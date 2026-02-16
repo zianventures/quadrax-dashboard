@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>QuadraX Risk Dashboard</title>
+<style>
+body {
+  margin:0;
+  background:#0a0e27;
+  color:#e0e0e0;
+  font-family:Segoe UI, sans-serif;
+  padding:20px;
+}
+.container { max-width:1600px; margin:auto; }
+.card {
+  background:rgba(30,58,138,0.3);
+  border:2px solid #3b82f6;
+  border-radius:15px;
+  padding:20px;
+}
+.row { display:grid; grid-template-columns:2fr 1fr; gap:20px; }
+button {
+  border:none;
+  padding:10px 15px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.green { color:#10b981; }
+.red { color:#dc2626; }
+.blue { color:#60a5fa; }
+.bar {
+  height:8px;
+  background:rgba(0,0,0,0.3);
+  border-radius:5px;
+  overflow:hidden;
+}
+.fill {
+  height:100%;
+}
+.alert {
+  padding:10px;
+  border-radius:8px;
+  margin-bottom:10px;
+}
+.header {
+  background:linear-gradient(135deg,#1e3a8a,#3b82f6);
+  border:2px solid #60a5fa;
+  border-radius:15px;
+  padding:20px 30px;
+  margin-bottom:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+  <div>
+    <h2 style="margin:0;">🛡️ QuadraX Risk Dashboard</h2>
+    <div style="color:#bfdbfe;">Real-Time 8-State Monitoring & Control System</div>
+  </div>
+  <div id="status" class="green" style="font-weight:bold;">● LIVE</div>
+</div>
+
+<div class="row">
+
+<!-- LEFT -->
+<div>
+
+<div class="card" id="stateCard">
+  <h3>CURRENT MARKET STATE</h3>
+  <div id="stateName" style="font-size:2em;font-weight:bold;"></div>
+  <div>Confidence: <span id="confidence"></span></div>
+</div>
+
+<div class="card" style="margin-top:20px;">
+  <h3>State Probability Distribution</h3>
+  <div id="probabilities"></div>
+</div>
+
+<div class="card" style="margin-top:20px;">
+  <h3>Portfolio</h3>
+  <div>Account Balance: <span id="balance"></span></div>
+  <div>Daily PnL: <span id="dailyPnl"></span></div>
+  <div>Total Exposure: <span id="exposure"></span></div>
+</div>
+
+</div>
+
+<!-- RIGHT -->
+<div>
+
+<div class="card" id="riskCard">
+  <h3>RISK LEVEL</h3>
+  <div id="riskLevel" style="font-size:2em;font-weight:bold;"></div>
+</div>
+
+<div class="card" style="margin-top:20px;">
+  <h3>Risk Metrics</h3>
+  <div>VaR (95%): <span id="var95" class="red"></span></div>
+  <div>CVaR (95%): <span id="cvar95" class="red"></span></div>
+  <div>Sharpe: <span id="sharpe"></span></div>
+  <div>Correlation: <span id="correlation"></span></div>
+</div>
+
+<div class="card" style="margin-top:20px;">
+  <h3>Emergency Controls</h3>
+  <button onclick="reduceExposure()" style="background:#f59e0b;color:white;">Reduce 50%</button>
+  <button onclick="flatten()" style="background:#dc2626;color:white;margin-top:10px;">Emergency Flatten</button>
+</div>
+
+<div class="card" style="margin-top:20px;">
+  <h3>Alerts</h3>
+  <div id="alerts"></div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+
+// Core Data
+let currentState = 1;
+let stateConfidence = 82;
+let stateProbabilities = {1:82,2:8,3:5,4:3,5:1,6:0.5,7:0.3,8:0.2};
+
+let accountBalance = 1000000;
+let totalExposure = 650000;
+let dailyPnL = 12500;
+let sharpe = 2.85;
+let correlation = 0.32;
+let var95 = 28500;
+let cvar95 = 42300;
+
+const stateNames = {
+1:"Mean-Reverting",2:"Liquidity Vacuum",3:"Slow Drift",
+4:"Strong Trend",5:"Stop Cascade",6:"News Shock",
+7:"Dealer Unwind",8:"Panic/Forced"
+};
+
+function getRiskLevel(){
+ if(currentState>=7) return "CRITICAL";
+ if(currentState>=5) return "HIGH";
+ return "NORMAL";
+}
+
+function render(){
+ document.getElementById("stateName").innerText =
+  "STATE "+currentState+": "+stateNames[currentState];
+ document.getElementById("confidence").innerText = stateConfidence+"%";
+ document.getElementById("balance").innerText =
+  "$"+accountBalance.toLocaleString();
+ document.getElementById("dailyPnl").innerText =
+  (dailyPnL>=0?"+":"")+"$"+dailyPnL.toLocaleString();
+ document.getElementById("dailyPnl").className =
+  dailyPnL>=0?"green":"red";
+ document.getElementById("exposure").innerText =
+  "$"+totalExposure.toLocaleString();
+
+ document.getElementById("var95").innerText =
+  "$"+var95.toLocaleString();
+ document.getElementById("cvar95").innerText =
+  "$"+cvar95.toLocaleString();
+ document.getElementById("sharpe").innerText = sharpe;
+ document.getElementById("correlation").innerText =
+  (correlation*100).toFixed(1)+"%";
+
+ document.getElementById("riskLevel").innerText =
+  getRiskLevel();
+
+ // probabilities
+ let html="";
+ for(let s in stateProbabilities){
+  html+=`
+   <div style="margin-bottom:10px;">
+    State ${s}: ${stateNames[s]} (${stateProbabilities[s]}%)
+    <div class="bar">
+     <div class="fill" style="width:${stateProbabilities[s]}%;background:#60a5fa;"></div>
+    </div>
+   </div>`;
+ }
+ document.getElementById("probabilities").innerHTML=html;
+
+ document.getElementById("alerts").innerHTML =
+  "<div class='alert'>System stable. All limits within tolerance.</div>";
+}
+
+function reduceExposure(){
+ totalExposure*=0.5;
+ dailyPnL*=0.5;
+ alert("Exposure reduced 50%");
+ render();
+}
+
+function flatten(){
+ totalExposure=0;
+ dailyPnL=0;
+ alert("EMERGENCY FLATTEN EXECUTED");
+ render();
+}
+
+// Simulated live updates
+setInterval(()=>{
+ dailyPnL += (Math.random()-0.5)*2000;
+ render();
+},3000);
+
+render();
+
+</script>
+</body>
+</html>
