@@ -1,220 +1,788 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>QuadraX Risk Dashboard</title>
-<style>
-body {
-  margin:0;
-  background:#0a0e27;
-  color:#e0e0e0;
-  font-family:Segoe UI, sans-serif;
-  padding:20px;
-}
-.container { max-width:1600px; margin:auto; }
-.card {
-  background:rgba(30,58,138,0.3);
-  border:2px solid #3b82f6;
-  border-radius:15px;
-  padding:20px;
-}
-.row { display:grid; grid-template-columns:2fr 1fr; gap:20px; }
-button {
-  border:none;
-  padding:10px 15px;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:bold;
-}
-.green { color:#10b981; }
-.red { color:#dc2626; }
-.blue { color:#60a5fa; }
-.bar {
-  height:8px;
-  background:rgba(0,0,0,0.3);
-  border-radius:5px;
-  overflow:hidden;
-}
-.fill {
-  height:100%;
-}
-.alert {
-  padding:10px;
-  border-radius:8px;
-  margin-bottom:10px;
-}
-.header {
-  background:linear-gradient(135deg,#1e3a8a,#3b82f6);
-  border:2px solid #60a5fa;
-  border-radius:15px;
-  padding:20px 30px;
-  margin-bottom:20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>QuadraX Risk Dashboard</title>
+  <style>
+    :root{
+      --bg:#050B1A;
+      --panel:#07122F;
+      --panel2: rgba(30,58,138,0.22);
+      --border: rgba(96,165,250,0.35);
+      --border2: rgba(255,255,255,0.10);
+      --text:#E6EAF2;
+      --muted: rgba(230,234,242,0.70);
+      --muted2: rgba(230,234,242,0.55);
+
+      --green:#10B981;
+      --amber:#F59E0B;
+      --orange:#F97316;
+      --red:#DC2626;
+      --blue:#60A5FA;
+      --violet:#A78BFA;
+
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --radius: 18px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      padding:24px;
+      background: radial-gradient(1200px 600px at 15% 10%, rgba(96,165,250,0.14), transparent 60%),
+                  radial-gradient(900px 500px at 80% 20%, rgba(16,185,129,0.10), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      letter-spacing: 0.2px;
+    }
+
+    .wrap{ max-width: 1620px; margin:0 auto; }
+    .topbar{
+      border: 1px solid rgba(96,165,250,0.45);
+      background: linear-gradient(135deg, rgba(30,58,138,0.95), rgba(59,130,246,0.65));
+      border-radius: 20px;
+      padding: 18px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      box-shadow: var(--shadow);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width: 260px;
+    }
+
+    .logo{
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 800;
+      color: rgba(255,255,255,0.92);
+      user-select:none;
+    }
+
+    .brand h1{
+      margin:0;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+    .brand .sub{
+      margin-top: 2px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.78);
+    }
+
+    .top-right{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius: 999px;
+      background: rgba(2,6,23,0.40);
+      border: 1px solid rgba(255,255,255,0.14);
+      font-size: 12px;
+      color: rgba(255,255,255,0.88);
+      white-space: nowrap;
+    }
+
+    .dot{
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(16,185,129,0.18);
+    }
+    .dot.off{ background: rgba(148,163,184,0.9); box-shadow:none; }
+
+    .btn{
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(2,6,23,0.35);
+      color: rgba(255,255,255,0.92);
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight: 700;
+      font-size: 12px;
+      transition: transform 120ms ease, background 120ms ease;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(2,6,23,0.50); }
+    .btn.primary{ background: rgba(16,185,129,0.18); border-color: rgba(16,185,129,0.35); }
+    .btn.warn{ background: rgba(245,158,11,0.20); border-color: rgba(245,158,11,0.35); color: rgba(255,255,255,0.95); }
+    .btn.danger{ background: rgba(220,38,38,0.18); border-color: rgba(220,38,38,0.35); color: rgba(255,255,255,0.95); }
+
+    .grid{
+      margin-top: 18px;
+      display:grid;
+      grid-template-columns: 2.1fr 1fr;
+      gap: 18px;
+    }
+
+    .card{
+      border-radius: var(--radius);
+      background: rgba(7,18,47,0.85);
+      border: 1px solid var(--border2);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .card-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 12px;
+    }
+
+    .card-title h2{
+      margin:0;
+      font-size: 14px;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+      color: rgba(230,234,242,0.85);
+    }
+    .muted{ color: var(--muted); font-size: 12px; }
+
+    .state-card{
+      background: linear-gradient(180deg, rgba(16,185,129,0.18), rgba(7,18,47,0.85) 70%);
+      border: 1px solid rgba(16,185,129,0.25);
+    }
+
+    .state-main{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 14px;
+    }
+
+    .state-name{
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin: 6px 0 6px 0;
+      color: rgba(255,255,255,0.95);
+    }
+
+    .confidence{
+      font-size: 13px;
+      color: rgba(230,234,242,0.86);
+    }
+
+    .state-badge{
+      width: 76px;
+      height: 76px;
+      border-radius: 999px;
+      background: rgba(16,185,129,0.22);
+      border: 1px solid rgba(16,185,129,0.35);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 900;
+      font-size: 34px;
+      color: rgba(255,255,255,0.95);
+      flex: 0 0 auto;
+    }
+
+    .divider{
+      height:1px;
+      background: rgba(255,255,255,0.10);
+      margin: 14px 0;
+    }
+
+    .history{
+      display:flex;
+      gap: 8px;
+      flex-wrap:wrap;
+    }
+
+    .chip{
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 900;
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.92);
+      background: rgba(255,255,255,0.06);
+      user-select:none;
+    }
+
+    .probs{ display:flex; flex-direction:column; gap: 12px; }
+    .prob-row{ display:flex; flex-direction:column; gap: 6px; }
+    .prob-head{ display:flex; justify-content:space-between; gap: 10px; font-size: 13px; }
+    .bar{
+      height: 10px;
+      background: rgba(0,0,0,0.35);
+      border-radius: 999px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .fill{
+      height:100%;
+      width: 0%;
+      border-radius: 999px;
+      transition: width 260ms ease;
+    }
+
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .kpi{
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(2,6,23,0.22);
+      padding: 12px;
+    }
+    .kpi .label{ font-size: 12px; color: var(--muted); }
+    .kpi .value{ margin-top: 6px; font-size: 18px; font-weight: 900; color: rgba(255,255,255,0.95); }
+
+    .risk-tile{
+      text-align:center;
+      padding: 18px 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(2,6,23,0.35);
+    }
+    .risk-tile .big{ font-size: 34px; font-weight: 1000; margin-top: 8px; }
+    .risk-tile .label{ font-size: 12px; color: var(--muted); letter-spacing: 0.7px; text-transform: uppercase; }
+
+    .metric{
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(2,6,23,0.22);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .metric .m-title{ font-size: 12px; color: var(--muted); }
+    .metric .m-value{ font-size: 18px; font-weight: 900; color: rgba(255,255,255,0.95); margin-top: 6px; }
+    .metric .m-sub{ font-size: 11px; color: var(--muted2); margin-top: 4px; }
+
+    .gauge{
+      margin-top: 8px;
+      height: 10px;
+      background: rgba(0,0,0,0.35);
+      border-radius: 999px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .gauge .gfill{
+      height:100%;
+      width:0%;
+      background: var(--green);
+      transition: width 260ms ease;
+    }
+
+    .alerts{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      max-height: 300px;
+      overflow:auto;
+      padding-right: 4px;
+    }
+    .alert{
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(2,6,23,0.22);
+      padding: 12px;
+    }
+    .alert .sev{ font-size: 11px; font-weight: 900; letter-spacing: 0.7px; text-transform: uppercase; }
+    .alert .msg{ margin-top: 6px; font-size: 13px; color: rgba(255,255,255,0.92); }
+    .alert .time{ margin-top: 6px; font-size: 11px; color: var(--muted2); }
+
+    .sev-info{ color: rgba(96,165,250,0.95); }
+    .sev-warn{ color: rgba(245,158,11,0.95); }
+    .sev-critical{ color: rgba(248,113,113,0.95); }
+
+    .footer{
+      margin-top: 18px;
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      align-items:center;
+      justify-content:space-between;
+      padding: 12px 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(7,18,47,0.70);
+      box-shadow: var(--shadow);
+    }
+
+    .footer .item{
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .footer .item b{ color: rgba(255,255,255,0.95); }
+
+    @media (max-width: 1120px){
+      .grid{ grid-template-columns: 1fr; }
+      .kpis{ grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
 </head>
 
 <body>
-<div class="container">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" title="QuadraX">QX</div>
+        <div>
+          <h1>QuadraX Risk Dashboard</h1>
+          <div class="sub">Executive View: 8-State Monitoring and Control System</div>
+        </div>
+      </div>
 
-<!-- Header -->
-<div class="header">
-  <div>
-    <h2 style="margin:0;">🛡️ QuadraX Risk Dashboard</h2>
-    <div style="color:#bfdbfe;">Real-Time 8-State Monitoring & Control System</div>
+      <div class="top-right">
+        <div class="pill" title="Data feed status">
+          <span id="liveDot" class="dot"></span>
+          <span id="liveText">LIVE</span>
+        </div>
+        <div class="pill">
+          <span class="muted">Last Update</span>
+          <b id="lastUpdate">--:--:--</b>
+        </div>
+        <button class="btn warn" id="pauseBtn">Pause</button>
+        <button class="btn primary" id="syncBtn">Sync</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Left -->
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        <div class="card state-card">
+          <div class="card-title">
+            <h2>Current Market State</h2>
+            <div class="muted">Read-only demo data</div>
+          </div>
+
+          <div class="state-main">
+            <div>
+              <div class="state-name" id="stateName">STATE 1: Mean-Reverting</div>
+              <div class="confidence">Confidence: <b id="confidence">82.0%</b></div>
+            </div>
+            <div class="state-badge" id="stateBadge">1</div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="muted">Recent State History (Last 12 Updates)</div>
+          <div class="history" id="stateHistory"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <h2>State Probability Distribution</h2>
+            <div class="muted">Conditional regime likelihoods</div>
+          </div>
+
+          <div class="probs" id="probList"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <h2>Portfolio Snapshot</h2>
+            <div class="muted">Exposure and performance health</div>
+          </div>
+
+          <div class="kpis">
+            <div class="kpi">
+              <div class="label">Account Balance</div>
+              <div class="value" id="balance">$1,000,000</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Daily PnL</div>
+              <div class="value" id="dailyPnl">+$12,500</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Total Exposure</div>
+              <div class="value" id="exposure">$650,000</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Max Drawdown</div>
+              <div class="value" id="drawdown">-3.2%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right -->
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        <div class="card">
+          <div class="risk-tile" id="riskTile">
+            <div class="label">Risk Level</div>
+            <div class="big" id="riskLevel">NORMAL</div>
+            <div class="muted" id="riskNote">Policy: state-aware sizing and entry gating</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <h2>Risk Metrics</h2>
+            <div class="muted">Control signals</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div class="metric">
+              <div>
+                <div class="m-title">Value at Risk (95%)</div>
+                <div class="m-value" style="color: rgba(248,113,113,0.95);" id="var95">$28,500</div>
+                <div class="m-sub" id="varPct">2.85% of account</div>
+              </div>
+            </div>
+
+            <div class="metric">
+              <div>
+                <div class="m-title">Conditional VaR (95%)</div>
+                <div class="m-value" style="color: rgba(248,113,113,0.95);" id="cvar95">$42,300</div>
+                <div class="m-sub">Expected loss if VaR exceeded</div>
+              </div>
+            </div>
+
+            <div class="metric">
+              <div style="width:100%;">
+                <div style="display:flex; justify-content:space-between; gap:10px;">
+                  <div class="m-title">Portfolio Correlation</div>
+                  <div class="m-value" style="color: rgba(52,211,153,0.95);" id="corr">32.0%</div>
+                </div>
+                <div class="m-sub">Max allowed: <span id="corrMax">50%</span></div>
+                <div class="gauge"><div class="gfill" id="corrFill"></div></div>
+              </div>
+            </div>
+
+            <div class="metric">
+              <div>
+                <div class="m-title">Beta to Market</div>
+                <div class="m-value" style="color: rgba(96,165,250,0.95);" id="beta">0.15</div>
+                <div class="m-sub">Low market correlation (good)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <h2>Active Alerts</h2>
+            <div class="muted" id="alertCount">2 items</div>
+          </div>
+
+          <div class="alerts" id="alerts"></div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:12px;">
+            <button class="btn warn" id="reduceBtn" title="Demo action only">Reduce Risk</button>
+            <button class="btn danger" id="flattenBtn" title="Demo action only">Emergency Flatten</button>
+          </div>
+
+          <div class="muted" style="margin-top:10px;">
+            This is a demo artifact. Real controls will wire to backend policy actions and audit logs.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="item">System Status: <b id="sysStatus">LIVE</b></div>
+      <div class="item">Current Regime: <b id="sysRegime">State 1</b></div>
+      <div class="item">Positions: <b id="posCount">5</b></div>
+      <div class="item">Data Source: <b>Mock (demo)</b></div>
+    </div>
   </div>
-  <div id="status" class="green" style="font-weight:bold;">● LIVE</div>
-</div>
-
-<div class="row">
-
-<!-- LEFT -->
-<div>
-
-<div class="card" id="stateCard">
-  <h3>CURRENT MARKET STATE</h3>
-  <div id="stateName" style="font-size:2em;font-weight:bold;"></div>
-  <div>Confidence: <span id="confidence"></span></div>
-</div>
-
-<div class="card" style="margin-top:20px;">
-  <h3>State Probability Distribution</h3>
-  <div id="probabilities"></div>
-</div>
-
-<div class="card" style="margin-top:20px;">
-  <h3>Portfolio</h3>
-  <div>Account Balance: <span id="balance"></span></div>
-  <div>Daily PnL: <span id="dailyPnl"></span></div>
-  <div>Total Exposure: <span id="exposure"></span></div>
-</div>
-
-</div>
-
-<!-- RIGHT -->
-<div>
-
-<div class="card" id="riskCard">
-  <h3>RISK LEVEL</h3>
-  <div id="riskLevel" style="font-size:2em;font-weight:bold;"></div>
-</div>
-
-<div class="card" style="margin-top:20px;">
-  <h3>Risk Metrics</h3>
-  <div>VaR (95%): <span id="var95" class="red"></span></div>
-  <div>CVaR (95%): <span id="cvar95" class="red"></span></div>
-  <div>Sharpe: <span id="sharpe"></span></div>
-  <div>Correlation: <span id="correlation"></span></div>
-</div>
-
-<div class="card" style="margin-top:20px;">
-  <h3>Emergency Controls</h3>
-  <button onclick="reduceExposure()" style="background:#f59e0b;color:white;">Reduce 50%</button>
-  <button onclick="flatten()" style="background:#dc2626;color:white;margin-top:10px;">Emergency Flatten</button>
-</div>
-
-<div class="card" style="margin-top:20px;">
-  <h3>Alerts</h3>
-  <div id="alerts"></div>
-</div>
-
-</div>
-
-</div>
-</div>
 
 <script>
+  // Demo data (swap later for real API)
+  let isLive = true;
 
-// Core Data
-let currentState = 1;
-let stateConfidence = 82;
-let stateProbabilities = {1:82,2:8,3:5,4:3,5:1,6:0.5,7:0.3,8:0.2};
+  let currentState = 1;
+  let stateConfidence = 0.82;
+  let stateHistory = [1,1,1,2,1,1,1,1,3,3,3,1];
 
-let accountBalance = 1000000;
-let totalExposure = 650000;
-let dailyPnL = 12500;
-let sharpe = 2.85;
-let correlation = 0.32;
-let var95 = 28500;
-let cvar95 = 42300;
+  let stateProbabilities = { 1:82, 2:8, 3:5, 4:3, 5:1, 6:0.5, 7:0.3, 8:0.2 };
 
-const stateNames = {
-1:"Mean-Reverting",2:"Liquidity Vacuum",3:"Slow Drift",
-4:"Strong Trend",5:"Stop Cascade",6:"News Shock",
-7:"Dealer Unwind",8:"Panic/Forced"
-};
+  let accountBalance = 1000000;
+  let totalExposure = 650000;
+  let dailyPnL = 12500;
+  let maxDrawdown = -3.2;
 
-function getRiskLevel(){
- if(currentState>=7) return "CRITICAL";
- if(currentState>=5) return "HIGH";
- return "NORMAL";
-}
+  let var95 = 28500;
+  let cvar95 = 42300;
+  let correlation = 0.32;
+  let corrMax = 0.5;
+  let beta = 0.15;
 
-function render(){
- document.getElementById("stateName").innerText =
-  "STATE "+currentState+": "+stateNames[currentState];
- document.getElementById("confidence").innerText = stateConfidence+"%";
- document.getElementById("balance").innerText =
-  "$"+accountBalance.toLocaleString();
- document.getElementById("dailyPnl").innerText =
-  (dailyPnL>=0?"+":"")+"$"+dailyPnL.toLocaleString();
- document.getElementById("dailyPnl").className =
-  dailyPnL>=0?"green":"red";
- document.getElementById("exposure").innerText =
-  "$"+totalExposure.toLocaleString();
+  let alerts = [
+    { severity: "warning", message: "State 2 probability increased to 8%. Prepare for potential breakout.", time: "2 min ago" },
+    { severity: "info", message: "USDJPY position moved to +13,500 PnL. Consider taking partial profits.", time: "8 min ago" }
+  ];
 
- document.getElementById("var95").innerText =
-  "$"+var95.toLocaleString();
- document.getElementById("cvar95").innerText =
-  "$"+cvar95.toLocaleString();
- document.getElementById("sharpe").innerText = sharpe;
- document.getElementById("correlation").innerText =
-  (correlation*100).toFixed(1)+"%";
+  const stateNames = {
+    1:"Mean-Reverting",2:"Liquidity Vacuum",3:"Slow Drift",
+    4:"Strong Trend",5:"Stop Cascade",6:"News Shock",
+    7:"Dealer Unwind",8:"Panic/Forced"
+  };
 
- document.getElementById("riskLevel").innerText =
-  getRiskLevel();
+  function fmtUsd(x){ return x.toLocaleString(undefined,{style:"currency",currency:"USD"}); }
+  function fmtPct(x){ return (x*100).toFixed(1) + "%"; }
 
- // probabilities
- let html="";
- for(let s in stateProbabilities){
-  html+=`
-   <div style="margin-bottom:10px;">
-    State ${s}: ${stateNames[s]} (${stateProbabilities[s]}%)
-    <div class="bar">
-     <div class="fill" style="width:${stateProbabilities[s]}%;background:#60a5fa;"></div>
-    </div>
-   </div>`;
- }
- document.getElementById("probabilities").innerHTML=html;
+  function riskLevel(){
+    // Simple demo logic
+    if (currentState >= 7) return "CRITICAL";
+    if (currentState >= 5) return "HIGH";
+    if (currentState === 2) return "ELEVATED";
+    return "NORMAL";
+  }
 
- document.getElementById("alerts").innerHTML =
-  "<div class='alert'>System stable. All limits within tolerance.</div>";
-}
+  function riskColor(level){
+    if (level === "NORMAL") return "rgba(16,185,129,0.20)";
+    if (level === "ELEVATED") return "rgba(245,158,11,0.22)";
+    if (level === "HIGH") return "rgba(249,115,22,0.22)";
+    return "rgba(220,38,38,0.22)";
+  }
 
-function reduceExposure(){
- totalExposure*=0.5;
- dailyPnL*=0.5;
- alert("Exposure reduced 50%");
- render();
-}
+  function sevClass(sev){
+    if (sev === "critical") return "sev-critical";
+    if (sev === "warning") return "sev-warn";
+    return "sev-info";
+  }
 
-function flatten(){
- totalExposure=0;
- dailyPnL=0;
- alert("EMERGENCY FLATTEN EXECUTED");
- render();
-}
+  function setLiveUI(){
+    document.getElementById("liveDot").className = isLive ? "dot" : "dot off";
+    document.getElementById("liveText").textContent = isLive ? "LIVE" : "PAUSED";
+    document.getElementById("sysStatus").textContent = isLive ? "LIVE" : "PAUSED";
+    document.getElementById("pauseBtn").textContent = isLive ? "Pause" : "Resume";
+  }
 
-// Simulated live updates
-setInterval(()=>{
- dailyPnL += (Math.random()-0.5)*2000;
- render();
-},3000);
+  function render(){
+    const now = new Date();
+    document.getElementById("lastUpdate").textContent = now.toLocaleTimeString();
 
-render();
+    // State
+    document.getElementById("stateName").textContent = `STATE ${currentState}: ${stateNames[currentState]}`;
+    document.getElementById("confidence").textContent = fmtPct(stateConfidence);
+    document.getElementById("stateBadge").textContent = String(currentState);
+    document.getElementById("sysRegime").textContent = `State ${currentState}`;
 
+    // History chips
+    const hist = document.getElementById("stateHistory");
+    hist.innerHTML = "";
+    stateHistory.forEach((s, idx) => {
+      const el = document.createElement("div");
+      el.className = "chip";
+      el.title = stateNames[s];
+
+      // make older chips lighter
+      const opacity = 0.35 + (idx / Math.max(1, stateHistory.length - 1)) * 0.65;
+      el.style.opacity = String(opacity);
+
+      // color by state
+      el.style.background = "rgba(255,255,255,0.06)";
+      if (s === 1) el.style.borderColor = "rgba(16,185,129,0.35)";
+      if (s === 2) el.style.borderColor = "rgba(245,158,11,0.35)";
+      if (s === 3) el.style.borderColor = "rgba(96,165,250,0.35)";
+      if (s === 4) el.style.borderColor = "rgba(59,130,246,0.35)";
+      if (s === 5) el.style.borderColor = "rgba(249,115,22,0.35)";
+      if (s === 6) el.style.borderColor = "rgba(248,113,113,0.35)";
+      if (s === 7) el.style.borderColor = "rgba(167,139,250,0.35)";
+      if (s === 8) el.style.borderColor = "rgba(239,68,68,0.35)";
+
+      el.textContent = String(s);
+      hist.appendChild(el);
+    });
+
+    // Probabilities
+    const probList = document.getElementById("probList");
+    probList.innerHTML = "";
+    Object.keys(stateProbabilities).forEach((k) => {
+      const s = Number(k);
+      const p = Number(stateProbabilities[k]);
+
+      const row = document.createElement("div");
+      row.className = "prob-row";
+
+      const head = document.createElement("div");
+      head.className = "prob-head";
+      const left = document.createElement("div");
+      left.textContent = `State ${s}: ${stateNames[s]}`;
+      left.style.color = "rgba(230,234,242,0.88)";
+      const right = document.createElement("div");
+      right.textContent = `${p}%`;
+      right.style.fontWeight = "900";
+      right.style.color = (s===1) ? "rgba(52,211,153,0.95)"
+                       : (s===2) ? "rgba(245,158,11,0.95)"
+                       : (s===3) ? "rgba(96,165,250,0.95)"
+                       : (s===4) ? "rgba(59,130,246,0.95)"
+                       : (s===5) ? "rgba(251,146,60,0.95)"
+                       : (s===6) ? "rgba(248,113,113,0.95)"
+                       : (s===7) ? "rgba(167,139,250,0.95)"
+                       : "rgba(239,68,68,0.95)";
+
+      head.appendChild(left);
+      head.appendChild(right);
+
+      const bar = document.createElement("div");
+      bar.className = "bar";
+      const fill = document.createElement("div");
+      fill.className = "fill";
+      fill.style.width = `${Math.max(0, Math.min(100, p))}%`;
+      fill.style.background = right.style.color;
+
+      bar.appendChild(fill);
+      row.appendChild(head);
+      row.appendChild(bar);
+
+      probList.appendChild(row);
+    });
+
+    // Portfolio
+    document.getElementById("balance").textContent = fmtUsd(accountBalance);
+    const pnlEl = document.getElementById("dailyPnl");
+    pnlEl.textContent = (dailyPnL >= 0 ? "+" : "") + fmtUsd(Math.round(dailyPnL));
+    pnlEl.style.color = dailyPnL >= 0 ? "rgba(52,211,153,0.95)" : "rgba(248,113,113,0.95)";
+    document.getElementById("exposure").textContent = fmtUsd(totalExposure);
+    document.getElementById("drawdown").textContent = `${maxDrawdown.toFixed(1)}%`;
+
+    // Risk
+    const rl = riskLevel();
+    document.getElementById("riskLevel").textContent = rl;
+    document.getElementById("riskTile").style.background = riskColor(rl);
+
+    document.getElementById("var95").textContent = fmtUsd(var95);
+    document.getElementById("varPct").textContent = fmtPct(var95 / accountBalance);
+    document.getElementById("cvar95").textContent = fmtUsd(cvar95);
+    document.getElementById("corr").textContent = fmtPct(correlation);
+    document.getElementById("corrMax").textContent = fmtPct(corrMax);
+    document.getElementById("beta").textContent = beta.toFixed(2);
+
+    // Correlation gauge
+    const ratio = Math.max(0, Math.min(1, correlation / corrMax));
+    const corrFill = document.getElementById("corrFill");
+    corrFill.style.width = `${ratio * 100}%`;
+    corrFill.style.background = (correlation > corrMax) ? "rgba(245,158,11,0.95)" : "rgba(52,211,153,0.95)";
+
+    // Alerts
+    const activeAlerts = alerts.slice(0, 10);
+    document.getElementById("alertCount").textContent = `${activeAlerts.length} items`;
+
+    const aWrap = document.getElementById("alerts");
+    aWrap.innerHTML = "";
+    activeAlerts.forEach((a) => {
+      const el = document.createElement("div");
+      el.className = "alert";
+      const sev = document.createElement("div");
+      sev.className = `sev ${sevClass(a.severity)}`;
+      sev.textContent = a.severity.toUpperCase();
+      const msg = document.createElement("div");
+      msg.className = "msg";
+      msg.textContent = a.message;
+      const time = document.createElement("div");
+      time.className = "time";
+      time.textContent = a.time;
+
+      el.appendChild(sev);
+      el.appendChild(msg);
+      el.appendChild(time);
+      aWrap.appendChild(el);
+    });
+
+    setLiveUI();
+  }
+
+  function simulateTick(){
+    if (!isLive) return;
+
+    // Demo PnL wiggle
+    const delta = (Math.random() - 0.5) * 1800;
+    dailyPnL = dailyPnL + delta;
+
+    // Occasionally nudge regime probabilities slightly
+    if (Math.random() < 0.18){
+      const bump = (Math.random() - 0.5) * 2.0;
+      const s2 = Math.max(0, Math.min(15, stateProbabilities[2] + bump));
+      stateProbabilities[2] = Math.round(s2 * 10) / 10;
+
+      // keep state 1 dominant by adjusting it
+      let sumOther = 0;
+      for (let s=2; s<=8; s++) sumOther += stateProbabilities[s];
+      stateProbabilities[1] = Math.max(0, Math.round((100 - sumOther) * 10) / 10);
+
+      stateConfidence = Math.max(0.55, Math.min(0.95, stateProbabilities[currentState] / 100));
+    }
+
+    // Occasionally flip state to show concept
+    if (Math.random() < 0.07){
+      const roll = Math.random();
+      currentState = roll < 0.75 ? 1 : (roll < 0.88 ? 2 : 3);
+
+      stateHistory = stateHistory.slice(1);
+      stateHistory.push(currentState);
+      stateConfidence = Math.max(0.55, Math.min(0.95, (stateProbabilities[currentState] || 60) / 100));
+    }
+
+    render();
+  }
+
+  // Buttons (demo actions)
+  document.getElementById("pauseBtn").addEventListener("click", () => {
+    isLive = !isLive;
+    render();
+  });
+
+  document.getElementById("syncBtn").addEventListener("click", () => {
+    // Reset to baseline demo data
+    isLive = true;
+    currentState = 1;
+    stateConfidence = 0.82;
+    stateHistory = [1,1,1,2,1,1,1,1,3,3,3,1];
+    stateProbabilities = { 1:82, 2:8, 3:5, 4:3, 5:1, 6:0.5, 7:0.3, 8:0.2 };
+    dailyPnL = 12500;
+    render();
+  });
+
+  document.getElementById("reduceBtn").addEventListener("click", () => {
+    totalExposure = Math.round(totalExposure * 0.5);
+    alerts.unshift({ severity:"warning", message:"Exposure reduced 50% (demo action).", time:"Just now" });
+    render();
+  });
+
+  document.getElementById("flattenBtn").addEventListener("click", () => {
+    totalExposure = 0;
+    alerts.unshift({ severity:"critical", message:"Emergency flatten executed (demo action).", time:"Just now" });
+    render();
+  });
+
+  // Initial
+  render();
+  setInterval(simulateTick, 2500);
+
+  // Static placeholders for footer
+  document.getElementById("posCount").textContent = "5";
 </script>
 </body>
 </html>
