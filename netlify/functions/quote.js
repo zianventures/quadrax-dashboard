@@ -1,8 +1,7 @@
 // netlify/functions/quote.js
 // QuadraX backend quote proxy (Twelve Data)
-// Usage:
-//   /.netlify/functions/quote?pair=EUR/USD
-//   /.netlify/functions/quote?pair=EURUSD
+// Canonical test:
+//   https://YOUR-SITE.netlify.app/.netlify/functions/quote?pair=EUR/USD
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -16,11 +15,16 @@ function normalizePair(rawPair) {
   // If already "EUR/USD" style, keep it
   if (p.includes("/")) return p;
 
-  // If "EURUSD" style, convert to "EUR/USD" if length >= 6
+  // If "EURUSD" style, convert to "EUR/USD"
   if (p.length >= 6) return `${p.slice(0, 3)}/${p.slice(3, 6)}`;
 
-  // Fallback
   return "EUR/USD";
+}
+
+function toNum(x) {
+  if (x === null || x === undefined) return null;
+  const n = Number(x);
+  return Number.isFinite(n) ? n : null;
 }
 
 exports.handler = async (event) => {
@@ -56,7 +60,7 @@ exports.handler = async (event) => {
 
     const data = await resp.json().catch(() => null);
 
-    // Twelve Data sometimes returns 200 with an "code"/"message" error payload
+    // Twelve Data may return 200 with error payload (code/message)
     if (!resp.ok || (data && data.code)) {
       return {
         statusCode: 502,
@@ -64,8 +68,8 @@ exports.handler = async (event) => {
         body: JSON.stringify({
           ok: false,
           provider: "twelvedata",
-          symbol,
           pair,
+          symbol,
           latency_ms: latencyMs,
           status: "error",
           raw: data || { message: "Failed to parse provider response" },
@@ -73,13 +77,22 @@ exports.handler = async (event) => {
       };
     }
 
-    // Typical fields: symbol, name, timestamp, open, high, low, close, price, volume, etc.
-    // We'll return a normalized payload that your frontend can rely on.
-    const price = data.price != null ? Number(data.price) : null;
-    const ts =
-      data.timestamp != null
-        ? Number(data.timestamp) * 1000 // Twelve Data timestamp is in seconds (usually)
-        : Date.now();
+    // FX quotes often populate "close" more reliably than "price"
+    const px =
+      toNum(data.price) ??
+      toNum(data.close) ??
+      toNum(data.bid) ??
+      toNum(data.ask);
+
+    const open = toNum(data.open);
+    const high = toNum(data.high);
+    const low = toNum(data.low);
+    const close = toNum(data.close);
+    const change = toNum(data.change);
+    const pct = toNum(data.percent_change);
+
+    // Twelve Data timestamps are often seconds; if "datetime" is present we still keep now()
+    const tsMs = data.timestamp ? Number(data.timestamp) * 1000 : Date.now();
 
     return {
       statusCode: 200,
@@ -93,8 +106,12 @@ exports.handler = async (event) => {
         provider: "twelvedata",
         pair,
         symbol,
-        price,
-        timestamp_ms: ts,
+        price: px,
+        ohlc: { open, high, low, close },
+        change,
+        percent_change: pct,
+        is_market_open: data.is_market_open ?? null,
+        timestamp_ms: tsMs,
         latency_ms: latencyMs,
         raw: data, // keep for debugging
       }),
