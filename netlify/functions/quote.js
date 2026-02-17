@@ -1,130 +1,67 @@
 // netlify/functions/quote.js
-// QuadraX backend quote proxy (Twelve Data)
-// Canonical test:
-//   https://YOUR-SITE.netlify.app/.netlify/functions/quote?pair=EUR/USD
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-};
-
-function normalizePair(rawPair) {
-  const p = String(rawPair || "EUR/USD").toUpperCase().trim();
-
-  // If already "EUR/USD" style, keep it
-  if (p.includes("/")) return p;
-
-  // If "EURUSD" style, convert to "EUR/USD"
-  if (p.length >= 6) return `${p.slice(0, 3)}/${p.slice(3, 6)}`;
-
-  return "EUR/USD";
-}
-
-function toNum(x) {
-  if (x === null || x === undefined) return null;
-  const n = Number(x);
-  return Number.isFinite(n) ? n : null;
-}
-
-exports.handler = async (event) => {
-  // Preflight
-  if (event.httpMethod === "OPTIONS") {
-    return { statusCode: 200, headers: corsHeaders, body: "" };
-  }
-
+export async function handler(event) {
   try {
     const apiKey = process.env.TWELVEDATA_API_KEY;
     if (!apiKey) {
-      return {
-        statusCode: 500,
-        headers: corsHeaders,
-        body: JSON.stringify({
-          ok: false,
-          error: "Missing TWELVEDATA_API_KEY env var on Netlify",
-        }),
-      };
+      return json(500, { ok: false, error: "Missing TWELVEDATA_API_KEY env var" });
     }
 
     const qs = event.queryStringParameters || {};
-    const pair = normalizePair(qs.pair);
-    const symbol = pair; // Twelve Data FX safest as "EUR/USD"
+    const pair = (qs.pair || qs.symbol || "EUR/USD").toUpperCase();
 
-    const url =
-      `https://api.twelvedata.com/quote?symbol=${encodeURIComponent(symbol)}` +
-      `&apikey=${encodeURIComponent(apiKey)}`;
+    // Twelve Data expects symbol like "EUR/USD" for forex
+    const symbol = pair.includes("/") ? pair : "EUR/USD";
 
     const t0 = Date.now();
-    const resp = await fetch(url, { method: "GET" });
-    const latencyMs = Date.now() - t0;
+    const url = `https://api.twelvedata.com/quote?symbol=${encodeURIComponent(symbol)}&apikey=${encodeURIComponent(apiKey)}`;
 
-    const data = await resp.json().catch(() => null);
+    const resp = await fetch(url);
+    const raw = await resp.json();
 
-    // Twelve Data may return 200 with error payload (code/message)
-    if (!resp.ok || (data && data.code)) {
-      return {
-        statusCode: 502,
-        headers: corsHeaders,
-        body: JSON.stringify({
-          ok: false,
-          provider: "twelvedata",
-          pair,
-          symbol,
-          latency_ms: latencyMs,
-          status: "error",
-          raw: data || { message: "Failed to parse provider response" },
-        }),
-      };
+    if (!resp.ok || raw.status === "error") {
+      return json(502, {
+        ok: false,
+        provider: "twelvedata",
+        symbol,
+        raw,
+        status: "error"
+      });
     }
 
-    // FX quotes often populate "close" more reliably than "price"
-    const px =
-      toNum(data.price) ??
-      toNum(data.close) ??
-      toNum(data.bid) ??
-      toNum(data.ask);
+    const price = safeNumber(raw.price);
+    const tsMs = Date.now();
+    const latencyMs = Date.now() - t0;
 
-    const open = toNum(data.open);
-    const high = toNum(data.high);
-    const low = toNum(data.low);
-    const close = toNum(data.close);
-    const change = toNum(data.change);
-    const pct = toNum(data.percent_change);
-
-    // Twelve Data timestamps are often seconds; if "datetime" is present we still keep now()
-    const tsMs = data.timestamp ? Number(data.timestamp) * 1000 : Date.now();
-
-    return {
-      statusCode: 200,
-      headers: {
-        ...corsHeaders,
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store",
-      },
-      body: JSON.stringify({
-        ok: true,
-        provider: "twelvedata",
-        pair,
-        symbol,
-        price: px,
-        ohlc: { open, high, low, close },
-        change,
-        percent_change: pct,
-        is_market_open: data.is_market_open ?? null,
-        timestamp_ms: tsMs,
-        latency_ms: latencyMs,
-        raw: data, // keep for debugging
-      }),
-    };
-  } catch (err) {
-    return {
-      statusCode: 500,
-      headers: corsHeaders,
-      body: JSON.stringify({
-        ok: false,
-        error: "Unhandled exception in quote function",
-        detail: String(err && err.message ? err.message : err),
-      }),
-    };
+    return json(200, {
+      ok: true,
+      provider: "twelvedata",
+      pair: symbol,
+      symbol,
+      price,
+      timestamp_ms: tsMs,
+      latency_ms: latencyMs,
+      raw
+    });
+  } catch (e) {
+    return json(500, { ok: false, error: String(e?.message || e) });
   }
-};
+}
+
+function safeNumber(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function json(statusCode, body) {
+  return {
+    statusCode,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "access-control-allow-origin": "*",
+      "access-control-allow-methods": "GET,OPTIONS",
+      "access-control-allow-headers": "content-type"
+    },
+    body: JSON.stringify(body)
+  };
+}
