@@ -2,1606 +2,1504 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>QuadraX Risk Dashboard</title>
   <style>
     :root{
-      --bg0:#050814;
-      --bg1:#070c1d;
-      --card:#0b1630cc;
-      --card2:#091226cc;
-      --stroke:#274b8a66;
-      --stroke2:#2f6fd066;
-      --glow:#4aa3ff33;
-      --txt:#e9f1ff;
-      --mut:#9db1d1;
-      --mut2:#7f94b8;
-      --good:#26e6a4;
-      --warn:#ffb020;
-      --bad:#ff4d4d;
-      --blue:#4aa3ff;
-      --violet:#8a6cff;
-      --pink:#ff4fd8;
-      --teal:#00e2ff;
-      --shadow: 0 20px 60px rgba(0,0,0,.45);
-      --radius: 18px;
-      --radius2: 26px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      --bg0:#060b1a;
+      --bg1:#07122a;
+      --card: rgba(12, 22, 54, 0.72);
+      --card2: rgba(8, 16, 40, 0.72);
+      --stroke: rgba(120, 160, 255, 0.25);
+      --stroke2: rgba(120, 160, 255, 0.14);
+      --glow: rgba(80, 150, 255, 0.22);
+      --text:#e9f0ff;
+      --muted: rgba(233,240,255,0.70);
+      --muted2: rgba(233,240,255,0.55);
+
+      --green:#39d98a;
+      --amber:#f6c945;
+      --red:#ff4d6d;
+      --blue:#59a7ff;
+      --purple:#b47cff;
+      --pink:#ff5bd6;
+      --orange:#ff9a4d;
+
+      --radius: 22px;
+      --shadow: 0 20px 70px rgba(0,0,0,0.55);
+      --shadow2: 0 10px 30px rgba(0,0,0,0.35);
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
+
+    *{ box-sizing:border-box; }
     body{
       margin:0;
-      font-family:var(--sans);
-      color:var(--txt);
-      background:
-        radial-gradient(900px 600px at 12% 10%, rgba(52,128,255,.25), transparent 65%),
-        radial-gradient(800px 520px at 88% 18%, rgba(0,226,255,.18), transparent 60%),
-        radial-gradient(700px 520px at 60% 88%, rgba(138,108,255,.16), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      overflow-x:hidden;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 900px at 15% 15%, rgba(40,90,200,0.35), transparent 55%),
+                  radial-gradient(900px 700px at 85% 25%, rgba(80,30,140,0.25), transparent 60%),
+                  radial-gradient(1200px 900px at 50% 90%, rgba(0,255,200,0.08), transparent 60%),
+                  linear-gradient(180deg, var(--bg0), var(--bg1));
+      color: var(--text);
+      padding: 18px;
     }
-    .wrap{max-width:1280px;margin:18px auto 44px; padding:0 14px;}
+
+    .shell{
+      max-width: 1500px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
     .topbar{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:14px 14px;
-      border-radius:var(--radius2);
-      background: linear-gradient(180deg, rgba(33,92,190,.92), rgba(24,62,138,.90));
-      border:1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 16px 18px;
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(30,80,180,0.7), rgba(20,50,120,0.55));
+      border: 1px solid rgba(170, 210, 255, 0.26);
       box-shadow: var(--shadow);
-      position:sticky; top:10px; z-index:10;
-      backdrop-filter: blur(10px);
     }
-    .brand{display:flex;gap:14px;align-items:center;}
-    .qx{
-      width:44px;height:44px;border-radius:14px;
-      display:grid;place-items:center;
-      background: rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.18);
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-      font-weight:800;letter-spacing:.6px;
+
+    .brand{
+      display:flex;
+      gap: 14px;
+      align-items:center;
     }
-    .btitle{display:flex;flex-direction:column;gap:2px}
-    .btitle .name{font-size:18px;font-weight:800;line-height:1.1}
-    .btitle .sub{font-size:12px;color:rgba(255,255,255,.82); max-width:520px}
-    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+
+    .qx-badge{
+      width:42px;height:42px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.16);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:800;
+      letter-spacing:0.5px;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+    }
+
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .title h1{
+      margin:0;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+    .title .sub{
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.2px;
+    }
+
+    .top-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
     .pill{
-      display:flex;align-items:center;gap:10px;
-      padding:9px 12px;border-radius:999px;
-      background: rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.16);
-      color:rgba(255,255,255,.92);
-      font-size:12px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: var(--text);
+      font-size: 12px;
+      box-shadow: var(--shadow2);
+      white-space:nowrap;
     }
-    .dot{width:9px;height:9px;border-radius:99px;background:var(--good);box-shadow:0 0 0 4px rgba(38,230,164,.16);}
-    .btn{
+
+    .dot{
+      width:10px;height:10px;border-radius:50%;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(57,217,138,0.15);
+    }
+
+    button{
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      padding: 9px 14px;
+      border-radius: 999px;
+      font-weight: 700;
       cursor:pointer;
-      padding:9px 14px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.18);
-      background: rgba(0,0,0,.16);
-      color:rgba(255,255,255,.92);
-      font-weight:700;
-      transition: transform .06s ease, background .2s ease, border .2s ease;
-      user-select:none;
+      box-shadow: var(--shadow2);
     }
-    .btn:hover{background: rgba(0,0,0,.22)}
-    .btn:active{transform: translateY(1px)}
-    .btn.primary{
-      background: rgba(0,160,255,.18);
-      border:1px solid rgba(0,160,255,.35);
+    button:hover{ filter: brightness(1.05); }
+    button.primary{
+      background: linear-gradient(180deg, rgba(60,140,255,0.65), rgba(40,90,200,0.55));
+      border-color: rgba(170,210,255,0.26);
     }
-    .btn.warn{
-      background: rgba(255,176,32,.14);
-      border:1px solid rgba(255,176,32,.30);
-    }
+
     .grid{
-      margin-top:14px;
       display:grid;
-      grid-template-columns: 2fr 1.05fr;
-      gap:14px;
+      grid-template-columns: 1.55fr 1fr;
+      gap: 16px;
       align-items:start;
     }
-    @media (max-width: 1020px){
-      .grid{grid-template-columns:1fr}
-      .controls{justify-content:flex-start}
-      .btitle .sub{max-width:unset}
-    }
+
     .card{
+      background: linear-gradient(180deg, rgba(15,30,70,0.72), rgba(7,16,40,0.72));
+      border: 1px solid rgba(140, 190, 255, 0.18);
       border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(11,22,48,.78), rgba(8,14,30,.72));
-      border:1px solid rgba(160,200,255,.14);
       box-shadow: var(--shadow);
-      overflow:hidden;
+      padding: 16px;
       position:relative;
+      overflow:hidden;
     }
-    .card .hd{
-      display:flex;justify-content:space-between;align-items:center;
-      padding:14px 16px 10px;
-      border-bottom: 1px solid rgba(255,255,255,.06);
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(900px 420px at 15% 0%, rgba(80,150,255,0.20), transparent 55%);
+      pointer-events:none;
     }
-    .card .hd .t{
-      font-size:13px;
-      letter-spacing:.8px;
-      font-weight:900;
-      color:rgba(255,255,255,.92);
-      text-transform:uppercase;
+
+    .card h2{
+      margin:0 0 10px 0;
+      font-size: 12px;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: rgba(233,240,255,0.78);
     }
-    .card .hd .hint{
-      font-size:12px;color:var(--mut);
+
+    .big{
+      font-size: 44px;
+      font-weight: 900;
+      letter-spacing: 0.2px;
+      margin: 0;
     }
-    .card .bd{padding:14px 16px 16px;}
-    .bigState{
-      display:flex; gap:12px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;
+
+    .muted{
+      color: var(--muted);
+      font-size: 12px;
     }
-    .bigState .left{min-width:320px; flex:1}
-    .bigState .right{display:flex; gap:12px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
-    .stateName{
-      font-size:34px; font-weight:950; letter-spacing:.2px; margin:2px 0 6px;
+
+    .row{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items:start;
     }
-    .metaRow{
-      display:flex; flex-wrap:wrap; gap:8px; align-items:center;
-      margin-bottom:10px;
+
+    .stateBadge{
+      width:64px;height:64px;
+      border-radius: 999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 22px;
+      font-weight: 900;
+      background: rgba(57,217,138,0.14);
+      border: 1px solid rgba(57,217,138,0.35);
+      box-shadow: 0 0 0 6px rgba(57,217,138,0.08);
+      margin-top: 6px;
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top: 10px;
     }
     .chip{
-      display:inline-flex; gap:8px; align-items:center;
-      padding:7px 10px;
-      border-radius:999px;
-      background: rgba(0,0,0,.20);
-      border:1px solid rgba(255,255,255,.10);
-      font-size:12px; color:rgba(255,255,255,.92);
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.18);
+      font-size: 12px;
+      color: rgba(233,240,255,0.86);
+      white-space:nowrap;
     }
-    .chip b{font-weight:900}
-    .badge{
-      width:66px;height:66px;border-radius:999px;
-      display:grid;place-items:center;
-      background: radial-gradient(circle at 30% 30%, rgba(38,230,164,.35), rgba(0,0,0,.15));
-      border:1px solid rgba(38,230,164,.38);
-      box-shadow: 0 20px 45px rgba(0,0,0,.35);
-      font-size:22px;font-weight:950;
+    .chip b{ color: var(--text); }
+    .chip.green{ border-color: rgba(57,217,138,0.35); }
+    .chip.amber{ border-color: rgba(246,201,69,0.35); }
+    .chip.red{ border-color: rgba(255,77,109,0.35); }
+
+    .miniHistory{
+      margin-top: 12px;
+      display:flex;
+      gap: 8px;
+      flex-wrap:wrap;
     }
-    .miniQuote{
-      width:250px; padding:10px 12px;
-      border-radius:14px;
-      background: rgba(0,0,0,.22);
-      border:1px solid rgba(255,255,255,.12);
-      font-family:var(--mono);
-      font-size:12px;
-      display:flex; flex-direction:column; gap:6px;
-    }
-    .miniQuote .row{display:flex;justify-content:space-between;gap:10px;align-items:center}
-    .spark{
-      height:6px;border-radius:999px;
-      background: rgba(255,255,255,.08);
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.08);
-    }
-    .spark > i{
-      display:block;height:100%;width:50%;
-      background: linear-gradient(90deg, rgba(0,226,255,.92), rgba(38,230,164,.92));
-      border-radius:999px;
-    }
-    .historyDots{display:flex; gap:7px; flex-wrap:wrap; padding-top:6px;}
-    .hDot{
-      width:34px;height:34px;border-radius:11px;
-      display:grid;place-items:center;
-      background: rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.10);
-      color: rgba(255,255,255,.86);
-      font-weight:900; font-size:12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,.25);
-    }
-    .hDot.active{
-      border-color: rgba(0,226,255,.40);
-      box-shadow: 0 0 0 6px rgba(0,226,255,.10);
+    .mini{
+      width:34px;height:34px;border-radius: 10px;
+      display:flex;align-items:center;justify-content:center;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.18);
+      font-weight: 800;
+      color: rgba(233,240,255,0.88);
     }
 
-    .bars{display:flex; flex-direction:column; gap:10px; margin-top:6px;}
-    .barRow{display:grid; grid-template-columns: 1.2fr 3.3fr .7fr; gap:10px; align-items:center;}
-    .barRow .lbl{font-size:12px;color:rgba(255,255,255,.9)}
-    .barRow .pct{font-size:12px;color:rgba(255,255,255,.9); text-align:right; font-family:var(--mono)}
+    .probWrap{ margin-top: 10px; }
+    .probRow{
+      display:grid;
+      grid-template-columns: 220px 1fr 60px;
+      align-items:center;
+      gap: 10px;
+      padding: 7px 0;
+    }
     .bar{
-      height:10px;border-radius:999px;
-      background: rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.08);
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.12);
       overflow:hidden;
       position:relative;
     }
-    .bar > i{display:block;height:100%;width:0%; border-radius:999px;}
-    .c1{background: linear-gradient(90deg, rgba(38,230,164,.95), rgba(0,226,255,.7))}
-    .c2{background: linear-gradient(90deg, rgba(255,176,32,.95), rgba(255,176,32,.45))}
-    .c3{background: linear-gradient(90deg, rgba(74,163,255,.95), rgba(74,163,255,.40))}
-    .c4{background: linear-gradient(90deg, rgba(74,163,255,.95), rgba(138,108,255,.55))}
-    .c5{background: linear-gradient(90deg, rgba(255,140,32,.95), rgba(255,140,32,.42))}
-    .c6{background: linear-gradient(90deg, rgba(255,77,77,.95), rgba(255,77,77,.40))}
-    .c7{background: linear-gradient(90deg, rgba(138,108,255,.95), rgba(138,108,255,.45))}
-    .c8{background: linear-gradient(90deg, rgba(255,77,77,.95), rgba(255,79,216,.45))}
-
-    .twoCol{display:grid; grid-template-columns: 1fr 1fr; gap:12px;}
-    @media (max-width: 680px){ .twoCol{grid-template-columns:1fr} }
-
-    .metric{
-      padding:12px 12px;
-      border-radius: 16px;
-      background: rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.10);
+    .bar > i{
+      display:block;
+      height:100%;
+      width: 0%;
+      border-radius: 999px;
+      background: var(--blue);
+      box-shadow: 0 0 0 6px rgba(89,167,255,0.09);
     }
-    .metric .k{font-size:12px;color:var(--mut); margin-bottom:6px}
-    .metric .v{font-size:28px;font-weight:950;letter-spacing:.2px}
-    .metric .s{font-size:12px;color:var(--mut2); margin-top:2px}
+    .pct{
+      text-align:right;
+      color: rgba(233,240,255,0.85);
+      font-weight: 800;
+      font-size: 12px;
+    }
 
-    .riskBox{
+    .rightStack{
+      display:grid;
+      gap: 16px;
+    }
+
+    .riskLevel{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding: 20px 16px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(0,0,0,0.20), rgba(0,0,0,0.08));
+      border: 1px solid rgba(255,255,255,0.14);
+      min-height: 140px;
+    }
+    .riskLevel .label{
+      text-transform:uppercase;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .riskLevel .value{
+      font-size: 46px;
+      font-weight: 1000;
+      letter-spacing: 0.6px;
+      margin: 0;
+    }
+    .riskLevel .rule{
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
       text-align:center;
-      padding:18px 14px;
-      border-radius: 18px;
-      background: radial-gradient(circle at 20% 20%, rgba(0,226,255,.14), rgba(0,0,0,.18));
-      border:1px solid rgba(255,255,255,.10);
-      min-height:124px;
-      display:flex; flex-direction:column; justify-content:center; gap:6px;
+      max-width: 520px;
     }
-    .riskBox .lvl{font-size:36px; font-weight:980; letter-spacing:.8px}
-    .riskBox .rule{font-size:12px; color:var(--mut)}
-    .riskBox.normal .lvl{color: var(--good)}
-    .riskBox.elevated .lvl{color: var(--warn)}
-    .riskBox.critical .lvl{color: var(--bad)}
 
-    .feedHealth{
-      display:grid; grid-template-columns: 1.2fr .8fr; gap:12px;
-      align-items:stretch;
+    .twoCol{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
-    @media (max-width: 680px){ .feedHealth{grid-template-columns:1fr} }
+
+    .feedBox{
+      padding: 14px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.16);
+      min-height: 120px;
+    }
+    .feedBox .k{
+      font-size: 11px;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: rgba(233,240,255,0.70);
+      margin-bottom: 6px;
+    }
+    .feedBox .v{
+      font-size: 34px;
+      font-weight: 950;
+      margin: 0;
+    }
+    .feedBox .small{
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
     .statusPill{
-      display:flex; flex-direction:column; justify-content:center; gap:8px;
-      padding:12px 12px; border-radius:16px;
-      background: rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.10);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(0,0,0,0.22);
+      font-weight: 900;
+      font-size: 12px;
+      white-space:nowrap;
     }
-    .statusLine{display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:12px; color:var(--mut)}
-    .statusTag{
-      padding:6px 10px; border-radius:999px; font-weight:900; font-size:12px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
+    .statusPill i{
+      width:10px;height:10px;border-radius:50%;
+      display:inline-block;
+      background: var(--amber);
+      box-shadow: 0 0 0 4px rgba(246,201,69,0.12);
     }
-    .tagLive{color:var(--good); border-color: rgba(38,230,164,.35)}
-    .tagStale{color:var(--warn); border-color: rgba(255,176,32,.35)}
-    .tagErr{color:var(--bad); border-color: rgba(255,77,77,.35)}
+    .statusPill.live i{ background: var(--green); box-shadow: 0 0 0 4px rgba(57,217,138,0.12); }
+    .statusPill.stale i{ background: var(--amber); box-shadow: 0 0 0 4px rgba(246,201,69,0.12); }
+    .statusPill.error i{ background: var(--red); box-shadow: 0 0 0 4px rgba(255,77,109,0.12); }
 
-    .smallNote{font-size:12px;color:var(--mut); margin-top:10px; line-height:1.35}
+    .note{
+      margin-top: 10px;
+      font-size: 12px;
+      color: rgba(233,240,255,0.62);
+      line-height: 1.35;
+    }
 
-    .tableWrap{
-      background: rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius: 16px;
+    .lowerGrid{
+      display:grid;
+      grid-template-columns: 1.55fr 1fr;
+      gap: 16px;
+      align-items:start;
+    }
+
+    .logTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .logBtns{
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing: 0;
+      margin-top: 12px;
       overflow:hidden;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.16);
     }
-    table{width:100%; border-collapse:collapse; font-size:12px}
-    th,td{padding:10px 10px; border-bottom:1px solid rgba(255,255,255,.06); text-align:left}
-    th{color:rgba(255,255,255,.78); font-weight:900; letter-spacing:.6px; text-transform:uppercase; font-size:11px; background: rgba(0,0,0,.14)}
-    tr:last-child td{border-bottom:none}
-    td{color: rgba(255,255,255,.9)}
-    .scrollY{max-height:290px; overflow:auto}
-    .scrollY::-webkit-scrollbar{height:10px;width:10px}
-    .scrollY::-webkit-scrollbar-thumb{background: rgba(255,255,255,.12); border-radius:999px}
-    .scrollY::-webkit-scrollbar-track{background: rgba(0,0,0,.12)}
+    thead th{
+      text-align:left;
+      font-size: 11px;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: rgba(233,240,255,0.70);
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.14);
+      position:sticky;
+      top:0;
+      z-index:1;
+    }
+    tbody td{
+      padding: 11px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: rgba(233,240,255,0.86);
+      font-size: 12px;
+      white-space:nowrap;
+    }
+    tbody tr:hover td{
+      background: rgba(89,167,255,0.06);
+    }
+    .scroll{
+      max-height: 320px;
+      overflow:auto;
+      margin-top: 10px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.16);
+    }
+    .scroll table{ margin:0; border:none; border-radius:0; }
 
-    .sideStack{display:flex; flex-direction:column; gap:14px;}
-    .footerBar{
-      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
-      padding:10px 2px 0;
-      color: rgba(255,255,255,.65);
-      font-size:12px;
+    .eventsHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
     }
-    .footerBar b{color: rgba(255,255,255,.90)}
-    .btnRow{display:flex; gap:10px; flex-wrap:wrap}
 
     .impact{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:6px 10px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      font-weight:900;
-      font-size:11px;
-      letter-spacing:.5px;
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.20);
+      font-weight: 900;
+      font-size: 12px;
     }
-    .impact.high{color:#ff6f8a;border-color:rgba(255,111,138,.35); background: rgba(255,111,138,.08)}
-    .impact.med{color:#ffb020;border-color:rgba(255,176,32,.35); background: rgba(255,176,32,.08)}
-    .impact.low{color:#74b7ff;border-color:rgba(116,183,255,.35); background: rgba(116,183,255,.08)}
     .impact .sq{
-      width:10px;height:10px;border-radius:3px;background: currentColor; opacity:.9;
-      box-shadow: 0 0 0 5px rgba(255,255,255,.06) inset;
+      width:10px;height:10px;border-radius: 3px; background: var(--amber);
+      box-shadow: 0 0 0 4px rgba(246,201,69,0.10);
+    }
+    .impact.high{ border-color: rgba(255,77,109,0.35); }
+    .impact.high .sq{ background: var(--red); box-shadow: 0 0 0 4px rgba(255,77,109,0.10); }
+    .impact.med{ border-color: rgba(246,201,69,0.35); }
+    .impact.med .sq{ background: var(--amber); }
+    .impact.low{ border-color: rgba(57,217,138,0.35); }
+    .impact.low .sq{ background: var(--green); }
+
+    .headlineRow a{
+      color: rgba(120,190,255,0.95);
+      text-decoration:none;
+      font-weight: 800;
+    }
+    .headlineRow a:hover{ text-decoration:underline; }
+
+    .tvWrap{
+      border-radius: var(--radius);
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.16);
+      min-height: 360px;
     }
 
-    .link{color: #8fd0ff; text-decoration:none; font-weight:800}
-    .link:hover{text-decoration:underline}
+    .footerLine{
+      margin-top: 10px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      color: rgba(233,240,255,0.60);
+      font-size: 12px;
+    }
+
+    @media (max-width: 1100px){
+      .grid, .lowerGrid{ grid-template-columns: 1fr; }
+      .probRow{ grid-template-columns: 1fr; gap:6px; }
+      .twoCol{ grid-template-columns: 1fr; }
+      .big{ font-size: 38px; }
+      .riskLevel .value{ font-size: 40px; }
+    }
 
     /* Modal */
-    .modalBackdrop{
-      position:fixed; inset:0; background: rgba(0,0,0,.55);
-      display:none; align-items:center; justify-content:center;
-      padding:16px; z-index:50;
-      backdrop-filter: blur(8px);
+    .modalBg{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,0.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 50;
     }
     .modal{
-      width:min(860px, 96vw);
-      background: linear-gradient(180deg, rgba(10,18,40,.96), rgba(6,10,24,.96));
-      border:1px solid rgba(255,255,255,.12);
+      width:min(760px, 100%);
       border-radius: 22px;
-      box-shadow: 0 30px 90px rgba(0,0,0,.6);
-      overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: linear-gradient(180deg, rgba(15,30,70,0.92), rgba(7,16,40,0.92));
+      box-shadow: 0 30px 120px rgba(0,0,0,0.65);
+      padding: 16px;
     }
-    .modal .mh{display:flex; justify-content:space-between; align-items:center; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.08)}
-    .modal .mh .ttl{font-weight:950; letter-spacing:.4px}
-    .modal .mb{padding:14px 16px}
-    textarea{
+    .modal h3{ margin: 4px 0 6px 0; }
+    .modal p{ margin:0 0 10px 0; color: var(--muted); font-size: 13px; line-height:1.35; }
+    .modal textarea{
       width:100%;
-      min-height:260px;
-      resize:vertical;
+      min-height: 220px;
       border-radius: 16px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.22);
-      color: rgba(255,255,255,.92);
-      padding:12px 12px;
-      font-family: var(--mono);
-      font-size:12px;
-      line-height:1.35;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.20);
+      color: var(--text);
+      padding: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
       outline:none;
     }
-    .modal .mf{display:flex; gap:10px; justify-content:flex-end; padding:14px 16px; border-top:1px solid rgba(255,255,255,.08)}
-    .kbd{font-family: var(--mono); font-size:12px; color: rgba(255,255,255,.70)}
+    .modal .actions{
+      margin-top: 12px;
+      display:flex;
+      gap: 10px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+    .hint{
+      font-size: 12px;
+      color: rgba(233,240,255,0.60);
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="shell">
     <div class="topbar">
       <div class="brand">
-        <div class="qx">QX</div>
-        <div class="btitle">
-          <div class="name">QuadraX Risk Dashboard</div>
+        <div class="qx-badge">QX</div>
+        <div class="title">
+          <h1>QuadraX Risk Dashboard</h1>
           <div class="sub">Executive View: 8-State Monitoring and Control System (Live EUR/USD Spot)</div>
         </div>
       </div>
-      <div class="controls">
-        <div class="pill"><span class="dot" id="liveDot"></span><span id="liveText">LIVE</span></div>
-        <div class="pill">Last Update <span style="font-weight:950" id="lastUpdate">--</span></div>
-        <button class="btn warn" id="pauseBtn">Pause</button>
-        <button class="btn primary" id="syncBtn">Sync</button>
-        <button class="btn" id="editBtn">Edit Events + Headlines</button>
+
+      <div class="top-actions">
+        <div class="pill"><span class="dot" id="liveDot"></span><span id="sysLabel">LIVE</span></div>
+        <div class="pill">Last Update <b id="lastUpdate">--:--:--</b></div>
+        <button id="btnPause">Pause</button>
+        <button class="primary" id="btnSync">Sync</button>
+        <button id="btnEdit">Edit Events + Headlines</button>
       </div>
     </div>
 
     <div class="grid">
-      <div class="mainStack" style="display:flex;flex-direction:column;gap:14px;">
-        <div class="card">
-          <div class="hd">
-            <div class="t">Current Market State</div>
-            <div class="hint" id="engineHint">Live spot drives regime engine, no simulation</div>
-          </div>
-          <div class="bd">
-            <div class="bigState">
-              <div class="left">
-                <div class="stateName" id="stateTitle">Policy State: --</div>
-                <div class="metaRow" id="metaRow">
-                  <span class="chip">Detector <b id="detChip">--</b></span>
-                  <span class="chip">Policy <b id="polChip">--</b></span>
-                  <span class="chip">Confidence <b id="confChip">--</b></span>
-                  <span class="chip">Hysteresis <b id="hystChip">--</b></span>
-                  <span class="chip">Tick <b id="tickChip">--</b></span>
-                  <span class="chip">Stale <b id="staleChip">--</b></span>
-                </div>
-                <div class="historyDots" id="historyDots"></div>
-              </div>
-              <div class="right">
-                <div class="miniQuote">
-                  <div class="row"><span><b>EURUSD</b></span><span id="qPrice">--</span></div>
-                  <div class="row"><span>Δ</span><span id="qDelta">--</span></div>
-                  <div class="spark"><i id="sparkBar" style="width:50%"></i></div>
-                  <div class="row" style="color:var(--mut)"><span id="qSource">source: --</span><span id="qLatency">--</span></div>
-                </div>
-                <div class="badge" id="stateBadge">--</div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="card">
+        <h2>Current Market State</h2>
+        <div class="row">
+          <div>
+            <p class="big" id="policyTitle">Policy State: --</p>
+            <div class="muted" id="policyDesc">--</div>
 
-        <div class="card">
-          <div class="hd">
-            <div class="t">State Probability Distribution</div>
-            <div class="hint">Conditional regime likelihoods P(state | features)</div>
-          </div>
-          <div class="bd">
-            <div class="bars" id="bars"></div>
-            <div class="smallNote" id="probNote">
-              Note: These are model-derived probabilities from EUR/USD spot features (return, volatility, momentum, jump). They are not “market probabilities”.
+            <div class="chips">
+              <div class="chip"><b>Detector</b> <span id="detectorChip">--</span></div>
+              <div class="chip"><b>Policy</b> <span id="policyChip">--</span></div>
+              <div class="chip"><b>Confidence</b> <span id="confChip">--</span></div>
+              <div class="chip"><b>Hysteresis</b> <span id="hystChip">--</span></div>
+              <div class="chip"><b>Tick</b> <span id="tickChip">--</span></div>
+              <div class="chip"><b>Stale</b> <span id="staleChip">--</span></div>
             </div>
-          </div>
-        </div>
 
-        <div class="card">
-          <div class="hd">
-            <div class="t">Portfolio Snapshot</div>
-            <div class="hint">Demo placeholders until execution and risk feeds are connected</div>
+            <div class="miniHistory" id="histWrap"></div>
           </div>
-          <div class="bd">
-            <div class="twoCol" style="grid-template-columns: repeat(4, 1fr);">
-              <div class="metric"><div class="k">Account Balance</div><div class="v">$1,000,000</div><div class="s">demo</div></div>
-              <div class="metric"><div class="k">Daily PnL</div><div class="v" style="color:var(--good)">+$13,160</div><div class="s">demo</div></div>
-              <div class="metric"><div class="k">Total Exposure</div><div class="v">$650,000</div><div class="s">demo</div></div>
-              <div class="metric"><div class="k">Max Drawdown</div><div class="v" style="color:var(--bad)">-3.2%</div><div class="s">demo</div></div>
-            </div>
-            <div class="smallNote">This section is intentionally demo. Tonight the priority is accurate regime visualization on real EUR/USD spot and coherent state transitions.</div>
-          </div>
-        </div>
 
-        <div class="card">
-          <div class="hd">
-            <div class="t">Regime Log</div>
-            <div class="hint">CSV-style telemetry (latest on top)</div>
-          </div>
-          <div class="bd">
-            <div class="btnRow" style="margin-bottom:10px;">
-              <button class="btn" id="copyCsvBtn">Copy as CSV</button>
-              <button class="btn" id="clearLogBtn">Clear</button>
-            </div>
-            <div class="tableWrap">
-              <div class="scrollY">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Time</th>
-                      <th>EURUSD</th>
-                      <th>DET</th>
-                      <th>POL</th>
-                      <th>CONF</th>
-                      <th>VOL X</th>
-                      <th>MOM (bp)</th>
-                      <th>STALE</th>
-                      <th>SRC</th>
-                    </tr>
-                  </thead>
-                  <tbody id="logBody"></tbody>
-                </table>
-              </div>
-            </div>
-            <div class="smallNote">Tip: Copy CSV and paste into Excel. It splits cleanly.</div>
-          </div>
-        </div>
-
-        <div class="footerBar">
-          <div>System Status: <b id="sysStatus">LIVE</b></div>
-          <div>Smoothed Policy: <b id="footPolicy">--</b></div>
-          <div>Detector: <b id="footDet">--</b></div>
-          <div>Hysteresis Hold: <b id="footHold">--</b></div>
+          <div class="stateBadge" id="stateBadge">--</div>
         </div>
       </div>
 
-      <div class="sideStack">
-        <div class="card">
-          <div class="hd">
-            <div class="t">Risk Level</div>
-            <div class="hint">Policy: state-aware sizing and entry gating</div>
-          </div>
-          <div class="bd">
-            <div class="riskBox normal" id="riskBox">
-              <div class="k" style="font-size:12px;color:var(--mut);">Risk Level</div>
-              <div class="lvl" id="riskLevel">NORMAL</div>
-              <div class="rule" id="riskRule">Rule: Trade normally. Avoid overfitting. Keep size disciplined.</div>
-            </div>
-          </div>
+      <div class="card">
+        <h2>Risk Level <span class="muted" style="float:right; text-transform:none; letter-spacing:0;">Policy: state-aware sizing and entry gating</span></h2>
+        <div class="riskLevel">
+          <div class="label">Risk Level</div>
+          <p class="value" id="riskValue">--</p>
+          <div class="rule" id="riskRule">--</div>
         </div>
+      </div>
+    </div>
 
+    <div class="grid">
+      <div class="card">
+        <h2>State Probability Distribution <span class="muted" style="float:right; text-transform:none; letter-spacing:0;">Conditional regime likelihoods P(state | features)</span></h2>
+        <div class="muted">Note: probabilities are computed from EUR/USD-derived features (returns, momentum, volatility, mean-reversion pressure). They are not a “vote count” of ticks.</div>
+        <div class="probWrap" id="probWrap"></div>
+        <div class="note" id="probNote"></div>
+      </div>
+
+      <div class="rightStack">
         <div class="card">
-          <div class="hd">
-            <div class="t">Feed Health</div>
-            <div class="hint">Proof the market data is updating</div>
-          </div>
-          <div class="bd">
-            <div class="feedHealth">
-              <div class="metric">
-                <div class="k">EUR/USD Spot (reference)</div>
-                <div class="v" id="fhPrice">--</div>
-                <div class="s">Last good sample: <span id="fhLast">--</span></div>
+          <h2>Feed Health <span class="muted" style="float:right; text-transform:none; letter-spacing:0;">Proof the market data is updating</span></h2>
+          <div class="twoCol">
+            <div class="feedBox">
+              <div class="k">EUR/USD Spot (model feed)</div>
+              <p class="v" id="spotVal">--</p>
+              <div class="small">Last good sample: <span id="spotTs">--</span></div>
+              <div class="small">Source: <span id="spotSrc">--</span></div>
+            </div>
+            <div class="feedBox">
+              <div class="k">Status</div>
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+                <span class="statusPill" id="statusPill"><i></i><span id="statusText">CHECKING</span></span>
+                <span class="muted">Latency: <b id="latency">--</b></span>
               </div>
-              <div class="statusPill">
-                <div class="statusLine"><span>Status</span><span class="statusTag tagLive" id="fhStatus">LIVE</span></div>
-                <div class="statusLine"><span>Source</span><span id="fhSource">--</span></div>
-                <div class="statusLine"><span>Latency</span><span id="fhLatency">--</span></div>
-                <div class="statusLine"><span>Delta (last)</span><span id="fhDelta">--</span></div>
-                <div class="statusLine"><span>Stale polls</span><span id="fhStalePolls">0</span></div>
-              </div>
+              <div class="small">Delta (last): <b id="delta">--</b></div>
+              <div class="small">Poll interval: <b id="pollInt">--</b></div>
             </div>
-            <div class="smallNote" id="fhNote">
-              With free endpoints, updates are spot-sampled (not broker ticks). Still real price, lower frequency. If price repeats too long, engine pauses instead of inventing signals.
-            </div>
+          </div>
+          <div class="note">
+            <b>Important:</b> We cannot extract live price from the TradingView chart via JavaScript (browser security). So we show TradingView live visually below, and we drive the regime engine from the best-available spot API feed with throttling and fallbacks.
           </div>
         </div>
 
         <div class="card">
-          <div class="hd">
-            <div class="t">World Events Calendar</div>
-            <div class="hint">Fastest reliable mode tonight: curated list (saved locally)</div>
+          <div class="eventsHead">
+            <h2 style="margin:0;">World Events Calendar <span class="muted" style="text-transform:none; letter-spacing:0; float:none;">Fastest reliable mode tonight: curated list (saved locally)</span></h2>
+            <span class="muted">Red folder style: High impact events are <span style="color:var(--red); font-weight:900;">HIGH</span>.</span>
           </div>
-          <div class="bd">
-            <div class="tableWrap">
-              <div class="scrollY" style="max-height:210px">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>When</th>
-                      <th>Event</th>
-                      <th>Impact</th>
-                      <th>Countdown</th>
-                    </tr>
-                  </thead>
-                  <tbody id="eventsBody"></tbody>
-                </table>
-              </div>
-            </div>
-            <div class="smallNote">Red folder style: High impact events are <span class="impact high"><span class="sq"></span>HIGH</span></div>
+          <div class="scroll" style="max-height: 220px;">
+            <table>
+              <thead>
+                <tr><th>When</th><th>Event</th><th>Impact</th><th>Countdown</th></tr>
+              </thead>
+              <tbody id="eventsBody"></tbody>
+            </table>
           </div>
         </div>
 
         <div class="card">
-          <div class="hd">
-            <div class="t">Headlines</div>
-            <div class="hint">Fastest reliable mode tonight: curated list (saved locally)</div>
+          <div class="eventsHead">
+            <h2 style="margin:0;">Headlines <span class="muted" style="text-transform:none; letter-spacing:0; float:none;">Fastest reliable mode tonight: curated list (saved locally)</span></h2>
           </div>
-          <div class="bd">
-            <div class="tableWrap">
-              <div class="scrollY" style="max-height:220px">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Time</th>
-                      <th>Source</th>
-                      <th>Headline</th>
-                    </tr>
-                  </thead>
-                  <tbody id="newsBody"></tbody>
-                </table>
-              </div>
-            </div>
-            <div class="smallNote">Click opens source in a new tab.</div>
+          <div class="scroll" style="max-height: 220px;">
+            <table>
+              <thead>
+                <tr><th>Time</th><th>Source</th><th>Headline</th></tr>
+              </thead>
+              <tbody id="newsBody"></tbody>
+            </table>
+          </div>
+          <div class="note">Click opens source in a new tab.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lowerGrid">
+      <div class="card">
+        <div class="logTop">
+          <h2 style="margin:0;">Regime Log <span class="muted" style="text-transform:none; letter-spacing:0; float:none;">CSV-style telemetry (latest on top)</span></h2>
+          <div class="logBtns">
+            <button id="btnCopy">Copy as CSV</button>
+            <button id="btnClear">Clear</button>
+            <button id="btnSetKey">Set Quote API Key (optional)</button>
           </div>
         </div>
 
-        <div class="card">
-          <div class="hd">
-            <div class="t">Daily EUR/USD Trend</div>
-            <div class="hint">Embedded TradingView chart (display only)</div>
-          </div>
-          <div class="bd" style="padding:0">
-            <div class="tradingview-widget-container" style="height: 360px;">
-              <div id="tvChart" style="height:360px;"></div>
-            </div>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>EURUSD</th>
+                <th>DET</th>
+                <th>POL</th>
+                <th>CONF</th>
+                <th>VOL X</th>
+                <th>MOM (bp)</th>
+                <th>STALE</th>
+                <th>SRC</th>
+              </tr>
+            </thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+        <div class="note">Tip: Copy CSV and paste into Excel. It splits cleanly.</div>
+      </div>
+
+      <div class="card">
+        <div class="eventsHead">
+          <h2 style="margin:0;">Daily EUR/USD Trend <span class="muted" style="text-transform:none; letter-spacing:0; float:none;">Embedded TradingView chart (live visual)</span></h2>
+        </div>
+        <div class="tvWrap">
+          <!-- TradingView Symbol Overview Widget -->
+          <div class="tradingview-widget-container" style="height:100%; width:100%;">
+            <div class="tradingview-widget-container__widget" style="height:100%; width:100%;"></div>
           </div>
         </div>
 
-        <div class="card">
-          <div class="hd">
-            <div class="t">Risk Metrics</div>
-            <div class="hint">Placeholders until execution integration</div>
+        <div class="card" style="margin-top: 16px;">
+          <h2>Risk Metrics <span class="muted" style="float:right; text-transform:none; letter-spacing:0;">Placeholders until execution integration</span></h2>
+          <div class="twoCol">
+            <div class="feedBox">
+              <div class="k">Value at Risk (95%)</div>
+              <p class="v" style="color:var(--red)">$28,500</p>
+              <div class="small">2.85% of account</div>
+            </div>
+            <div class="feedBox">
+              <div class="k">Conditional VaR (95%)</div>
+              <p class="v" style="color:var(--red)">$42,300</p>
+              <div class="small">Expected loss if VaR exceeded</div>
+            </div>
           </div>
-          <div class="bd">
-            <div class="twoCol">
-              <div class="metric"><div class="k">Value at Risk (95%)</div><div class="v" style="color:var(--bad)">$28,500</div><div class="s">2.85% of account</div></div>
-              <div class="metric"><div class="k">Conditional VaR (95%)</div><div class="v" style="color:var(--bad)">$42,300</div><div class="s">Expected loss if VaR exceeded</div></div>
-              <div class="metric"><div class="k">Portfolio Correlation</div><div class="v" style="color:var(--good)">32.0%</div><div class="s">Max allowed: 50.0%</div></div>
-              <div class="metric"><div class="k">Beta to Market</div><div class="v" style="color:var(--blue)">0.15</div><div class="s">Low market correlation (good)</div></div>
+          <div class="twoCol" style="margin-top:12px;">
+            <div class="feedBox">
+              <div class="k">Portfolio Correlation</div>
+              <p class="v" style="color:var(--green)">32.0%</p>
+              <div class="small">Max allowed: 50.0%</div>
+            </div>
+            <div class="feedBox">
+              <div class="k">Beta to Market</div>
+              <p class="v" style="color:var(--blue)">0.15</p>
+              <div class="small">Low market correlation (good)</div>
             </div>
           </div>
         </div>
 
       </div>
     </div>
+
+    <div class="footerLine">
+      <div>System Status: <b id="sysStatus">LIVE</b></div>
+      <div>Smoothed Policy: <b id="footPolicy">--</b></div>
+      <div>Detector: <b id="footDet">--</b></div>
+      <div>Hysteresis Hold: <b id="footHold">--</b></div>
+    </div>
   </div>
 
   <!-- Modal -->
-  <div class="modalBackdrop" id="modalBackdrop">
+  <div class="modalBg" id="modalBg" aria-hidden="true">
     <div class="modal">
-      <div class="mh">
-        <div class="ttl">Edit Events + Headlines (saved locally)</div>
-        <button class="btn" id="closeModalBtn">Close</button>
+      <h3>Edit Events + Headlines</h3>
+      <p>This is the “fastest reliable mode tonight”. Paste JSON here. It saves to your browser (localStorage).</p>
+      <textarea id="modalText"></textarea>
+      <div class="hint">
+        Format:
+        <br/>{"events":[{"when":"2026-02-19T13:30:00Z","event":"US Initial Jobless Claims","impact":"HIGH"}], "headlines":[{"time":"17:01","source":"FinancialJuice","title":"...","url":"https://..."}]}
       </div>
-      <div class="mb">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
-          <div class="kbd">
-            Format:<br>
-            EVENTS: <b>YYYY-MM-DD HH:MM|Impact(HIGH/MED/LOW)|Event Name</b><br>
-            NEWS: <b>HH:MM|Source|Headline|URL</b>
-          </div>
-          <div class="btnRow">
-            <button class="btn" id="loadDefaultsBtn">Load defaults</button>
-            <button class="btn primary" id="saveListsBtn">Save</button>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr;gap:12px;">
-          <div>
-            <div style="font-weight:950;margin:0 0 6px;">Events</div>
-            <textarea id="eventsText"></textarea>
-          </div>
-          <div>
-            <div style="font-weight:950;margin:0 0 6px;">Headlines</div>
-            <textarea id="newsText"></textarea>
-          </div>
-        </div>
-      </div>
-      <div class="mf">
-        <button class="btn" id="closeModalBtn2">Close</button>
+      <div class="actions">
+        <button id="btnClose">Close</button>
+        <button class="primary" id="btnSave">Save</button>
       </div>
     </div>
   </div>
 
   <script>
-    /* ===========================
-       QuadraX Regime Demo Engine
-       - No simulation of price
-       - Multi-provider spot fetch with TradingView-first attempt
-       - Local persistence so refresh does not reset
-       =========================== */
-
-    const LS_KEY = "quadrax_state_v6";
-    const LS_LISTS = "quadrax_lists_v2";
-
-    const CONFIG = {
-      pair: "EURUSD",
-      pollMs: 12000,                 // keep it sane on free sources
-      minMove: 0.00001,              // tiny threshold for stale detection
-      staleLimit: 7,                 // how many repeated polls before we mark stale and pause updates
-      maxPriceSeries: 220,
-      logMaxRows: 240,
-      hysteresisHoldTicks: 4,        // minimum ticks to hold before switching policy state
-      hysteresisMargin: 0.05,        // new top prob must exceed current prob by this margin to switch
-      minFeatureWindow: 30           // minimum samples before model is meaningful
-    };
-
+    /***********************
+     * 0) Constants / State
+     ***********************/
     const STATES = [
-      { id:1, name:"S1 Mean-Reverting", colorClass:"c1", risk:"NORMAL", rule:"Trade normally. Avoid overfitting. Keep size disciplined." },
-      { id:2, name:"S2 Liquidity Vacuum", colorClass:"c2", risk:"ELEVATED", rule:"Expect gaps. Reduce size and demand cleaner entries." },
-      { id:3, name:"S3 Slow Drift", colorClass:"c3", risk:"NORMAL", rule:"Favor patience. Small edges, do not chase." },
-      { id:4, name:"S4 Strong Trend", colorClass:"c4", risk:"NORMAL", rule:"Let winners run. Avoid countertrend heroics." },
-      { id:5, name:"S5 Stop Cascade", colorClass:"c5", risk:"ELEVATED", rule:"Stops can accelerate. Tighten risk and avoid late entries." },
-      { id:6, name:"S6 News Shock", colorClass:"c6", risk:"CRITICAL", rule:"News regime. Reduce or pause. Wait for volatility to normalize." },
-      { id:7, name:"S7 Dealer Unwind", colorClass:"c7", risk:"ELEVATED", rule:"Expect mean snapbacks. Use wider filters and smaller size." },
-      { id:8, name:"S8 Panic/Forced", colorClass:"c8", risk:"CRITICAL", rule:"Forced flow. Survival mode. Stand down or trade minimal only." }
+      { id: 1, name: "Mean-Reverting",     color: "var(--green)",  risk: "NORMAL",   rule: "Range-bound. Fade extremes and keep size disciplined." },
+      { id: 2, name: "Liquidity Vacuum",   color: "var(--amber)",  risk: "ELEVATED", rule: "Thin liquidity. Reduce size, widen filters, avoid chasing." },
+      { id: 3, name: "Slow Drift",         color: "var(--blue)",   risk: "NORMAL",   rule: "Slow directional bias. Prefer patience over aggression." },
+      { id: 4, name: "Strong Trend",       color: "var(--blue)",   risk: "ELEVATED", rule: "Trend regime. Trade with structure, avoid mean-revert traps." },
+      { id: 5, name: "Stop Cascade",       color: "var(--orange)", risk: "CRITICAL", rule: "Stops firing. Cut size hard. Protect downside." },
+      { id: 6, name: "News Shock",         color: "var(--red)",    risk: "CRITICAL", rule: "News-driven volatility. Wait for stabilization and confirmation." },
+      { id: 7, name: "Dealer Unwind",      color: "var(--purple)", risk: "ELEVATED", rule: "Unwind conditions. Avoid oversized entries. Respect whipsaw." },
+      { id: 8, name: "Panic/Forced",       color: "var(--pink)",   risk: "CRITICAL", rule: "Forced flows. Defensive posture. Only A+ setups." },
     ];
 
-    // UI handles
-    const el = (id) => document.getElementById(id);
-    const ui = {
-      lastUpdate: el("lastUpdate"),
-      liveDot: el("liveDot"),
-      liveText: el("liveText"),
-      pauseBtn: el("pauseBtn"),
-      syncBtn: el("syncBtn"),
-      editBtn: el("editBtn"),
+    const LS_KEY = "quadrax_curated_v1";
+    const LS_APIKEY = "quadrax_twelvedata_key_v1";
 
-      stateTitle: el("stateTitle"),
-      detChip: el("detChip"),
-      polChip: el("polChip"),
-      confChip: el("confChip"),
-      hystChip: el("hystChip"),
-      tickChip: el("tickChip"),
-      staleChip: el("staleChip"),
-      historyDots: el("historyDots"),
+    let paused = false;
+    let tick = 0;
 
-      qPrice: el("qPrice"),
-      qDelta: el("qDelta"),
-      qSource: el("qSource"),
-      qLatency: el("qLatency"),
-      sparkBar: el("sparkBar"),
-      stateBadge: el("stateBadge"),
-      engineHint: el("engineHint"),
+    // Quote polling behavior: starts fast, backs off when rate-limited or stale
+    let pollMs = 6000;             // 6s baseline
+    const POLL_MIN = 6000;
+    const POLL_MAX = 60000;
 
-      bars: el("bars"),
+    // Regime hysteresis: don’t flip unless candidate wins consistently
+    const HOLD_TICKS_REQUIRED = 4;
 
-      riskBox: el("riskBox"),
-      riskLevel: el("riskLevel"),
-      riskRule: el("riskRule"),
+    // Quote history for features
+    const priceSeries = [];        // {t, p}
+    const MAX_SERIES = 240;        // ~ 24 min at 6s
+    const logRows = [];            // CSV log buffer
+    const MAX_LOG = 120;
 
-      fhPrice: el("fhPrice"),
-      fhLast: el("fhLast"),
-      fhStatus: el("fhStatus"),
-      fhSource: el("fhSource"),
-      fhLatency: el("fhLatency"),
-      fhDelta: el("fhDelta"),
-      fhStalePolls: el("fhStalePolls"),
-      fhNote: el("fhNote"),
+    // Policy state memory
+    let detectorState = 1;
+    let policyState = 1;
+    let holdTicks = 0;
+    let lastPolicy = 1;
 
-      logBody: el("logBody"),
-      copyCsvBtn: el("copyCsvBtn"),
-      clearLogBtn: el("clearLogBtn"),
+    // Feed health
+    let lastPrice = null;
+    let lastGoodTs = null;
+    let staleCount = 0;
+    let lastLatency = null;
+    let lastSrc = "--";
+    let lastDelta = 0;
 
-      sysStatus: el("sysStatus"),
-      footPolicy: el("footPolicy"),
-      footDet: el("footDet"),
-      footHold: el("footHold"),
+    /***********************
+     * 1) DOM helpers
+     ***********************/
+    const $ = (id) => document.getElementById(id);
 
-      eventsBody: el("eventsBody"),
-      newsBody: el("newsBody"),
+    function nowClock(){
+      const d = new Date();
+      let h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
+      const am = h >= 12 ? "PM" : "AM";
+      h = h % 12; if (h === 0) h = 12;
+      const pad = (x)=> String(x).padStart(2,"0");
+      return `${pad(h)}:${pad(m)}:${pad(s)} ${am}`;
+    }
 
-      modalBackdrop: el("modalBackdrop"),
-      closeModalBtn: el("closeModalBtn"),
-      closeModalBtn2: el("closeModalBtn2"),
-      saveListsBtn: el("saveListsBtn"),
-      loadDefaultsBtn: el("loadDefaultsBtn"),
-      eventsText: el("eventsText"),
-      newsText: el("newsText")
+    function fmtPrice(x){
+      if (x === null || x === undefined || Number.isNaN(x)) return "--";
+      return Number(x).toFixed(5);
+    }
+
+    function clamp(x, a, b){ return Math.max(a, Math.min(b, x)); }
+
+    /***********************
+     * 2) Curated events/headlines (local)
+     ***********************/
+    const DEFAULT_CURATED = {
+      events: [
+        { when: "2026-02-19T13:30:00Z", event: "US Initial Jobless Claims", impact: "MED" },
+        { when: "2026-02-20T12:00:00Z", event: "Eurozone CPI (flash)", impact: "HIGH" },
+        { when: "2026-02-26T13:30:00Z", event: "US GDP (advance)", impact: "HIGH" },
+        { when: "2026-03-06T13:30:00Z", event: "US Non-Farm Payrolls", impact: "HIGH" }
+      ],
+      headlines: [
+        { time: "03:00 PM", source: "FinancialJuice", title: "Dollar firming ahead of major data window", url: "https://financialjuice.com/" },
+        { time: "02:26 PM", source: "FinancialJuice", title: "Rates repricing drives short-term USD bid", url: "https://financialjuice.com/" },
+        { time: "01:06 PM", source: "Market", title: "Risk tone mixed as equities stabilize", url: "https://www.investing.com/" }
+      ]
     };
 
-    function fmtTime(d=new Date()){
-      let h=d.getHours(), m=d.getMinutes(), s=d.getSeconds();
-      const ap = h>=12 ? "PM" : "AM";
-      h = h%12; if(h===0) h=12;
-      const pad=(x)=> String(x).padStart(2,"0");
-      return `${pad(h)}:${pad(m)}:${pad(s)} ${ap}`;
-    }
-    function fmtTimeShort(d=new Date()){
-      let h=d.getHours(), m=d.getMinutes();
-      const ap = h>=12 ? "PM" : "AM";
-      h = h%12; if(h===0) h=12;
-      const pad=(x)=> String(x).padStart(2,"0");
-      return `${pad(h)}:${pad(m)} ${ap}`;
-    }
-    function clamp(x,a,b){ return Math.max(a, Math.min(b,x)); }
-    function round(x,n=5){ return Number.parseFloat(x).toFixed(n); }
-    function bp(x){ return (x*10000); } // 1 bp = 0.0001
-
-    /* ======= Storage ======= */
-    function loadState(){
+    function loadCurated(){
       try{
         const raw = localStorage.getItem(LS_KEY);
-        if(!raw) return null;
-        return JSON.parse(raw);
-      }catch(e){ return null; }
-    }
-    function saveState(){
-      try{
-        localStorage.setItem(LS_KEY, JSON.stringify(state));
-      }catch(e){}
-    }
-
-    /* ======= Default lists ======= */
-    function defaultLists(){
-      const now = new Date();
-      const pad = (x)=>String(x).padStart(2,"0");
-      const y=now.getFullYear();
-      const mo=pad(now.getMonth()+1);
-      const d=pad(now.getDate());
-      const baseDate = `${y}-${mo}-${d}`;
-
-      return {
-        events: [
-          `${baseDate} 05:30|MED|US Initial Jobless Claims`,
-          `${baseDate} 07:00|HIGH|Eurozone CPI (flash)`,
-          `${baseDate} 13:00|HIGH|US GDP (advance)`,
-          `${baseDate} 05:30|HIGH|US Non-Farm Payrolls`
-        ].join("\n"),
-        news: [
-          `09:31|FinancialJuice|Dollar firming ahead of major data window|https://www.financialjuice.com/`,
-          `09:13|FinancialJuice|Rates repricing drives short-term USD bid|https://www.financialjuice.com/`,
-          `08:50|Market|Risk tone mixed as equities stabilize|https://www.reuters.com/`
-        ].join("\n")
-      };
-    }
-
-    function loadLists(){
-      try{
-        const raw = localStorage.getItem(LS_LISTS);
-        if(!raw) return defaultLists();
+        if (!raw) return DEFAULT_CURATED;
         const parsed = JSON.parse(raw);
-        if(!parsed?.events || !parsed?.news) return defaultLists();
-        return parsed;
-      }catch(e){
-        return defaultLists();
-      }
-    }
-    function saveLists(lists){
-      try{ localStorage.setItem(LS_LISTS, JSON.stringify(lists)); }catch(e){}
-    }
-
-    let lists = loadLists();
-
-    /* ======= App state ======= */
-    let state = loadState() || {
-      paused: false,
-      tick: 0,
-      stalePolls: 0,
-      lastPrice: null,
-      lastGoodAt: null,
-      lastLatencyMs: null,
-      lastSource: null,
-
-      prices: [],
-      probs: Array(8).fill(1/8),
-      detector: null,
-      policy: null,
-      confidence: 0,
-      holdTicks: 0,
-      history: [],
-
-      log: []
-    };
-
-    // Ensure arrays exist
-    state.prices = state.prices || [];
-    state.probs = state.probs || Array(8).fill(1/8);
-    state.history = state.history || [];
-    state.log = state.log || [];
-
-    /* ======= Quote providers (no backend, no keys) =======
-       We try TradingView scanner first.
-       If CORS blocks it, we fall back to other public endpoints.
-       All are spot sampled, not broker ticks.
-    */
-
-    async function fetchTradingViewEURUSD(){
-      const t0 = performance.now();
-      const url = "https://scanner.tradingview.com/forex/scan";
-      const body = {
-        symbols: { tickers: ["FX:EURUSD"], query: { types: [] } },
-        columns: ["close","open","high","low","change","change_abs","description","exchange","lp","update_mode"]
-      };
-
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type":"application/json" },
-        body: JSON.stringify(body),
-        cache: "no-store",
-        mode: "cors"
-      });
-
-      if(!res.ok) throw new Error(`TradingView scan HTTP ${res.status}`);
-      const json = await res.json();
-      const row = json?.data?.[0];
-      const close = row?.d?.[0];
-      if(typeof close !== "number") throw new Error("TradingView scan parse error");
-      const latency = Math.round(performance.now() - t0);
-      return { ok:true, price: close, source: "tradingview.com", latency };
-    }
-
-    async function fetchOpenER(){
-      const t0 = performance.now();
-      // open.er-api returns rates, not a true spot tick, but updates frequently
-      const url = "https://open.er-api.com/v6/latest/EUR?_=" + Date.now();
-      const res = await fetch(url, { cache:"no-store" });
-      if(!res.ok) throw new Error(`open.er-api HTTP ${res.status}`);
-      const json = await res.json();
-      const usd = json?.rates?.USD;
-      if(typeof usd !== "number") throw new Error("open.er-api parse error");
-      const latency = Math.round(performance.now() - t0);
-      return { ok:true, price: usd, source: "open.er-api.com", latency };
-    }
-
-    async function fetchFloatRates(){
-      const t0 = performance.now();
-      // FloatRates EUR base
-      const url = "https://www.floatrates.com/daily/eur.json?_=" + Date.now();
-      const res = await fetch(url, { cache:"no-store" });
-      if(!res.ok) throw new Error(`floatrates HTTP ${res.status}`);
-      const json = await res.json();
-      const usd = json?.usd?.rate;
-      if(typeof usd !== "number") throw new Error("floatrates parse error");
-      const latency = Math.round(performance.now() - t0);
-      return { ok:true, price: usd, source: "floatrates.com", latency };
-    }
-
-    async function fetchFrankfurter(){
-      const t0 = performance.now();
-      // ECB based, may be delayed
-      const url = "https://api.frankfurter.app/latest?from=EUR&to=USD&_=" + Date.now();
-      const res = await fetch(url, { cache:"no-store" });
-      if(!res.ok) throw new Error(`frankfurter HTTP ${res.status}`);
-      const json = await res.json();
-      const usd = json?.rates?.USD;
-      if(typeof usd !== "number") throw new Error("frankfurter parse error");
-      const latency = Math.round(performance.now() - t0);
-      return { ok:true, price: usd, source: "frankfurter.app", latency };
-    }
-
-    const PROVIDERS = [
-      fetchTradingViewEURUSD,
-      fetchOpenER,
-      fetchFloatRates,
-      fetchFrankfurter
-    ];
-
-    async function fetchQuote(){
-      // Try sequentially, first success wins.
-      // If TradingView is blocked, we still get a real reference rate from other sources.
-      let lastErr = null;
-      for(const fn of PROVIDERS){
-        try{
-          const r = await fn();
-          if(r?.ok && typeof r.price === "number" && Number.isFinite(r.price)){
-            return r;
-          }
-        }catch(e){
-          lastErr = e;
-          continue;
-        }
-      }
-      throw lastErr || new Error("All providers failed");
-    }
-
-    /* ======= Feature engineering ======= */
-    function computeFeatures(prices){
-      // Need enough samples for any stability
-      const n = prices.length;
-      if(n < CONFIG.minFeatureWindow) return null;
-
-      // Use last window
-      const w = Math.min(90, n);
-      const p = prices.slice(n - w);
-
-      // Returns
-      const rets = [];
-      for(let i=1;i<p.length;i++){
-        const r = Math.log(p[i]/p[i-1]);
-        if(Number.isFinite(r)) rets.push(r);
-      }
-      if(rets.length < 10) return null;
-
-      const mean = rets.reduce((a,b)=>a+b,0)/rets.length;
-      const varr = rets.reduce((a,b)=>a+(b-mean)*(b-mean),0)/Math.max(1,rets.length-1);
-      const vol = Math.sqrt(varr);
-
-      // Momentum: last vs average
-      const mom = (p[p.length-1] - p[Math.max(0,p.length-11)]) / p[p.length-1]; // approx 10-step
-      // Range
-      const hi = Math.max(...p);
-      const lo = Math.min(...p);
-      const range = (hi - lo) / p[p.length-1];
-
-      // Jump: max absolute return vs vol
-      const maxAbs = Math.max(...rets.map(x=>Math.abs(x)));
-      const jump = vol > 0 ? (maxAbs / vol) : 0;
-
-      // Mean reversion pressure: negative autocorr proxy
-      let ac = 0;
-      for(let i=1;i<rets.length;i++){
-        ac += rets[i]*rets[i-1];
-      }
-      ac /= Math.max(1, rets.length-1);
-      const acNorm = vol>0 ? ac/(vol*vol) : 0;
-
-      return {
-        vol,
-        mom,
-        range,
-        jump,
-        mean,
-        acNorm
-      };
-    }
-
-    function softmax(scores){
-      const m = Math.max(...scores);
-      const ex = scores.map(s => Math.exp(s - m));
-      const sum = ex.reduce((a,b)=>a+b,0) || 1;
-      return ex.map(x => x/sum);
-    }
-
-    function computeProbabilities(features){
-      // Simple scoring model. This is not "truth".
-      // It maps EURUSD spot behavior to regime likelihoods for a UI.
-      const { vol, mom, range, jump, acNorm } = features;
-
-      // Normalize into rough bands
-      const v = clamp(vol * 1000, 0, 4);       // vol scale
-      const m = clamp(mom * 10000, -40, 40);   // bp scale
-      const r = clamp(range * 1000, 0, 6);
-      const j = clamp(jump, 0, 10);
-      const ac = clamp(acNorm, -2, 2);
-
-      // Scores per state
-      // S1 mean reverting: low vol, negative autocorr, low range
-      const s1 =  2.2 - 0.9*v - 0.5*r - 0.3*j + 0.9*(-ac);
-
-      // S2 liquidity vacuum: higher jump, rising vol, range, unstable
-      const s2 = -0.6 + 0.9*v + 0.8*r + 1.1*j;
-
-      // S3 slow drift: low vol, small momentum
-      const s3 =  1.5 - 0.7*v - 0.3*r - 0.4*j - 0.02*Math.abs(m);
-
-      // S4 strong trend: positive momentum magnitude, moderate vol
-      const s4 =  0.2 + 0.02*Math.abs(m) + 0.3*v - 0.2*j;
-
-      // S5 stop cascade: vol and range high, jump moderately high
-      const s5 = -0.2 + 0.7*v + 0.9*r + 0.5*j;
-
-      // S6 news shock: jump very high dominates
-      const s6 = -1.0 + 1.4*j + 0.4*v;
-
-      // S7 dealer unwind: momentum flips, mean reversion plus elevated vol
-      const s7 = -0.3 + 0.5*v + 0.2*r + 0.5*(-ac) + 0.01*Math.abs(m);
-
-      // S8 panic/forced: extreme vol and jump and range
-      const s8 = -1.2 + 1.0*v + 1.0*r + 1.2*j;
-
-      const probs = softmax([s1,s2,s3,s4,s5,s6,s7,s8]);
-      return probs;
-    }
-
-    function topIndex(arr){
-      let mi=0;
-      for(let i=1;i<arr.length;i++) if(arr[i]>arr[mi]) mi=i;
-      return mi;
-    }
-
-    function updatePolicy(detectorIdx, probs){
-      // Apply hysteresis so policy does not flip constantly.
-      // We only switch if:
-      // - we have held at least holdTicks
-      // - new top prob exceeds current policy prob by margin
-      const newTop = detectorIdx;
-      if(state.policy == null){
-        state.policy = newTop;
-        state.holdTicks = 0;
-        return;
-      }
-
-      if(newTop === state.policy){
-        state.holdTicks = 0;
-        return;
-      }
-
-      state.holdTicks += 1;
-
-      const curP = probs[state.policy] ?? 0;
-      const newP = probs[newTop] ?? 0;
-
-      const canSwitch = (state.holdTicks >= CONFIG.hysteresisHoldTicks) && ((newP - curP) >= CONFIG.hysteresisMargin);
-
-      if(canSwitch){
-        state.policy = newTop;
-        state.holdTicks = 0;
+        if (!parsed || typeof parsed !== "object") return DEFAULT_CURATED;
+        return {
+          events: Array.isArray(parsed.events) ? parsed.events : DEFAULT_CURATED.events,
+          headlines: Array.isArray(parsed.headlines) ? parsed.headlines : DEFAULT_CURATED.headlines
+        };
+      }catch{
+        return DEFAULT_CURATED;
       }
     }
 
-    function riskFromPolicy(policyIdx){
-      const s = STATES[policyIdx] || STATES[0];
-      return s;
+    function saveCurated(obj){
+      localStorage.setItem(LS_KEY, JSON.stringify(obj));
     }
 
-    /* ======= Rendering ======= */
-    function renderBars(probs){
-      ui.bars.innerHTML = "";
-      for(let i=0;i<8;i++){
-        const st = STATES[i];
-        const pct = clamp((probs[i] || 0) * 100, 0, 100);
-        const row = document.createElement("div");
-        row.className = "barRow";
-
-        const lbl = document.createElement("div");
-        lbl.className = "lbl";
-        lbl.textContent = `State ${st.id}: ${st.name}`;
-
-        const bar = document.createElement("div");
-        bar.className = "bar";
-        const fill = document.createElement("i");
-        fill.className = st.colorClass;
-        fill.style.width = pct.toFixed(1) + "%";
-        bar.appendChild(fill);
-
-        const val = document.createElement("div");
-        val.className = "pct";
-        val.textContent = pct.toFixed(1) + "%";
-
-        row.appendChild(lbl);
-        row.appendChild(bar);
-        row.appendChild(val);
-        ui.bars.appendChild(row);
-      }
-    }
-
-    function renderHistory(history){
-      ui.historyDots.innerHTML = "";
-      const last = history[history.length-1];
-      history.slice(-12).forEach((s, idx) => {
-        const d = document.createElement("div");
-        d.className = "hDot" + ((s===last) ? " active" : "");
-        d.textContent = String(s+1);
-        ui.historyDots.appendChild(d);
-      });
-    }
-
-    function setStatus(tag){
-      ui.fhStatus.classList.remove("tagLive","tagStale","tagErr");
-      if(tag==="LIVE"){ ui.fhStatus.classList.add("tagLive"); ui.fhStatus.textContent="LIVE"; }
-      else if(tag==="STALE"){ ui.fhStatus.classList.add("tagStale"); ui.fhStatus.textContent="STALE"; }
-      else { ui.fhStatus.classList.add("tagErr"); ui.fhStatus.textContent="ERROR"; }
-    }
-
-    function renderAll(){
-      ui.lastUpdate.textContent = state.lastGoodAt ? fmtTime(new Date(state.lastGoodAt)) : "--";
-      ui.tickChip.textContent = state.tick ?? "--";
-      ui.staleChip.textContent = state.stalePolls ?? 0;
-
-      ui.qPrice.textContent = (state.lastPrice != null) ? round(state.lastPrice, 5) : "--";
-      ui.fhPrice.textContent = (state.lastPrice != null) ? round(state.lastPrice, 5) : "--";
-      ui.fhLast.textContent = state.lastGoodAt ? fmtTime(new Date(state.lastGoodAt)) : "--";
-
-      ui.fhSource.textContent = state.lastSource || "--";
-      ui.qSource.textContent = "source: " + (state.lastSource || "--");
-      ui.fhLatency.textContent = (state.lastLatencyMs != null) ? (state.lastLatencyMs + "ms") : "--";
-      ui.qLatency.textContent = (state.lastLatencyMs != null) ? (state.lastLatencyMs + "ms") : "--";
-
-      const lastDelta = (state.prices.length >= 2) ? (state.prices[state.prices.length-1] - state.prices[state.prices.length-2]) : 0;
-      ui.fhDelta.textContent = (state.lastPrice != null) ? (lastDelta >=0 ? "+" : "") + round(lastDelta, 5) : "--";
-      ui.qDelta.textContent = (state.lastPrice != null) ? (lastDelta >=0 ? "+" : "") + round(lastDelta, 5) : "--";
-
-      ui.fhStalePolls.textContent = String(state.stalePolls ?? 0);
-
-      // spark
-      const sparkW = clamp(50 + (lastDelta * 80000), 5, 95);
-      ui.sparkBar.style.width = sparkW.toFixed(0) + "%";
-
-      // policy and detector
-      const det = (state.detector != null) ? STATES[state.detector] : null;
-      const pol = (state.policy != null) ? STATES[state.policy] : null;
-
-      ui.detChip.textContent = det ? `S${det.id}` : "--";
-      ui.polChip.textContent = pol ? `S${pol.id}` : "--";
-
-      ui.stateTitle.textContent = pol ? `Policy State: ${pol.name}` : "Policy State: --";
-      ui.stateBadge.textContent = pol ? String(pol.id) : "--";
-
-      // Confidence is just top prob
-      const conf = state.confidence || 0;
-      ui.confChip.textContent = (pol ? (conf*100).toFixed(1) + "%" : "--");
-
-      // hysteresis display
-      const hyst = (state.stalePolls >= CONFIG.staleLimit) ? "paused (stale)" : (state.holdTicks > 0 ? `holding (${state.holdTicks})` : "stable");
-      ui.hystChip.textContent = hyst;
-
-      // risk box from policy
-      if(pol){
-        const risk = riskFromPolicy(state.policy);
-        ui.riskLevel.textContent = risk.risk;
-        ui.riskRule.textContent = "Rule: " + risk.rule;
-        ui.riskBox.classList.remove("normal","elevated","critical");
-        ui.riskBox.classList.add(
-          risk.risk === "CRITICAL" ? "critical" : (risk.risk === "ELEVATED" ? "elevated" : "normal")
-        );
-      } else {
-        ui.riskLevel.textContent = "--";
-        ui.riskRule.textContent = "Rule: --";
-      }
-
-      // history and probabilities
-      renderHistory(state.history || []);
-      renderBars(state.probs || Array(8).fill(1/8));
-
-      // footer
-      ui.sysStatus.textContent = state.paused ? "PAUSED" : "LIVE";
-      ui.footPolicy.textContent = pol ? `S${pol.id}` : "--";
-      ui.footDet.textContent = det ? `S${det.id}` : "--";
-      ui.footHold.textContent = String(state.holdTicks ?? 0);
-
-      // top live indicator
-      if(state.paused){
-        ui.liveDot.style.background = "var(--warn)";
-        ui.liveText.textContent = "PAUSED";
-        ui.pauseBtn.textContent = "Resume";
-      } else {
-        ui.liveDot.style.background = "var(--good)";
-        ui.liveText.textContent = "LIVE";
-        ui.pauseBtn.textContent = "Pause";
-      }
-
-      // feed status
-      if(state.lastPrice == null){
-        setStatus("ERROR");
-        ui.engineHint.textContent = "Waiting for a valid EUR/USD spot sample";
-      } else if(state.stalePolls >= CONFIG.staleLimit){
-        setStatus("STALE");
-        ui.engineHint.textContent = "Feed looks stale. Regime engine holds policy state to avoid fake flips.";
-      } else {
-        setStatus("LIVE");
-        ui.engineHint.textContent = "Live spot drives regime engine, no simulation";
-      }
-
-      // log
-      renderLog();
-    }
-
-    function renderLog(){
-      ui.logBody.innerHTML = "";
-      const rows = (state.log || []).slice(0, CONFIG.logMaxRows);
-      for(const r of rows){
-        const tr = document.createElement("tr");
-        const cells = [
-          r.time,
-          r.price,
-          r.det,
-          r.pol,
-          r.conf,
-          r.volx,
-          r.mom,
-          r.stale,
-          r.src
-        ];
-        cells.forEach((c) => {
-          const td = document.createElement("td");
-          td.textContent = c;
-          tr.appendChild(td);
-        });
-        ui.logBody.appendChild(tr);
-      }
-    }
-
-    /* ======= Events and News rendering ======= */
-    function parseEvents(text){
-      const lines = (text||"").split("\n").map(s=>s.trim()).filter(Boolean);
-      const out = [];
-      for(const ln of lines){
-        const parts = ln.split("|").map(x=>x.trim());
-        if(parts.length < 3) continue;
-        const when = parts[0];
-        const impact = (parts[1]||"MED").toUpperCase();
-        const evt = parts.slice(2).join("|");
-        const dt = new Date(when.replace(" ", "T"));
-        out.push({ when, dt: isNaN(dt.getTime())? null : dt, impact, evt });
-      }
-      // sort by dt if valid
-      out.sort((a,b)=>{
-        if(!a.dt && !b.dt) return 0;
-        if(!a.dt) return 1;
-        if(!b.dt) return -1;
-        return a.dt - b.dt;
-      });
-      return out;
-    }
-
-    function countdown(dt){
-      if(!dt) return "--";
-      const now = new Date();
-      const ms = dt - now;
-      if(ms <= 0) return "now";
-      const mins = Math.floor(ms/60000);
-      const hrs = Math.floor(mins/60);
-      const days = Math.floor(hrs/24);
-      const remH = hrs%24;
-      const remM = mins%60;
-      if(days>0) return `${days}d ${remH}h`;
-      if(hrs>0) return `${hrs}h ${remM}m`;
-      return `${mins}m`;
+    function countdown(iso){
+      const t = new Date(iso).getTime();
+      const now = Date.now();
+      const diff = t - now;
+      if (Number.isNaN(t)) return "--";
+      if (diff <= 0) return "Now";
+      const mins = Math.floor(diff / 60000);
+      const hrs = Math.floor(mins / 60);
+      const days = Math.floor(hrs / 24);
+      const h = hrs % 24;
+      const m = mins % 60;
+      if (days > 0) return `${days}d ${h}h`;
+      if (hrs > 0) return `${hrs}h ${m}m`;
+      return `${m}m`;
     }
 
     function renderEvents(){
-      const evs = parseEvents(lists.events);
-      ui.eventsBody.innerHTML = "";
-      for(const e of evs.slice(0, 20)){
+      const curated = loadCurated();
+      const body = $("eventsBody");
+      body.innerHTML = "";
+      const rows = [...curated.events].sort((a,b)=> new Date(a.when) - new Date(b.when));
+      for (const ev of rows){
+        const d = new Date(ev.when);
+        const when = d.toLocaleString(undefined, { month:"numeric", day:"numeric", year:"numeric", hour:"numeric", minute:"2-digit" });
+        const impact = (ev.impact || "MED").toUpperCase();
+        const cls = impact === "HIGH" ? "high" : (impact === "LOW" ? "low" : "med");
         const tr = document.createElement("tr");
-        const tdWhen = document.createElement("td"); tdWhen.textContent = e.when.replace("T"," ");
-        const tdEvt = document.createElement("td"); tdEvt.textContent = e.evt;
-
-        const tdImp = document.createElement("td");
-        const imp = document.createElement("span");
-        const cls = (e.impact==="HIGH") ? "high" : (e.impact==="LOW" ? "low" : "med");
-        imp.className = "impact " + cls;
-        const sq = document.createElement("span"); sq.className="sq";
-        imp.appendChild(sq);
-        imp.appendChild(document.createTextNode(e.impact));
-        tdImp.appendChild(imp);
-
-        const tdCd = document.createElement("td"); tdCd.textContent = countdown(e.dt);
-
-        tr.appendChild(tdWhen);
-        tr.appendChild(tdEvt);
-        tr.appendChild(tdImp);
-        tr.appendChild(tdCd);
-        ui.eventsBody.appendChild(tr);
+        tr.innerHTML = `
+          <td>${when}</td>
+          <td style="font-weight:800; color: rgba(120,190,255,0.95);">${ev.event || ""}</td>
+          <td><span class="impact ${cls}"><span class="sq"></span>${impact}</span></td>
+          <td>${countdown(ev.when)}</td>
+        `;
+        body.appendChild(tr);
       }
     }
 
-    function parseNews(text){
-      const lines = (text||"").split("\n").map(s=>s.trim()).filter(Boolean);
-      const out = [];
-      for(const ln of lines){
-        const parts = ln.split("|").map(x=>x.trim());
-        if(parts.length < 3) continue;
-        const time = parts[0];
-        const source = parts[1] || "Market";
-        const headline = parts[2] || "";
-        const url = parts[3] || "";
-        out.push({ time, source, headline, url });
-      }
-      return out;
-    }
-
-    function renderNews(){
-      const news = parseNews(lists.news);
-      ui.newsBody.innerHTML = "";
-      for(const n of news.slice(0, 25)){
+    function renderHeadlines(){
+      const curated = loadCurated();
+      const body = $("newsBody");
+      body.innerHTML = "";
+      for (const h of curated.headlines){
         const tr = document.createElement("tr");
-        const tdT = document.createElement("td"); tdT.textContent = n.time;
-        const tdS = document.createElement("td"); tdS.textContent = n.source;
-        const tdH = document.createElement("td");
-        if(n.url){
-          const a = document.createElement("a");
-          a.href = n.url;
-          a.target = "_blank";
-          a.rel = "noopener noreferrer";
-          a.className = "link";
-          a.textContent = n.headline;
-          tdH.appendChild(a);
-        } else {
-          tdH.textContent = n.headline;
-        }
-        tr.appendChild(tdT);
-        tr.appendChild(tdS);
-        tr.appendChild(tdH);
-        ui.newsBody.appendChild(tr);
+        tr.className = "headlineRow";
+        const safeUrl = h.url || "#";
+        tr.innerHTML = `
+          <td>${h.time || ""}</td>
+          <td>${h.source || ""}</td>
+          <td><a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${h.title || ""}</a></td>
+        `;
+        body.appendChild(tr);
       }
     }
 
-    /* ======= Log helpers ======= */
-    function pushLogRow({price, det, pol, conf, volx, mom, stale, src}){
-      const row = {
-        time: fmtTime(new Date()),
-        price: (price != null) ? round(price, 5) : "--",
-        det: det ?? "--",
-        pol: pol ?? "--",
-        conf: conf ?? "--",
-        volx: volx ?? "--",
-        mom: mom ?? "--",
-        stale: stale ?? "--",
-        src: src ?? "--"
-      };
-      state.log = [row, ...(state.log || [])].slice(0, CONFIG.logMaxRows);
-    }
-
-    function logToCSV(){
-      const rows = state.log || [];
-      const header = ["time","eurusd","det","pol","conf","vol_x","mom_bp","stale","src"];
-      const lines = [header.join(",")];
-      for(const r of rows){
-        const line = [
-          r.time, r.price, r.det, r.pol, r.conf, r.volx, r.mom, r.stale, r.src
-        ].map(v => `"${String(v).replaceAll('"','""')}"`).join(",");
-        lines.push(line);
-      }
-      return lines.join("\n");
-    }
-
-    /* ======= Engine tick ======= */
-    function appendPrice(price){
-      state.prices.push(price);
-      if(state.prices.length > CONFIG.maxPriceSeries){
-        state.prices = state.prices.slice(-CONFIG.maxPriceSeries);
-      }
-    }
-
-    function updateEngineFromPrice(price, meta){
-      // meta: {source, latency, status}
-      appendPrice(price);
-
-      const features = computeFeatures(state.prices);
-      if(!features){
-        // Not enough data yet, keep defaults
-        state.probs = Array(8).fill(1/8);
-        state.detector = null;
-        state.policy = state.policy ?? 0;
-        state.confidence = 0;
-        return;
-      }
-
-      const probs = computeProbabilities(features);
-      state.probs = probs;
-
-      const detIdx = topIndex(probs); // 0..7
-      state.detector = detIdx;
-
-      updatePolicy(detIdx, probs);
-
-      const topP = probs[detIdx] || 0;
-      state.confidence = topP;
-
-      // History shows policy states
-      if(state.policy != null){
-        state.history.push(state.policy);
-        if(state.history.length > 80) state.history = state.history.slice(-80);
-      }
-
-      // Derived values for log
-      const volx = clamp(features.vol * 10000, 0, 99); // rough in bp
-      const momBp = bp(features.mom);
-
-      pushLogRow({
-        price,
-        det: `S${(state.detector ?? 0)+1}`,
-        pol: `S${(state.policy ?? 0)+1}`,
-        conf: (topP*100).toFixed(1) + "%",
-        volx: volx.toFixed(2),
-        mom: momBp.toFixed(2),
-        stale: (state.stalePolls >= CONFIG.staleLimit) ? "Y" : "N",
-        src: meta?.source || "--"
+    function refreshCountdowns(){
+      // update countdown column without re-rendering everything
+      const curated = loadCurated();
+      const rows = [...curated.events].sort((a,b)=> new Date(a.when) - new Date(b.when));
+      const tds = $("eventsBody").querySelectorAll("tr td:last-child");
+      tds.forEach((td, i) => {
+        if (rows[i]) td.textContent = countdown(rows[i].when);
       });
     }
 
-    /* ======= Poll loop ======= */
-    let pollTimer = null;
+    /***********************
+     * 3) Quote fetch (no backend, multi-source, throttled)
+     ***********************/
+    function getTwelveKey(){
+      return (localStorage.getItem(LS_APIKEY) || "").trim();
+    }
 
-    async function pollOnce(force=false){
-      if(state.paused && !force) return;
-
-      state.tick = (state.tick || 0) + 1;
-
-      let q;
+    async function tryFetch(url, timeoutMs = 6500){
+      const ctrl = new AbortController();
+      const t = setTimeout(()=> ctrl.abort(), timeoutMs);
+      const start = performance.now();
       try{
-        q = await fetchQuote();
+        const res = await fetch(url, {
+          method: "GET",
+          cache: "no-store",
+          headers: { "Accept":"application/json" },
+          signal: ctrl.signal
+        });
+        const latency = Math.round(performance.now() - start);
+        clearTimeout(t);
+        return { ok: res.ok, status: res.status, latency, json: await res.json() };
       }catch(e){
-        // On total failure, mark error, do not change engine state
-        state.stalePolls = (state.stalePolls || 0) + 1;
-        state.lastSource = "none";
-        state.lastLatencyMs = null;
-        renderAll();
-        saveState();
-        return;
+        clearTimeout(t);
+        return { ok: false, status: 0, latency: null, json: { error: String(e) } };
+      }
+    }
+
+    async function fetchEURUSD(){
+      // Returns: { ok, price, src, latency, note, rateLimited }
+      const cacheBust = `&_=${Date.now()}`;
+
+      // A) TwelveData (optional key, can rate limit hard)
+      const key = getTwelveKey();
+      if (key){
+        const tdUrl = `https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${encodeURIComponent(key)}${cacheBust}`;
+        const r = await tryFetch(tdUrl);
+        if (r.ok && r.json && r.json.price){
+          const p = Number(r.json.price);
+          if (Number.isFinite(p)) return { ok:true, price:p, src:"twelvedata", latency:r.latency, note:"spot-sampled", rateLimited:false };
+        }
+        // Detect rate limit / credits
+        if (r.json && r.json.code && String(r.json.code) === "429") return { ok:false, price:null, src:"twelvedata", latency:r.latency, note:"rate-limited", rateLimited:true };
+        if (r.json && r.json.message && String(r.json.message).toLowerCase().includes("api credits")) return { ok:false, price:null, src:"twelvedata", latency:r.latency, note:"credits/rate-limit", rateLimited:true };
       }
 
-      const newPrice = q.price;
-      const prevPrice = state.lastPrice;
-
-      // Detect stale repeats
-      let delta = 0;
-      if(prevPrice != null) delta = Math.abs(newPrice - prevPrice);
-
-      const moved = (prevPrice == null) ? true : (delta >= CONFIG.minMove);
-
-      state.lastLatencyMs = q.latency;
-      state.lastSource = q.source;
-
-      if(moved){
-        state.lastPrice = newPrice;
-        state.lastGoodAt = Date.now();
-        state.stalePolls = 0;
-
-        updateEngineFromPrice(newPrice, {source:q.source, latency:q.latency});
-
-      } else {
-        state.stalePolls = (state.stalePolls || 0) + 1;
-
-        // If stale is too long, do not update engine (no fake flips)
-        // Still keep UI updated with status.
-        if(state.stalePolls < CONFIG.staleLimit){
-          // We can still re-log as unchanged if you want continuity
-          pushLogRow({
-            price: newPrice,
-            det: state.detector != null ? `S${state.detector+1}` : "--",
-            pol: state.policy != null ? `S${state.policy+1}` : "--",
-            conf: state.confidence ? (state.confidence*100).toFixed(1)+"%" : "--",
-            volx: "--",
-            mom: "--",
-            stale: "Y",
-            src: q.source
-          });
+      // B) open.er-api (EUR base -> USD rate)
+      {
+        const url = `https://open.er-api.com/v6/latest/EUR?${cacheBust}`;
+        const r = await tryFetch(url);
+        if (r.ok && r.json && r.json.rates && r.json.rates.USD){
+          const p = Number(r.json.rates.USD);
+          if (Number.isFinite(p)) return { ok:true, price:p, src:"open.er-api.com", latency:r.latency, note:"spot-sampled", rateLimited:false };
         }
       }
 
-      renderAll();
-      saveState();
+      // C) exchangerate.host (can be good, sometimes cached)
+      {
+        const url = `https://api.exchangerate.host/latest?base=EUR&symbols=USD${cacheBust}`;
+        const r = await tryFetch(url);
+        if (r.ok && r.json && r.json.rates && r.json.rates.USD){
+          const p = Number(r.json.rates.USD);
+          if (Number.isFinite(p)) return { ok:true, price:p, src:"exchangerate.host", latency:r.latency, note:"spot-sampled", rateLimited:false };
+        }
+      }
+
+      // D) frankfurter (ECB daily, last resort, will lag)
+      {
+        const url = `https://api.frankfurter.app/latest?from=EUR&to=USD${cacheBust}`;
+        const r = await tryFetch(url);
+        if (r.ok && r.json && r.json.rates && r.json.rates.USD){
+          const p = Number(r.json.rates.USD);
+          if (Number.isFinite(p)) return { ok:true, price:p, src:"frankfurter.app (ECB daily)", latency:r.latency, note:"DAILY (lag)", rateLimited:false };
+        }
+      }
+
+      return { ok:false, price:null, src:"--", latency:null, note:"unreachable", rateLimited:false };
     }
 
-    function startPolling(){
-      if(pollTimer) clearInterval(pollTimer);
-      pollTimer = setInterval(()=>pollOnce(false), CONFIG.pollMs);
+    function updatePollInterval({rateLimited, stale}){
+      if (rateLimited){
+        pollMs = clamp(pollMs * 2, POLL_MIN, POLL_MAX);   // back off aggressively
+        return;
+      }
+      if (stale){
+        pollMs = clamp(Math.round(pollMs * 1.25), POLL_MIN, POLL_MAX); // back off gently
+        return;
+      }
+      // healthy: slowly drift toward baseline
+      pollMs = clamp(Math.round(pollMs * 0.92), POLL_MIN, 20000);
     }
 
-    /* ======= TradingView embed (display) ======= */
-    function loadTradingViewWidget(){
-      // Lightweight embed via TV script
-      // Note: This is display-only. We cannot read price from it due to iframe security.
-      const script = document.createElement("script");
-      script.src = "https://s3.tradingview.com/tv.js";
-      script.async = true;
-      script.onload = () => {
-        try{
-          new TradingView.widget({
-            "container_id": "tvChart",
-            "symbol": "FX:EURUSD",
-            "interval": "D",
-            "timezone": "Etc/UTC",
-            "theme": "dark",
-            "style": "1",
-            "locale": "en",
-            "hide_top_toolbar": false,
-            "hide_legend": false,
-            "allow_symbol_change": false,
-            "save_image": false,
-            "details": false,
-            "calendar": false,
-            "width": "100%",
-            "height": 360
-          });
-        }catch(e){}
-      };
-      document.body.appendChild(script);
+    /***********************
+     * 4) Feature extraction + probability distribution
+     ***********************/
+    function bp(x){ return x * 10000; }
+
+    function mean(arr){
+      if (arr.length === 0) return 0;
+      return arr.reduce((a,b)=>a+b,0)/arr.length;
     }
 
-    /* ======= Modal controls ======= */
-    function openModal(){
-      ui.eventsText.value = lists.events || "";
-      ui.newsText.value = lists.news || "";
-      ui.modalBackdrop.style.display = "flex";
-    }
-    function closeModal(){
-      ui.modalBackdrop.style.display = "none";
+    function stdev(arr){
+      if (arr.length < 2) return 0;
+      const m = mean(arr);
+      const v = mean(arr.map(x => (x-m)*(x-m)));
+      return Math.sqrt(v);
     }
 
-    /* ======= Buttons ======= */
-    ui.pauseBtn.addEventListener("click", ()=>{
-      state.paused = !state.paused;
-      renderAll();
-      saveState();
+    function softmax(scores){
+      const mx = Math.max(...scores);
+      const exps = scores.map(s => Math.exp(s - mx));
+      const sum = exps.reduce((a,b)=>a+b,0) || 1;
+      return exps.map(e => e / sum);
+    }
+
+    function computeFeatures(){
+      // Uses last N points of priceSeries
+      const n = priceSeries.length;
+      if (n < 6) return { ready:false, ret:0, mom:0, vol:0, z:0, mr:0 };
+
+      const last = priceSeries[n-1].p;
+      const prev = priceSeries[n-2].p;
+
+      const rets = [];
+      for (let i=1; i<n; i++){
+        const r = (priceSeries[i].p - priceSeries[i-1].p) / priceSeries[i-1].p;
+        rets.push(r);
+      }
+
+      const w = rets.slice(-30); // last ~3 minutes at 6s
+      const vol = stdev(w);      // short-term realized vol proxy
+      const mom = (last - priceSeries[Math.max(0, n-10)].p); // ~1 minute momentum
+      const ret = last - prev;
+
+      // mean reversion pressure: deviation from rolling mean
+      const pxWin = priceSeries.slice(-40).map(x=>x.p);
+      const m = mean(pxWin);
+      const sd = stdev(pxWin) || 1e-9;
+      const z = (last - m)/sd;
+      const mr = -Math.abs(z); // closer to mean => higher mr score
+
+      return { ready:true, ret, mom, vol, z, mr };
+    }
+
+    function computeStateScores(feat){
+      // Heuristic scoring model: maps features to 8 regime archetypes
+      // Important: this is a *demo* regime classifier. It is driven by EURUSD spot feed (sampled), not events.
+      const v = feat.vol;
+      const mom = feat.mom;
+      const z = feat.z;
+      const absZ = Math.abs(z);
+
+      // Normalize-ish
+      const vN = clamp(v * 10000, 0, 5);       // vol in bp-ish scale
+      const mN = clamp(bp(mom), -50, 50)/50;   // momentum in [-1,1]
+      const zN = clamp(z, -3, 3)/3;            // zscore in [-1,1]
+      const absZN = clamp(absZ, 0, 3)/3;       // [0,1]
+
+      const scores = new Array(8).fill(0);
+
+      // S1 Mean-Reverting: low vol + high absZ tends to revert (fade extremes)
+      scores[0] = (1.2 - vN) + (absZN * 1.4) - Math.abs(mN) * 0.4;
+
+      // S2 Liquidity Vacuum: medium vol spikes without clean direction (chop risk)
+      scores[1] = (vN * 0.8) - Math.abs(mN) * 0.5 + 0.2;
+
+      // S3 Slow Drift: low-to-medium vol + small but persistent momentum
+      scores[2] = (1.0 - vN*0.6) + Math.abs(mN) * 0.7 - absZN * 0.2;
+
+      // S4 Strong Trend: higher momentum + controlled vol
+      scores[3] = Math.abs(mN) * 1.3 + (vN * 0.3) - absZN * 0.2;
+
+      // S5 Stop Cascade: high vol + momentum + big z excursion
+      scores[4] = (vN * 1.2) + Math.abs(mN) * 0.8 + absZN * 0.8;
+
+      // S6 News Shock: sharp vol jump (proxy: high vN) and unstable move (absZ moderate)
+      scores[5] = (vN * 1.4) + (1.0 - absZN) * 0.2;
+
+      // S7 Dealer Unwind: high vol but mean reversion tug (absZ high, momentum decaying)
+      scores[6] = (vN * 1.0) + (absZN * 1.0) - Math.abs(mN) * 0.2;
+
+      // S8 Panic/Forced: extreme vol + extreme z + directional push
+      scores[7] = (vN * 1.6) + (absZN * 1.2) + Math.abs(mN) * 0.6;
+
+      return scores;
+    }
+
+    function pickDetectorAndPolicy(prob){
+      const topIdx = prob.indexOf(Math.max(...prob)); // 0-based
+      const det = topIdx + 1;
+
+      // Hysteresis: policy changes only if a new detector wins for HOLD_TICKS_REQUIRED consecutive updates
+      if (det === policyState){
+        holdTicks = 0;
+        return { det, pol: policyState, holdTicks, stable:true };
+      }
+
+      // candidate differs
+      if (det !== lastPolicy){
+        lastPolicy = det;
+        holdTicks = 1;
+        return { det, pol: policyState, holdTicks, stable:false };
+      } else {
+        holdTicks += 1;
+        if (holdTicks >= HOLD_TICKS_REQUIRED){
+          policyState = det;
+          holdTicks = 0;
+          return { det, pol: policyState, holdTicks, stable:true };
+        }
+        return { det, pol: policyState, holdTicks, stable:false };
+      }
+    }
+
+    /***********************
+     * 5) UI render
+     ***********************/
+    function renderProb(prob){
+      const wrap = $("probWrap");
+      wrap.innerHTML = "";
+      for (let i=0; i<8; i++){
+        const st = STATES[i];
+        const pct = prob[i] * 100;
+        const row = document.createElement("div");
+        row.className = "probRow";
+        row.innerHTML = `
+          <div style="font-weight:900; color: rgba(233,240,255,0.86);">${"State " + st.id + ": " + st.name}</div>
+          <div class="bar"><i style="background:${st.color}; width:${pct.toFixed(1)}%"></i></div>
+          <div class="pct">${pct.toFixed(1)}%</div>
+        `;
+        wrap.appendChild(row);
+      }
+    }
+
+    function renderHeader(policyId, detectorId, conf, hystText){
+      const st = STATES[policyId-1];
+      $("policyTitle").textContent = `Policy State: S${st.id} ${st.name}`;
+      $("policyDesc").textContent = st.rule;
+
+      $("detectorChip").textContent = `S${detectorId}`;
+      $("policyChip").textContent = `S${policyId}`;
+      $("confChip").textContent = `${(conf*100).toFixed(1)}%`;
+      $("hystChip").textContent = hystText;
+
+      // No EURUSD rate displayed here (you asked to remove it)
+      $("tickChip").textContent = `${tick}`;
+      $("staleChip").textContent = `${staleCount}`;
+
+      $("stateBadge").textContent = String(st.id);
+      $("stateBadge").style.background = `color-mix(in oklab, ${st.color} 22%, rgba(0,0,0,0.18))`;
+      $("stateBadge").style.borderColor = `color-mix(in oklab, ${st.color} 55%, rgba(255,255,255,0.08))`;
+      $("stateBadge").style.boxShadow = `0 0 0 6px color-mix(in oklab, ${st.color} 20%, rgba(0,0,0,0.0))`;
+
+      $("riskValue").textContent = st.risk;
+      $("riskRule").textContent = st.rule;
+
+      $("footPolicy").textContent = `S${policyId}`;
+      $("footDet").textContent = `S${detectorId}`;
+      $("footHold").textContent = String(holdTicks);
+
+      // History pills
+      const hist = JSON.parse(localStorage.getItem("quadrax_hist_v1") || "[]");
+      const wrap = $("histWrap");
+      wrap.innerHTML = "";
+      hist.slice(-12).forEach(x=>{
+        const d = document.createElement("div");
+        d.className = "mini";
+        d.textContent = String(x);
+        wrap.appendChild(d);
+      });
+    }
+
+    function pushHistory(pol){
+      const key = "quadrax_hist_v1";
+      const hist = JSON.parse(localStorage.getItem(key) || "[]");
+      hist.push(pol);
+      localStorage.setItem(key, JSON.stringify(hist.slice(-48)));
+    }
+
+    function renderFeed(price, src, latency, status){
+      $("spotVal").textContent = fmtPrice(price);
+      $("spotTs").textContent = lastGoodTs ? lastGoodTs : "--";
+      $("spotSrc").textContent = src || "--";
+      $("latency").textContent = latency ? `${latency}ms` : "--";
+      $("delta").textContent = (lastDelta !== null && lastDelta !== undefined) ? fmtPrice(lastDelta) : "--";
+      $("pollInt").textContent = `${Math.round(pollMs/1000)}s`;
+
+      const pill = $("statusPill");
+      const txt = $("statusText");
+
+      pill.classList.remove("live","stale","error");
+      if (status === "LIVE"){
+        pill.classList.add("live");
+        txt.textContent = "LIVE";
+      } else if (status === "STALE"){
+        pill.classList.add("stale");
+        txt.textContent = "STALE";
+      } else {
+        pill.classList.add("error");
+        txt.textContent = "ERROR";
+      }
+    }
+
+    function addLogRow({time, price, det, pol, conf, volx, momBp, stale, src}){
+      logRows.unshift({time, price, det, pol, conf, volx, momBp, stale, src});
+      if (logRows.length > MAX_LOG) logRows.pop();
+
+      const body = $("logBody");
+      body.innerHTML = "";
+      for (const r of logRows){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.time}</td>
+          <td>${fmtPrice(r.price)}</td>
+          <td>${r.det}</td>
+          <td>${r.pol}</td>
+          <td>${(r.conf*100).toFixed(1)}%</td>
+          <td>${r.volx.toFixed(2)}</td>
+          <td>${r.momBp.toFixed(2)}</td>
+          <td>${r.stale ? "Y" : "N"}</td>
+          <td>${r.src}</td>
+        `;
+        body.appendChild(tr);
+      }
+    }
+
+    /***********************
+     * 6) Main loop
+     ***********************/
+    async function step(){
+      if (paused){
+        scheduleNext();
+        return;
+      }
+
+      tick += 1;
+
+      const t0 = performance.now();
+      const q = await fetchEURUSD();
+      lastLatency = q.latency;
+      lastSrc = q.src || "--";
+
+      // If no price, mark error and backoff
+      if (!q.ok || !Number.isFinite(q.price)){
+        staleCount += 1;
+        updatePollInterval({ rateLimited: q.rateLimited, stale: true });
+        renderFeed(lastPrice, lastSrc, lastLatency, "ERROR");
+        $("probNote").textContent = "Quote unavailable. Probabilities may freeze until a valid sample arrives.";
+        scheduleNext();
+        return;
+      }
+
+      // Detect staleness: exact repeats too many times
+      const newPrice = q.price;
+      const isRepeat = (lastPrice !== null && Math.abs(newPrice - lastPrice) < 1e-9);
+      if (isRepeat) staleCount += 1; else staleCount = 0;
+
+      lastDelta = (lastPrice === null) ? 0 : (newPrice - lastPrice);
+      lastPrice = newPrice;
+      lastGoodTs = nowClock();
+      $("lastUpdate").textContent = lastGoodTs;
+
+      // Store price series
+      priceSeries.push({ t: Date.now(), p: newPrice });
+      while (priceSeries.length > MAX_SERIES) priceSeries.shift();
+
+      const stale = staleCount >= 6;
+      renderFeed(newPrice, lastSrc, lastLatency, stale ? "STALE" : "LIVE");
+
+      // Update polling interval adaptively
+      updatePollInterval({ rateLimited: q.rateLimited, stale });
+
+      // If stale, we still compute features, but warn
+      if (stale){
+        $("probNote").textContent = "Feed looks stale (repeating price). Probabilities may flatten and policy changes will be conservative.";
+      } else {
+        $("probNote").textContent = "Probabilities are computed from recent EUR/USD spot changes (sampled). Policy state uses hysteresis to prevent flip-flopping.";
+      }
+
+      // Features + probabilities
+      const feat = computeFeatures();
+      if (!feat.ready){
+        // not enough data yet
+        renderHeader(policyState, detectorState, 0.10, "warming up");
+        renderProb(new Array(8).fill(1/8));
+        pushHistory(policyState);
+        addLogRow({
+          time: nowClock(), price: newPrice,
+          det: "S--", pol: `S${policyState}`,
+          conf: 0.10, volx: 0, momBp: 0,
+          stale, src: lastSrc
+        });
+        scheduleNext();
+        return;
+      }
+
+      const scores = computeStateScores(feat);
+      const prob = softmax(scores);
+
+      const top = Math.max(...prob);
+      const { det, pol, stable } = pickDetectorAndPolicy(prob);
+      detectorState = det;
+
+      const hystText = stable ? "stable" : `holding (${holdTicks}/${HOLD_TICKS_REQUIRED})`;
+
+      renderProb(prob);
+      renderHeader(pol, det, top, hystText);
+      pushHistory(pol);
+
+      // Log row
+      addLogRow({
+        time: nowClock(),
+        price: newPrice,
+        det: `S${det}`,
+        pol: `S${pol}`,
+        conf: top,
+        volx: clamp(feat.vol * 10000, 0, 9), // vol proxy in bp-ish
+        momBp: bp(feat.mom),
+        stale,
+        src: lastSrc
+      });
+
+      scheduleNext();
+    }
+
+    function scheduleNext(){
+      setTimeout(step, pollMs);
+    }
+
+    /***********************
+     * 7) Buttons / modal
+     ***********************/
+    $("btnPause").addEventListener("click", ()=>{
+      paused = !paused;
+      $("btnPause").textContent = paused ? "Resume" : "Pause";
+      $("sysStatus").textContent = paused ? "PAUSED" : "LIVE";
+      $("sysLabel").textContent = paused ? "PAUSED" : "LIVE";
+      $("liveDot").style.background = paused ? "var(--amber)" : "var(--green)";
+      $("liveDot").style.boxShadow = paused
+        ? "0 0 0 4px rgba(246,201,69,0.15)"
+        : "0 0 0 4px rgba(57,217,138,0.15)";
     });
-    ui.syncBtn.addEventListener("click", ()=>{
-      pollOnce(true);
+
+    $("btnSync").addEventListener("click", ()=>{
+      // “Sync” in a static site means: clear local rate-limit backoff + do an immediate step
+      pollMs = POLL_MIN;
+      staleCount = 0;
+      step();
     });
-    ui.copyCsvBtn.addEventListener("click", async ()=>{
-      const csv = logToCSV();
+
+    $("btnCopy").addEventListener("click", async ()=>{
+      const lines = [];
+      lines.push(["time","eurusd","det","pol","conf","vol_x","mom_bp","stale","src"].join(","));
+      for (const r of logRows){
+        lines.push([
+          `"${r.time}"`,
+          fmtPrice(r.price),
+          r.det,
+          r.pol,
+          (r.conf*100).toFixed(1),
+          r.volx.toFixed(2),
+          r.momBp.toFixed(2),
+          r.stale ? "Y" : "N",
+          `"${r.src}"`
+        ].join(","));
+      }
+      await navigator.clipboard.writeText(lines.join("\n"));
+    });
+
+    $("btnClear").addEventListener("click", ()=>{
+      logRows.length = 0;
+      $("logBody").innerHTML = "";
+      localStorage.removeItem("quadrax_hist_v1");
+      $("histWrap").innerHTML = "";
+    });
+
+    $("btnEdit").addEventListener("click", ()=>{
+      const curated = loadCurated();
+      $("modalText").value = JSON.stringify(curated, null, 2);
+      $("modalBg").style.display = "flex";
+      $("modalBg").setAttribute("aria-hidden", "false");
+    });
+
+    $("btnClose").addEventListener("click", ()=>{
+      $("modalBg").style.display = "none";
+      $("modalBg").setAttribute("aria-hidden", "true");
+    });
+
+    $("btnSave").addEventListener("click", ()=>{
       try{
-        await navigator.clipboard.writeText(csv);
-        ui.copyCsvBtn.textContent = "Copied";
-        setTimeout(()=> ui.copyCsvBtn.textContent="Copy as CSV", 900);
-      }catch(e){
-        // fallback
-        const ta = document.createElement("textarea");
-        ta.value = csv;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        ta.remove();
+        const obj = JSON.parse($("modalText").value);
+        saveCurated(obj);
+        renderEvents();
+        renderHeadlines();
+        $("modalBg").style.display = "none";
+        $("modalBg").setAttribute("aria-hidden", "true");
+      }catch{
+        alert("Invalid JSON. Fix the format and try again.");
       }
     });
-    ui.clearLogBtn.addEventListener("click", ()=>{
-      state.log = [];
-      renderAll();
-      saveState();
+
+    $("btnSetKey").addEventListener("click", ()=>{
+      const cur = getTwelveKey();
+      const v = prompt("Optional: paste TwelveData API key (will be stored in this browser only). Leave blank to clear.", cur || "");
+      if (v === null) return;
+      const trimmed = String(v).trim();
+      if (!trimmed){
+        localStorage.removeItem(LS_APIKEY);
+        alert("Cleared TwelveData key. Using free public sources only.");
+      } else {
+        localStorage.setItem(LS_APIKEY, trimmed);
+        alert("Saved key. Note: TwelveData free tier rate-limits hard. The dashboard will back off automatically.");
+      }
+      pollMs = POLL_MIN;
+      staleCount = 0;
+      step();
     });
 
-    ui.editBtn.addEventListener("click", openModal);
-    ui.closeModalBtn.addEventListener("click", closeModal);
-    ui.closeModalBtn2.addEventListener("click", closeModal);
-    ui.modalBackdrop.addEventListener("click", (e)=>{
-      if(e.target === ui.modalBackdrop) closeModal();
-    });
+    /***********************
+     * 8) TradingView widget embed
+     * We show live visually, but cannot read it in JS.
+     ***********************/
+    (function loadTradingView(){
+      const script = document.createElement("script");
+      script.src = "https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js";
+      script.async = true;
+      script.innerHTML = JSON.stringify({
+        "symbols": [
+          ["FX:EURUSD|1D"]
+        ],
+        "chartOnly": false,
+        "width": "100%",
+        "height": "360",
+        "locale": "en",
+        "colorTheme": "dark",
+        "autosize": true,
+        "showVolume": true,
+        "showMA": false,
+        "hideDateRanges": false,
+        "hideMarketStatus": false,
+        "hideSymbolLogo": false,
+        "scalePosition": "right",
+        "scaleMode": "Normal",
+        "fontFamily": "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif",
+        "fontSize": "12",
+        "noTimeScale": false,
+        "valuesTracking": "1",
+        "changeMode": "price-and-percent",
+        "chartType": "candlesticks",
+        "maLineColor": "#2962FF",
+        "maLineWidth": 1,
+        "maLength": 9,
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "gridLineColor": "rgba(255, 255, 255, 0.08)",
+        "lineWidth": 2,
+        "lineType": 0,
+        "dateRanges": ["1D","5D","1M","3M","6M","YTD","1Y","5Y","ALL"]
+      });
+      document.querySelector(".tradingview-widget-container__widget").appendChild(script);
+    })();
 
-    ui.saveListsBtn.addEventListener("click", ()=>{
-      lists = { events: ui.eventsText.value.trim(), news: ui.newsText.value.trim() };
-      saveLists(lists);
-      renderEvents();
-      renderNews();
-      closeModal();
-    });
-
-    ui.loadDefaultsBtn.addEventListener("click", ()=>{
-      const d = defaultLists();
-      ui.eventsText.value = d.events;
-      ui.newsText.value = d.news;
-    });
-
-    /* ======= Init ======= */
+    /***********************
+     * 9) Init
+     ***********************/
     function init(){
-      // Ensure at least one placeholder policy
-      if(state.policy == null) state.policy = 0;
-
-      // Render lists
       renderEvents();
-      renderNews();
+      renderHeadlines();
+      setInterval(refreshCountdowns, 30_000);
 
-      // Render dashboard
-      renderAll();
+      $("lastUpdate").textContent = nowClock();
+      $("sysStatus").textContent = "LIVE";
+      $("sysLabel").textContent = "LIVE";
 
-      // Poll immediately then interval
-      pollOnce(true);
-      startPolling();
+      // Seed history placeholders
+      $("histWrap").innerHTML = "";
 
-      // Update countdowns every 30s
-      setInterval(renderEvents, 30000);
-
-      // Load chart
-      loadTradingViewWidget();
+      // Start loop
+      step();
     }
 
     init();
