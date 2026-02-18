@@ -48,7 +48,6 @@
       padding: 0 16px;
     }
 
-    /* Top bar */
     .topbar{
       display:flex;
       align-items:center;
@@ -146,7 +145,6 @@
       border-color: rgba(120,170,255,0.26);
     }
 
-    /* Grid layout */
     .grid{
       display:grid;
       grid-template-columns: 2fr 1fr;
@@ -193,7 +191,6 @@
       text-align:right;
     }
 
-    /* Current state */
     .stateBig{
       font-size: 40px;
       font-weight: 900;
@@ -201,6 +198,7 @@
       margin: 6px 0 2px;
     }
     .muted{ color: var(--muted); font-size: 13px; }
+    .muted2{ color: var(--muted2); }
     .chips{
       display:flex;
       gap: 10px;
@@ -301,7 +299,6 @@
       background: rgba(24,209,138,0.85);
     }
 
-    /* Risk level card */
     .riskLevel{
       text-align:center;
       padding: 22px 16px 14px;
@@ -322,7 +319,6 @@
       color: rgba(255,255,255,0.68);
     }
 
-    /* Probabilities */
     .probRow{
       display:grid;
       grid-template-columns: 240px 1fr 72px;
@@ -366,7 +362,6 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* Feed health */
     .feedGrid{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -421,7 +416,6 @@
     .sdot.live{ background: var(--green); box-shadow: 0 0 0 4px rgba(24,209,138,0.18); }
     .sdot.err{ background: var(--red); box-shadow: 0 0 0 4px rgba(255,77,77,0.18); }
 
-    /* Tables */
     .tableWrap{
       border-radius: 18px;
       background: rgba(10,25,60,0.20);
@@ -463,7 +457,6 @@
     }
     .link:hover{ text-decoration:underline; }
 
-    /* Impact pills */
     .impact{
       display:inline-flex;
       align-items:center;
@@ -486,7 +479,6 @@
     .folder.med{ background: var(--amber); box-shadow: 0 0 0 4px rgba(255,176,32,0.14); }
     .folder.low{ background: rgba(255,255,255,0.30); box-shadow: none; }
 
-    /* Portfolio snapshot */
     .snapGrid{
       display:grid;
       grid-template-columns: repeat(4, 1fr);
@@ -506,10 +498,8 @@
     .pos{ color: rgba(24,209,138,0.95); }
     .neg{ color: rgba(255,77,77,0.95); }
 
-    /* Section stacking in right column */
     .stack{ display:grid; gap: 16px; }
 
-    /* Footer line */
     .foot{
       margin-top: 14px;
       display:flex;
@@ -521,7 +511,6 @@
       flex-wrap:wrap;
     }
 
-    /* Modal */
     .modalBack{
       position:fixed;
       inset:0;
@@ -580,7 +569,6 @@
       flex-wrap:wrap;
     }
 
-    /* TradingView card */
     .tvWrap{
       border-radius: 18px;
       overflow:hidden;
@@ -617,9 +605,7 @@
     </div>
 
     <div class="grid">
-      <!-- LEFT column -->
       <div class="stack">
-        <!-- Current market state -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
@@ -658,7 +644,6 @@
           </div>
         </div>
 
-        <!-- Probability distribution -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
@@ -672,7 +657,6 @@
           </div>
         </div>
 
-        <!-- Portfolio snapshot -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
@@ -703,7 +687,6 @@
           </div>
         </div>
 
-        <!-- Regime log -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
@@ -751,9 +734,7 @@
         </div>
       </div>
 
-      <!-- RIGHT column -->
       <div class="stack">
-        <!-- Risk level -->
         <div class="card">
           <div class="inner riskLevel">
             <div class="label">Risk Level</div>
@@ -762,7 +743,6 @@
           </div>
         </div>
 
-        <!-- Feed health -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
@@ -791,12 +771,11 @@
           </div>
         </div>
 
-        <!-- World events calendar -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
               <h2>World Events Calendar</h2>
-              <div class="hint">Fastest reliable mode tonight: curated list (saved locally)</div>
+              <div class="hint">Demo: live geopolitics via GDELT, fallback curated list saved locally</div>
             </div>
             <div class="tableWrap">
               <div class="scroll" style="max-height: 260px;">
@@ -819,12 +798,11 @@
           </div>
         </div>
 
-        <!-- Headlines -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
               <h2>Headlines</h2>
-              <div class="hint">Fastest reliable mode tonight: curated list (saved locally)</div>
+              <div class="hint">Demo: live headlines via GDELT, fallback curated list saved locally</div>
             </div>
 
             <div class="tableWrap">
@@ -848,7 +826,6 @@
           </div>
         </div>
 
-        <!-- TradingView chart -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
@@ -857,7 +834,6 @@
             </div>
 
             <div class="tvWrap">
-              <!-- TradingView Advanced Chart Widget iframe embed -->
               <iframe
                 title="TradingView EURUSD"
                 loading="lazy"
@@ -868,7 +844,6 @@
           </div>
         </div>
 
-        <!-- Risk metrics (still placeholders) -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
@@ -904,7 +879,6 @@
     </div>
   </div>
 
-  <!-- Modal: edit events + headlines -->
   <div class="modalBack" id="modalBack">
     <div class="modal">
       <div class="modalHead">
@@ -914,7 +888,7 @@
       <div class="modalBody">
         <div class="muted">
           This is the “tonight, ship it” approach. Save curated items locally so everyone sees the same list after refresh on their device.
-          Later we can plug a backend feed once you choose a source that does not explode your budget.
+          Later we can plug a real economic calendar feed once you decide what level of pain you want to pay for.
         </div>
 
         <div>
@@ -936,25 +910,10 @@
   </div>
 
 <script>
-/* ============================================================================
-   QuadraX Risk Dashboard
-   - Option A quotes: direct fetch, throttled, multi-source failover, no simulation
-   - Events + headlines: curated local JSON, editable, persisted
-   - Hysteresis: prevent flipping every update
-   - Persistence: refresh does not reset state to empty
-============================================================================ */
-
 (function(){
-  // ---------- Utilities ----------
   const fmtTime = (ms) => new Date(ms).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
   const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
-  const bp = (x)=> x * 10000; // price diff to basis points
-  const safeNum = (x, fallback=null) => (Number.isFinite(Number(x)) ? Number(x) : fallback);
-
-  function setText(id, v){
-    const el = document.getElementById(id);
-    if (el) el.textContent = v;
-  }
+  const bp = (x)=> x * 10000;
 
   // ---------- State definitions ----------
   const STATES = [
@@ -982,7 +941,7 @@
     resetCuratedBtn: document.getElementById("resetCuratedBtn"),
     eventsEditor: document.getElementById("eventsEditor"),
     headlinesEditor: document.getElementById("headlinesEditor"),
-    // main panels
+
     policyStateTitle: document.getElementById("policyStateTitle"),
     policyStateDesc: document.getElementById("policyStateDesc"),
     detectorChip: document.getElementById("detectorChip"),
@@ -998,24 +957,24 @@
     miniDelta: document.getElementById("miniDelta"),
     miniBar: document.getElementById("miniBar"),
     probList: document.getElementById("probList"),
-    // feed health
+
     fxSpotPrice: document.getElementById("fxSpotPrice"),
     fxSpotLast: document.getElementById("fxSpotLast"),
     fxSpotStatus: document.getElementById("fxSpotStatus"),
     fxStatusDot: document.getElementById("fxStatusDot"),
     fxSpotMeta: document.getElementById("fxSpotMeta"),
     fxSpotDelta: document.getElementById("fxSpotDelta"),
-    // right panels
+
     eventsBody: document.getElementById("eventsBody"),
     headlinesBody: document.getElementById("headlinesBody"),
-    // risk
+
     riskBig: document.getElementById("riskBig"),
     riskRule: document.getElementById("riskRule"),
-    // log
+
     logBody: document.getElementById("logBody"),
     copyCsvBtn: document.getElementById("copyCsvBtn"),
     clearLogBtn: document.getElementById("clearLogBtn"),
-    // footer
+
     sysStatus: document.getElementById("sysStatus"),
     footPolicy: document.getElementById("footPolicy"),
     footDetector: document.getElementById("footDetector"),
@@ -1030,7 +989,7 @@
     log: "qx_regime_log_v1"
   };
 
-  // ---------- Curated defaults (fastest reliable tonight) ----------
+  // ---------- Curated defaults ----------
   const curatedEventsDefault = [
     { when: "2026-02-17T21:18:47Z", event: "Eurozone CPI (flash)", impact: "HIGH" },
     { when: "2026-02-18T17:18:47Z", event: "US Initial Jobless Claims", impact: "MED" },
@@ -1044,7 +1003,6 @@
     { time: "01:06 PM", source: "Market", title: "Risk tone mixed as equities stabilize", url: "https://www.investing.com/" }
   ];
 
-  // ---------- Load persisted curated lists ----------
   function loadJSON(key, fallback){
     try{
       const raw = localStorage.getItem(key);
@@ -1056,6 +1014,14 @@
 
   let curatedEvents = loadJSON(KEY.events, curatedEventsDefault);
   let curatedHeadlines = loadJSON(KEY.headlines, curatedHeadlinesDefault);
+
+  // ---------- Escape helpers ----------
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
+  }
+  function escapeAttr(s){
+    return String(s).replace(/"/g, "&quot;");
+  }
 
   // ---------- Render events ----------
   function impactPill(impact){
@@ -1116,14 +1082,6 @@
     els.headlinesBody.innerHTML = rows || `<tr><td colspan="3" style="color:rgba(255,255,255,0.6)">No headlines set.</td></tr>`;
   }
 
-  // ---------- Escape helpers ----------
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
-  }
-  function escapeAttr(s){
-    return String(s).replace(/"/g, "&quot;");
-  }
-
   // ---------- Modal wiring ----------
   function openModal(){
     els.eventsEditor.value = JSON.stringify(curatedEvents, null, 2);
@@ -1162,9 +1120,106 @@
     }
   });
 
-  // ---------- Spot feed (Option A: direct fetch, throttled, multi-source failover) ----------
+  // ---------- Live headlines via GDELT ----------
+  async function fetchGdeltHeadlines(){
+    const q = encodeURIComponent('(eurusd OR "euro dollar" OR ECB OR Fed OR inflation OR jobs OR sanctions OR iran OR hormuz OR oil OR brent OR wti OR gold OR silver)');
+    const url = `https://api.gdeltproject.org/api/v2/doc/doc?query=${q}&mode=ArtList&format=json&maxrecords=12&sort=datedesc`;
+
+    try{
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error("GDELT bad response");
+      const j = await res.json();
+      const arts = j?.articles || [];
+
+      const live = arts.map(a => {
+        const dt = a.seendate ? new Date(a.seendate) : null;
+        const tm = dt && !isNaN(dt.getTime())
+          ? dt.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" })
+          : "--:--";
+        return {
+          time: tm,
+          source: a.domain || "GDELT",
+          title: a.title || "(no title)",
+          url: a.url || "https://gdeltproject.org/"
+        };
+      });
+
+      if (live.length){
+        curatedHeadlines = live;
+        renderHeadlines();
+      }
+    }catch(e){
+      // keep curated if live fails
+    }
+  }
+
+  // ---------- Live geopolitics events via GDELT (demo) ----------
+  async function fetchGdeltEvents(){
+    const q = encodeURIComponent('(iran OR hormuz OR "strait of hormuz" OR sanctions OR missile OR "oil facility" OR tanker OR opec OR venezuela OR libya)');
+    const url = `https://api.gdeltproject.org/api/v2/doc/doc?query=${q}&mode=ArtList&format=json&maxrecords=8&sort=datedesc`;
+
+    try{
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error("GDELT bad response");
+      const j = await res.json();
+      const arts = j?.articles || [];
+
+      const liveEvents = arts.map(a => {
+        const dt = a.seendate ? new Date(a.seendate) : new Date();
+        const iso = dt.toISOString();
+        return { when: iso, event: a.title || "(no title)", impact: "MED" };
+      });
+
+      if (liveEvents.length){
+        curatedEvents = liveEvents;
+        renderEvents();
+      }
+    }catch(e){
+      // keep curated if live fails
+    }
+  }
+
+  // ---------- Spot feed: TradingView scanner first, then fallbacks ----------
   const SpotFeed = (() => {
-    const sources = [
+
+    async function fetchTradingView(timeoutMs = 5500){
+      const controller = new AbortController();
+      const timer = setTimeout(()=> controller.abort(), timeoutMs);
+
+      try{
+        const url = "https://scanner.tradingview.com/forex/scan";
+        const payload = {
+          filter: [{ left: "name", operation: "equal", right: "EURUSD" }],
+          options: { lang: "en" },
+          symbols: { tickers: ["FX:EURUSD"], query: { types: [] } },
+          columns: ["close","change","change_abs","change_pct","description"]
+        };
+
+        const t0 = performance.now();
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          cache: "no-store",
+          signal: controller.signal
+        });
+        clearTimeout(timer);
+
+        if (!res.ok) throw new Error(`TV HTTP ${res.status}`);
+        const j = await res.json();
+        const row = j?.data?.[0]?.d;
+        const px = Number(row?.[0]);
+
+        if (!Number.isFinite(px) || px <= 0) throw new Error("TV parse failed");
+        const latency = Math.round(performance.now() - t0);
+        return { ok:true, price:px, source:"tradingview.scan", latencyMs:latency };
+      }catch(e){
+        clearTimeout(timer);
+        return { ok:false };
+      }
+    }
+
+    const fallbackSources = [
       {
         name: "exchangerate.host",
         url: () => `https://api.exchangerate.host/latest?base=EUR&symbols=USD&_=${Date.now()}`,
@@ -1182,27 +1237,8 @@
       }
     ];
 
-    let last = {
-      price: null,
-      ts: 0,
-      source: null,
-      latencyMs: null,
-      staleCount: 0,
-      lastChangeTs: 0,
-      lastDelta: 0
-    };
-
-    const STALE_MS = 60_000;     // no change for 60s => stale
-    const MIN_MOVE = 0.000001;   // ignore rounding noise
-
-    function status(now = Date.now()){
-      if (!last.price) return { status: "CHECKING", stale: false };
-      const stale = (now - last.lastChangeTs) > STALE_MS;
-      return { status: stale ? "STALE" : "LIVE", stale };
-    }
-
-    async function fetchOnce(timeoutMs = 5500){
-      for (const s of sources){
+    async function fetchFallback(timeoutMs = 5500){
+      for (const s of fallbackSources){
         const t0 = performance.now();
         try{
           const controller = new AbortController();
@@ -1219,15 +1255,37 @@
           const latency = Math.round(performance.now() - t0);
           return { ok:true, price:px, source:s.name, latencyMs:latency };
         }catch(e){
-          // try next source
+          // try next
         }
       }
       return { ok:false };
     }
 
+    let last = {
+      price: null,
+      ts: 0,
+      source: null,
+      latencyMs: null,
+      staleCount: 0,
+      lastChangeTs: 0,
+      lastDelta: 0
+    };
+
+    const STALE_MS = 45_000;
+    const MIN_MOVE = 0.000002;
+
+    function status(now = Date.now()){
+      if (!last.price) return { status: "CHECKING", stale: false };
+      const stale = (now - last.lastChangeTs) > STALE_MS;
+      return { status: stale ? "STALE" : "LIVE", stale };
+    }
+
     async function tick(updateCb){
       const now = Date.now();
-      const r = await fetchOnce();
+
+      let r = await fetchTradingView();
+      if (!r.ok) r = await fetchFallback();
+
       if (!r.ok){
         last.staleCount += 1;
         updateCb?.({ ok:false, ...last, ...status(now) });
@@ -1254,22 +1312,20 @@
     return { tick, getLast: ()=> ({...last}) };
   })();
 
-  // ---------- Regime engine (simple but stable, with hysteresis) ----------
-  // This is a visualization layer, not “the secret sauce” model. It gives consistent, testable behavior.
-  // Features: momentum (bp), vol proxy (scaled abs returns), shock detection.
+  // ---------- Regime engine ----------
   const Engine = (() => {
-    const HISTORY_N = 64;        // price samples
-    const MOM_WINDOW = 8;        // momentum window
-    const VOL_WINDOW = 18;       // volatility proxy window
-    const HOLD_TICKS = 4;        // hysteresis hold threshold before switching policy
-    const PROB_TEMP = 1.35;      // softmax temperature
+    const HISTORY_N = 64;
+    const MOM_WINDOW = 8;
+    const VOL_WINDOW = 18;
+    const HOLD_TICKS = 4;
+    const PROB_TEMP = 1.35;
 
     let tickN = 0;
     let prices = [];
     let returns = [];
 
-    let detectorState = null; // raw
-    let policyState = null;   // smoothed
+    let detectorState = null;
+    let policyState = null;
     let hold = 0;
     let policyHistory = [];
 
@@ -1290,27 +1346,15 @@
       const momBase = prices[Math.max(0, prices.length-1-MOM_WINDOW)];
       const mom = momBase ? (p - momBase) : 0;
 
-      // returns list for vol proxy
       const recentR = returns.slice(-VOL_WINDOW);
       const absAvg = recentR.length ? recentR.reduce((a,b)=>a+Math.abs(b),0)/recentR.length : 0;
-      const volx = clamp(absAvg / 0.00015, 0, 5); // rough scaling
+      const volx = clamp(absAvg / 0.00015, 0, 5);
 
-      // shock: big single-step move
       const shock = Math.abs(r) > 0.0007 ? 1 : 0;
-
       return { p, r, mom, volx, shock };
     }
 
     function scoreStates(f){
-      // Heuristic scoring:
-      // - mean reversion: low vol, low mom
-      // - liquidity vacuum: higher vol, low mom (jumpy but no direction)
-      // - slow drift: low/mod vol, small mom
-      // - strong trend: moderate vol, strong mom
-      // - stop cascade: high vol and aligned mom
-      // - news shock: shock flag
-      // - dealer unwind: mid/high vol with sign changes
-      // - panic: very high vol
       const momBp = Math.abs(bp(f.mom));
       const rBp = Math.abs(bp(f.r));
       const vol = f.volx;
@@ -1325,31 +1369,14 @@
         return changes;
       })();
 
-      // logits
       const L = new Array(8).fill(0);
-
-      // S1 mean reversion
       L[0] = 2.4 - 0.7*vol - 0.04*momBp;
-
-      // S2 liquidity vacuum
       L[1] = 1.1 + 0.55*vol - 0.03*momBp;
-
-      // S3 slow drift
       L[2] = 1.6 - 0.25*vol - 0.02*momBp;
-
-      // S4 strong trend
       L[3] = 0.9 + 0.25*vol + 0.045*momBp;
-
-      // S5 stop cascade
       L[4] = -0.2 + 0.55*vol + 0.02*momBp + 0.04*rBp;
-
-      // S6 news shock
       L[5] = -0.4 + (f.shock ? 3.0 : 0) + 0.2*vol;
-
-      // S7 dealer unwind
       L[6] = 0.3 + 0.18*vol + 0.35*clamp(signChanges/6,0,1) - 0.02*momBp;
-
-      // S8 panic/forced
       L[7] = -0.8 + 0.95*Math.max(0, vol-2.2) + 0.04*rBp + (f.shock ? 0.6 : 0);
 
       return softmax(L);
@@ -1358,7 +1385,7 @@
     function pickState(probs){
       let best = 0;
       for (let i=1;i<probs.length;i++) if (probs[i] > probs[best]) best = i;
-      return best+1; // 1..8
+      return best+1;
     }
 
     function confidence(probs, state){
@@ -1366,7 +1393,6 @@
       const top = probs[s];
       const sorted = [...probs].sort((a,b)=>b-a);
       const gap = (sorted[0] - (sorted[1] || 0));
-      // combine top and gap
       return clamp((top*0.7 + gap*0.3), 0, 1);
     }
 
@@ -1410,7 +1436,6 @@
 
       const probs = scoreStates(f);
       const det = pickState(probs);
-      detectorState = det;
 
       const polRes = updatePolicy(det);
       policyHistory.unshift(polRes.policy);
@@ -1434,11 +1459,11 @@
     return { step, getHistory };
   })();
 
-  // ---------- Render probability list skeleton ----------
+  // ---------- Probability UI skeleton ----------
   const probEls = [];
   function initProbUI(){
     els.probList.innerHTML = "";
-    STATES.forEach((s, idx)=>{
+    STATES.forEach((s)=> {
       const row = document.createElement("div");
       row.className = "probRow";
       row.innerHTML = `
@@ -1454,7 +1479,6 @@
     });
   }
 
-  // ---------- State history boxes ----------
   function renderHistory(history, active){
     els.stateHistory.innerHTML = "";
     const arr = history.length ? history : new Array(12).fill(null);
@@ -1470,14 +1494,11 @@
     if (active){
       const color = STATES[active-1]?.color || "rgba(120,170,255,0.8)";
       els.stateBadge.style.borderColor = color;
-      els.stateBadge.style.boxShadow = `0 0 0 6px ${color.replace("0.9","0.14").replace("0.85","0.14")}`;
+      els.stateBadge.style.boxShadow = `0 0 0 6px rgba(120,170,255,0.14)`;
     }
   }
 
-  // ---------- Risk level mapping ----------
   function setRisk(policyState, conf){
-    // Basic mapping by state and confidence.
-    // You can tighten later once theorems are finalized.
     let level = "NORMAL";
     let rule = "Rule: Trade normally. Avoid overfitting. Keep size disciplined.";
 
@@ -1494,7 +1515,6 @@
       if (policyState === 7) { level = "ELEVATED"; rule = "Rule: Unwind risk. Protect and demand confirmation."; }
       if (policyState === 8) { level = "CRITICAL"; rule = "Rule: Risk off. Protect capital first."; }
 
-      // If confidence is very low, bump caution one notch
       if (conf != null && conf < 0.35 && (level === "NORMAL")) level = "ELEVATED";
       if (conf != null && conf < 0.25 && (level === "ELEVATED")) level = "HIGH";
     }
@@ -1510,21 +1530,19 @@
   }
 
   function renderLog(){
-    const html = logRows.slice(0, 80).map(r=>{
-      return `
-        <tr>
-          <td>${escapeHtml(r.time)}</td>
-          <td>${escapeHtml(r.price)}</td>
-          <td>${escapeHtml(r.det)}</td>
-          <td>${escapeHtml(r.pol)}</td>
-          <td>${escapeHtml(r.conf)}</td>
-          <td>${escapeHtml(r.volx)}</td>
-          <td>${escapeHtml(r.mom)}</td>
-          <td>${escapeHtml(r.stale)}</td>
-          <td>${escapeHtml(r.src)}</td>
-        </tr>
-      `;
-    }).join("");
+    const html = logRows.slice(0, 80).map(r=>`
+      <tr>
+        <td>${escapeHtml(r.time)}</td>
+        <td>${escapeHtml(r.price)}</td>
+        <td>${escapeHtml(r.det)}</td>
+        <td>${escapeHtml(r.pol)}</td>
+        <td>${escapeHtml(r.conf)}</td>
+        <td>${escapeHtml(r.volx)}</td>
+        <td>${escapeHtml(r.mom)}</td>
+        <td>${escapeHtml(r.stale)}</td>
+        <td>${escapeHtml(r.src)}</td>
+      </tr>
+    `).join("");
     els.logBody.innerHTML = html || `<tr><td colspan="9" style="color:rgba(255,255,255,0.6)">No samples yet.</td></tr>`;
   }
 
@@ -1533,6 +1551,12 @@
     logRows = logRows.slice(0, 250);
     persistLog();
     renderLog();
+  }
+
+  function csvCell(v){
+    const s = String(v ?? "");
+    if (/[",\n]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
+    return s;
   }
 
   els.copyCsvBtn.addEventListener("click", async ()=>{
@@ -1557,12 +1581,6 @@
     renderLog();
   });
 
-  function csvCell(v){
-    const s = String(v ?? "");
-    if (/[",\n]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
-    return s;
-  }
-
   // ---------- Pause + Sync ----------
   let paused = false;
   els.pauseBtn.addEventListener("click", ()=>{
@@ -1579,7 +1597,6 @@
   });
 
   els.syncBtn.addEventListener("click", ()=>{
-    // Force immediate fetch tick and UI update
     SpotFeed.tick(onSpotUpdate);
   });
 
@@ -1598,7 +1615,7 @@
     }catch(e){}
   }
 
-  // ---------- Rendering spot health + drive engine ----------
+  // ---------- Spot rendering + engine drive ----------
   let stalePolls = 0;
 
   function setFxStatus(status){
@@ -1629,30 +1646,24 @@
     els.fxSpotMeta.textContent = `Source: ${s.source} | Latency: ${s.latencyMs}ms`;
     els.fxSpotDelta.textContent = `Delta (last): ${s.lastDelta.toFixed(5)}`;
 
-    // top mini quote
     els.miniPrice.textContent = s.price.toFixed(5);
     els.miniSrc.textContent = `Feed ${s.source}`;
     els.miniDelta.textContent = s.lastDelta.toFixed(5);
 
-    // bar: map abs delta into 0..100%
     const w = clamp(Math.abs(s.lastDelta) / 0.0012, 0, 1) * 100;
     els.miniBar.style.width = `${Math.max(10, w)}%`;
     els.miniBar.style.background = (s.lastDelta >= 0) ? "rgba(24,209,138,0.85)" : "rgba(255,77,77,0.85)";
 
-    // status and stale counter
     setFxStatus(s.status);
     if (s.status === "STALE") stalePolls += 1;
     else stalePolls = 0;
     els.staleChip.textContent = String(stalePolls);
 
-    // Do not advance engine if stale too long
     if (paused) return;
 
-    // Drive regime engine only when we got a sample (even if it is unchanged, engine can still update features)
     const step = Engine.step(s.price);
     if (!step) return;
 
-    // Update UI from engine output
     els.tickChip.textContent = String(step.tickN);
 
     const det = step.detector;
@@ -1674,7 +1685,6 @@
 
     setRisk(pol, step.conf);
 
-    // probability bars
     step.probs.forEach((p, i)=>{
       const pct = (p*100);
       probEls[i].bar.style.width = `${clamp(pct, 0, 100)}%`;
@@ -1682,15 +1692,12 @@
       probEls[i].val.textContent = `${pct.toFixed(1)}%`;
     });
 
-    // history
     renderHistory(Engine.getHistory(), pol);
 
-    // footer
     els.footPolicy.textContent = `S${pol}`;
     els.footDetector.textContent = `S${det}`;
     els.footHold.textContent = String(step.hold);
 
-    // persist dashboard snapshot so refresh does not feel like a reboot
     dashState = {
       lastPrice: s.price,
       lastTs: s.ts,
@@ -1704,7 +1711,6 @@
     };
     persistDashState();
 
-    // log row
     addLogSample({
       time: fmtTime(s.ts),
       price: s.price.toFixed(5),
@@ -1718,22 +1724,18 @@
     });
   }
 
-  // ---------- Hydrate UI from persisted snapshot (immediate, then live updates take over) ----------
   function hydrateFromPersisted(){
     if (!dashState || !dashState.lastPrice) return;
 
-    // Feed panel
     els.fxSpotPrice.textContent = Number(dashState.lastPrice).toFixed(5);
     els.fxSpotLast.textContent = `Last good sample: ${fmtTime(dashState.lastTs || Date.now())}`;
     els.fxSpotMeta.textContent = `Source: ${dashState.lastSrc || "--"} | Latency: --`;
     els.fxSpotDelta.textContent = `Delta (last): 0.00000`;
 
-    // Mini quote
     els.miniPrice.textContent = Number(dashState.lastPrice).toFixed(5);
     els.miniSrc.textContent = `Feed ${dashState.lastSrc || "--"}`;
     els.miniDelta.textContent = "0.00000";
 
-    // Engine outputs (best effort)
     if (dashState.lastPolicy){
       const pol = dashState.lastPolicy;
       const polName = STATES[pol-1]?.name || "--";
@@ -1770,7 +1772,7 @@
   }
 
   // ---------- Start polling ----------
-  const POLL_MS = 12_000; // 10 to 15 seconds is sane for free endpoints
+  const POLL_MS = 12_000;
 
   async function start(){
     initProbUI();
@@ -1778,18 +1780,20 @@
     renderHeadlines();
     renderLog();
     hydrateFromPersisted();
-
-    // Render initial empty history placeholders
     renderHistory([], null);
 
-    // first tick now
     await SpotFeed.tick(onSpotUpdate);
-
-    // poll
     setInterval(()=> SpotFeed.tick(onSpotUpdate), POLL_MS);
 
-    // update countdowns for events without reloading everything
+    // Countdown refresh
     setInterval(()=> renderEvents(), 30_000);
+
+    // Live demo feeds (fallback safe)
+    fetchGdeltHeadlines();
+    setInterval(fetchGdeltHeadlines, 3 * 60_000);
+
+    fetchGdeltEvents();
+    setInterval(fetchGdeltEvents, 5 * 60_000);
   }
 
   start();
