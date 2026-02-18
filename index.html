@@ -6,718 +6,443 @@
   <title>QuadraX Risk Dashboard</title>
   <style>
     :root{
-      --bg0:#050a1a;
-      --bg1:#07122f;
-      --card: rgba(10, 25, 60, 0.55);
-      --card2: rgba(12, 34, 84, 0.42);
-      --stroke: rgba(120, 170, 255, 0.22);
-      --stroke2: rgba(120, 170, 255, 0.12);
-      --text:#e9f0ff;
-      --muted: rgba(233,240,255,0.7);
-      --muted2: rgba(233,240,255,0.55);
-      --blue:#2b6cff;
-      --green:#18d18a;
-      --amber:#ffb020;
-      --red:#ff4d4d;
-      --pink:#ff3aa5;
-      --shadow: 0 18px 55px rgba(0,0,0,0.55);
-      --shadow2: 0 10px 30px rgba(0,0,0,0.45);
-      --radius: 22px;
-      --radius2: 16px;
-      --pad: 18px;
-      --pad2: 14px;
-      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --bg0:#050814;
+      --bg1:#070c1d;
+      --card:#0b1630cc;
+      --card2:#091226cc;
+      --stroke:#274b8a66;
+      --stroke2:#2f6fd066;
+      --glow:#4aa3ff33;
+      --txt:#e9f1ff;
+      --mut:#9db1d1;
+      --mut2:#7f94b8;
+      --good:#26e6a4;
+      --warn:#ffb020;
+      --bad:#ff4d4d;
+      --blue:#4aa3ff;
+      --violet:#8a6cff;
+      --pink:#ff4fd8;
+      --teal:#00e2ff;
+      --shadow: 0 20px 60px rgba(0,0,0,.45);
+      --radius: 18px;
+      --radius2: 26px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
     }
-
-    html,body{height:100%;}
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      font-family: var(--font);
-      color:var(--text);
+      font-family:var(--sans);
+      color:var(--txt);
       background:
-        radial-gradient(1200px 700px at 20% 20%, rgba(80,140,255,0.22), transparent 55%),
-        radial-gradient(900px 600px at 70% 35%, rgba(22,210,170,0.16), transparent 55%),
-        radial-gradient(900px 700px at 35% 85%, rgba(255,80,180,0.12), transparent 60%),
+        radial-gradient(900px 600px at 12% 10%, rgba(52,128,255,.25), transparent 65%),
+        radial-gradient(800px 520px at 88% 18%, rgba(0,226,255,.18), transparent 60%),
+        radial-gradient(700px 520px at 60% 88%, rgba(138,108,255,.16), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
       overflow-x:hidden;
     }
-
-    .wrap{
-      max-width: 1400px;
-      margin: 22px auto 40px;
-      padding: 0 16px;
-    }
-
-    /* Top bar */
+    .wrap{max-width:1280px;margin:18px auto 44px; padding:0 14px;}
     .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      padding: 18px 18px;
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(50,115,255,0.55), rgba(35,85,200,0.42));
-      border: 1px solid rgba(210,230,255,0.18);
+      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 14px;
+      border-radius:var(--radius2);
+      background: linear-gradient(180deg, rgba(33,92,190,.92), rgba(24,62,138,.90));
+      border:1px solid rgba(255,255,255,.10);
       box-shadow: var(--shadow);
-      position: sticky;
-      top: 12px;
-      z-index: 10;
+      position:sticky; top:10px; z-index:10;
       backdrop-filter: blur(10px);
     }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap: 14px;
-      min-width: 280px;
+    .brand{display:flex;gap:14px;align-items:center;}
+    .qx{
+      width:44px;height:44px;border-radius:14px;
+      display:grid;place-items:center;
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      font-weight:800;letter-spacing:.6px;
     }
-
-    .qxlogo{
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      display:grid;
-      place-items:center;
-      font-weight: 900;
-      letter-spacing: 0.5px;
-      background: rgba(10,25,60,0.45);
-      border: 1px solid rgba(210,230,255,0.18);
-      box-shadow: var(--shadow2);
-    }
-
-    .brand h1{
-      margin:0;
-      font-size: 18px;
-      line-height: 1.1;
-    }
-    .brand .sub{
-      margin-top: 2px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.78);
-    }
-
-    .top-actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap: wrap;
-      justify-content:flex-end;
-    }
-
+    .btitle{display:flex;flex-direction:column;gap:2px}
+    .btitle .name{font-size:18px;font-weight:800;line-height:1.1}
+    .btitle .sub{font-size:12px;color:rgba(255,255,255,.82); max-width:520px}
+    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
     .pill{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(10,25,60,0.35);
-      border:1px solid rgba(210,230,255,0.16);
-      color: rgba(255,255,255,0.9);
-      font-size: 12px;
-      box-shadow: 0 8px 22px rgba(0,0,0,0.25);
-      white-space:nowrap;
+      display:flex;align-items:center;gap:10px;
+      padding:9px 12px;border-radius:999px;
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.16);
+      color:rgba(255,255,255,.92);
+      font-size:12px;
     }
-    .dot{
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: var(--green);
-      box-shadow: 0 0 0 4px rgba(24,209,138,0.18);
-    }
-
+    .dot{width:9px;height:9px;border-radius:99px;background:var(--good);box-shadow:0 0 0 4px rgba(38,230,164,.16);}
     .btn{
       cursor:pointer;
-      border: 1px solid rgba(210,230,255,0.18);
-      background: rgba(10,25,60,0.35);
-      color: rgba(255,255,255,0.92);
-      border-radius: 999px;
-      padding: 9px 14px;
-      font-weight: 700;
-      font-size: 12px;
-      letter-spacing: 0.2px;
-      box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+      padding:9px 14px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.16);
+      color:rgba(255,255,255,.92);
+      font-weight:700;
+      transition: transform .06s ease, background .2s ease, border .2s ease;
       user-select:none;
     }
-    .btn:hover{ filter: brightness(1.06); }
-    .btn:active{ transform: translateY(1px); }
-
+    .btn:hover{background: rgba(0,0,0,.22)}
+    .btn:active{transform: translateY(1px)}
     .btn.primary{
-      background: rgba(35,120,255,0.35);
-      border-color: rgba(120,170,255,0.26);
+      background: rgba(0,160,255,.18);
+      border:1px solid rgba(0,160,255,.35);
     }
-
-    /* Grid layout */
+    .btn.warn{
+      background: rgba(255,176,32,.14);
+      border:1px solid rgba(255,176,32,.30);
+    }
     .grid{
+      margin-top:14px;
       display:grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 16px;
-      margin-top: 16px;
+      grid-template-columns: 2fr 1.05fr;
+      gap:14px;
+      align-items:start;
     }
-
-    @media (max-width: 1100px){
-      .grid{ grid-template-columns: 1fr; }
-      .brand{ min-width: unset; }
+    @media (max-width: 1020px){
+      .grid{grid-template-columns:1fr}
+      .controls{justify-content:flex-start}
+      .btitle .sub{max-width:unset}
     }
-
     .card{
-      background: linear-gradient(180deg, rgba(10,25,60,0.55), rgba(7,12,30,0.35));
-      border:1px solid rgba(210,230,255,0.16);
       border-radius: var(--radius);
-      box-shadow: var(--shadow2);
-      overflow:hidden;
-      position:relative;
-    }
-
-    .card .inner{
-      padding: var(--pad);
-    }
-
-    .card-title{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom: 12px;
-    }
-
-    .card-title h2{
-      margin:0;
-      font-size: 13px;
-      color: rgba(255,255,255,0.82);
-      letter-spacing: 0.9px;
-      text-transform: uppercase;
-    }
-    .card-title .hint{
-      font-size: 12px;
-      color: rgba(255,255,255,0.55);
-      text-align:right;
-    }
-
-    /* Current state */
-    .stateBig{
-      font-size: 40px;
-      font-weight: 900;
-      letter-spacing: 0.2px;
-      margin: 6px 0 2px;
-    }
-    .muted{ color: var(--muted); font-size: 13px; }
-    .chips{
-      display:flex;
-      gap: 10px;
-      flex-wrap:wrap;
-      margin-top: 10px;
-      align-items:center;
-    }
-    .chip{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.88);
-      background: rgba(10,25,60,0.30);
-      border: 1px solid rgba(210,230,255,0.14);
-      white-space:nowrap;
-    }
-    .chip b{ font-weight:900; }
-
-    .history{
-      display:flex;
-      gap: 8px;
-      flex-wrap:wrap;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(210,230,255,0.12);
-    }
-    .hbox{
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      display:grid;
-      place-items:center;
-      font-weight: 900;
-      background: rgba(10,25,60,0.25);
-      border:1px solid rgba(210,230,255,0.12);
-      color: rgba(255,255,255,0.82);
-    }
-    .hbox.active{
-      border-color: rgba(120,170,255,0.35);
-      box-shadow: 0 0 0 4px rgba(120,170,255,0.12);
-    }
-
-    .stateBadge{
-      position:absolute;
-      right: 18px;
-      top: 18px;
-      width: 68px;
-      height: 68px;
-      border-radius: 999px;
-      display:grid;
-      place-items:center;
-      font-weight: 1000;
-      font-size: 26px;
-      background: rgba(10,25,60,0.28);
-      border:1px solid rgba(210,230,255,0.18);
-      box-shadow: var(--shadow2);
-    }
-
-    .miniQuote{
-      position:absolute;
-      right: 104px;
-      top: 18px;
-      width: 210px;
-      border-radius: 14px;
-      background: rgba(10,25,60,0.28);
-      border:1px solid rgba(210,230,255,0.14);
-      box-shadow: var(--shadow2);
-      padding: 10px 12px;
-    }
-    .miniQuote .row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.84);
-    }
-    .miniQuote .px{
-      font-size: 18px;
-      font-weight: 950;
-      letter-spacing: 0.2px;
-      margin: 4px 0 2px;
-    }
-    .miniQuote .bar{
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.10);
-      overflow:hidden;
-      margin-top: 8px;
-    }
-    .miniQuote .bar > i{
-      display:block;
-      height:100%;
-      width: 40%;
-      background: rgba(24,209,138,0.85);
-    }
-
-    /* Risk level card */
-    .riskLevel{
-      text-align:center;
-      padding: 22px 16px 14px;
-    }
-    .riskLevel .label{
-      font-size: 12px;
-      letter-spacing: 0.9px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.72);
-    }
-    .riskLevel .big{
-      font-size: 42px;
-      font-weight: 1000;
-      margin: 6px 0 2px;
-    }
-    .riskLevel .rule{
-      font-size: 12px;
-      color: rgba(255,255,255,0.68);
-    }
-
-    /* Probabilities */
-    .probRow{
-      display:grid;
-      grid-template-columns: 240px 1fr 72px;
-      gap: 12px;
-      align-items:center;
-      padding: 10px 0;
-      border-top: 1px solid rgba(210,230,255,0.08);
-    }
-    .probRow:first-child{ border-top:none; }
-    .probName{
-      font-size: 12px;
-      color: rgba(255,255,255,0.88);
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .pdot{
-      width: 14px;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.18);
-    }
-    .pbar{
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.10);
-      overflow:hidden;
-      position:relative;
-    }
-    .pbar > i{
-      display:block;
-      height:100%;
-      width: 0%;
-      border-radius: 999px;
-      background: rgba(120,170,255,0.8);
-    }
-    .probVal{
-      font-size: 12px;
-      color: rgba(255,255,255,0.78);
-      text-align:right;
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* Feed health */
-    .feedGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      align-items:stretch;
-    }
-    @media (max-width: 540px){
-      .feedGrid{ grid-template-columns: 1fr; }
-    }
-    .feedBox{
-      border-radius: 18px;
-      background: rgba(10,25,60,0.25);
-      border:1px solid rgba(210,230,255,0.12);
-      padding: 14px;
-    }
-    .feedBox .k{
-      font-size: 12px;
-      color: rgba(255,255,255,0.7);
-    }
-    .feedBox .v{
-      font-size: 30px;
-      font-weight: 1000;
-      margin-top: 6px;
-      font-variant-numeric: tabular-nums;
-    }
-    .feedMeta{
-      font-size: 12px;
-      color: rgba(255,255,255,0.62);
-      margin-top: 6px;
-      line-height: 1.35;
-    }
-    .statusPill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(210,230,255,0.14);
-      background: rgba(10,25,60,0.26);
-      font-size: 12px;
-      font-weight: 900;
-      color: rgba(255,255,255,0.88);
-      margin-top: 8px;
-    }
-    .sdot{
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: var(--amber);
-      box-shadow: 0 0 0 4px rgba(255,176,32,0.18);
-    }
-    .sdot.live{ background: var(--green); box-shadow: 0 0 0 4px rgba(24,209,138,0.18); }
-    .sdot.err{ background: var(--red); box-shadow: 0 0 0 4px rgba(255,77,77,0.18); }
-
-    /* Tables */
-    .tableWrap{
-      border-radius: 18px;
-      background: rgba(10,25,60,0.20);
-      border:1px solid rgba(210,230,255,0.12);
-      overflow:hidden;
-    }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      font-size: 12px;
-    }
-    thead th{
-      text-align:left;
-      padding: 12px 12px;
-      color: rgba(255,255,255,0.78);
-      border-bottom: 1px solid rgba(210,230,255,0.10);
-      background: rgba(10,25,60,0.22);
-      font-weight: 900;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      font-size: 11px;
-    }
-    tbody td{
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(210,230,255,0.06);
-      color: rgba(255,255,255,0.82);
-      vertical-align:top;
-      font-variant-numeric: tabular-nums;
-    }
-    tbody tr:hover{ background: rgba(255,255,255,0.04); }
-    .scroll{
-      max-height: 300px;
-      overflow:auto;
-    }
-    .link{
-      color: rgba(120,170,255,0.95);
-      text-decoration:none;
-      font-weight: 800;
-    }
-    .link:hover{ text-decoration:underline; }
-
-    /* Impact pills */
-    .impact{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(210,230,255,0.14);
-      background: rgba(10,25,60,0.22);
-      font-weight: 950;
-      color: rgba(255,255,255,0.88);
-      white-space:nowrap;
-    }
-    .folder{
-      width: 10px;
-      height: 10px;
-      border-radius: 3px;
-      background: var(--pink);
-      box-shadow: 0 0 0 4px rgba(255,58,165,0.14);
-    }
-    .folder.med{ background: var(--amber); box-shadow: 0 0 0 4px rgba(255,176,32,0.14); }
-    .folder.low{ background: rgba(255,255,255,0.30); box-shadow: none; }
-
-    /* Portfolio snapshot */
-    .snapGrid{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-    @media (max-width: 900px){
-      .snapGrid{ grid-template-columns: repeat(2, 1fr); }
-    }
-    .snap{
-      border-radius: 18px;
-      background: rgba(10,25,60,0.25);
-      border:1px solid rgba(210,230,255,0.12);
-      padding: 14px;
-    }
-    .snap .k{ font-size:12px; color: rgba(255,255,255,0.62); }
-    .snap .v{ margin-top:6px; font-size: 18px; font-weight: 950; }
-    .pos{ color: rgba(24,209,138,0.95); }
-    .neg{ color: rgba(255,77,77,0.95); }
-
-    /* Section stacking in right column */
-    .stack{ display:grid; gap: 16px; }
-
-    /* Footer line */
-    .foot{
-      margin-top: 14px;
-      display:flex;
-      justify-content:space-between;
-      color: rgba(255,255,255,0.5);
-      font-size: 12px;
-      padding: 0 6px;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    /* Modal */
-    .modalBack{
-      position:fixed;
-      inset:0;
-      background: rgba(0,0,0,0.55);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index: 999;
-      padding: 18px;
-    }
-    .modal{
-      width:min(860px, 100%);
-      border-radius: 22px;
-      background: linear-gradient(180deg, rgba(12,34,84,0.92), rgba(6,10,24,0.88));
-      border: 1px solid rgba(210,230,255,0.18);
+      background: linear-gradient(180deg, rgba(11,22,48,.78), rgba(8,14,30,.72));
+      border:1px solid rgba(160,200,255,.14);
       box-shadow: var(--shadow);
       overflow:hidden;
+      position:relative;
     }
-    .modalHead{
-      padding: 14px 18px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      border-bottom: 1px solid rgba(210,230,255,0.12);
+    .card .hd{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:14px 16px 10px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
     }
-    .modalHead h3{
-      margin:0;
-      font-size: 14px;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.86);
+    .card .hd .t{
+      font-size:13px;
+      letter-spacing:.8px;
+      font-weight:900;
+      color:rgba(255,255,255,.92);
+      text-transform:uppercase;
     }
-    .modalBody{
-      padding: 16px 18px 18px;
-      display:grid;
-      gap: 14px;
+    .card .hd .hint{
+      font-size:12px;color:var(--mut);
     }
+    .card .bd{padding:14px 16px 16px;}
+    .bigState{
+      display:flex; gap:12px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;
+    }
+    .bigState .left{min-width:320px; flex:1}
+    .bigState .right{display:flex; gap:12px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
+    .stateName{
+      font-size:34px; font-weight:950; letter-spacing:.2px; margin:2px 0 6px;
+    }
+    .metaRow{
+      display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+      margin-bottom:10px;
+    }
+    .chip{
+      display:inline-flex; gap:8px; align-items:center;
+      padding:7px 10px;
+      border-radius:999px;
+      background: rgba(0,0,0,.20);
+      border:1px solid rgba(255,255,255,.10);
+      font-size:12px; color:rgba(255,255,255,.92);
+    }
+    .chip b{font-weight:900}
+    .badge{
+      width:66px;height:66px;border-radius:999px;
+      display:grid;place-items:center;
+      background: radial-gradient(circle at 30% 30%, rgba(38,230,164,.35), rgba(0,0,0,.15));
+      border:1px solid rgba(38,230,164,.38);
+      box-shadow: 0 20px 45px rgba(0,0,0,.35);
+      font-size:22px;font-weight:950;
+    }
+    .miniQuote{
+      width:250px; padding:10px 12px;
+      border-radius:14px;
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.12);
+      font-family:var(--mono);
+      font-size:12px;
+      display:flex; flex-direction:column; gap:6px;
+    }
+    .miniQuote .row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .spark{
+      height:6px;border-radius:999px;
+      background: rgba(255,255,255,.08);
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .spark > i{
+      display:block;height:100%;width:50%;
+      background: linear-gradient(90deg, rgba(0,226,255,.92), rgba(38,230,164,.92));
+      border-radius:999px;
+    }
+    .historyDots{display:flex; gap:7px; flex-wrap:wrap; padding-top:6px;}
+    .hDot{
+      width:34px;height:34px;border-radius:11px;
+      display:grid;place-items:center;
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.10);
+      color: rgba(255,255,255,.86);
+      font-weight:900; font-size:12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.25);
+    }
+    .hDot.active{
+      border-color: rgba(0,226,255,.40);
+      box-shadow: 0 0 0 6px rgba(0,226,255,.10);
+    }
+
+    .bars{display:flex; flex-direction:column; gap:10px; margin-top:6px;}
+    .barRow{display:grid; grid-template-columns: 1.2fr 3.3fr .7fr; gap:10px; align-items:center;}
+    .barRow .lbl{font-size:12px;color:rgba(255,255,255,.9)}
+    .barRow .pct{font-size:12px;color:rgba(255,255,255,.9); text-align:right; font-family:var(--mono)}
+    .bar{
+      height:10px;border-radius:999px;
+      background: rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.08);
+      overflow:hidden;
+      position:relative;
+    }
+    .bar > i{display:block;height:100%;width:0%; border-radius:999px;}
+    .c1{background: linear-gradient(90deg, rgba(38,230,164,.95), rgba(0,226,255,.7))}
+    .c2{background: linear-gradient(90deg, rgba(255,176,32,.95), rgba(255,176,32,.45))}
+    .c3{background: linear-gradient(90deg, rgba(74,163,255,.95), rgba(74,163,255,.40))}
+    .c4{background: linear-gradient(90deg, rgba(74,163,255,.95), rgba(138,108,255,.55))}
+    .c5{background: linear-gradient(90deg, rgba(255,140,32,.95), rgba(255,140,32,.42))}
+    .c6{background: linear-gradient(90deg, rgba(255,77,77,.95), rgba(255,77,77,.40))}
+    .c7{background: linear-gradient(90deg, rgba(138,108,255,.95), rgba(138,108,255,.45))}
+    .c8{background: linear-gradient(90deg, rgba(255,77,77,.95), rgba(255,79,216,.45))}
+
+    .twoCol{display:grid; grid-template-columns: 1fr 1fr; gap:12px;}
+    @media (max-width: 680px){ .twoCol{grid-template-columns:1fr} }
+
+    .metric{
+      padding:12px 12px;
+      border-radius: 16px;
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .metric .k{font-size:12px;color:var(--mut); margin-bottom:6px}
+    .metric .v{font-size:28px;font-weight:950;letter-spacing:.2px}
+    .metric .s{font-size:12px;color:var(--mut2); margin-top:2px}
+
+    .riskBox{
+      text-align:center;
+      padding:18px 14px;
+      border-radius: 18px;
+      background: radial-gradient(circle at 20% 20%, rgba(0,226,255,.14), rgba(0,0,0,.18));
+      border:1px solid rgba(255,255,255,.10);
+      min-height:124px;
+      display:flex; flex-direction:column; justify-content:center; gap:6px;
+    }
+    .riskBox .lvl{font-size:36px; font-weight:980; letter-spacing:.8px}
+    .riskBox .rule{font-size:12px; color:var(--mut)}
+    .riskBox.normal .lvl{color: var(--good)}
+    .riskBox.elevated .lvl{color: var(--warn)}
+    .riskBox.critical .lvl{color: var(--bad)}
+
+    .feedHealth{
+      display:grid; grid-template-columns: 1.2fr .8fr; gap:12px;
+      align-items:stretch;
+    }
+    @media (max-width: 680px){ .feedHealth{grid-template-columns:1fr} }
+    .statusPill{
+      display:flex; flex-direction:column; justify-content:center; gap:8px;
+      padding:12px 12px; border-radius:16px;
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .statusLine{display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:12px; color:var(--mut)}
+    .statusTag{
+      padding:6px 10px; border-radius:999px; font-weight:900; font-size:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+    .tagLive{color:var(--good); border-color: rgba(38,230,164,.35)}
+    .tagStale{color:var(--warn); border-color: rgba(255,176,32,.35)}
+    .tagErr{color:var(--bad); border-color: rgba(255,77,77,.35)}
+
+    .smallNote{font-size:12px;color:var(--mut); margin-top:10px; line-height:1.35}
+
+    .tableWrap{
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 16px;
+      overflow:hidden;
+    }
+    table{width:100%; border-collapse:collapse; font-size:12px}
+    th,td{padding:10px 10px; border-bottom:1px solid rgba(255,255,255,.06); text-align:left}
+    th{color:rgba(255,255,255,.78); font-weight:900; letter-spacing:.6px; text-transform:uppercase; font-size:11px; background: rgba(0,0,0,.14)}
+    tr:last-child td{border-bottom:none}
+    td{color: rgba(255,255,255,.9)}
+    .scrollY{max-height:290px; overflow:auto}
+    .scrollY::-webkit-scrollbar{height:10px;width:10px}
+    .scrollY::-webkit-scrollbar-thumb{background: rgba(255,255,255,.12); border-radius:999px}
+    .scrollY::-webkit-scrollbar-track{background: rgba(0,0,0,.12)}
+
+    .sideStack{display:flex; flex-direction:column; gap:14px;}
+    .footerBar{
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      padding:10px 2px 0;
+      color: rgba(255,255,255,.65);
+      font-size:12px;
+    }
+    .footerBar b{color: rgba(255,255,255,.90)}
+    .btnRow{display:flex; gap:10px; flex-wrap:wrap}
+
+    .impact{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      font-weight:900;
+      font-size:11px;
+      letter-spacing:.5px;
+    }
+    .impact.high{color:#ff6f8a;border-color:rgba(255,111,138,.35); background: rgba(255,111,138,.08)}
+    .impact.med{color:#ffb020;border-color:rgba(255,176,32,.35); background: rgba(255,176,32,.08)}
+    .impact.low{color:#74b7ff;border-color:rgba(116,183,255,.35); background: rgba(116,183,255,.08)}
+    .impact .sq{
+      width:10px;height:10px;border-radius:3px;background: currentColor; opacity:.9;
+      box-shadow: 0 0 0 5px rgba(255,255,255,.06) inset;
+    }
+
+    .link{color: #8fd0ff; text-decoration:none; font-weight:800}
+    .link:hover{text-decoration:underline}
+
+    /* Modal */
+    .modalBackdrop{
+      position:fixed; inset:0; background: rgba(0,0,0,.55);
+      display:none; align-items:center; justify-content:center;
+      padding:16px; z-index:50;
+      backdrop-filter: blur(8px);
+    }
+    .modal{
+      width:min(860px, 96vw);
+      background: linear-gradient(180deg, rgba(10,18,40,.96), rgba(6,10,24,.96));
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: 22px;
+      box-shadow: 0 30px 90px rgba(0,0,0,.6);
+      overflow:hidden;
+    }
+    .modal .mh{display:flex; justify-content:space-between; align-items:center; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.08)}
+    .modal .mh .ttl{font-weight:950; letter-spacing:.4px}
+    .modal .mb{padding:14px 16px}
     textarea{
       width:100%;
-      min-height: 180px;
-      resize: vertical;
+      min-height:260px;
+      resize:vertical;
       border-radius: 16px;
-      border: 1px solid rgba(210,230,255,0.18);
-      background: rgba(10,25,60,0.35);
-      color: rgba(255,255,255,0.9);
-      padding: 12px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 12px;
-      line-height: 1.35;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      color: rgba(255,255,255,.92);
+      padding:12px 12px;
+      font-family: var(--mono);
+      font-size:12px;
+      line-height:1.35;
       outline:none;
     }
-    .modalActions{
-      display:flex;
-      justify-content:flex-end;
-      gap: 10px;
-      flex-wrap:wrap;
-    }
-
-    /* TradingView card */
-    .tvWrap{
-      border-radius: 18px;
-      overflow:hidden;
-      border: 1px solid rgba(210,230,255,0.12);
-      background: rgba(10,25,60,0.20);
-    }
-    .tvWrap iframe{
-      width:100%;
-      height: 380px;
-      border:0;
-      display:block;
-    }
+    .modal .mf{display:flex; gap:10px; justify-content:flex-end; padding:14px 16px; border-top:1px solid rgba(255,255,255,.08)}
+    .kbd{font-family: var(--mono); font-size:12px; color: rgba(255,255,255,.70)}
   </style>
 </head>
-
 <body>
   <div class="wrap">
     <div class="topbar">
       <div class="brand">
-        <div class="qxlogo">QX</div>
-        <div>
-          <h1>QuadraX Risk Dashboard</h1>
+        <div class="qx">QX</div>
+        <div class="btitle">
+          <div class="name">QuadraX Risk Dashboard</div>
           <div class="sub">Executive View: 8-State Monitoring and Control System (Live EUR/USD Spot)</div>
         </div>
       </div>
-
-      <div class="top-actions">
+      <div class="controls">
         <div class="pill"><span class="dot" id="liveDot"></span><span id="liveText">LIVE</span></div>
-        <div class="pill">Last Update <b id="lastUpdate">--:--:--</b></div>
-        <button class="btn" id="pauseBtn">Pause</button>
+        <div class="pill">Last Update <span style="font-weight:950" id="lastUpdate">--</span></div>
+        <button class="btn warn" id="pauseBtn">Pause</button>
         <button class="btn primary" id="syncBtn">Sync</button>
         <button class="btn" id="editBtn">Edit Events + Headlines</button>
       </div>
     </div>
 
     <div class="grid">
-      <!-- LEFT column -->
-      <div class="stack">
-        <!-- Current market state -->
+      <div class="mainStack" style="display:flex;flex-direction:column;gap:14px;">
         <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Current Market State</h2>
-              <div class="hint">With free endpoints, updates are spot-sampled. Still real price, lower frequency.</div>
-            </div>
-
-            <div class="stateBig" id="policyStateTitle">Policy State: --</div>
-            <div class="muted" id="policyStateDesc">Waiting for live spot sample.</div>
-
-            <div class="chips">
-              <div class="chip">Detector <b id="detectorChip">--</b></div>
-              <div class="chip">Policy <b id="policyChip">--</b></div>
-              <div class="chip">Confidence <b id="confChip">--</b></div>
-              <div class="chip">Hysteresis <b id="hystChip">--</b></div>
-              <div class="chip">Tick <b id="tickChip">0</b></div>
-              <div class="chip">Stale <b id="staleChip">0</b></div>
-            </div>
-
-            <div class="history" id="stateHistory"></div>
-
-            <div class="miniQuote" title="Live spot sample summary">
-              <div class="row">
-                <div><b>EURUSD:</b></div>
-                <div id="miniSrc" style="color: rgba(255,255,255,0.68)">--</div>
-              </div>
-              <div class="px" id="miniPrice">--</div>
-              <div class="row" style="color: rgba(255,255,255,0.62)">
-                <div>Δ</div>
-                <div id="miniDelta">0.00000</div>
-              </div>
-              <div class="bar"><i id="miniBar"></i></div>
-            </div>
-
-            <div class="stateBadge" id="stateBadge">--</div>
+          <div class="hd">
+            <div class="t">Current Market State</div>
+            <div class="hint" id="engineHint">Live spot drives regime engine, no simulation</div>
           </div>
-        </div>
-
-        <!-- Probability distribution -->
-        <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>State Probability Distribution</h2>
-              <div class="hint">Conditional regime likelihoods P(state | features)</div>
-            </div>
-            <div id="probList"></div>
-            <div class="muted" style="margin-top:10px;">
-              Note: probabilities can flatten if the quote feed is stale or the features are ambiguous.
+          <div class="bd">
+            <div class="bigState">
+              <div class="left">
+                <div class="stateName" id="stateTitle">Policy State: --</div>
+                <div class="metaRow" id="metaRow">
+                  <span class="chip">Detector <b id="detChip">--</b></span>
+                  <span class="chip">Policy <b id="polChip">--</b></span>
+                  <span class="chip">Confidence <b id="confChip">--</b></span>
+                  <span class="chip">Hysteresis <b id="hystChip">--</b></span>
+                  <span class="chip">Tick <b id="tickChip">--</b></span>
+                  <span class="chip">Stale <b id="staleChip">--</b></span>
+                </div>
+                <div class="historyDots" id="historyDots"></div>
+              </div>
+              <div class="right">
+                <div class="miniQuote">
+                  <div class="row"><span><b>EURUSD</b></span><span id="qPrice">--</span></div>
+                  <div class="row"><span>Δ</span><span id="qDelta">--</span></div>
+                  <div class="spark"><i id="sparkBar" style="width:50%"></i></div>
+                  <div class="row" style="color:var(--mut)"><span id="qSource">source: --</span><span id="qLatency">--</span></div>
+                </div>
+                <div class="badge" id="stateBadge">--</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Portfolio snapshot -->
         <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Portfolio Snapshot</h2>
-              <div class="hint">Demo placeholders until execution and risk feeds are connected</div>
-            </div>
-            <div class="snapGrid">
-              <div class="snap">
-                <div class="k">Account Balance</div>
-                <div class="v">$1,000,000</div>
-              </div>
-              <div class="snap">
-                <div class="k">Daily PnL</div>
-                <div class="v pos">+$13,160</div>
-              </div>
-              <div class="snap">
-                <div class="k">Total Exposure</div>
-                <div class="v">$650,000</div>
-              </div>
-              <div class="snap">
-                <div class="k">Max Drawdown</div>
-                <div class="v neg">-3.2%</div>
-              </div>
-            </div>
-            <div class="muted" style="margin-top:10px;">
-              This section is intentionally demo. Tonight the goal is accurate regime visualization on real EUR/USD spot.
+          <div class="hd">
+            <div class="t">State Probability Distribution</div>
+            <div class="hint">Conditional regime likelihoods P(state | features)</div>
+          </div>
+          <div class="bd">
+            <div class="bars" id="bars"></div>
+            <div class="smallNote" id="probNote">
+              Note: These are model-derived probabilities from EUR/USD spot features (return, volatility, momentum, jump). They are not “market probabilities”.
             </div>
           </div>
         </div>
 
-        <!-- Regime log -->
         <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Regime Log</h2>
-              <div class="hint">CSV-style telemetry (latest on top)</div>
+          <div class="hd">
+            <div class="t">Portfolio Snapshot</div>
+            <div class="hint">Demo placeholders until execution and risk feeds are connected</div>
+          </div>
+          <div class="bd">
+            <div class="twoCol" style="grid-template-columns: repeat(4, 1fr);">
+              <div class="metric"><div class="k">Account Balance</div><div class="v">$1,000,000</div><div class="s">demo</div></div>
+              <div class="metric"><div class="k">Daily PnL</div><div class="v" style="color:var(--good)">+$13,160</div><div class="s">demo</div></div>
+              <div class="metric"><div class="k">Total Exposure</div><div class="v">$650,000</div><div class="s">demo</div></div>
+              <div class="metric"><div class="k">Max Drawdown</div><div class="v" style="color:var(--bad)">-3.2%</div><div class="s">demo</div></div>
             </div>
+            <div class="smallNote">This section is intentionally demo. Tonight the priority is accurate regime visualization on real EUR/USD spot and coherent state transitions.</div>
+          </div>
+        </div>
 
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+        <div class="card">
+          <div class="hd">
+            <div class="t">Regime Log</div>
+            <div class="hint">CSV-style telemetry (latest on top)</div>
+          </div>
+          <div class="bd">
+            <div class="btnRow" style="margin-bottom:10px;">
               <button class="btn" id="copyCsvBtn">Copy as CSV</button>
               <button class="btn" id="clearLogBtn">Clear</button>
             </div>
-
             <div class="tableWrap">
-              <div class="scroll" style="max-height: 320px;">
+              <div class="scrollY">
                 <table>
                   <thead>
                     <tr>
@@ -736,70 +461,67 @@
                 </table>
               </div>
             </div>
-
-            <div class="muted" style="margin-top:10px;">
-              Tip: Copy CSV and paste into Excel. It splits cleanly.
-            </div>
+            <div class="smallNote">Tip: Copy CSV and paste into Excel. It splits cleanly.</div>
           </div>
         </div>
 
-        <div class="foot">
+        <div class="footerBar">
           <div>System Status: <b id="sysStatus">LIVE</b></div>
           <div>Smoothed Policy: <b id="footPolicy">--</b></div>
-          <div>Detector: <b id="footDetector">--</b></div>
-          <div>Hysteresis Hold: <b id="footHold">0</b></div>
+          <div>Detector: <b id="footDet">--</b></div>
+          <div>Hysteresis Hold: <b id="footHold">--</b></div>
         </div>
       </div>
 
-      <!-- RIGHT column -->
-      <div class="stack">
-        <!-- Risk level -->
+      <div class="sideStack">
         <div class="card">
-          <div class="inner riskLevel">
-            <div class="label">Risk Level</div>
-            <div class="big" id="riskBig">--</div>
-            <div class="rule" id="riskRule">Policy: state-aware sizing and entry gating</div>
+          <div class="hd">
+            <div class="t">Risk Level</div>
+            <div class="hint">Policy: state-aware sizing and entry gating</div>
+          </div>
+          <div class="bd">
+            <div class="riskBox normal" id="riskBox">
+              <div class="k" style="font-size:12px;color:var(--mut);">Risk Level</div>
+              <div class="lvl" id="riskLevel">NORMAL</div>
+              <div class="rule" id="riskRule">Rule: Trade normally. Avoid overfitting. Keep size disciplined.</div>
+            </div>
           </div>
         </div>
 
-        <!-- Feed health -->
         <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Feed Health</h2>
-              <div class="hint">Proof the market data is updating</div>
-            </div>
-
-            <div class="feedGrid">
-              <div class="feedBox">
+          <div class="hd">
+            <div class="t">Feed Health</div>
+            <div class="hint">Proof the market data is updating</div>
+          </div>
+          <div class="bd">
+            <div class="feedHealth">
+              <div class="metric">
                 <div class="k">EUR/USD Spot (reference)</div>
-                <div class="v" id="fxSpotPrice">--</div>
-                <div class="feedMeta" id="fxSpotLast">Last good sample: --</div>
+                <div class="v" id="fhPrice">--</div>
+                <div class="s">Last good sample: <span id="fhLast">--</span></div>
               </div>
-              <div class="feedBox">
-                <div class="k">Status</div>
-                <div class="statusPill"><span class="sdot" id="fxStatusDot"></span><span id="fxSpotStatus">CHECKING</span></div>
-                <div class="feedMeta" id="fxSpotMeta">Source: -- | Latency: --</div>
-                <div class="feedMeta" id="fxSpotDelta">Delta (last): 0.00000</div>
+              <div class="statusPill">
+                <div class="statusLine"><span>Status</span><span class="statusTag tagLive" id="fhStatus">LIVE</span></div>
+                <div class="statusLine"><span>Source</span><span id="fhSource">--</span></div>
+                <div class="statusLine"><span>Latency</span><span id="fhLatency">--</span></div>
+                <div class="statusLine"><span>Delta (last)</span><span id="fhDelta">--</span></div>
+                <div class="statusLine"><span>Stale polls</span><span id="fhStalePolls">0</span></div>
               </div>
             </div>
-
-            <div class="muted" style="margin-top:10px;">
-              If the spot stays unchanged for a while, it might be a quiet market or endpoint caching or throttling.
-              This dashboard never invents price.
+            <div class="smallNote" id="fhNote">
+              With free endpoints, updates are spot-sampled (not broker ticks). Still real price, lower frequency. If price repeats too long, engine pauses instead of inventing signals.
             </div>
           </div>
         </div>
 
-        <!-- World events calendar -->
         <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>World Events Calendar</h2>
-              <div class="hint">Fastest reliable mode tonight: curated list (saved locally)</div>
-            </div>
+          <div class="hd">
+            <div class="t">World Events Calendar</div>
+            <div class="hint">Fastest reliable mode tonight: curated list (saved locally)</div>
+          </div>
+          <div class="bd">
             <div class="tableWrap">
-              <div class="scroll" style="max-height: 260px;">
+              <div class="scrollY" style="max-height:210px">
                 <table>
                   <thead>
                     <tr>
@@ -813,22 +535,18 @@
                 </table>
               </div>
             </div>
-            <div class="muted" style="margin-top:10px;">
-              Red folder style: High impact events are <span class="impact"><span class="folder"></span>HIGH</span>.
-            </div>
+            <div class="smallNote">Red folder style: High impact events are <span class="impact high"><span class="sq"></span>HIGH</span></div>
           </div>
         </div>
 
-        <!-- Headlines -->
         <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Headlines</h2>
-              <div class="hint">Fastest reliable mode tonight: curated list (saved locally)</div>
-            </div>
-
+          <div class="hd">
+            <div class="t">Headlines</div>
+            <div class="hint">Fastest reliable mode tonight: curated list (saved locally)</div>
+          </div>
+          <div class="bd">
             <div class="tableWrap">
-              <div class="scroll" style="max-height: 240px;">
+              <div class="scrollY" style="max-height:220px">
                 <table>
                   <thead>
                     <tr>
@@ -837,65 +555,37 @@
                       <th>Headline</th>
                     </tr>
                   </thead>
-                  <tbody id="headlinesBody"></tbody>
+                  <tbody id="newsBody"></tbody>
                 </table>
               </div>
             </div>
+            <div class="smallNote">Click opens source in a new tab.</div>
+          </div>
+        </div>
 
-            <div class="muted" style="margin-top:10px;">
-              Click opens source in a new tab.
+        <div class="card">
+          <div class="hd">
+            <div class="t">Daily EUR/USD Trend</div>
+            <div class="hint">Embedded TradingView chart (display only)</div>
+          </div>
+          <div class="bd" style="padding:0">
+            <div class="tradingview-widget-container" style="height: 360px;">
+              <div id="tvChart" style="height:360px;"></div>
             </div>
           </div>
         </div>
 
-        <!-- TradingView chart -->
         <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Daily EUR/USD Trend</h2>
-              <div class="hint">Embedded TradingView chart (no backend needed)</div>
-            </div>
-
-            <div class="tvWrap">
-              <!-- TradingView Advanced Chart Widget iframe embed -->
-              <iframe
-                title="TradingView EURUSD"
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-                src="https://s.tradingview.com/widgetembed/?frameElementId=tvchart&symbol=FX%3AEURUSD&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0b1028&studies=%5B%5D&hideideas=1&theme=dark&style=1&locale=en&withdateranges=1&hidevolume=0&allow_symbol_change=0&details=0&hotlist=0&calendar=0"
-              ></iframe>
-            </div>
+          <div class="hd">
+            <div class="t">Risk Metrics</div>
+            <div class="hint">Placeholders until execution integration</div>
           </div>
-        </div>
-
-        <!-- Risk metrics (still placeholders) -->
-        <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Risk Metrics</h2>
-              <div class="hint">Placeholders until execution integration</div>
-            </div>
-            <div class="snapGrid" style="grid-template-columns: 1fr 1fr;">
-              <div class="snap">
-                <div class="k">Value at Risk (95%)</div>
-                <div class="v" style="color: rgba(255,77,77,0.95);">$28,500</div>
-                <div class="muted2" style="margin-top:4px;">2.85% of account</div>
-              </div>
-              <div class="snap">
-                <div class="k">Conditional VaR (95%)</div>
-                <div class="v" style="color: rgba(255,77,77,0.95);">$42,300</div>
-                <div class="muted2" style="margin-top:4px;">Expected loss if VaR exceeded</div>
-              </div>
-              <div class="snap">
-                <div class="k">Portfolio Correlation</div>
-                <div class="v" style="color: rgba(24,209,138,0.95);">32.0%</div>
-                <div class="muted2" style="margin-top:4px;">Max allowed: 50.0%</div>
-              </div>
-              <div class="snap">
-                <div class="k">Beta to Market</div>
-                <div class="v" style="color: rgba(120,170,255,0.95);">0.15</div>
-                <div class="muted2" style="margin-top:4px;">Low market correlation (good)</div>
-              </div>
+          <div class="bd">
+            <div class="twoCol">
+              <div class="metric"><div class="k">Value at Risk (95%)</div><div class="v" style="color:var(--bad)">$28,500</div><div class="s">2.85% of account</div></div>
+              <div class="metric"><div class="k">Conditional VaR (95%)</div><div class="v" style="color:var(--bad)">$42,300</div><div class="s">Expected loss if VaR exceeded</div></div>
+              <div class="metric"><div class="k">Portfolio Correlation</div><div class="v" style="color:var(--good)">32.0%</div><div class="s">Max allowed: 50.0%</div></div>
+              <div class="metric"><div class="k">Beta to Market</div><div class="v" style="color:var(--blue)">0.15</div><div class="s">Low market correlation (good)</div></div>
             </div>
           </div>
         </div>
@@ -904,897 +594,1017 @@
     </div>
   </div>
 
-  <!-- Modal: edit events + headlines -->
-  <div class="modalBack" id="modalBack">
+  <!-- Modal -->
+  <div class="modalBackdrop" id="modalBackdrop">
     <div class="modal">
-      <div class="modalHead">
-        <h3>Edit World Events + Headlines</h3>
+      <div class="mh">
+        <div class="ttl">Edit Events + Headlines (saved locally)</div>
         <button class="btn" id="closeModalBtn">Close</button>
       </div>
-      <div class="modalBody">
-        <div class="muted">
-          This is the “tonight, ship it” approach. Save curated items locally so everyone sees the same list after refresh on their device.
-          Later we can plug a backend feed once you choose a source that does not explode your budget.
+      <div class="mb">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+          <div class="kbd">
+            Format:<br>
+            EVENTS: <b>YYYY-MM-DD HH:MM|Impact(HIGH/MED/LOW)|Event Name</b><br>
+            NEWS: <b>HH:MM|Source|Headline|URL</b>
+          </div>
+          <div class="btnRow">
+            <button class="btn" id="loadDefaultsBtn">Load defaults</button>
+            <button class="btn primary" id="saveListsBtn">Save</button>
+          </div>
         </div>
-
-        <div>
-          <div class="muted" style="margin-bottom:8px;"><b>Events JSON</b> (array of objects: when, event, impact: HIGH|MED|LOW)</div>
-          <textarea id="eventsEditor"></textarea>
+        <div style="display:grid;grid-template-columns:1fr;gap:12px;">
+          <div>
+            <div style="font-weight:950;margin:0 0 6px;">Events</div>
+            <textarea id="eventsText"></textarea>
+          </div>
+          <div>
+            <div style="font-weight:950;margin:0 0 6px;">Headlines</div>
+            <textarea id="newsText"></textarea>
+          </div>
         </div>
-
-        <div>
-          <div class="muted" style="margin-bottom:8px;"><b>Headlines JSON</b> (array of objects: time, source, title, url)</div>
-          <textarea id="headlinesEditor"></textarea>
-        </div>
-
-        <div class="modalActions">
-          <button class="btn" id="resetCuratedBtn">Reset to curated defaults</button>
-          <button class="btn primary" id="saveCuratedBtn">Save</button>
-        </div>
+      </div>
+      <div class="mf">
+        <button class="btn" id="closeModalBtn2">Close</button>
       </div>
     </div>
   </div>
 
-<script>
-/* ============================================================================
-   QuadraX Risk Dashboard
-   - Option A quotes: direct fetch, throttled, multi-source failover, no simulation
-   - Events + headlines: curated local JSON, editable, persisted
-   - Hysteresis: prevent flipping every update
-   - Persistence: refresh does not reset state to empty
-============================================================================ */
+  <script>
+    /* ===========================
+       QuadraX Regime Demo Engine
+       - No simulation of price
+       - Multi-provider spot fetch with TradingView-first attempt
+       - Local persistence so refresh does not reset
+       =========================== */
 
-(function(){
-  // ---------- Utilities ----------
-  const fmtTime = (ms) => new Date(ms).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
-  const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
-  const bp = (x)=> x * 10000; // price diff to basis points
-  const safeNum = (x, fallback=null) => (Number.isFinite(Number(x)) ? Number(x) : fallback);
+    const LS_KEY = "quadrax_state_v6";
+    const LS_LISTS = "quadrax_lists_v2";
 
-  function setText(id, v){
-    const el = document.getElementById(id);
-    if (el) el.textContent = v;
-  }
-
-  // ---------- State definitions ----------
-  const STATES = [
-    { id:1, name:"Mean-Reverting", desc:"Range-bound. Fade extremes and keep size disciplined.", color:"rgba(24,209,138,0.85)" },
-    { id:2, name:"Liquidity Vacuum", desc:"Thin market, jumpy moves. Tighten risk and be selective.", color:"rgba(255,176,32,0.85)" },
-    { id:3, name:"Slow Drift", desc:"Steady grind. Small edges, avoid forcing entries.", color:"rgba(120,170,255,0.85)" },
-    { id:4, name:"Strong Trend", desc:"Directional. Trend-follow bias, avoid countertrend heroics.", color:"rgba(60,145,255,0.9)" },
-    { id:5, name:"Stop Cascade", desc:"Fast continuation on stops. Reduce leverage, widen filters.", color:"rgba(255,138,64,0.9)" },
-    { id:6, name:"News Shock", desc:"Event-driven. Consider standing down around releases.", color:"rgba(255,77,77,0.9)" },
-    { id:7, name:"Dealer Unwind", desc:"Choppy reversal risk. Focus on protection and confirmation.", color:"rgba(160,120,255,0.9)" },
-    { id:8, name:"Panic/Forced", desc:"Dislocation. Risk off. Protect capital first.", color:"rgba(255,58,165,0.9)" }
-  ];
-
-  // ---------- DOM wiring ----------
-  const els = {
-    liveDot: document.getElementById("liveDot"),
-    liveText: document.getElementById("liveText"),
-    lastUpdate: document.getElementById("lastUpdate"),
-    pauseBtn: document.getElementById("pauseBtn"),
-    syncBtn: document.getElementById("syncBtn"),
-    editBtn: document.getElementById("editBtn"),
-    modalBack: document.getElementById("modalBack"),
-    closeModalBtn: document.getElementById("closeModalBtn"),
-    saveCuratedBtn: document.getElementById("saveCuratedBtn"),
-    resetCuratedBtn: document.getElementById("resetCuratedBtn"),
-    eventsEditor: document.getElementById("eventsEditor"),
-    headlinesEditor: document.getElementById("headlinesEditor"),
-    // main panels
-    policyStateTitle: document.getElementById("policyStateTitle"),
-    policyStateDesc: document.getElementById("policyStateDesc"),
-    detectorChip: document.getElementById("detectorChip"),
-    policyChip: document.getElementById("policyChip"),
-    confChip: document.getElementById("confChip"),
-    hystChip: document.getElementById("hystChip"),
-    tickChip: document.getElementById("tickChip"),
-    staleChip: document.getElementById("staleChip"),
-    stateHistory: document.getElementById("stateHistory"),
-    stateBadge: document.getElementById("stateBadge"),
-    miniPrice: document.getElementById("miniPrice"),
-    miniSrc: document.getElementById("miniSrc"),
-    miniDelta: document.getElementById("miniDelta"),
-    miniBar: document.getElementById("miniBar"),
-    probList: document.getElementById("probList"),
-    // feed health
-    fxSpotPrice: document.getElementById("fxSpotPrice"),
-    fxSpotLast: document.getElementById("fxSpotLast"),
-    fxSpotStatus: document.getElementById("fxSpotStatus"),
-    fxStatusDot: document.getElementById("fxStatusDot"),
-    fxSpotMeta: document.getElementById("fxSpotMeta"),
-    fxSpotDelta: document.getElementById("fxSpotDelta"),
-    // right panels
-    eventsBody: document.getElementById("eventsBody"),
-    headlinesBody: document.getElementById("headlinesBody"),
-    // risk
-    riskBig: document.getElementById("riskBig"),
-    riskRule: document.getElementById("riskRule"),
-    // log
-    logBody: document.getElementById("logBody"),
-    copyCsvBtn: document.getElementById("copyCsvBtn"),
-    clearLogBtn: document.getElementById("clearLogBtn"),
-    // footer
-    sysStatus: document.getElementById("sysStatus"),
-    footPolicy: document.getElementById("footPolicy"),
-    footDetector: document.getElementById("footDetector"),
-    footHold: document.getElementById("footHold"),
-  };
-
-  // ---------- Persistence keys ----------
-  const KEY = {
-    dashboard: "qx_dashboard_state_v1",
-    events: "qx_events_v1",
-    headlines: "qx_headlines_v1",
-    log: "qx_regime_log_v1"
-  };
-
-  // ---------- Curated defaults (fastest reliable tonight) ----------
-  const curatedEventsDefault = [
-    { when: "2026-02-17T21:18:47Z", event: "Eurozone CPI (flash)", impact: "HIGH" },
-    { when: "2026-02-18T17:18:47Z", event: "US Initial Jobless Claims", impact: "MED" },
-    { when: "2026-02-19T21:18:47Z", event: "US GDP (advance)", impact: "HIGH" },
-    { when: "2026-02-22T15:18:47Z", event: "US Non-Farm Payrolls", impact: "HIGH" }
-  ];
-
-  const curatedHeadlinesDefault = [
-    { time: "03:00 PM", source: "FinancialJuice", title: "Dollar firming ahead of major data window", url: "https://financialjuice.com/" },
-    { time: "02:26 PM", source: "FinancialJuice", title: "Rates repricing drives short-term USD bid", url: "https://financialjuice.com/" },
-    { time: "01:06 PM", source: "Market", title: "Risk tone mixed as equities stabilize", url: "https://www.investing.com/" }
-  ];
-
-  // ---------- Load persisted curated lists ----------
-  function loadJSON(key, fallback){
-    try{
-      const raw = localStorage.getItem(key);
-      if (!raw) return fallback;
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed : fallback;
-    }catch(e){ return fallback; }
-  }
-
-  let curatedEvents = loadJSON(KEY.events, curatedEventsDefault);
-  let curatedHeadlines = loadJSON(KEY.headlines, curatedHeadlinesDefault);
-
-  // ---------- Render events ----------
-  function impactPill(impact){
-    const imp = (impact || "").toUpperCase();
-    if (imp === "HIGH") return `<span class="impact"><span class="folder"></span>HIGH</span>`;
-    if (imp === "MED") return `<span class="impact"><span class="folder med"></span>MED</span>`;
-    return `<span class="impact"><span class="folder low"></span>LOW</span>`;
-  }
-
-  function countdownText(iso){
-    const t = new Date(iso).getTime();
-    const now = Date.now();
-    if (!Number.isFinite(t)) return "--";
-    const d = t - now;
-    if (d <= 0) return "Now";
-    const mins = Math.floor(d/60000);
-    const days = Math.floor(mins / (60*24));
-    const hrs = Math.floor((mins - days*60*24)/60);
-    const rem = mins - days*60*24 - hrs*60;
-    if (days > 0) return `${days}d ${hrs}h`;
-    if (hrs > 0) return `${hrs}h ${rem}m`;
-    return `${rem}m`;
-  }
-
-  function renderEvents(){
-    const rows = curatedEvents
-      .slice()
-      .sort((a,b)=> new Date(a.when)-new Date(b.when))
-      .map(e=>{
-        const when = new Date(e.when);
-        const whenStr = isNaN(when.getTime()) ? String(e.when) : `${when.toLocaleDateString()} ${when.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"})}`;
-        return `
-          <tr>
-            <td>${whenStr}</td>
-            <td><a class="link" href="https://www.forexfactory.com/" target="_blank" rel="noopener noreferrer">${escapeHtml(e.event || "")}</a></td>
-            <td>${impactPill(e.impact)}</td>
-            <td>${countdownText(e.when)}</td>
-          </tr>
-        `;
-      }).join("");
-
-    els.eventsBody.innerHTML = rows || `<tr><td colspan="4" style="color:rgba(255,255,255,0.6)">No events set.</td></tr>`;
-  }
-
-  // ---------- Render headlines ----------
-  function renderHeadlines(){
-    const rows = curatedHeadlines.map(h=>{
-      const url = h.url || "#";
-      return `
-        <tr>
-          <td>${escapeHtml(h.time || "")}</td>
-          <td>${escapeHtml(h.source || "")}</td>
-          <td><a class="link" href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(h.title || "")}</a></td>
-        </tr>
-      `;
-    }).join("");
-
-    els.headlinesBody.innerHTML = rows || `<tr><td colspan="3" style="color:rgba(255,255,255,0.6)">No headlines set.</td></tr>`;
-  }
-
-  // ---------- Escape helpers ----------
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
-  }
-  function escapeAttr(s){
-    return String(s).replace(/"/g, "&quot;");
-  }
-
-  // ---------- Modal wiring ----------
-  function openModal(){
-    els.eventsEditor.value = JSON.stringify(curatedEvents, null, 2);
-    els.headlinesEditor.value = JSON.stringify(curatedHeadlines, null, 2);
-    els.modalBack.style.display = "flex";
-  }
-  function closeModal(){
-    els.modalBack.style.display = "none";
-  }
-
-  els.editBtn.addEventListener("click", openModal);
-  els.closeModalBtn.addEventListener("click", closeModal);
-  els.modalBack.addEventListener("click", (e)=>{ if (e.target === els.modalBack) closeModal(); });
-
-  els.resetCuratedBtn.addEventListener("click", ()=>{
-    curatedEvents = structuredClone(curatedEventsDefault);
-    curatedHeadlines = structuredClone(curatedHeadlinesDefault);
-    els.eventsEditor.value = JSON.stringify(curatedEvents, null, 2);
-    els.headlinesEditor.value = JSON.stringify(curatedHeadlines, null, 2);
-  });
-
-  els.saveCuratedBtn.addEventListener("click", ()=>{
-    try{
-      const ev = JSON.parse(els.eventsEditor.value);
-      const hd = JSON.parse(els.headlinesEditor.value);
-      if (!Array.isArray(ev) || !Array.isArray(hd)) throw new Error("Not arrays");
-      curatedEvents = ev;
-      curatedHeadlines = hd;
-      localStorage.setItem(KEY.events, JSON.stringify(curatedEvents));
-      localStorage.setItem(KEY.headlines, JSON.stringify(curatedHeadlines));
-      renderEvents();
-      renderHeadlines();
-      closeModal();
-    }catch(err){
-      alert("Invalid JSON. Fix the JSON formatting before saving.");
-    }
-  });
-
-  // ---------- Spot feed (Option A: direct fetch, throttled, multi-source failover) ----------
-  const SpotFeed = (() => {
-    const sources = [
-      {
-        name: "exchangerate.host",
-        url: () => `https://api.exchangerate.host/latest?base=EUR&symbols=USD&_=${Date.now()}`,
-        parse: (j) => j?.rates?.USD
-      },
-      {
-        name: "frankfurter.app",
-        url: () => `https://api.frankfurter.app/latest?from=EUR&to=USD&_=${Date.now()}`,
-        parse: (j) => j?.rates?.USD
-      },
-      {
-        name: "open.er-api.com",
-        url: () => `https://open.er-api.com/v6/latest/EUR?_=${Date.now()}`,
-        parse: (j) => j?.rates?.USD
-      }
-    ];
-
-    let last = {
-      price: null,
-      ts: 0,
-      source: null,
-      latencyMs: null,
-      staleCount: 0,
-      lastChangeTs: 0,
-      lastDelta: 0
+    const CONFIG = {
+      pair: "EURUSD",
+      pollMs: 12000,                 // keep it sane on free sources
+      minMove: 0.00001,              // tiny threshold for stale detection
+      staleLimit: 7,                 // how many repeated polls before we mark stale and pause updates
+      maxPriceSeries: 220,
+      logMaxRows: 240,
+      hysteresisHoldTicks: 4,        // minimum ticks to hold before switching policy state
+      hysteresisMargin: 0.05,        // new top prob must exceed current prob by this margin to switch
+      minFeatureWindow: 30           // minimum samples before model is meaningful
     };
 
-    const STALE_MS = 60_000;     // no change for 60s => stale
-    const MIN_MOVE = 0.000001;   // ignore rounding noise
+    const STATES = [
+      { id:1, name:"S1 Mean-Reverting", colorClass:"c1", risk:"NORMAL", rule:"Trade normally. Avoid overfitting. Keep size disciplined." },
+      { id:2, name:"S2 Liquidity Vacuum", colorClass:"c2", risk:"ELEVATED", rule:"Expect gaps. Reduce size and demand cleaner entries." },
+      { id:3, name:"S3 Slow Drift", colorClass:"c3", risk:"NORMAL", rule:"Favor patience. Small edges, do not chase." },
+      { id:4, name:"S4 Strong Trend", colorClass:"c4", risk:"NORMAL", rule:"Let winners run. Avoid countertrend heroics." },
+      { id:5, name:"S5 Stop Cascade", colorClass:"c5", risk:"ELEVATED", rule:"Stops can accelerate. Tighten risk and avoid late entries." },
+      { id:6, name:"S6 News Shock", colorClass:"c6", risk:"CRITICAL", rule:"News regime. Reduce or pause. Wait for volatility to normalize." },
+      { id:7, name:"S7 Dealer Unwind", colorClass:"c7", risk:"ELEVATED", rule:"Expect mean snapbacks. Use wider filters and smaller size." },
+      { id:8, name:"S8 Panic/Forced", colorClass:"c8", risk:"CRITICAL", rule:"Forced flow. Survival mode. Stand down or trade minimal only." }
+    ];
 
-    function status(now = Date.now()){
-      if (!last.price) return { status: "CHECKING", stale: false };
-      const stale = (now - last.lastChangeTs) > STALE_MS;
-      return { status: stale ? "STALE" : "LIVE", stale };
+    // UI handles
+    const el = (id) => document.getElementById(id);
+    const ui = {
+      lastUpdate: el("lastUpdate"),
+      liveDot: el("liveDot"),
+      liveText: el("liveText"),
+      pauseBtn: el("pauseBtn"),
+      syncBtn: el("syncBtn"),
+      editBtn: el("editBtn"),
+
+      stateTitle: el("stateTitle"),
+      detChip: el("detChip"),
+      polChip: el("polChip"),
+      confChip: el("confChip"),
+      hystChip: el("hystChip"),
+      tickChip: el("tickChip"),
+      staleChip: el("staleChip"),
+      historyDots: el("historyDots"),
+
+      qPrice: el("qPrice"),
+      qDelta: el("qDelta"),
+      qSource: el("qSource"),
+      qLatency: el("qLatency"),
+      sparkBar: el("sparkBar"),
+      stateBadge: el("stateBadge"),
+      engineHint: el("engineHint"),
+
+      bars: el("bars"),
+
+      riskBox: el("riskBox"),
+      riskLevel: el("riskLevel"),
+      riskRule: el("riskRule"),
+
+      fhPrice: el("fhPrice"),
+      fhLast: el("fhLast"),
+      fhStatus: el("fhStatus"),
+      fhSource: el("fhSource"),
+      fhLatency: el("fhLatency"),
+      fhDelta: el("fhDelta"),
+      fhStalePolls: el("fhStalePolls"),
+      fhNote: el("fhNote"),
+
+      logBody: el("logBody"),
+      copyCsvBtn: el("copyCsvBtn"),
+      clearLogBtn: el("clearLogBtn"),
+
+      sysStatus: el("sysStatus"),
+      footPolicy: el("footPolicy"),
+      footDet: el("footDet"),
+      footHold: el("footHold"),
+
+      eventsBody: el("eventsBody"),
+      newsBody: el("newsBody"),
+
+      modalBackdrop: el("modalBackdrop"),
+      closeModalBtn: el("closeModalBtn"),
+      closeModalBtn2: el("closeModalBtn2"),
+      saveListsBtn: el("saveListsBtn"),
+      loadDefaultsBtn: el("loadDefaultsBtn"),
+      eventsText: el("eventsText"),
+      newsText: el("newsText")
+    };
+
+    function fmtTime(d=new Date()){
+      let h=d.getHours(), m=d.getMinutes(), s=d.getSeconds();
+      const ap = h>=12 ? "PM" : "AM";
+      h = h%12; if(h===0) h=12;
+      const pad=(x)=> String(x).padStart(2,"0");
+      return `${pad(h)}:${pad(m)}:${pad(s)} ${ap}`;
+    }
+    function fmtTimeShort(d=new Date()){
+      let h=d.getHours(), m=d.getMinutes();
+      const ap = h>=12 ? "PM" : "AM";
+      h = h%12; if(h===0) h=12;
+      const pad=(x)=> String(x).padStart(2,"0");
+      return `${pad(h)}:${pad(m)} ${ap}`;
+    }
+    function clamp(x,a,b){ return Math.max(a, Math.min(b,x)); }
+    function round(x,n=5){ return Number.parseFloat(x).toFixed(n); }
+    function bp(x){ return (x*10000); } // 1 bp = 0.0001
+
+    /* ======= Storage ======= */
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        if(!raw) return null;
+        return JSON.parse(raw);
+      }catch(e){ return null; }
+    }
+    function saveState(){
+      try{
+        localStorage.setItem(LS_KEY, JSON.stringify(state));
+      }catch(e){}
     }
 
-    async function fetchOnce(timeoutMs = 5500){
-      for (const s of sources){
-        const t0 = performance.now();
-        try{
-          const controller = new AbortController();
-          const timer = setTimeout(()=> controller.abort(), timeoutMs);
-
-          const res = await fetch(s.url(), { method:"GET", cache:"no-store", signal: controller.signal });
-          clearTimeout(timer);
-
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const j = await res.json();
-          const px = Number(s.parse(j));
-          if (!Number.isFinite(px) || px <= 0) throw new Error("Bad parse");
-
-          const latency = Math.round(performance.now() - t0);
-          return { ok:true, price:px, source:s.name, latencyMs:latency };
-        }catch(e){
-          // try next source
-        }
-      }
-      return { ok:false };
-    }
-
-    async function tick(updateCb){
-      const now = Date.now();
-      const r = await fetchOnce();
-      if (!r.ok){
-        last.staleCount += 1;
-        updateCb?.({ ok:false, ...last, ...status(now) });
-        return;
-      }
-
-      const prev = last.price;
-      const moved = (prev == null) ? true : Math.abs(r.price - prev) > MIN_MOVE;
-      const delta = (prev == null) ? 0 : (r.price - prev);
-
-      last.price = r.price;
-      last.ts = now;
-      last.source = r.source;
-      last.latencyMs = r.latencyMs;
-      last.staleCount = 0;
-      last.lastDelta = delta;
-
-      if (moved) last.lastChangeTs = now;
-      if (!last.lastChangeTs) last.lastChangeTs = now;
-
-      updateCb?.({ ok:true, ...last, ...status(now) });
-    }
-
-    return { tick, getLast: ()=> ({...last}) };
-  })();
-
-  // ---------- Regime engine (simple but stable, with hysteresis) ----------
-  // This is a visualization layer, not “the secret sauce” model. It gives consistent, testable behavior.
-  // Features: momentum (bp), vol proxy (scaled abs returns), shock detection.
-  const Engine = (() => {
-    const HISTORY_N = 64;        // price samples
-    const MOM_WINDOW = 8;        // momentum window
-    const VOL_WINDOW = 18;       // volatility proxy window
-    const HOLD_TICKS = 4;        // hysteresis hold threshold before switching policy
-    const PROB_TEMP = 1.35;      // softmax temperature
-
-    let tickN = 0;
-    let prices = [];
-    let returns = [];
-
-    let detectorState = null; // raw
-    let policyState = null;   // smoothed
-    let hold = 0;
-    let policyHistory = [];
-
-    function softmax(logits){
-      const m = Math.max(...logits);
-      const exps = logits.map(v => Math.exp((v - m) / PROB_TEMP));
-      const s = exps.reduce((a,b)=>a+b,0) || 1;
-      return exps.map(v => v/s);
-    }
-
-    function computeFeatures(){
-      if (prices.length < 3) return null;
-
-      const p = prices[prices.length-1];
-      const pPrev = prices[prices.length-2];
-
-      const r = (pPrev ? (p - pPrev) : 0);
-      const momBase = prices[Math.max(0, prices.length-1-MOM_WINDOW)];
-      const mom = momBase ? (p - momBase) : 0;
-
-      // returns list for vol proxy
-      const recentR = returns.slice(-VOL_WINDOW);
-      const absAvg = recentR.length ? recentR.reduce((a,b)=>a+Math.abs(b),0)/recentR.length : 0;
-      const volx = clamp(absAvg / 0.00015, 0, 5); // rough scaling
-
-      // shock: big single-step move
-      const shock = Math.abs(r) > 0.0007 ? 1 : 0;
-
-      return { p, r, mom, volx, shock };
-    }
-
-    function scoreStates(f){
-      // Heuristic scoring:
-      // - mean reversion: low vol, low mom
-      // - liquidity vacuum: higher vol, low mom (jumpy but no direction)
-      // - slow drift: low/mod vol, small mom
-      // - strong trend: moderate vol, strong mom
-      // - stop cascade: high vol and aligned mom
-      // - news shock: shock flag
-      // - dealer unwind: mid/high vol with sign changes
-      // - panic: very high vol
-      const momBp = Math.abs(bp(f.mom));
-      const rBp = Math.abs(bp(f.r));
-      const vol = f.volx;
-
-      const signChanges = (() => {
-        const rr = returns.slice(-10);
-        if (rr.length < 6) return 0;
-        let changes = 0;
-        for (let i=1;i<rr.length;i++){
-          if (Math.sign(rr[i]) !== Math.sign(rr[i-1])) changes++;
-        }
-        return changes;
-      })();
-
-      // logits
-      const L = new Array(8).fill(0);
-
-      // S1 mean reversion
-      L[0] = 2.4 - 0.7*vol - 0.04*momBp;
-
-      // S2 liquidity vacuum
-      L[1] = 1.1 + 0.55*vol - 0.03*momBp;
-
-      // S3 slow drift
-      L[2] = 1.6 - 0.25*vol - 0.02*momBp;
-
-      // S4 strong trend
-      L[3] = 0.9 + 0.25*vol + 0.045*momBp;
-
-      // S5 stop cascade
-      L[4] = -0.2 + 0.55*vol + 0.02*momBp + 0.04*rBp;
-
-      // S6 news shock
-      L[5] = -0.4 + (f.shock ? 3.0 : 0) + 0.2*vol;
-
-      // S7 dealer unwind
-      L[6] = 0.3 + 0.18*vol + 0.35*clamp(signChanges/6,0,1) - 0.02*momBp;
-
-      // S8 panic/forced
-      L[7] = -0.8 + 0.95*Math.max(0, vol-2.2) + 0.04*rBp + (f.shock ? 0.6 : 0);
-
-      return softmax(L);
-    }
-
-    function pickState(probs){
-      let best = 0;
-      for (let i=1;i<probs.length;i++) if (probs[i] > probs[best]) best = i;
-      return best+1; // 1..8
-    }
-
-    function confidence(probs, state){
-      const s = state-1;
-      const top = probs[s];
-      const sorted = [...probs].sort((a,b)=>b-a);
-      const gap = (sorted[0] - (sorted[1] || 0));
-      // combine top and gap
-      return clamp((top*0.7 + gap*0.3), 0, 1);
-    }
-
-    function updatePolicy(det){
-      if (policyState == null){
-        policyState = det;
-        hold = 0;
-        return { policy: policyState, hold, changed:true };
-      }
-      if (det === policyState){
-        hold = 0;
-        return { policy: policyState, hold, changed:false };
-      }
-      hold += 1;
-      if (hold >= HOLD_TICKS){
-        policyState = det;
-        hold = 0;
-        return { policy: policyState, hold, changed:true };
-      }
-      return { policy: policyState, hold, changed:false };
-    }
-
-    function step(price){
-      tickN += 1;
-
-      const p = Number(price);
-      if (!Number.isFinite(p) || p <= 0) return null;
-
-      const prev = prices.length ? prices[prices.length-1] : null;
-      prices.push(p);
-      if (prices.length > HISTORY_N) prices.shift();
-
-      if (prev != null){
-        const r = p - prev;
-        returns.push(r);
-        if (returns.length > HISTORY_N) returns.shift();
-      }
-
-      const f = computeFeatures();
-      if (!f) return null;
-
-      const probs = scoreStates(f);
-      const det = pickState(probs);
-      detectorState = det;
-
-      const polRes = updatePolicy(det);
-      policyHistory.unshift(polRes.policy);
-      policyHistory = policyHistory.slice(0, 12);
-
-      const conf = confidence(probs, polRes.policy);
+    /* ======= Default lists ======= */
+    function defaultLists(){
+      const now = new Date();
+      const pad = (x)=>String(x).padStart(2,"0");
+      const y=now.getFullYear();
+      const mo=pad(now.getMonth()+1);
+      const d=pad(now.getDate());
+      const baseDate = `${y}-${mo}-${d}`;
 
       return {
-        tickN,
-        features: f,
-        probs,
-        detector: det,
-        policy: polRes.policy,
-        hold: polRes.hold,
-        conf
+        events: [
+          `${baseDate} 05:30|MED|US Initial Jobless Claims`,
+          `${baseDate} 07:00|HIGH|Eurozone CPI (flash)`,
+          `${baseDate} 13:00|HIGH|US GDP (advance)`,
+          `${baseDate} 05:30|HIGH|US Non-Farm Payrolls`
+        ].join("\n"),
+        news: [
+          `09:31|FinancialJuice|Dollar firming ahead of major data window|https://www.financialjuice.com/`,
+          `09:13|FinancialJuice|Rates repricing drives short-term USD bid|https://www.financialjuice.com/`,
+          `08:50|Market|Risk tone mixed as equities stabilize|https://www.reuters.com/`
+        ].join("\n")
       };
     }
 
-    function getHistory(){ return policyHistory.slice(); }
-
-    return { step, getHistory };
-  })();
-
-  // ---------- Render probability list skeleton ----------
-  const probEls = [];
-  function initProbUI(){
-    els.probList.innerHTML = "";
-    STATES.forEach((s, idx)=>{
-      const row = document.createElement("div");
-      row.className = "probRow";
-      row.innerHTML = `
-        <div class="probName"><span class="pdot" style="background:${s.color}"></span>State ${s.id}: ${s.name}</div>
-        <div class="pbar"><i></i></div>
-        <div class="probVal">--%</div>
-      `;
-      els.probList.appendChild(row);
-      probEls.push({
-        bar: row.querySelector(".pbar > i"),
-        val: row.querySelector(".probVal")
-      });
-    });
-  }
-
-  // ---------- State history boxes ----------
-  function renderHistory(history, active){
-    els.stateHistory.innerHTML = "";
-    const arr = history.length ? history : new Array(12).fill(null);
-
-    arr.forEach((st, i)=>{
-      const d = document.createElement("div");
-      d.className = "hbox" + ((i===0) ? " active" : "");
-      d.textContent = st ? String(st) : "-";
-      els.stateHistory.appendChild(d);
-    });
-
-    els.stateBadge.textContent = active ? String(active) : "--";
-    if (active){
-      const color = STATES[active-1]?.color || "rgba(120,170,255,0.8)";
-      els.stateBadge.style.borderColor = color;
-      els.stateBadge.style.boxShadow = `0 0 0 6px ${color.replace("0.9","0.14").replace("0.85","0.14")}`;
+    function loadLists(){
+      try{
+        const raw = localStorage.getItem(LS_LISTS);
+        if(!raw) return defaultLists();
+        const parsed = JSON.parse(raw);
+        if(!parsed?.events || !parsed?.news) return defaultLists();
+        return parsed;
+      }catch(e){
+        return defaultLists();
+      }
     }
-  }
-
-  // ---------- Risk level mapping ----------
-  function setRisk(policyState, conf){
-    // Basic mapping by state and confidence.
-    // You can tighten later once theorems are finalized.
-    let level = "NORMAL";
-    let rule = "Rule: Trade normally. Avoid overfitting. Keep size disciplined.";
-
-    if (!policyState){
-      level = "--";
-      rule = "Policy: state-aware sizing and entry gating";
-    } else {
-      if (policyState === 1) { level = "NORMAL"; rule = "Rule: Range logic favored. Avoid forcing breakouts."; }
-      if (policyState === 2) { level = "ELEVATED"; rule = "Rule: Thin liquidity risk. Reduce size and wait for confirmation."; }
-      if (policyState === 3) { level = "NORMAL"; rule = "Rule: Drift regime. Small edges, avoid impulsive entries."; }
-      if (policyState === 4) { level = "ELEVATED"; rule = "Rule: Trend regime. Bias with trend. Cut countertrend attempts."; }
-      if (policyState === 5) { level = "HIGH"; rule = "Rule: Stop cascade risk. De-risk and widen filters."; }
-      if (policyState === 6) { level = "HIGH"; rule = "Rule: News shock. Consider standing down around releases."; }
-      if (policyState === 7) { level = "ELEVATED"; rule = "Rule: Unwind risk. Protect and demand confirmation."; }
-      if (policyState === 8) { level = "CRITICAL"; rule = "Rule: Risk off. Protect capital first."; }
-
-      // If confidence is very low, bump caution one notch
-      if (conf != null && conf < 0.35 && (level === "NORMAL")) level = "ELEVATED";
-      if (conf != null && conf < 0.25 && (level === "ELEVATED")) level = "HIGH";
+    function saveLists(lists){
+      try{ localStorage.setItem(LS_LISTS, JSON.stringify(lists)); }catch(e){}
     }
 
-    els.riskBig.textContent = level;
-    els.riskRule.textContent = rule;
-  }
+    let lists = loadLists();
 
-  // ---------- Regime log ----------
-  let logRows = loadJSON(KEY.log, []);
-  function persistLog(){
-    localStorage.setItem(KEY.log, JSON.stringify(logRows.slice(0, 250)));
-  }
+    /* ======= App state ======= */
+    let state = loadState() || {
+      paused: false,
+      tick: 0,
+      stalePolls: 0,
+      lastPrice: null,
+      lastGoodAt: null,
+      lastLatencyMs: null,
+      lastSource: null,
 
-  function renderLog(){
-    const html = logRows.slice(0, 80).map(r=>{
-      return `
-        <tr>
-          <td>${escapeHtml(r.time)}</td>
-          <td>${escapeHtml(r.price)}</td>
-          <td>${escapeHtml(r.det)}</td>
-          <td>${escapeHtml(r.pol)}</td>
-          <td>${escapeHtml(r.conf)}</td>
-          <td>${escapeHtml(r.volx)}</td>
-          <td>${escapeHtml(r.mom)}</td>
-          <td>${escapeHtml(r.stale)}</td>
-          <td>${escapeHtml(r.src)}</td>
-        </tr>
-      `;
-    }).join("");
-    els.logBody.innerHTML = html || `<tr><td colspan="9" style="color:rgba(255,255,255,0.6)">No samples yet.</td></tr>`;
-  }
+      prices: [],
+      probs: Array(8).fill(1/8),
+      detector: null,
+      policy: null,
+      confidence: 0,
+      holdTicks: 0,
+      history: [],
 
-  function addLogSample(sample){
-    logRows.unshift(sample);
-    logRows = logRows.slice(0, 250);
-    persistLog();
-    renderLog();
-  }
-
-  els.copyCsvBtn.addEventListener("click", async ()=>{
-    const header = ["time","eurusd","det","pol","conf","volx","mom_bp","stale","src"];
-    const lines = [header.join(",")];
-    for (const r of logRows.slice().reverse()){
-      lines.push([r.time,r.price,r.det,r.pol,r.conf,r.volx,r.mom,r.stale,r.src].map(csvCell).join(","));
-    }
-    try{
-      await navigator.clipboard.writeText(lines.join("\n"));
-      els.copyCsvBtn.textContent = "Copied";
-      setTimeout(()=> els.copyCsvBtn.textContent = "Copy as CSV", 900);
-    }catch(e){
-      alert("Clipboard copy failed. Your browser is being difficult.");
-    }
-  });
-
-  els.clearLogBtn.addEventListener("click", ()=>{
-    if (!confirm("Clear regime log?")) return;
-    logRows = [];
-    persistLog();
-    renderLog();
-  });
-
-  function csvCell(v){
-    const s = String(v ?? "");
-    if (/[",\n]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
-    return s;
-  }
-
-  // ---------- Pause + Sync ----------
-  let paused = false;
-  els.pauseBtn.addEventListener("click", ()=>{
-    paused = !paused;
-    els.pauseBtn.textContent = paused ? "Resume" : "Pause";
-    els.sysStatus.textContent = paused ? "PAUSED" : "LIVE";
-    if (paused){
-      els.liveDot.style.background = "rgba(255,176,32,1)";
-      els.liveDot.style.boxShadow = "0 0 0 4px rgba(255,176,32,0.18)";
-    } else {
-      els.liveDot.style.background = "rgba(24,209,138,1)";
-      els.liveDot.style.boxShadow = "0 0 0 4px rgba(24,209,138,0.18)";
-    }
-  });
-
-  els.syncBtn.addEventListener("click", ()=>{
-    // Force immediate fetch tick and UI update
-    SpotFeed.tick(onSpotUpdate);
-  });
-
-  // ---------- Dashboard state persistence ----------
-  let dashState = (function(){
-    try{
-      const raw = localStorage.getItem(KEY.dashboard);
-      if (!raw) return {};
-      return JSON.parse(raw) || {};
-    }catch(e){ return {}; }
-  })();
-
-  function persistDashState(){
-    try{
-      localStorage.setItem(KEY.dashboard, JSON.stringify(dashState));
-    }catch(e){}
-  }
-
-  // ---------- Rendering spot health + drive engine ----------
-  let stalePolls = 0;
-
-  function setFxStatus(status){
-    els.fxSpotStatus.textContent = status;
-    els.fxStatusDot.classList.remove("live","err");
-    if (status === "LIVE"){
-      els.fxStatusDot.classList.add("live");
-    } else if (status === "ERROR"){
-      els.fxStatusDot.classList.add("err");
-    }
-  }
-
-  function onSpotUpdate(s){
-    const now = Date.now();
-    els.lastUpdate.textContent = fmtTime(now);
-
-    if (!s.ok){
-      setFxStatus("ERROR");
-      els.fxSpotMeta.textContent = `Source: -- | Latency: --`;
-      els.fxSpotDelta.textContent = `Delta (last): 0.00000`;
-      stalePolls += 1;
-      els.staleChip.textContent = String(stalePolls);
-      return;
-    }
-
-    els.fxSpotPrice.textContent = s.price.toFixed(5);
-    els.fxSpotLast.textContent = `Last good sample: ${fmtTime(s.ts)}`;
-    els.fxSpotMeta.textContent = `Source: ${s.source} | Latency: ${s.latencyMs}ms`;
-    els.fxSpotDelta.textContent = `Delta (last): ${s.lastDelta.toFixed(5)}`;
-
-    // top mini quote
-    els.miniPrice.textContent = s.price.toFixed(5);
-    els.miniSrc.textContent = `Feed ${s.source}`;
-    els.miniDelta.textContent = s.lastDelta.toFixed(5);
-
-    // bar: map abs delta into 0..100%
-    const w = clamp(Math.abs(s.lastDelta) / 0.0012, 0, 1) * 100;
-    els.miniBar.style.width = `${Math.max(10, w)}%`;
-    els.miniBar.style.background = (s.lastDelta >= 0) ? "rgba(24,209,138,0.85)" : "rgba(255,77,77,0.85)";
-
-    // status and stale counter
-    setFxStatus(s.status);
-    if (s.status === "STALE") stalePolls += 1;
-    else stalePolls = 0;
-    els.staleChip.textContent = String(stalePolls);
-
-    // Do not advance engine if stale too long
-    if (paused) return;
-
-    // Drive regime engine only when we got a sample (even if it is unchanged, engine can still update features)
-    const step = Engine.step(s.price);
-    if (!step) return;
-
-    // Update UI from engine output
-    els.tickChip.textContent = String(step.tickN);
-
-    const det = step.detector;
-    const pol = step.policy;
-    const confPct = (step.conf * 100).toFixed(1) + "%";
-
-    const polName = STATES[pol-1]?.name || "--";
-    const polDesc = STATES[pol-1]?.desc || "Waiting for signal.";
-
-    els.policyStateTitle.textContent = `Policy State: S${pol} ${polName}`;
-    els.policyStateDesc.textContent = polDesc;
-
-    els.detectorChip.textContent = `S${det}`;
-    els.policyChip.textContent = `S${pol}`;
-    els.confChip.textContent = confPct;
-
-    const hystLabel = (det === pol) ? "stable" : `holding`;
-    els.hystChip.textContent = hystLabel;
-
-    setRisk(pol, step.conf);
-
-    // probability bars
-    step.probs.forEach((p, i)=>{
-      const pct = (p*100);
-      probEls[i].bar.style.width = `${clamp(pct, 0, 100)}%`;
-      probEls[i].bar.style.background = STATES[i].color;
-      probEls[i].val.textContent = `${pct.toFixed(1)}%`;
-    });
-
-    // history
-    renderHistory(Engine.getHistory(), pol);
-
-    // footer
-    els.footPolicy.textContent = `S${pol}`;
-    els.footDetector.textContent = `S${det}`;
-    els.footHold.textContent = String(step.hold);
-
-    // persist dashboard snapshot so refresh does not feel like a reboot
-    dashState = {
-      lastPrice: s.price,
-      lastTs: s.ts,
-      lastSrc: s.source,
-      lastPolicy: pol,
-      lastDetector: det,
-      lastConf: step.conf,
-      lastProbs: step.probs,
-      lastHold: step.hold,
-      lastTick: step.tickN
+      log: []
     };
-    persistDashState();
 
-    // log row
-    addLogSample({
-      time: fmtTime(s.ts),
-      price: s.price.toFixed(5),
-      det: `S${det}`,
-      pol: `S${pol}`,
-      conf: confPct,
-      volx: step.features.volx.toFixed(2),
-      mom: bp(step.features.mom).toFixed(2),
-      stale: (s.status === "STALE") ? "Y" : "N",
-      src: s.source
-    });
-  }
+    // Ensure arrays exist
+    state.prices = state.prices || [];
+    state.probs = state.probs || Array(8).fill(1/8);
+    state.history = state.history || [];
+    state.log = state.log || [];
 
-  // ---------- Hydrate UI from persisted snapshot (immediate, then live updates take over) ----------
-  function hydrateFromPersisted(){
-    if (!dashState || !dashState.lastPrice) return;
+    /* ======= Quote providers (no backend, no keys) =======
+       We try TradingView scanner first.
+       If CORS blocks it, we fall back to other public endpoints.
+       All are spot sampled, not broker ticks.
+    */
 
-    // Feed panel
-    els.fxSpotPrice.textContent = Number(dashState.lastPrice).toFixed(5);
-    els.fxSpotLast.textContent = `Last good sample: ${fmtTime(dashState.lastTs || Date.now())}`;
-    els.fxSpotMeta.textContent = `Source: ${dashState.lastSrc || "--"} | Latency: --`;
-    els.fxSpotDelta.textContent = `Delta (last): 0.00000`;
+    async function fetchTradingViewEURUSD(){
+      const t0 = performance.now();
+      const url = "https://scanner.tradingview.com/forex/scan";
+      const body = {
+        symbols: { tickers: ["FX:EURUSD"], query: { types: [] } },
+        columns: ["close","open","high","low","change","change_abs","description","exchange","lp","update_mode"]
+      };
 
-    // Mini quote
-    els.miniPrice.textContent = Number(dashState.lastPrice).toFixed(5);
-    els.miniSrc.textContent = `Feed ${dashState.lastSrc || "--"}`;
-    els.miniDelta.textContent = "0.00000";
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type":"application/json" },
+        body: JSON.stringify(body),
+        cache: "no-store",
+        mode: "cors"
+      });
 
-    // Engine outputs (best effort)
-    if (dashState.lastPolicy){
-      const pol = dashState.lastPolicy;
-      const polName = STATES[pol-1]?.name || "--";
-      const polDesc = STATES[pol-1]?.desc || "--";
-      els.policyStateTitle.textContent = `Policy State: S${pol} ${polName}`;
-      els.policyStateDesc.textContent = polDesc;
-      els.policyChip.textContent = `S${pol}`;
-      els.stateBadge.textContent = String(pol);
-      els.footPolicy.textContent = `S${pol}`;
-      renderHistory([pol], pol);
+      if(!res.ok) throw new Error(`TradingView scan HTTP ${res.status}`);
+      const json = await res.json();
+      const row = json?.data?.[0];
+      const close = row?.d?.[0];
+      if(typeof close !== "number") throw new Error("TradingView scan parse error");
+      const latency = Math.round(performance.now() - t0);
+      return { ok:true, price: close, source: "tradingview.com", latency };
     }
-    if (dashState.lastDetector){
-      els.detectorChip.textContent = `S${dashState.lastDetector}`;
-      els.footDetector.textContent = `S${dashState.lastDetector}`;
+
+    async function fetchOpenER(){
+      const t0 = performance.now();
+      // open.er-api returns rates, not a true spot tick, but updates frequently
+      const url = "https://open.er-api.com/v6/latest/EUR?_=" + Date.now();
+      const res = await fetch(url, { cache:"no-store" });
+      if(!res.ok) throw new Error(`open.er-api HTTP ${res.status}`);
+      const json = await res.json();
+      const usd = json?.rates?.USD;
+      if(typeof usd !== "number") throw new Error("open.er-api parse error");
+      const latency = Math.round(performance.now() - t0);
+      return { ok:true, price: usd, source: "open.er-api.com", latency };
     }
-    if (dashState.lastConf != null){
-      els.confChip.textContent = (dashState.lastConf*100).toFixed(1) + "%";
-      setRisk(dashState.lastPolicy, dashState.lastConf);
+
+    async function fetchFloatRates(){
+      const t0 = performance.now();
+      // FloatRates EUR base
+      const url = "https://www.floatrates.com/daily/eur.json?_=" + Date.now();
+      const res = await fetch(url, { cache:"no-store" });
+      if(!res.ok) throw new Error(`floatrates HTTP ${res.status}`);
+      const json = await res.json();
+      const usd = json?.usd?.rate;
+      if(typeof usd !== "number") throw new Error("floatrates parse error");
+      const latency = Math.round(performance.now() - t0);
+      return { ok:true, price: usd, source: "floatrates.com", latency };
     }
-    if (Array.isArray(dashState.lastProbs) && dashState.lastProbs.length === 8){
-      dashState.lastProbs.forEach((p,i)=>{
-        const pct = p*100;
-        probEls[i].bar.style.width = `${clamp(pct,0,100)}%`;
-        probEls[i].bar.style.background = STATES[i].color;
-        probEls[i].val.textContent = `${pct.toFixed(1)}%`;
+
+    async function fetchFrankfurter(){
+      const t0 = performance.now();
+      // ECB based, may be delayed
+      const url = "https://api.frankfurter.app/latest?from=EUR&to=USD&_=" + Date.now();
+      const res = await fetch(url, { cache:"no-store" });
+      if(!res.ok) throw new Error(`frankfurter HTTP ${res.status}`);
+      const json = await res.json();
+      const usd = json?.rates?.USD;
+      if(typeof usd !== "number") throw new Error("frankfurter parse error");
+      const latency = Math.round(performance.now() - t0);
+      return { ok:true, price: usd, source: "frankfurter.app", latency };
+    }
+
+    const PROVIDERS = [
+      fetchTradingViewEURUSD,
+      fetchOpenER,
+      fetchFloatRates,
+      fetchFrankfurter
+    ];
+
+    async function fetchQuote(){
+      // Try sequentially, first success wins.
+      // If TradingView is blocked, we still get a real reference rate from other sources.
+      let lastErr = null;
+      for(const fn of PROVIDERS){
+        try{
+          const r = await fn();
+          if(r?.ok && typeof r.price === "number" && Number.isFinite(r.price)){
+            return r;
+          }
+        }catch(e){
+          lastErr = e;
+          continue;
+        }
+      }
+      throw lastErr || new Error("All providers failed");
+    }
+
+    /* ======= Feature engineering ======= */
+    function computeFeatures(prices){
+      // Need enough samples for any stability
+      const n = prices.length;
+      if(n < CONFIG.minFeatureWindow) return null;
+
+      // Use last window
+      const w = Math.min(90, n);
+      const p = prices.slice(n - w);
+
+      // Returns
+      const rets = [];
+      for(let i=1;i<p.length;i++){
+        const r = Math.log(p[i]/p[i-1]);
+        if(Number.isFinite(r)) rets.push(r);
+      }
+      if(rets.length < 10) return null;
+
+      const mean = rets.reduce((a,b)=>a+b,0)/rets.length;
+      const varr = rets.reduce((a,b)=>a+(b-mean)*(b-mean),0)/Math.max(1,rets.length-1);
+      const vol = Math.sqrt(varr);
+
+      // Momentum: last vs average
+      const mom = (p[p.length-1] - p[Math.max(0,p.length-11)]) / p[p.length-1]; // approx 10-step
+      // Range
+      const hi = Math.max(...p);
+      const lo = Math.min(...p);
+      const range = (hi - lo) / p[p.length-1];
+
+      // Jump: max absolute return vs vol
+      const maxAbs = Math.max(...rets.map(x=>Math.abs(x)));
+      const jump = vol > 0 ? (maxAbs / vol) : 0;
+
+      // Mean reversion pressure: negative autocorr proxy
+      let ac = 0;
+      for(let i=1;i<rets.length;i++){
+        ac += rets[i]*rets[i-1];
+      }
+      ac /= Math.max(1, rets.length-1);
+      const acNorm = vol>0 ? ac/(vol*vol) : 0;
+
+      return {
+        vol,
+        mom,
+        range,
+        jump,
+        mean,
+        acNorm
+      };
+    }
+
+    function softmax(scores){
+      const m = Math.max(...scores);
+      const ex = scores.map(s => Math.exp(s - m));
+      const sum = ex.reduce((a,b)=>a+b,0) || 1;
+      return ex.map(x => x/sum);
+    }
+
+    function computeProbabilities(features){
+      // Simple scoring model. This is not "truth".
+      // It maps EURUSD spot behavior to regime likelihoods for a UI.
+      const { vol, mom, range, jump, acNorm } = features;
+
+      // Normalize into rough bands
+      const v = clamp(vol * 1000, 0, 4);       // vol scale
+      const m = clamp(mom * 10000, -40, 40);   // bp scale
+      const r = clamp(range * 1000, 0, 6);
+      const j = clamp(jump, 0, 10);
+      const ac = clamp(acNorm, -2, 2);
+
+      // Scores per state
+      // S1 mean reverting: low vol, negative autocorr, low range
+      const s1 =  2.2 - 0.9*v - 0.5*r - 0.3*j + 0.9*(-ac);
+
+      // S2 liquidity vacuum: higher jump, rising vol, range, unstable
+      const s2 = -0.6 + 0.9*v + 0.8*r + 1.1*j;
+
+      // S3 slow drift: low vol, small momentum
+      const s3 =  1.5 - 0.7*v - 0.3*r - 0.4*j - 0.02*Math.abs(m);
+
+      // S4 strong trend: positive momentum magnitude, moderate vol
+      const s4 =  0.2 + 0.02*Math.abs(m) + 0.3*v - 0.2*j;
+
+      // S5 stop cascade: vol and range high, jump moderately high
+      const s5 = -0.2 + 0.7*v + 0.9*r + 0.5*j;
+
+      // S6 news shock: jump very high dominates
+      const s6 = -1.0 + 1.4*j + 0.4*v;
+
+      // S7 dealer unwind: momentum flips, mean reversion plus elevated vol
+      const s7 = -0.3 + 0.5*v + 0.2*r + 0.5*(-ac) + 0.01*Math.abs(m);
+
+      // S8 panic/forced: extreme vol and jump and range
+      const s8 = -1.2 + 1.0*v + 1.0*r + 1.2*j;
+
+      const probs = softmax([s1,s2,s3,s4,s5,s6,s7,s8]);
+      return probs;
+    }
+
+    function topIndex(arr){
+      let mi=0;
+      for(let i=1;i<arr.length;i++) if(arr[i]>arr[mi]) mi=i;
+      return mi;
+    }
+
+    function updatePolicy(detectorIdx, probs){
+      // Apply hysteresis so policy does not flip constantly.
+      // We only switch if:
+      // - we have held at least holdTicks
+      // - new top prob exceeds current policy prob by margin
+      const newTop = detectorIdx;
+      if(state.policy == null){
+        state.policy = newTop;
+        state.holdTicks = 0;
+        return;
+      }
+
+      if(newTop === state.policy){
+        state.holdTicks = 0;
+        return;
+      }
+
+      state.holdTicks += 1;
+
+      const curP = probs[state.policy] ?? 0;
+      const newP = probs[newTop] ?? 0;
+
+      const canSwitch = (state.holdTicks >= CONFIG.hysteresisHoldTicks) && ((newP - curP) >= CONFIG.hysteresisMargin);
+
+      if(canSwitch){
+        state.policy = newTop;
+        state.holdTicks = 0;
+      }
+    }
+
+    function riskFromPolicy(policyIdx){
+      const s = STATES[policyIdx] || STATES[0];
+      return s;
+    }
+
+    /* ======= Rendering ======= */
+    function renderBars(probs){
+      ui.bars.innerHTML = "";
+      for(let i=0;i<8;i++){
+        const st = STATES[i];
+        const pct = clamp((probs[i] || 0) * 100, 0, 100);
+        const row = document.createElement("div");
+        row.className = "barRow";
+
+        const lbl = document.createElement("div");
+        lbl.className = "lbl";
+        lbl.textContent = `State ${st.id}: ${st.name}`;
+
+        const bar = document.createElement("div");
+        bar.className = "bar";
+        const fill = document.createElement("i");
+        fill.className = st.colorClass;
+        fill.style.width = pct.toFixed(1) + "%";
+        bar.appendChild(fill);
+
+        const val = document.createElement("div");
+        val.className = "pct";
+        val.textContent = pct.toFixed(1) + "%";
+
+        row.appendChild(lbl);
+        row.appendChild(bar);
+        row.appendChild(val);
+        ui.bars.appendChild(row);
+      }
+    }
+
+    function renderHistory(history){
+      ui.historyDots.innerHTML = "";
+      const last = history[history.length-1];
+      history.slice(-12).forEach((s, idx) => {
+        const d = document.createElement("div");
+        d.className = "hDot" + ((s===last) ? " active" : "");
+        d.textContent = String(s+1);
+        ui.historyDots.appendChild(d);
       });
     }
-    if (dashState.lastTick){
-      els.tickChip.textContent = String(dashState.lastTick);
+
+    function setStatus(tag){
+      ui.fhStatus.classList.remove("tagLive","tagStale","tagErr");
+      if(tag==="LIVE"){ ui.fhStatus.classList.add("tagLive"); ui.fhStatus.textContent="LIVE"; }
+      else if(tag==="STALE"){ ui.fhStatus.classList.add("tagStale"); ui.fhStatus.textContent="STALE"; }
+      else { ui.fhStatus.classList.add("tagErr"); ui.fhStatus.textContent="ERROR"; }
     }
-    if (dashState.lastHold != null){
-      els.footHold.textContent = String(dashState.lastHold);
+
+    function renderAll(){
+      ui.lastUpdate.textContent = state.lastGoodAt ? fmtTime(new Date(state.lastGoodAt)) : "--";
+      ui.tickChip.textContent = state.tick ?? "--";
+      ui.staleChip.textContent = state.stalePolls ?? 0;
+
+      ui.qPrice.textContent = (state.lastPrice != null) ? round(state.lastPrice, 5) : "--";
+      ui.fhPrice.textContent = (state.lastPrice != null) ? round(state.lastPrice, 5) : "--";
+      ui.fhLast.textContent = state.lastGoodAt ? fmtTime(new Date(state.lastGoodAt)) : "--";
+
+      ui.fhSource.textContent = state.lastSource || "--";
+      ui.qSource.textContent = "source: " + (state.lastSource || "--");
+      ui.fhLatency.textContent = (state.lastLatencyMs != null) ? (state.lastLatencyMs + "ms") : "--";
+      ui.qLatency.textContent = (state.lastLatencyMs != null) ? (state.lastLatencyMs + "ms") : "--";
+
+      const lastDelta = (state.prices.length >= 2) ? (state.prices[state.prices.length-1] - state.prices[state.prices.length-2]) : 0;
+      ui.fhDelta.textContent = (state.lastPrice != null) ? (lastDelta >=0 ? "+" : "") + round(lastDelta, 5) : "--";
+      ui.qDelta.textContent = (state.lastPrice != null) ? (lastDelta >=0 ? "+" : "") + round(lastDelta, 5) : "--";
+
+      ui.fhStalePolls.textContent = String(state.stalePolls ?? 0);
+
+      // spark
+      const sparkW = clamp(50 + (lastDelta * 80000), 5, 95);
+      ui.sparkBar.style.width = sparkW.toFixed(0) + "%";
+
+      // policy and detector
+      const det = (state.detector != null) ? STATES[state.detector] : null;
+      const pol = (state.policy != null) ? STATES[state.policy] : null;
+
+      ui.detChip.textContent = det ? `S${det.id}` : "--";
+      ui.polChip.textContent = pol ? `S${pol.id}` : "--";
+
+      ui.stateTitle.textContent = pol ? `Policy State: ${pol.name}` : "Policy State: --";
+      ui.stateBadge.textContent = pol ? String(pol.id) : "--";
+
+      // Confidence is just top prob
+      const conf = state.confidence || 0;
+      ui.confChip.textContent = (pol ? (conf*100).toFixed(1) + "%" : "--");
+
+      // hysteresis display
+      const hyst = (state.stalePolls >= CONFIG.staleLimit) ? "paused (stale)" : (state.holdTicks > 0 ? `holding (${state.holdTicks})` : "stable");
+      ui.hystChip.textContent = hyst;
+
+      // risk box from policy
+      if(pol){
+        const risk = riskFromPolicy(state.policy);
+        ui.riskLevel.textContent = risk.risk;
+        ui.riskRule.textContent = "Rule: " + risk.rule;
+        ui.riskBox.classList.remove("normal","elevated","critical");
+        ui.riskBox.classList.add(
+          risk.risk === "CRITICAL" ? "critical" : (risk.risk === "ELEVATED" ? "elevated" : "normal")
+        );
+      } else {
+        ui.riskLevel.textContent = "--";
+        ui.riskRule.textContent = "Rule: --";
+      }
+
+      // history and probabilities
+      renderHistory(state.history || []);
+      renderBars(state.probs || Array(8).fill(1/8));
+
+      // footer
+      ui.sysStatus.textContent = state.paused ? "PAUSED" : "LIVE";
+      ui.footPolicy.textContent = pol ? `S${pol.id}` : "--";
+      ui.footDet.textContent = det ? `S${det.id}` : "--";
+      ui.footHold.textContent = String(state.holdTicks ?? 0);
+
+      // top live indicator
+      if(state.paused){
+        ui.liveDot.style.background = "var(--warn)";
+        ui.liveText.textContent = "PAUSED";
+        ui.pauseBtn.textContent = "Resume";
+      } else {
+        ui.liveDot.style.background = "var(--good)";
+        ui.liveText.textContent = "LIVE";
+        ui.pauseBtn.textContent = "Pause";
+      }
+
+      // feed status
+      if(state.lastPrice == null){
+        setStatus("ERROR");
+        ui.engineHint.textContent = "Waiting for a valid EUR/USD spot sample";
+      } else if(state.stalePolls >= CONFIG.staleLimit){
+        setStatus("STALE");
+        ui.engineHint.textContent = "Feed looks stale. Regime engine holds policy state to avoid fake flips.";
+      } else {
+        setStatus("LIVE");
+        ui.engineHint.textContent = "Live spot drives regime engine, no simulation";
+      }
+
+      // log
+      renderLog();
     }
-  }
 
-  // ---------- Start polling ----------
-  const POLL_MS = 12_000; // 10 to 15 seconds is sane for free endpoints
+    function renderLog(){
+      ui.logBody.innerHTML = "";
+      const rows = (state.log || []).slice(0, CONFIG.logMaxRows);
+      for(const r of rows){
+        const tr = document.createElement("tr");
+        const cells = [
+          r.time,
+          r.price,
+          r.det,
+          r.pol,
+          r.conf,
+          r.volx,
+          r.mom,
+          r.stale,
+          r.src
+        ];
+        cells.forEach((c) => {
+          const td = document.createElement("td");
+          td.textContent = c;
+          tr.appendChild(td);
+        });
+        ui.logBody.appendChild(tr);
+      }
+    }
 
-  async function start(){
-    initProbUI();
-    renderEvents();
-    renderHeadlines();
-    renderLog();
-    hydrateFromPersisted();
+    /* ======= Events and News rendering ======= */
+    function parseEvents(text){
+      const lines = (text||"").split("\n").map(s=>s.trim()).filter(Boolean);
+      const out = [];
+      for(const ln of lines){
+        const parts = ln.split("|").map(x=>x.trim());
+        if(parts.length < 3) continue;
+        const when = parts[0];
+        const impact = (parts[1]||"MED").toUpperCase();
+        const evt = parts.slice(2).join("|");
+        const dt = new Date(when.replace(" ", "T"));
+        out.push({ when, dt: isNaN(dt.getTime())? null : dt, impact, evt });
+      }
+      // sort by dt if valid
+      out.sort((a,b)=>{
+        if(!a.dt && !b.dt) return 0;
+        if(!a.dt) return 1;
+        if(!b.dt) return -1;
+        return a.dt - b.dt;
+      });
+      return out;
+    }
 
-    // Render initial empty history placeholders
-    renderHistory([], null);
+    function countdown(dt){
+      if(!dt) return "--";
+      const now = new Date();
+      const ms = dt - now;
+      if(ms <= 0) return "now";
+      const mins = Math.floor(ms/60000);
+      const hrs = Math.floor(mins/60);
+      const days = Math.floor(hrs/24);
+      const remH = hrs%24;
+      const remM = mins%60;
+      if(days>0) return `${days}d ${remH}h`;
+      if(hrs>0) return `${hrs}h ${remM}m`;
+      return `${mins}m`;
+    }
 
-    // first tick now
-    await SpotFeed.tick(onSpotUpdate);
+    function renderEvents(){
+      const evs = parseEvents(lists.events);
+      ui.eventsBody.innerHTML = "";
+      for(const e of evs.slice(0, 20)){
+        const tr = document.createElement("tr");
+        const tdWhen = document.createElement("td"); tdWhen.textContent = e.when.replace("T"," ");
+        const tdEvt = document.createElement("td"); tdEvt.textContent = e.evt;
 
-    // poll
-    setInterval(()=> SpotFeed.tick(onSpotUpdate), POLL_MS);
+        const tdImp = document.createElement("td");
+        const imp = document.createElement("span");
+        const cls = (e.impact==="HIGH") ? "high" : (e.impact==="LOW" ? "low" : "med");
+        imp.className = "impact " + cls;
+        const sq = document.createElement("span"); sq.className="sq";
+        imp.appendChild(sq);
+        imp.appendChild(document.createTextNode(e.impact));
+        tdImp.appendChild(imp);
 
-    // update countdowns for events without reloading everything
-    setInterval(()=> renderEvents(), 30_000);
-  }
+        const tdCd = document.createElement("td"); tdCd.textContent = countdown(e.dt);
 
-  start();
+        tr.appendChild(tdWhen);
+        tr.appendChild(tdEvt);
+        tr.appendChild(tdImp);
+        tr.appendChild(tdCd);
+        ui.eventsBody.appendChild(tr);
+      }
+    }
 
-})();
-</script>
+    function parseNews(text){
+      const lines = (text||"").split("\n").map(s=>s.trim()).filter(Boolean);
+      const out = [];
+      for(const ln of lines){
+        const parts = ln.split("|").map(x=>x.trim());
+        if(parts.length < 3) continue;
+        const time = parts[0];
+        const source = parts[1] || "Market";
+        const headline = parts[2] || "";
+        const url = parts[3] || "";
+        out.push({ time, source, headline, url });
+      }
+      return out;
+    }
+
+    function renderNews(){
+      const news = parseNews(lists.news);
+      ui.newsBody.innerHTML = "";
+      for(const n of news.slice(0, 25)){
+        const tr = document.createElement("tr");
+        const tdT = document.createElement("td"); tdT.textContent = n.time;
+        const tdS = document.createElement("td"); tdS.textContent = n.source;
+        const tdH = document.createElement("td");
+        if(n.url){
+          const a = document.createElement("a");
+          a.href = n.url;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          a.className = "link";
+          a.textContent = n.headline;
+          tdH.appendChild(a);
+        } else {
+          tdH.textContent = n.headline;
+        }
+        tr.appendChild(tdT);
+        tr.appendChild(tdS);
+        tr.appendChild(tdH);
+        ui.newsBody.appendChild(tr);
+      }
+    }
+
+    /* ======= Log helpers ======= */
+    function pushLogRow({price, det, pol, conf, volx, mom, stale, src}){
+      const row = {
+        time: fmtTime(new Date()),
+        price: (price != null) ? round(price, 5) : "--",
+        det: det ?? "--",
+        pol: pol ?? "--",
+        conf: conf ?? "--",
+        volx: volx ?? "--",
+        mom: mom ?? "--",
+        stale: stale ?? "--",
+        src: src ?? "--"
+      };
+      state.log = [row, ...(state.log || [])].slice(0, CONFIG.logMaxRows);
+    }
+
+    function logToCSV(){
+      const rows = state.log || [];
+      const header = ["time","eurusd","det","pol","conf","vol_x","mom_bp","stale","src"];
+      const lines = [header.join(",")];
+      for(const r of rows){
+        const line = [
+          r.time, r.price, r.det, r.pol, r.conf, r.volx, r.mom, r.stale, r.src
+        ].map(v => `"${String(v).replaceAll('"','""')}"`).join(",");
+        lines.push(line);
+      }
+      return lines.join("\n");
+    }
+
+    /* ======= Engine tick ======= */
+    function appendPrice(price){
+      state.prices.push(price);
+      if(state.prices.length > CONFIG.maxPriceSeries){
+        state.prices = state.prices.slice(-CONFIG.maxPriceSeries);
+      }
+    }
+
+    function updateEngineFromPrice(price, meta){
+      // meta: {source, latency, status}
+      appendPrice(price);
+
+      const features = computeFeatures(state.prices);
+      if(!features){
+        // Not enough data yet, keep defaults
+        state.probs = Array(8).fill(1/8);
+        state.detector = null;
+        state.policy = state.policy ?? 0;
+        state.confidence = 0;
+        return;
+      }
+
+      const probs = computeProbabilities(features);
+      state.probs = probs;
+
+      const detIdx = topIndex(probs); // 0..7
+      state.detector = detIdx;
+
+      updatePolicy(detIdx, probs);
+
+      const topP = probs[detIdx] || 0;
+      state.confidence = topP;
+
+      // History shows policy states
+      if(state.policy != null){
+        state.history.push(state.policy);
+        if(state.history.length > 80) state.history = state.history.slice(-80);
+      }
+
+      // Derived values for log
+      const volx = clamp(features.vol * 10000, 0, 99); // rough in bp
+      const momBp = bp(features.mom);
+
+      pushLogRow({
+        price,
+        det: `S${(state.detector ?? 0)+1}`,
+        pol: `S${(state.policy ?? 0)+1}`,
+        conf: (topP*100).toFixed(1) + "%",
+        volx: volx.toFixed(2),
+        mom: momBp.toFixed(2),
+        stale: (state.stalePolls >= CONFIG.staleLimit) ? "Y" : "N",
+        src: meta?.source || "--"
+      });
+    }
+
+    /* ======= Poll loop ======= */
+    let pollTimer = null;
+
+    async function pollOnce(force=false){
+      if(state.paused && !force) return;
+
+      state.tick = (state.tick || 0) + 1;
+
+      let q;
+      try{
+        q = await fetchQuote();
+      }catch(e){
+        // On total failure, mark error, do not change engine state
+        state.stalePolls = (state.stalePolls || 0) + 1;
+        state.lastSource = "none";
+        state.lastLatencyMs = null;
+        renderAll();
+        saveState();
+        return;
+      }
+
+      const newPrice = q.price;
+      const prevPrice = state.lastPrice;
+
+      // Detect stale repeats
+      let delta = 0;
+      if(prevPrice != null) delta = Math.abs(newPrice - prevPrice);
+
+      const moved = (prevPrice == null) ? true : (delta >= CONFIG.minMove);
+
+      state.lastLatencyMs = q.latency;
+      state.lastSource = q.source;
+
+      if(moved){
+        state.lastPrice = newPrice;
+        state.lastGoodAt = Date.now();
+        state.stalePolls = 0;
+
+        updateEngineFromPrice(newPrice, {source:q.source, latency:q.latency});
+
+      } else {
+        state.stalePolls = (state.stalePolls || 0) + 1;
+
+        // If stale is too long, do not update engine (no fake flips)
+        // Still keep UI updated with status.
+        if(state.stalePolls < CONFIG.staleLimit){
+          // We can still re-log as unchanged if you want continuity
+          pushLogRow({
+            price: newPrice,
+            det: state.detector != null ? `S${state.detector+1}` : "--",
+            pol: state.policy != null ? `S${state.policy+1}` : "--",
+            conf: state.confidence ? (state.confidence*100).toFixed(1)+"%" : "--",
+            volx: "--",
+            mom: "--",
+            stale: "Y",
+            src: q.source
+          });
+        }
+      }
+
+      renderAll();
+      saveState();
+    }
+
+    function startPolling(){
+      if(pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(()=>pollOnce(false), CONFIG.pollMs);
+    }
+
+    /* ======= TradingView embed (display) ======= */
+    function loadTradingViewWidget(){
+      // Lightweight embed via TV script
+      // Note: This is display-only. We cannot read price from it due to iframe security.
+      const script = document.createElement("script");
+      script.src = "https://s3.tradingview.com/tv.js";
+      script.async = true;
+      script.onload = () => {
+        try{
+          new TradingView.widget({
+            "container_id": "tvChart",
+            "symbol": "FX:EURUSD",
+            "interval": "D",
+            "timezone": "Etc/UTC",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "hide_top_toolbar": false,
+            "hide_legend": false,
+            "allow_symbol_change": false,
+            "save_image": false,
+            "details": false,
+            "calendar": false,
+            "width": "100%",
+            "height": 360
+          });
+        }catch(e){}
+      };
+      document.body.appendChild(script);
+    }
+
+    /* ======= Modal controls ======= */
+    function openModal(){
+      ui.eventsText.value = lists.events || "";
+      ui.newsText.value = lists.news || "";
+      ui.modalBackdrop.style.display = "flex";
+    }
+    function closeModal(){
+      ui.modalBackdrop.style.display = "none";
+    }
+
+    /* ======= Buttons ======= */
+    ui.pauseBtn.addEventListener("click", ()=>{
+      state.paused = !state.paused;
+      renderAll();
+      saveState();
+    });
+    ui.syncBtn.addEventListener("click", ()=>{
+      pollOnce(true);
+    });
+    ui.copyCsvBtn.addEventListener("click", async ()=>{
+      const csv = logToCSV();
+      try{
+        await navigator.clipboard.writeText(csv);
+        ui.copyCsvBtn.textContent = "Copied";
+        setTimeout(()=> ui.copyCsvBtn.textContent="Copy as CSV", 900);
+      }catch(e){
+        // fallback
+        const ta = document.createElement("textarea");
+        ta.value = csv;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+      }
+    });
+    ui.clearLogBtn.addEventListener("click", ()=>{
+      state.log = [];
+      renderAll();
+      saveState();
+    });
+
+    ui.editBtn.addEventListener("click", openModal);
+    ui.closeModalBtn.addEventListener("click", closeModal);
+    ui.closeModalBtn2.addEventListener("click", closeModal);
+    ui.modalBackdrop.addEventListener("click", (e)=>{
+      if(e.target === ui.modalBackdrop) closeModal();
+    });
+
+    ui.saveListsBtn.addEventListener("click", ()=>{
+      lists = { events: ui.eventsText.value.trim(), news: ui.newsText.value.trim() };
+      saveLists(lists);
+      renderEvents();
+      renderNews();
+      closeModal();
+    });
+
+    ui.loadDefaultsBtn.addEventListener("click", ()=>{
+      const d = defaultLists();
+      ui.eventsText.value = d.events;
+      ui.newsText.value = d.news;
+    });
+
+    /* ======= Init ======= */
+    function init(){
+      // Ensure at least one placeholder policy
+      if(state.policy == null) state.policy = 0;
+
+      // Render lists
+      renderEvents();
+      renderNews();
+
+      // Render dashboard
+      renderAll();
+
+      // Poll immediately then interval
+      pollOnce(true);
+      startPolling();
+
+      // Update countdowns every 30s
+      setInterval(renderEvents, 30000);
+
+      // Load chart
+      loadTradingViewWidget();
+    }
+
+    init();
+  </script>
 </body>
 </html>
