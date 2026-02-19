@@ -7,26 +7,35 @@
 
   <style>
     :root{
-      --bg0:#050a1a;
+      --bg0:#040816;
       --bg1:#07122f;
+      --bg2:#0b1a42;
+
       --card: rgba(10, 25, 60, 0.55);
       --card2: rgba(12, 34, 84, 0.42);
-      --stroke: rgba(120, 170, 255, 0.22);
-      --stroke2: rgba(120, 170, 255, 0.12);
+
+      --stroke: rgba(140, 185, 255, 0.22);
+      --stroke2: rgba(140, 185, 255, 0.12);
+
       --text:#e9f0ff;
-      --muted: rgba(233,240,255,0.7);
+      --muted: rgba(233,240,255,0.72);
       --muted2: rgba(233,240,255,0.55);
+
       --blue:#2b6cff;
       --green:#18d18a;
       --amber:#ffb020;
       --red:#ff4d4d;
       --pink:#ff3aa5;
+      --violet:#a078ff;
+
       --shadow: 0 18px 55px rgba(0,0,0,0.55);
       --shadow2: 0 10px 30px rgba(0,0,0,0.45);
+
       --radius: 22px;
       --radius2: 16px;
       --pad: 18px;
       --pad2: 14px;
+
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
@@ -37,16 +46,16 @@
       font-family: var(--font);
       color:var(--text);
       background:
-        radial-gradient(1200px 700px at 20% 20%, rgba(80,140,255,0.22), transparent 55%),
-        radial-gradient(900px 600px at 70% 35%, rgba(22,210,170,0.16), transparent 55%),
-        radial-gradient(900px 700px at 35% 85%, rgba(255,80,180,0.12), transparent 60%),
+        radial-gradient(1200px 700px at 18% 18%, rgba(80,140,255,0.24), transparent 55%),
+        radial-gradient(900px 600px at 72% 30%, rgba(22,210,170,0.16), transparent 55%),
+        radial-gradient(900px 700px at 40% 86%, rgba(255,80,180,0.12), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
       overflow-x:hidden;
     }
 
     .wrap{
-      max-width: 1400px;
-      margin: 22px auto 40px;
+      max-width: 1440px;
+      margin: 22px auto 44px;
       padding: 0 16px;
     }
 
@@ -71,17 +80,17 @@
       display:flex;
       align-items:center;
       gap: 14px;
-      min-width: 280px;
+      min-width: 300px;
     }
 
     .qxlogo{
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
       display:grid;
       place-items:center;
-      font-weight: 900;
-      letter-spacing: 0.5px;
+      font-weight: 1000;
+      letter-spacing: 0.4px;
       background: rgba(10,25,60,0.45);
       border: 1px solid rgba(210,230,255,0.18);
       box-shadow: var(--shadow2);
@@ -91,11 +100,12 @@
       margin:0;
       font-size: 18px;
       line-height: 1.1;
+      letter-spacing: 0.2px;
     }
     .brand .sub{
-      margin-top: 2px;
+      margin-top: 3px;
       font-size: 12px;
-      color: rgba(255,255,255,0.78);
+      color: rgba(255,255,255,0.8);
     }
 
     .top-actions{
@@ -114,7 +124,7 @@
       border-radius: 999px;
       background: rgba(10,25,60,0.35);
       border:1px solid rgba(210,230,255,0.16);
-      color: rgba(255,255,255,0.9);
+      color: rgba(255,255,255,0.92);
       font-size: 12px;
       box-shadow: 0 8px 22px rgba(0,0,0,0.25);
       white-space:nowrap;
@@ -134,7 +144,7 @@
       color: rgba(255,255,255,0.92);
       border-radius: 999px;
       padding: 9px 14px;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 12px;
       letter-spacing: 0.2px;
       box-shadow: 0 8px 22px rgba(0,0,0,0.25);
@@ -148,31 +158,29 @@
       border-color: rgba(120,170,255,0.26);
     }
 
-    /* Grid layout */
+    /* Layout */
     .grid{
       display:grid;
-      grid-template-columns: 2fr 1fr;
+      grid-template-columns: 2.2fr 1fr;
       gap: 16px;
       margin-top: 16px;
     }
-
     @media (max-width: 1100px){
       .grid{ grid-template-columns: 1fr; }
       .brand{ min-width: unset; }
     }
 
+    .stack{ display:grid; gap: 16px; }
+
     .card{
-      background: linear-gradient(180deg, rgba(10,25,60,0.55), rgba(7,12,30,0.35));
+      background: linear-gradient(180deg, rgba(10,25,60,0.58), rgba(7,12,30,0.36));
       border:1px solid rgba(210,230,255,0.16);
       border-radius: var(--radius);
       box-shadow: var(--shadow2);
       overflow:hidden;
       position:relative;
     }
-
-    .card .inner{
-      padding: var(--pad);
-    }
+    .card .inner{ padding: var(--pad); }
 
     .card-title{
       display:flex;
@@ -181,7 +189,6 @@
       gap:12px;
       margin-bottom: 12px;
     }
-
     .card-title h2{
       margin:0;
       font-size: 13px;
@@ -193,25 +200,57 @@
       font-size: 12px;
       color: rgba(255,255,255,0.55);
       text-align:right;
-      max-width: 360px;
-      line-height: 1.25;
+      max-width: 420px;
     }
 
-    /* Current state */
-    .stateBig{
-      font-size: 40px;
-      font-weight: 900;
-      letter-spacing: 0.2px;
-      margin: 6px 0 2px;
+    /* HERO Current Market State */
+    .hero{
+      position:relative;
+      padding: 18px;
+      border-radius: var(--radius);
+      background:
+        radial-gradient(900px 420px at 30% 20%, rgba(120,170,255,0.20), transparent 60%),
+        radial-gradient(780px 420px at 80% 65%, rgba(24,209,138,0.10), transparent 60%),
+        linear-gradient(180deg, rgba(8,18,42,0.60), rgba(5,10,24,0.28));
+      border: 1px solid rgba(210,230,255,0.14);
+      overflow:hidden;
     }
-    .muted{ color: var(--muted); font-size: 13px; line-height:1.35; }
-    .muted2{ color: var(--muted2); font-size: 12px; line-height:1.35; }
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(420px 240px at 18% 30%, rgba(255,58,165,0.06), transparent 60%),
+        radial-gradient(520px 260px at 70% 10%, rgba(255,176,32,0.05), transparent 60%);
+      pointer-events:none;
+    }
+    .heroGrid{
+      display:grid;
+      grid-template-columns: 1.7fr 0.9fr;
+      gap: 14px;
+      align-items: stretch;
+      position:relative;
+      z-index:1;
+    }
+    @media (max-width: 900px){
+      .heroGrid{ grid-template-columns: 1fr; }
+    }
+
+    .heroTitle{
+      font-size: 42px;
+      font-weight: 1100;
+      letter-spacing: 0.2px;
+      margin: 4px 0 6px;
+      line-height: 1.08;
+      text-shadow: 0 12px 42px rgba(0,0,0,0.45);
+    }
+    .heroSub{ color: var(--muted); font-size: 13px; max-width: 740px; }
 
     .chips{
       display:flex;
       gap: 10px;
       flex-wrap:wrap;
-      margin-top: 10px;
+      margin-top: 12px;
       align-items:center;
     }
     .chip{
@@ -221,96 +260,106 @@
       padding: 7px 10px;
       border-radius: 999px;
       font-size: 12px;
-      color: rgba(255,255,255,0.88);
+      color: rgba(255,255,255,0.9);
       background: rgba(10,25,60,0.30);
       border: 1px solid rgba(210,230,255,0.14);
       white-space:nowrap;
     }
-    .chip b{ font-weight:900; }
+    .chip b{ font-weight: 950; font-variant-numeric: tabular-nums; }
+    .chip.kpi{
+      background: rgba(10,25,60,0.40);
+      border-color: rgba(120,170,255,0.22);
+    }
 
-    .history{
+    /* Quote box (fixed readability) */
+    .quoteCard{
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(10,25,60,0.40), rgba(6,10,24,0.20));
+      border:1px solid rgba(210,230,255,0.14);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      padding: 14px 14px 12px;
       display:flex;
-      gap: 8px;
-      flex-wrap:wrap;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(210,230,255,0.12);
+      flex-direction:column;
+      justify-content:space-between;
+      min-height: 172px;
     }
-    .hbox{
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      display:grid;
-      place-items:center;
-      font-weight: 900;
-      background: rgba(10,25,60,0.25);
-      border:1px solid rgba(210,230,255,0.12);
+    .quoteTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .quotePair{
+      font-size: 12px;
       color: rgba(255,255,255,0.82);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      font-weight: 900;
     }
-    .hbox.active{
-      border-color: rgba(120,170,255,0.35);
-      box-shadow: 0 0 0 4px rgba(120,170,255,0.12);
+    .quoteSrc{
+      font-size: 11px;
+      color: rgba(255,255,255,0.55);
+      text-align:right;
     }
-
-    .stateBadge{
-      position:absolute;
-      right: 18px;
-      top: 18px;
-      width: 68px;
-      height: 68px;
-      border-radius: 999px;
-      display:grid;
-      place-items:center;
-      font-weight: 1000;
-      font-size: 26px;
-      background: rgba(10,25,60,0.28);
-      border:1px solid rgba(210,230,255,0.18);
-      box-shadow: var(--shadow2);
-      user-select:none;
+    .quotePx{
+      margin-top: 10px;
+      font-size: 34px;
+      font-weight: 1100;
+      letter-spacing: 0.2px;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
     }
-
-    /* Mini quote box (fixed readability + alignment) */
-    .miniQuote{
-      position:absolute;
-      right: 104px;
-      top: 58px;
-      width: 220px;
-      border-radius: 14px;
-      background: rgba(10,25,60,0.34);
-      border:1px solid rgba(210,230,255,0.16);
-      box-shadow: var(--shadow2);
-      padding: 10px 12px;
-      user-select:none;
-    }
-    .miniQuote .row{
+    .quoteDeltaRow{
+      margin-top: 8px;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;
-      font-size: 11px;
-      color: rgba(255,255,255,0.80);
-      line-height: 1.2;
-    }
-    .miniQuote .px{
-      font-size: 22px;
-      font-weight: 1000;
-      letter-spacing: 0.2px;
-      margin: 6px 0 2px;
+      color: rgba(255,255,255,0.65);
+      font-size: 12px;
       font-variant-numeric: tabular-nums;
     }
-    .miniQuote .bar{
-      height: 6px;
+    .quoteBar{
+      height: 8px;
       border-radius: 999px;
       background: rgba(255,255,255,0.10);
       overflow:hidden;
       margin-top: 10px;
     }
-    .miniQuote .bar > i{
+    .quoteBar > i{
       display:block;
       height:100%;
-      width: 40%;
+      width: 18%;
       background: rgba(24,209,138,0.85);
+      border-radius: 999px;
     }
+    .quoteBadge{
+      margin-top: 10px;
+      display:flex;
+      gap: 8px;
+      flex-wrap:wrap;
+    }
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(210,230,255,0.14);
+      background: rgba(10,25,60,0.26);
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.9);
+      white-space:nowrap;
+    }
+    .sdot{
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--amber);
+      box-shadow: 0 0 0 4px rgba(255,176,32,0.18);
+    }
+    .sdot.live{ background: var(--green); box-shadow: 0 0 0 4px rgba(24,209,138,0.18); }
+    .sdot.err{ background: var(--red); box-shadow: 0 0 0 4px rgba(255,77,77,0.18); }
 
     /* Risk level card */
     .riskLevel{
@@ -325,25 +374,30 @@
     }
     .riskLevel .big{
       font-size: 42px;
-      font-weight: 1000;
+      font-weight: 1100;
       margin: 6px 0 2px;
+      letter-spacing: 0.2px;
     }
     .riskLevel .rule{
       font-size: 12px;
       color: rgba(255,255,255,0.68);
-      line-height:1.35;
-      max-width: 360px;
+      max-width: 320px;
       margin: 0 auto;
     }
 
-    /* Probabilities */
+    /* Probabilities compact inside hero */
+    .probCompact{
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(210,230,255,0.10);
+    }
     .probRow{
       display:grid;
-      grid-template-columns: 240px 1fr 72px;
-      gap: 12px;
+      grid-template-columns: 210px 1fr 68px;
+      gap: 10px;
       align-items:center;
-      padding: 10px 0;
-      border-top: 1px solid rgba(210,230,255,0.08);
+      padding: 8px 0;
+      border-top: 1px solid rgba(210,230,255,0.06);
     }
     .probRow:first-child{ border-top:none; }
     .probName{
@@ -352,12 +406,16 @@
       display:flex;
       align-items:center;
       gap:10px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
     }
     .pdot{
       width: 14px;
       height: 6px;
       border-radius: 999px;
       background: rgba(255,255,255,0.18);
+      flex: 0 0 auto;
     }
     .pbar{
       height: 8px;
@@ -380,61 +438,83 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* Feed health */
-    .feedGrid{
+    /* Macro drivers */
+    .kpiGrid{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      align-items:stretch;
     }
     @media (max-width: 540px){
-      .feedGrid{ grid-template-columns: 1fr; }
+      .kpiGrid{ grid-template-columns: 1fr; }
     }
-    .feedBox{
+    .kpi{
       border-radius: 18px;
       background: rgba(10,25,60,0.25);
       border:1px solid rgba(210,230,255,0.12);
       padding: 14px;
+      min-height: 112px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
     }
-    .feedBox .k{
-      font-size: 12px;
-      color: rgba(255,255,255,0.7);
-    }
-    .feedBox .v{
-      font-size: 30px;
-      font-weight: 1000;
-      margin-top: 6px;
+    .kpi .k{ font-size: 12px; color: rgba(255,255,255,0.70); }
+    .kpi .v{
+      margin-top: 8px;
+      font-size: 26px;
+      font-weight: 1100;
+      letter-spacing: 0.2px;
       font-variant-numeric: tabular-nums;
     }
-    .feedMeta{
+    .kpi .m{
+      margin-top: 6px;
       font-size: 12px;
       color: rgba(255,255,255,0.62);
-      margin-top: 6px;
       line-height: 1.35;
+      font-variant-numeric: tabular-nums;
     }
-    .statusPill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(210,230,255,0.14);
-      background: rgba(10,25,60,0.26);
-      font-size: 12px;
-      font-weight: 900;
-      color: rgba(255,255,255,0.88);
+    .pos{ color: rgba(24,209,138,0.95); }
+    .neg{ color: rgba(255,77,77,0.95); }
+
+    /* Forward projection */
+    .projTop{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    @media (max-width: 900px){
+      .projTop{ grid-template-columns: 1fr 1fr; }
+    }
+    .projBox{
+      border-radius: 18px;
+      background: rgba(10,25,60,0.25);
+      border:1px solid rgba(210,230,255,0.12);
+      padding: 14px;
+      min-height: 88px;
+    }
+    .projBox .k{ font-size: 12px; color: rgba(255,255,255,0.66); }
+    .projBox .v{
       margin-top: 8px;
-      user-select:none;
+      font-size: 22px;
+      font-weight: 1100;
+      letter-spacing: 0.2px;
+      font-variant-numeric: tabular-nums;
     }
-    .sdot{
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: var(--amber);
-      box-shadow: 0 0 0 4px rgba(255,176,32,0.18);
+    .projBox .m{ margin-top: 6px; font-size: 12px; color: rgba(255,255,255,0.60); }
+
+    .canvasWrap{
+      border-radius: 18px;
+      background: rgba(10,25,60,0.20);
+      border:1px solid rgba(210,230,255,0.12);
+      overflow:hidden;
+      position:relative;
     }
-    .sdot.live{ background: var(--green); box-shadow: 0 0 0 4px rgba(24,209,138,0.18); }
-    .sdot.err{ background: var(--red); box-shadow: 0 0 0 4px rgba(255,77,77,0.18); }
+    canvas{ display:block; width:100%; height: 280px; }
+    .canvasNote{
+      padding: 10px 2px 0;
+      color: rgba(255,255,255,0.58);
+      font-size: 12px;
+    }
 
     /* Tables */
     .tableWrap{
@@ -454,7 +534,7 @@
       color: rgba(255,255,255,0.78);
       border-bottom: 1px solid rgba(210,230,255,0.10);
       background: rgba(10,25,60,0.22);
-      font-weight: 900;
+      font-weight: 950;
       letter-spacing: 0.6px;
       text-transform: uppercase;
       font-size: 11px;
@@ -474,7 +554,7 @@
     .link{
       color: rgba(120,170,255,0.95);
       text-decoration:none;
-      font-weight: 800;
+      font-weight: 850;
     }
     .link:hover{ text-decoration:underline; }
 
@@ -490,7 +570,6 @@
       font-weight: 950;
       color: rgba(255,255,255,0.88);
       white-space:nowrap;
-      user-select:none;
     }
     .folder{
       width: 10px;
@@ -502,31 +581,21 @@
     .folder.med{ background: var(--amber); box-shadow: 0 0 0 4px rgba(255,176,32,0.14); }
     .folder.low{ background: rgba(255,255,255,0.30); box-shadow: none; }
 
-    /* Snapshots */
-    .snapGrid{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-    @media (max-width: 900px){
-      .snapGrid{ grid-template-columns: repeat(2, 1fr); }
-    }
-    .snap{
+    /* TradingView card */
+    .tvWrap{
       border-radius: 18px;
-      background: rgba(10,25,60,0.25);
-      border:1px solid rgba(210,230,255,0.12);
-      padding: 14px;
-      min-height: 74px;
+      overflow:hidden;
+      border: 1px solid rgba(210,230,255,0.12);
+      background: rgba(10,25,60,0.20);
     }
-    .snap .k{ font-size:12px; color: rgba(255,255,255,0.62); }
-    .snap .v{ margin-top:6px; font-size: 18px; font-weight: 950; font-variant-numeric: tabular-nums; }
-    .pos{ color: rgba(24,209,138,0.95); }
-    .neg{ color: rgba(255,77,77,0.95); }
+    .tvWrap iframe{
+      width:100%;
+      height: 380px;
+      border:0;
+      display:block;
+    }
 
-    /* Section stacking */
-    .stack{ display:grid; gap: 16px; }
-
-    /* Footer line */
+    /* Footer */
     .foot{
       margin-top: 14px;
       display:flex;
@@ -550,9 +619,9 @@
       padding: 18px;
     }
     .modal{
-      width:min(860px, 100%);
+      width:min(920px, 100%);
       border-radius: 22px;
-      background: linear-gradient(180deg, rgba(12,34,84,0.92), rgba(6,10,24,0.88));
+      background: linear-gradient(180deg, rgba(12,34,84,0.94), rgba(6,10,24,0.90));
       border: 1px solid rgba(210,230,255,0.18);
       box-shadow: var(--shadow);
       overflow:hidden;
@@ -576,9 +645,8 @@
       display:grid;
       gap: 14px;
     }
-    textarea{
+    textarea, input[type="text"]{
       width:100%;
-      min-height: 180px;
       resize: vertical;
       border-radius: 16px;
       border: 1px solid rgba(210,230,255,0.18);
@@ -589,65 +657,31 @@
       font-size: 12px;
       line-height: 1.35;
       outline:none;
+      box-sizing: border-box;
     }
+    textarea{ min-height: 160px; }
     .modalActions{
       display:flex;
       justify-content:flex-end;
       gap: 10px;
       flex-wrap:wrap;
     }
-
-    /* TradingView card */
-    .tvWrap{
-      border-radius: 18px;
-      overflow:hidden;
-      border: 1px solid rgba(210,230,255,0.12);
-      background: rgba(10,25,60,0.20);
+    .row2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
-    .tvWrap iframe{
-      width:100%;
-      height: 380px;
-      border:0;
-      display:block;
+    @media (max-width: 800px){
+      .row2{ grid-template-columns: 1fr; }
     }
-
-    /* Projection chart */
-    .chartWrap{
-      border-radius: 18px;
-      overflow:hidden;
-      border: 1px solid rgba(210,230,255,0.12);
-      background: rgba(10,25,60,0.20);
-      padding: 10px;
+    .help{
+      font-size: 12px;
+      color: rgba(255,255,255,0.62);
+      line-height: 1.35;
     }
-    canvas{ display:block; width:100%; height: 220px; }
-
-    /* Small meter */
-    .meter{
-      border-radius: 18px;
-      background: rgba(10,25,60,0.25);
-      border:1px solid rgba(210,230,255,0.12);
-      padding: 14px;
-    }
-    .meterTop{
-      display:flex;
-      align-items:baseline;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .meterTop .k{ font-size:12px; color: rgba(255,255,255,0.62); }
-    .meterTop .v{ font-size: 22px; font-weight: 1000; font-variant-numeric: tabular-nums; }
-    .meterBar{
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.10);
-      overflow:hidden;
-      margin-top: 10px;
-    }
-    .meterBar i{
-      display:block;
-      height:100%;
-      width: 50%;
-      background: rgba(120,170,255,0.8);
+    .danger{
+      color: rgba(255,77,77,0.90);
+      font-weight: 900;
     }
   </style>
 </head>
@@ -659,7 +693,7 @@
         <div class="qxlogo">QX</div>
         <div>
           <h1>QuadraX Risk Dashboard</h1>
-          <div class="sub">Executive View: 8-State Monitoring and Control System (Live EUR/USD Spot)</div>
+          <div class="sub">Executive View: 8-State Monitoring and Control System (EUR/USD + Macro Transmission)</div>
         </div>
       </div>
 
@@ -668,141 +702,124 @@
         <div class="pill">Last Update <b id="lastUpdate">--:--:--</b></div>
         <button class="btn" id="pauseBtn">Pause</button>
         <button class="btn primary" id="syncBtn">Sync</button>
+        <button class="btn" id="settingsBtn">Settings</button>
         <button class="btn" id="editBtn">Edit Events + Headlines</button>
       </div>
     </div>
 
     <div class="grid">
-      <!-- LEFT column -->
+      <!-- LEFT -->
       <div class="stack">
-        <!-- Current market state -->
+
+        <!-- HERO: Current market state -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
               <h2>Current Market State</h2>
-              <div class="hint">Free endpoints are sampled. Real reference price, lower frequency. Dashboard never invents spot.</div>
+              <div class="hint">This demo never fabricates price. For true live FX, set a quote API key in Settings.</div>
             </div>
 
-            <div class="stateBig" id="policyStateTitle">Policy State: --</div>
-            <div class="muted" id="policyStateDesc">Waiting for live spot sample.</div>
+            <div class="hero">
+              <div class="heroGrid">
+                <div>
+                  <div class="heroTitle" id="policyStateTitle">Policy State: --</div>
+                  <div class="heroSub" id="policyStateDesc">Waiting for market data sample.</div>
 
-            <div class="chips">
-              <div class="chip">Detector <b id="detectorChip">--</b></div>
-              <div class="chip">Policy <b id="policyChip">--</b></div>
-              <div class="chip">Confidence <b id="confChip">--</b></div>
-              <div class="chip">Hysteresis <b id="hystChip">--</b></div>
-              <div class="chip">Tick <b id="tickChip">0</b></div>
-              <div class="chip">Stale <b id="staleChip">0</b></div>
-              <div class="chip">Event Risk <b id="eventRiskChip">LOW</b></div>
-              <div class="chip">Macro Bias <b id="macroBiasChip">--</b></div>
-            </div>
+                  <div class="chips">
+                    <div class="chip">Detector <b id="detectorChip">--</b></div>
+                    <div class="chip">Policy <b id="policyChip">--</b></div>
+                    <div class="chip kpi">Confidence <b id="confChip">--</b></div>
+                    <div class="chip">Hysteresis <b id="hystChip">--</b></div>
+                    <div class="chip">Tick <b id="tickChip">0</b></div>
+                    <div class="chip">Stale <b id="staleChip">0</b></div>
+                    <div class="chip kpi">Macro Bias <b id="macroBiasChip">--</b></div>
+                    <div class="chip kpi">Event Risk <b id="eventRiskChip">--</b></div>
+                  </div>
 
-            <div class="history" id="stateHistory"></div>
+                  <div class="probCompact" id="probList"></div>
 
-            <div class="miniQuote" title="Live EURUSD sample summary">
-              <div class="row">
-                <div><b>EURUSD</b></div>
-                <div id="miniSrc" style="color: rgba(255,255,255,0.68)">--</div>
+                  <div class="canvasNote" id="heroNote">
+                    Premium look, yes. Premium data, only if you feed it premium data. Humans hate that part.
+                  </div>
+                </div>
+
+                <div class="quoteCard">
+                  <div>
+                    <div class="quoteTop">
+                      <div>
+                        <div class="quotePair">EURUSD</div>
+                        <div class="quoteSrc" id="miniSrc">Provider: --</div>
+                      </div>
+                      <div class="tag" title="Quote health"><span class="sdot" id="fxStatusDot"></span><span id="fxSpotStatus">CHECKING</span></div>
+                    </div>
+
+                    <div class="quotePx" id="miniPrice">--</div>
+
+                    <div class="quoteDeltaRow">
+                      <div>Δ</div>
+                      <div id="miniDelta">0.00000</div>
+                    </div>
+
+                    <div class="quoteBar"><i id="miniBar"></i></div>
+
+                    <div class="quoteBadge">
+                      <div class="tag" title="Latency"><span style="opacity:.7">⏱</span><span id="miniLatency">--</span></div>
+                      <div class="tag" title="Mode"><span style="opacity:.7">⚙</span><span id="miniMode">--</span></div>
+                    </div>
+                  </div>
+
+                  <div class="help" id="quoteDisclaimer" style="margin-top:10px;">
+                    If you see “REFERENCE”, your provider is not streaming. Set TwelveData key to get real intraday updates.
+                  </div>
+                </div>
+
               </div>
-              <div class="px" id="miniPrice">--</div>
-              <div class="row" style="color: rgba(255,255,255,0.62)">
-                <div>Δ</div>
-                <div id="miniDelta">0.00000</div>
-              </div>
-              <div class="bar"><i id="miniBar"></i></div>
             </div>
 
-            <div class="stateBadge" id="stateBadge">--</div>
           </div>
         </div>
 
-        <!-- Projection -->
+        <!-- Forward Projection -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
               <h2>Forward Projection</h2>
-              <div class="hint">Last samples plus projected cone. Demo-grade scenario projection using state, macro, and event risk.</div>
+              <div class="hint">Projection cone based on regime volatility + macro transmission + event proximity.</div>
             </div>
 
-            <div class="snapGrid" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
-              <div class="snap">
+            <div class="projTop">
+              <div class="projBox">
                 <div class="k">Trade Bias</div>
-                <div class="v" id="projBias">--</div>
-                <div class="muted2" id="projBiasNote">--</div>
+                <div class="v" id="tradeBias">--</div>
+                <div class="m" id="tradeBiasMeta">Macro + regime blend</div>
               </div>
-              <div class="snap">
+              <div class="projBox">
                 <div class="k">Move Range (1h)</div>
-                <div class="v" id="proj1h">--</div>
-                <div class="muted2" id="proj1hNote">--</div>
+                <div class="v" id="range1h">--</div>
+                <div class="m" id="range1hMeta">Regime scaled</div>
               </div>
-              <div class="snap">
+              <div class="projBox">
                 <div class="k">Move Range (4h)</div>
-                <div class="v" id="proj4h">--</div>
-                <div class="muted2" id="proj4hNote">--</div>
+                <div class="v" id="range4h">--</div>
+                <div class="m" id="range4hMeta">Event and macro weighted</div>
               </div>
-              <div class="snap">
+              <div class="projBox">
                 <div class="k">Decision Confidence</div>
-                <div class="v" id="projConf">--</div>
-                <div class="muted2" id="projConfNote">--</div>
+                <div class="v" id="decisionConf">--</div>
+                <div class="m" id="decisionConfMeta">Agreement between signals</div>
               </div>
             </div>
 
-            <div class="chartWrap" style="margin-top:12px;">
-              <canvas id="projCanvas" width="1200" height="440"></canvas>
+            <div class="canvasWrap">
+              <canvas id="cone"></canvas>
             </div>
-
-            <div class="muted" style="margin-top:10px;">
-              Cone reflects a probabilistic range, not a promise. Humans love confusing those, so this disclaimer exists.
+            <div class="canvasNote" id="coneNote">
+              Cone reflects a probabilistic range, not a promise. If anyone confuses this for certainty, remove their trading permissions.
             </div>
           </div>
         </div>
 
-        <!-- Probability distribution -->
-        <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>State Probability Distribution</h2>
-              <div class="hint">Conditional regime likelihoods P(state | features). Visualization layer, not the final alpha model.</div>
-            </div>
-            <div id="probList"></div>
-            <div class="muted" style="margin-top:10px;">
-              Probabilities can flatten when feeds are stale or features are ambiguous.
-            </div>
-          </div>
-        </div>
-
-        <!-- Portfolio snapshot -->
-        <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Portfolio Snapshot</h2>
-              <div class="hint">Demo placeholders until execution and risk feeds are connected</div>
-            </div>
-            <div class="snapGrid">
-              <div class="snap">
-                <div class="k">Account Balance</div>
-                <div class="v">$1,000,000</div>
-              </div>
-              <div class="snap">
-                <div class="k">Daily PnL</div>
-                <div class="v pos">+$13,160</div>
-              </div>
-              <div class="snap">
-                <div class="k">Total Exposure</div>
-                <div class="v">$650,000</div>
-              </div>
-              <div class="snap">
-                <div class="k">Max Drawdown</div>
-                <div class="v neg">-3.2%</div>
-              </div>
-            </div>
-            <div class="muted" style="margin-top:10px;">
-              This is intentionally demo. The showpiece is: regime, macro transmission, event risk, projection.
-            </div>
-          </div>
-        </div>
-
-        <!-- Regime log -->
+        <!-- Regime Log -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
@@ -827,8 +844,8 @@
                       <th>CONF</th>
                       <th>VOL X</th>
                       <th>MOM (bp)</th>
-                      <th>EVT</th>
                       <th>MACRO</th>
+                      <th>EVENT</th>
                       <th>SRC</th>
                     </tr>
                   </thead>
@@ -837,8 +854,8 @@
               </div>
             </div>
 
-            <div class="muted" style="margin-top:10px;">
-              Copy CSV into Excel. No drama. Excel will still find a way to disappoint you, but it will import cleanly.
+            <div class="help" style="margin-top:10px;">
+              Tip: Copy CSV and paste into Excel. It splits cleanly. Your coworkers will be impressed by basic clipboard functionality.
             </div>
           </div>
         </div>
@@ -847,13 +864,14 @@
           <div>System Status: <b id="sysStatus">LIVE</b></div>
           <div>Smoothed Policy: <b id="footPolicy">--</b></div>
           <div>Detector: <b id="footDetector">--</b></div>
-          <div>Hysteresis Hold: <b id="footHold">0</b></div>
+          <div>Transmission: <b id="footTx">--</b></div>
         </div>
       </div>
 
-      <!-- RIGHT column -->
+      <!-- RIGHT -->
       <div class="stack">
-        <!-- Risk level -->
+
+        <!-- Risk -->
         <div class="card">
           <div class="inner riskLevel">
             <div class="label">Risk Level</div>
@@ -862,139 +880,96 @@
           </div>
         </div>
 
-        <!-- Feed health -->
-        <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Feed Health</h2>
-              <div class="hint">Proof the market data is updating</div>
-            </div>
-
-            <div class="feedGrid">
-              <div class="feedBox">
-                <div class="k">EUR/USD Spot (reference)</div>
-                <div class="v" id="fxSpotPrice">--</div>
-                <div class="feedMeta" id="fxSpotLast">Last good sample: --</div>
-              </div>
-              <div class="feedBox">
-                <div class="k">Status</div>
-                <div class="statusPill"><span class="sdot" id="fxStatusDot"></span><span id="fxSpotStatus">CHECKING</span></div>
-                <div class="feedMeta" id="fxSpotMeta">Source: -- | Latency: --</div>
-                <div class="feedMeta" id="fxSpotDelta">Delta (last): 0.00000</div>
-              </div>
-            </div>
-
-            <div class="muted" style="margin-top:10px;">
-              If spot does not change, it might be a quiet market or throttling. This dashboard never fabricates price.
-            </div>
-          </div>
-        </div>
-
         <!-- Macro Drivers -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
               <h2>Macro Drivers</h2>
-              <div class="hint">Oil, metals, USD proxy via TradingView scan. Used in transmission score and pip projection.</div>
+              <div class="hint">Oil, metals, DXY proxies. Daily data via Stooq. Works on GitHub Pages without keys.</div>
             </div>
 
-            <div class="snapGrid" style="grid-template-columns: 1fr 1fr;">
-              <div class="snap">
+            <div class="kpiGrid">
+              <div class="kpi">
                 <div class="k">Brent (proxy)</div>
-                <div class="v" id="brentPx">--</div>
-                <div class="muted2" id="brentChg">--</div>
+                <div class="v" id="brentV">--</div>
+                <div class="m" id="brentM">--</div>
               </div>
-              <div class="snap">
+              <div class="kpi">
                 <div class="k">WTI (proxy)</div>
-                <div class="v" id="wtiPx">--</div>
-                <div class="muted2" id="wtiChg">--</div>
+                <div class="v" id="wtiV">--</div>
+                <div class="m" id="wtiM">--</div>
               </div>
-              <div class="snap">
-                <div class="k">Gold</div>
-                <div class="v" id="goldPx">--</div>
-                <div class="muted2" id="goldChg">--</div>
+              <div class="kpi">
+                <div class="k">Gold (proxy)</div>
+                <div class="v" id="goldV">--</div>
+                <div class="m" id="goldM">--</div>
               </div>
-              <div class="snap">
-                <div class="k">Silver</div>
-                <div class="v" id="silverPx">--</div>
-                <div class="muted2" id="silverChg">--</div>
+              <div class="kpi">
+                <div class="k">Silver (proxy)</div>
+                <div class="v" id="silverV">--</div>
+                <div class="m" id="silverM">--</div>
               </div>
-              <div class="snap">
+              <div class="kpi">
                 <div class="k">USD Index (DXY proxy)</div>
-                <div class="v" id="dxyPx">--</div>
-                <div class="muted2" id="dxyChg">--</div>
+                <div class="v" id="dxyV">--</div>
+                <div class="m" id="dxyM">--</div>
               </div>
-              <div class="snap">
+              <div class="kpi">
                 <div class="k">Transmission Score</div>
-                <div class="v" id="macroBias">--</div>
-                <div class="muted2" id="macroNote">--</div>
+                <div class="v" id="txV">--</div>
+                <div class="m" id="txM">--</div>
               </div>
             </div>
 
-            <div class="muted" style="margin-top:10px;">
-              Demo disclaimer: scanner values are proxy signals and can be delayed. Directional logic still holds for the dashboard flow.
+            <div class="help" style="margin-top:10px;">
+              In production: replace proxies with broker feed + learned mapping from macro to expected pip distribution.
             </div>
           </div>
         </div>
 
-        <!-- Transmission levers -->
+        <!-- Transmission Mechanism -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
               <h2>Transmission Mechanism</h2>
-              <div class="hint">Why macro + events move EURUSD. Three levers mapped into the projection.</div>
+              <div class="hint">Three levers that typically move EURUSD around conflict and commodity shocks.</div>
             </div>
 
-            <div class="snapGrid" style="grid-template-columns: 1fr 1fr;">
-              <div class="meter">
-                <div class="meterTop">
-                  <div class="k">Oil Lever (EU terms of trade)</div>
-                  <div class="v" id="leverOil">--</div>
-                </div>
-                <div class="meterBar"><i id="barOil"></i></div>
-                <div class="muted2" id="noteOil" style="margin-top:8px;">--</div>
+            <div class="kpiGrid">
+              <div class="kpi">
+                <div class="k">Oil Lever (EU terms of trade)</div>
+                <div class="v" id="oilLeverV">0%</div>
+                <div class="m" id="oilLeverM">Derived from Brent and WTI moves</div>
               </div>
-
-              <div class="meter">
-                <div class="meterTop">
-                  <div class="k">Dollar Lever (DXY pressure)</div>
-                  <div class="v" id="leverUsd">--</div>
-                </div>
-                <div class="meterBar"><i id="barUsd"></i></div>
-                <div class="muted2" id="noteUsd" style="margin-top:8px;">--</div>
+              <div class="kpi">
+                <div class="k">Dollar Lever (DXY pressure)</div>
+                <div class="v" id="dollarLeverV">0%</div>
+                <div class="m" id="dollarLeverM">Derived from USD index proxy</div>
               </div>
-
-              <div class="meter">
-                <div class="meterTop">
-                  <div class="k">Fear Lever (gold, risk-off)</div>
-                  <div class="v" id="leverFear">--</div>
-                </div>
-                <div class="meterBar"><i id="barFear"></i></div>
-                <div class="muted2" id="noteFear" style="margin-top:8px;">--</div>
+              <div class="kpi">
+                <div class="k">Fear Lever (gold risk-off)</div>
+                <div class="v" id="fearLeverV">0%</div>
+                <div class="m" id="fearLeverM">Derived from gold and silver tone</div>
               </div>
-
-              <div class="meter">
-                <div class="meterTop">
-                  <div class="k">Event Risk (calendar proximity)</div>
-                  <div class="v" id="leverEvent">--</div>
-                </div>
-                <div class="meterBar"><i id="barEvent"></i></div>
-                <div class="muted2" id="noteEvent" style="margin-top:8px;">--</div>
+              <div class="kpi">
+                <div class="k">Event Risk (calendar proximity)</div>
+                <div class="v" id="eventLeverV">0%</div>
+                <div class="m" id="eventLeverM">Higher when high-impact events are near</div>
               </div>
             </div>
 
-            <div class="muted" style="margin-top:10px;">
-              In production: this becomes a learned mapping (features to expected pip distribution) with backtests and live broker feed.
+            <div class="help" style="margin-top:10px;">
+              This is a demo mapping. The production version should learn weights from history and update per regime.
             </div>
           </div>
         </div>
 
-        <!-- World events calendar -->
+        <!-- World events -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
               <h2>World Events Calendar</h2>
-              <div class="hint">Fast mode: curated list saved locally. Edit for team demo. Countdown updates.</div>
+              <div class="hint">Curated list saved locally for demo. Countdown updates automatically.</div>
             </div>
             <div class="tableWrap">
               <div class="scroll" style="max-height: 260px;">
@@ -1011,8 +986,8 @@
                 </table>
               </div>
             </div>
-            <div class="muted" style="margin-top:10px;">
-              High impact events increase event risk and widen the projection cone.
+            <div class="help" style="margin-top:10px;">
+              High impact events are <span class="impact"><span class="folder"></span>HIGH</span>.
             </div>
           </div>
         </div>
@@ -1022,7 +997,7 @@
           <div class="inner">
             <div class="card-title">
               <h2>Headlines</h2>
-              <div class="hint">Curated list saved locally for consistent demo. Click opens source.</div>
+              <div class="hint">Curated list saved locally. You can swap to a live news API later.</div>
             </div>
 
             <div class="tableWrap">
@@ -1040,8 +1015,8 @@
               </div>
             </div>
 
-            <div class="muted" style="margin-top:10px;">
-              Later: wire real feeds (licensed) and auto-tag events into levers.
+            <div class="help" style="margin-top:10px;">
+              Click opens source in a new tab. Humans love clicking things.
             </div>
           </div>
         </div>
@@ -1050,8 +1025,8 @@
         <div class="card">
           <div class="inner">
             <div class="card-title">
-              <h2>Daily EUR/USD Trend</h2>
-              <div class="hint">Embedded TradingView chart. No backend needed.</div>
+              <h2>EUR/USD Live Chart</h2>
+              <div class="hint">TradingView embed is live visually. We do not scrape it.</div>
             </div>
 
             <div class="tvWrap">
@@ -1059,40 +1034,8 @@
                 title="TradingView EURUSD"
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
-                src="https://s.tradingview.com/widgetembed/?frameElementId=tvchart&symbol=FX%3AEURUSD&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0b1028&studies=%5B%5D&hideideas=1&theme=dark&style=1&locale=en&withdateranges=1&hidevolume=0&allow_symbol_change=0&details=0&hotlist=0&calendar=0"
+                src="https://s.tradingview.com/widgetembed/?frameElementId=tvchart&symbol=FX%3AEURUSD&interval=15&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0b1028&studies=%5B%5D&hideideas=1&theme=dark&style=1&locale=en&withdateranges=1&hidevolume=0&allow_symbol_change=0&details=0&hotlist=0&calendar=0"
               ></iframe>
-            </div>
-          </div>
-        </div>
-
-        <!-- Risk metrics placeholders -->
-        <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Risk Metrics</h2>
-              <div class="hint">Placeholders until execution integration</div>
-            </div>
-            <div class="snapGrid" style="grid-template-columns: 1fr 1fr;">
-              <div class="snap">
-                <div class="k">Value at Risk (95%)</div>
-                <div class="v" style="color: rgba(255,77,77,0.95);">$28,500</div>
-                <div class="muted2" style="margin-top:4px;">2.85% of account</div>
-              </div>
-              <div class="snap">
-                <div class="k">Conditional VaR (95%)</div>
-                <div class="v" style="color: rgba(255,77,77,0.95);">$42,300</div>
-                <div class="muted2" style="margin-top:4px;">Expected loss if VaR exceeded</div>
-              </div>
-              <div class="snap">
-                <div class="k">Portfolio Correlation</div>
-                <div class="v" style="color: rgba(24,209,138,0.95);">32.0%</div>
-                <div class="muted2" style="margin-top:4px;">Max allowed: 50.0%</div>
-              </div>
-              <div class="snap">
-                <div class="k">Beta to Market</div>
-                <div class="v" style="color: rgba(120,170,255,0.95);">0.15</div>
-                <div class="muted2" style="margin-top:4px;">Low market correlation</div>
-              </div>
             </div>
           </div>
         </div>
@@ -1109,52 +1052,219 @@
         <button class="btn" id="closeModalBtn">Close</button>
       </div>
       <div class="modalBody">
-        <div class="muted">
-          Demo mode: you edit curated items locally so a refresh does not wipe your story.
-          Production mode: these come from real feeds with tagging and severity models.
+        <div class="help">
+          Curated demo mode: save lists locally so each viewer has consistent content.
+          Production mode: swap to a backend feed and stop trusting humans to type JSON.
         </div>
 
-        <div>
-          <div class="muted" style="margin-bottom:8px;"><b>Events JSON</b> (array of objects: when, event, impact: HIGH|MED|LOW)</div>
-          <textarea id="eventsEditor"></textarea>
-        </div>
-
-        <div>
-          <div class="muted" style="margin-bottom:8px;"><b>Headlines JSON</b> (array of objects: time, source, title, url)</div>
-          <textarea id="headlinesEditor"></textarea>
+        <div class="row2">
+          <div>
+            <div class="help" style="margin-bottom:8px;"><b>Events JSON</b> (array of objects: when, event, impact: HIGH|MED|LOW)</div>
+            <textarea id="eventsEditor"></textarea>
+          </div>
+          <div>
+            <div class="help" style="margin-bottom:8px;"><b>Headlines JSON</b> (array of objects: time, source, title, url)</div>
+            <textarea id="headlinesEditor"></textarea>
+          </div>
         </div>
 
         <div class="modalActions">
-          <button class="btn" id="resetCuratedBtn">Reset to defaults</button>
+          <button class="btn" id="resetCuratedBtn">Reset defaults</button>
           <button class="btn primary" id="saveCuratedBtn">Save</button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Modal: Settings -->
+  <div class="modalBack" id="settingsBack">
+    <div class="modal">
+      <div class="modalHead">
+        <h3>Settings</h3>
+        <button class="btn" id="closeSettingsBtn">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="help">
+          Your EURUSD is stuck because most free endpoints update slowly. If you want intraday updates without building a backend, set a quote API key.
+          Recommended for demo: <b>TwelveData</b>.
+        </div>
+
+        <div class="row2">
+          <div>
+            <div class="help" style="margin-bottom:8px;"><b>TwelveData API Key</b> (optional)</div>
+            <input type="text" id="twelveKey" placeholder="Paste key here (stored locally in your browser)" />
+            <div class="help" style="margin-top:8px;">
+              If empty, dashboard falls back to slow “reference” providers. That is why it looks frozen.
+            </div>
+          </div>
+          <div>
+            <div class="help" style="margin-bottom:8px;"><b>Quote Update Interval</b> (seconds)</div>
+            <input type="text" id="pollSeconds" placeholder="12" />
+            <div class="help" style="margin-top:8px;">
+              Lower is not always better. Free APIs throttle. Your patience is also a rate limit.
+            </div>
+          </div>
+        </div>
+
+        <div class="help">
+          <span class="danger">Reality check:</span> If you want tick-grade pricing, you need a broker feed. This demo proves UI, logic, and integration points.
+        </div>
+
+        <div class="modalActions">
+          <button class="btn" id="resetSettingsBtn">Reset</button>
+          <button class="btn primary" id="saveSettingsBtn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script>
-/* ============================================================================
-   QuadraX Risk Dashboard (Demo-to-Production Architecture)
-   Goals:
-   - Accurate regime visualization off real EURUSD samples
-   - Add macro transmission mechanism: oil, dollar, fear, event risk
-   - Add forward projection: bias + pip cone
-   - Keep it frontend-only for demo without breaking the bank
-============================================================================ */
-
 (function(){
+  /* ============================================================
+     QuadraX Risk Dashboard (Demo-Grade, Production-Ready Structure)
+     - Quote Provider chain with real intraday option (TwelveData)
+     - Macro proxies (Oil, Metals, DXY) via Stooq daily data
+     - Transmission score => pip range projection cone
+     - Regime engine drives probabilities and risk mapping
+     - Curated Events + Headlines editable and persisted
+  ============================================================ */
+
   // ---------- Utilities ----------
-  const fmtTime = (ms) => new Date(ms).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
   const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
-  const bp = (x)=> x * 10000;
+  const fmtTime = (ms) => new Date(ms).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
   const safeNum = (x, fallback=null) => (Number.isFinite(Number(x)) ? Number(x) : fallback);
+  const bp = (x)=> x * 10000; // price diff to basis points
 
-  function setText(id, v){
-    const el = document.getElementById(id);
-    if (el) el.textContent = v;
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
   }
+  function escapeAttr(s){ return String(s).replace(/"/g, "&quot;"); }
 
-  // ---------- State definitions ----------
+  // ---------- Keys ----------
+  const KEY = {
+    dashboard: "qx_dashboard_state_v2",
+    events: "qx_events_v1",
+    headlines: "qx_headlines_v1",
+    log: "qx_regime_log_v2",
+    settings: "qx_settings_v1"
+  };
+
+  // ---------- Settings ----------
+  const defaultSettings = {
+    twelveKey: "",
+    pollSeconds: 12
+  };
+  function loadObj(key, fallback){
+    try{
+      const raw = localStorage.getItem(key);
+      if (!raw) return fallback;
+      const o = JSON.parse(raw);
+      return (o && typeof o === "object") ? {...fallback, ...o} : fallback;
+    }catch(e){ return fallback; }
+  }
+  let settings = loadObj(KEY.settings, defaultSettings);
+
+  // ---------- DOM ----------
+  const els = {
+    liveDot: document.getElementById("liveDot"),
+    liveText: document.getElementById("liveText"),
+    lastUpdate: document.getElementById("lastUpdate"),
+    pauseBtn: document.getElementById("pauseBtn"),
+    syncBtn: document.getElementById("syncBtn"),
+    editBtn: document.getElementById("editBtn"),
+    settingsBtn: document.getElementById("settingsBtn"),
+
+    policyStateTitle: document.getElementById("policyStateTitle"),
+    policyStateDesc: document.getElementById("policyStateDesc"),
+    detectorChip: document.getElementById("detectorChip"),
+    policyChip: document.getElementById("policyChip"),
+    confChip: document.getElementById("confChip"),
+    hystChip: document.getElementById("hystChip"),
+    tickChip: document.getElementById("tickChip"),
+    staleChip: document.getElementById("staleChip"),
+    macroBiasChip: document.getElementById("macroBiasChip"),
+    eventRiskChip: document.getElementById("eventRiskChip"),
+    probList: document.getElementById("probList"),
+
+    miniSrc: document.getElementById("miniSrc"),
+    miniPrice: document.getElementById("miniPrice"),
+    miniDelta: document.getElementById("miniDelta"),
+    miniBar: document.getElementById("miniBar"),
+    miniLatency: document.getElementById("miniLatency"),
+    miniMode: document.getElementById("miniMode"),
+    fxSpotStatus: document.getElementById("fxSpotStatus"),
+    fxStatusDot: document.getElementById("fxStatusDot"),
+    quoteDisclaimer: document.getElementById("quoteDisclaimer"),
+
+    riskBig: document.getElementById("riskBig"),
+    riskRule: document.getElementById("riskRule"),
+
+    // Projection
+    tradeBias: document.getElementById("tradeBias"),
+    tradeBiasMeta: document.getElementById("tradeBiasMeta"),
+    range1h: document.getElementById("range1h"),
+    range1hMeta: document.getElementById("range1hMeta"),
+    range4h: document.getElementById("range4h"),
+    range4hMeta: document.getElementById("range4hMeta"),
+    decisionConf: document.getElementById("decisionConf"),
+    decisionConfMeta: document.getElementById("decisionConfMeta"),
+    cone: document.getElementById("cone"),
+    coneNote: document.getElementById("coneNote"),
+
+    // Macro KPIs
+    brentV: document.getElementById("brentV"),
+    brentM: document.getElementById("brentM"),
+    wtiV: document.getElementById("wtiV"),
+    wtiM: document.getElementById("wtiM"),
+    goldV: document.getElementById("goldV"),
+    goldM: document.getElementById("goldM"),
+    silverV: document.getElementById("silverV"),
+    silverM: document.getElementById("silverM"),
+    dxyV: document.getElementById("dxyV"),
+    dxyM: document.getElementById("dxyM"),
+    txV: document.getElementById("txV"),
+    txM: document.getElementById("txM"),
+
+    oilLeverV: document.getElementById("oilLeverV"),
+    oilLeverM: document.getElementById("oilLeverM"),
+    dollarLeverV: document.getElementById("dollarLeverV"),
+    dollarLeverM: document.getElementById("dollarLeverM"),
+    fearLeverV: document.getElementById("fearLeverV"),
+    fearLeverM: document.getElementById("fearLeverM"),
+    eventLeverV: document.getElementById("eventLeverV"),
+    eventLeverM: document.getElementById("eventLeverM"),
+
+    // Events + headlines
+    eventsBody: document.getElementById("eventsBody"),
+    headlinesBody: document.getElementById("headlinesBody"),
+    modalBack: document.getElementById("modalBack"),
+    closeModalBtn: document.getElementById("closeModalBtn"),
+    saveCuratedBtn: document.getElementById("saveCuratedBtn"),
+    resetCuratedBtn: document.getElementById("resetCuratedBtn"),
+    eventsEditor: document.getElementById("eventsEditor"),
+    headlinesEditor: document.getElementById("headlinesEditor"),
+
+    // Settings modal
+    settingsBack: document.getElementById("settingsBack"),
+    closeSettingsBtn: document.getElementById("closeSettingsBtn"),
+    twelveKey: document.getElementById("twelveKey"),
+    pollSeconds: document.getElementById("pollSeconds"),
+    resetSettingsBtn: document.getElementById("resetSettingsBtn"),
+    saveSettingsBtn: document.getElementById("saveSettingsBtn"),
+
+    // Log
+    logBody: document.getElementById("logBody"),
+    copyCsvBtn: document.getElementById("copyCsvBtn"),
+    clearLogBtn: document.getElementById("clearLogBtn"),
+
+    // Footer
+    sysStatus: document.getElementById("sysStatus"),
+    footPolicy: document.getElementById("footPolicy"),
+    footDetector: document.getElementById("footDetector"),
+    footTx: document.getElementById("footTx"),
+  };
+
+  // ---------- States ----------
   const STATES = [
     { id:1, name:"Mean-Reverting", desc:"Range-bound. Fade extremes and keep size disciplined.", color:"rgba(24,209,138,0.85)" },
     { id:2, name:"Liquidity Vacuum", desc:"Thin market, jumpy moves. Tighten risk and be selective.", color:"rgba(255,176,32,0.85)" },
@@ -1166,116 +1276,6 @@
     { id:8, name:"Panic/Forced", desc:"Dislocation. Risk off. Protect capital first.", color:"rgba(255,58,165,0.9)" }
   ];
 
-  // ---------- DOM wiring ----------
-  const els = {
-    liveDot: document.getElementById("liveDot"),
-    liveText: document.getElementById("liveText"),
-    lastUpdate: document.getElementById("lastUpdate"),
-    pauseBtn: document.getElementById("pauseBtn"),
-    syncBtn: document.getElementById("syncBtn"),
-    editBtn: document.getElementById("editBtn"),
-    modalBack: document.getElementById("modalBack"),
-    closeModalBtn: document.getElementById("closeModalBtn"),
-    saveCuratedBtn: document.getElementById("saveCuratedBtn"),
-    resetCuratedBtn: document.getElementById("resetCuratedBtn"),
-    eventsEditor: document.getElementById("eventsEditor"),
-    headlinesEditor: document.getElementById("headlinesEditor"),
-
-    // main panels
-    policyStateTitle: document.getElementById("policyStateTitle"),
-    policyStateDesc: document.getElementById("policyStateDesc"),
-    detectorChip: document.getElementById("detectorChip"),
-    policyChip: document.getElementById("policyChip"),
-    confChip: document.getElementById("confChip"),
-    hystChip: document.getElementById("hystChip"),
-    tickChip: document.getElementById("tickChip"),
-    staleChip: document.getElementById("staleChip"),
-    eventRiskChip: document.getElementById("eventRiskChip"),
-    macroBiasChip: document.getElementById("macroBiasChip"),
-    stateHistory: document.getElementById("stateHistory"),
-    stateBadge: document.getElementById("stateBadge"),
-    miniPrice: document.getElementById("miniPrice"),
-    miniSrc: document.getElementById("miniSrc"),
-    miniDelta: document.getElementById("miniDelta"),
-    miniBar: document.getElementById("miniBar"),
-    probList: document.getElementById("probList"),
-
-    // projection
-    projBias: document.getElementById("projBias"),
-    projBiasNote: document.getElementById("projBiasNote"),
-    proj1h: document.getElementById("proj1h"),
-    proj1hNote: document.getElementById("proj1hNote"),
-    proj4h: document.getElementById("proj4h"),
-    proj4hNote: document.getElementById("proj4hNote"),
-    projConf: document.getElementById("projConf"),
-    projConfNote: document.getElementById("projConfNote"),
-    projCanvas: document.getElementById("projCanvas"),
-
-    // feed health
-    fxSpotPrice: document.getElementById("fxSpotPrice"),
-    fxSpotLast: document.getElementById("fxSpotLast"),
-    fxSpotStatus: document.getElementById("fxSpotStatus"),
-    fxStatusDot: document.getElementById("fxStatusDot"),
-    fxSpotMeta: document.getElementById("fxSpotMeta"),
-    fxSpotDelta: document.getElementById("fxSpotDelta"),
-
-    // right panels
-    eventsBody: document.getElementById("eventsBody"),
-    headlinesBody: document.getElementById("headlinesBody"),
-
-    // risk
-    riskBig: document.getElementById("riskBig"),
-    riskRule: document.getElementById("riskRule"),
-
-    // macro
-    brentPx: document.getElementById("brentPx"),
-    brentChg: document.getElementById("brentChg"),
-    wtiPx: document.getElementById("wtiPx"),
-    wtiChg: document.getElementById("wtiChg"),
-    goldPx: document.getElementById("goldPx"),
-    goldChg: document.getElementById("goldChg"),
-    silverPx: document.getElementById("silverPx"),
-    silverChg: document.getElementById("silverChg"),
-    dxyPx: document.getElementById("dxyPx"),
-    dxyChg: document.getElementById("dxyChg"),
-    macroBias: document.getElementById("macroBias"),
-    macroNote: document.getElementById("macroNote"),
-
-    // levers
-    leverOil: document.getElementById("leverOil"),
-    leverUsd: document.getElementById("leverUsd"),
-    leverFear: document.getElementById("leverFear"),
-    leverEvent: document.getElementById("leverEvent"),
-    barOil: document.getElementById("barOil"),
-    barUsd: document.getElementById("barUsd"),
-    barFear: document.getElementById("barFear"),
-    barEvent: document.getElementById("barEvent"),
-    noteOil: document.getElementById("noteOil"),
-    noteUsd: document.getElementById("noteUsd"),
-    noteFear: document.getElementById("noteFear"),
-    noteEvent: document.getElementById("noteEvent"),
-
-    // log
-    logBody: document.getElementById("logBody"),
-    copyCsvBtn: document.getElementById("copyCsvBtn"),
-    clearLogBtn: document.getElementById("clearLogBtn"),
-
-    // footer
-    sysStatus: document.getElementById("sysStatus"),
-    footPolicy: document.getElementById("footPolicy"),
-    footDetector: document.getElementById("footDetector"),
-    footHold: document.getElementById("footHold"),
-  };
-
-  // ---------- Persistence keys ----------
-  const KEY = {
-    dashboard: "qx_dashboard_state_v2",
-    events: "qx_events_v1",
-    headlines: "qx_headlines_v1",
-    log: "qx_regime_log_v2",
-    samples: "qx_price_samples_v1"
-  };
-
   // ---------- Curated defaults ----------
   const curatedEventsDefault = [
     { when: "2026-02-17T21:18:47Z", event: "Eurozone CPI (flash)", impact: "HIGH" },
@@ -1283,14 +1283,12 @@
     { when: "2026-02-19T21:18:47Z", event: "US GDP (advance)", impact: "HIGH" },
     { when: "2026-02-22T15:18:47Z", event: "US Non-Farm Payrolls", impact: "HIGH" }
   ];
-
   const curatedHeadlinesDefault = [
     { time: "03:00 PM", source: "FinancialJuice", title: "Dollar firming ahead of major data window", url: "https://financialjuice.com/" },
     { time: "02:26 PM", source: "FinancialJuice", title: "Rates repricing drives short-term USD bid", url: "https://financialjuice.com/" },
     { time: "01:06 PM", source: "Market", title: "Risk tone mixed as equities stabilize", url: "https://www.investing.com/" }
   ];
 
-  // ---------- Load helpers ----------
   function loadJSON(key, fallback){
     try{
       const raw = localStorage.getItem(key);
@@ -1300,22 +1298,10 @@
     }catch(e){ return fallback; }
   }
 
-  function saveJSON(key, value){
-    try{ localStorage.setItem(key, JSON.stringify(value)); }catch(e){}
-  }
-
-  // ---------- Escape helpers ----------
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
-  }
-  function escapeAttr(s){
-    return String(s).replace(/"/g, "&quot;");
-  }
-
-  // ---------- Events + headlines state ----------
   let curatedEvents = loadJSON(KEY.events, curatedEventsDefault);
   let curatedHeadlines = loadJSON(KEY.headlines, curatedHeadlinesDefault);
 
+  // ---------- Events render ----------
   function impactPill(impact){
     const imp = (impact || "").toUpperCase();
     if (imp === "HIGH") return `<span class="impact"><span class="folder"></span>HIGH</span>`;
@@ -1373,15 +1359,13 @@
     els.headlinesBody.innerHTML = rows || `<tr><td colspan="3" style="color:rgba(255,255,255,0.6)">No headlines set.</td></tr>`;
   }
 
-  // ---------- Modal wiring ----------
+  // ---------- Modal: edit events ----------
   function openModal(){
     els.eventsEditor.value = JSON.stringify(curatedEvents, null, 2);
     els.headlinesEditor.value = JSON.stringify(curatedHeadlines, null, 2);
     els.modalBack.style.display = "flex";
   }
-  function closeModal(){
-    els.modalBack.style.display = "none";
-  }
+  function closeModal(){ els.modalBack.style.display = "none"; }
 
   els.editBtn.addEventListener("click", openModal);
   els.closeModalBtn.addEventListener("click", closeModal);
@@ -1401,80 +1385,59 @@
       if (!Array.isArray(ev) || !Array.isArray(hd)) throw new Error("Not arrays");
       curatedEvents = ev;
       curatedHeadlines = hd;
-      saveJSON(KEY.events, curatedEvents);
-      saveJSON(KEY.headlines, curatedHeadlines);
+      localStorage.setItem(KEY.events, JSON.stringify(curatedEvents));
+      localStorage.setItem(KEY.headlines, JSON.stringify(curatedHeadlines));
       renderEvents();
       renderHeadlines();
       closeModal();
     }catch(err){
-      alert("Invalid JSON. Fix the JSON formatting before saving.");
+      alert("Invalid JSON. Fix formatting before saving.");
     }
   });
 
-  // ---------- Event Risk Score ----------
-  // Maps upcoming events into a 0..1 risk score
-  function computeEventRisk(now = Date.now()){
-    if (!Array.isArray(curatedEvents) || curatedEvents.length === 0) return { risk: 0.05, label:"LOW", note:"No events loaded" };
-
-    // Look at events within next 36 hours and weight by proximity and impact
-    const horizonMs = 36 * 60 * 60 * 1000;
-    let score = 0;
-
-    for (const e of curatedEvents){
-      const t = new Date(e.when).getTime();
-      if (!Number.isFinite(t)) continue;
-      const dt = t - now;
-      if (dt < -30*60*1000) continue; // ignore old events beyond 30m
-      if (dt > horizonMs) continue;
-
-      const imp = String(e.impact || "LOW").toUpperCase();
-      const wImp = (imp === "HIGH") ? 1.0 : (imp === "MED") ? 0.55 : 0.25;
-
-      // Proximity: peaks around event time, decays with hours
-      const hours = Math.abs(dt) / (60*60*1000);
-      const wProx = clamp(1.0 - (hours / 18), 0, 1); // 0 at 18h away
-      score += wImp * wProx;
-    }
-
-    // Squash into 0..1
-    const risk = clamp(1 - Math.exp(-score), 0, 1);
-    const label = risk > 0.70 ? "HIGH" : risk > 0.35 ? "MED" : "LOW";
-    const note = label === "HIGH" ? "High-impact window nearby" : label === "MED" ? "Event risk elevated" : "Event risk low";
-    return { risk, label, note };
+  // ---------- Modal: Settings ----------
+  function openSettings(){
+    els.twelveKey.value = settings.twelveKey || "";
+    els.pollSeconds.value = String(settings.pollSeconds || 12);
+    els.settingsBack.style.display = "flex";
   }
+  function closeSettings(){ els.settingsBack.style.display = "none"; }
 
-  // ---------- Spot feed (multi-source failover) ----------
-  const SpotFeed = (() => {
-    const sources = [
-      {
-        name: "exchangerate.host",
-        url: () => `https://api.exchangerate.host/latest?base=EUR&symbols=USD&_=${Date.now()}`,
-        parse: (j) => j?.rates?.USD
-      },
-      {
-        name: "frankfurter.app",
-        url: () => `https://api.frankfurter.app/latest?from=EUR&to=USD&_=${Date.now()}`,
-        parse: (j) => j?.rates?.USD
-      },
-      {
-        name: "open.er-api.com",
-        url: () => `https://open.er-api.com/v6/latest/EUR?_=${Date.now()}`,
-        parse: (j) => j?.rates?.USD
-      }
-    ];
+  els.settingsBtn.addEventListener("click", openSettings);
+  els.closeSettingsBtn.addEventListener("click", closeSettings);
+  els.settingsBack.addEventListener("click", (e)=>{ if (e.target === els.settingsBack) closeSettings(); });
+
+  els.resetSettingsBtn.addEventListener("click", ()=>{
+    settings = {...defaultSettings};
+    localStorage.setItem(KEY.settings, JSON.stringify(settings));
+    els.twelveKey.value = "";
+    els.pollSeconds.value = String(defaultSettings.pollSeconds);
+  });
+
+  els.saveSettingsBtn.addEventListener("click", ()=>{
+    const key = (els.twelveKey.value || "").trim();
+    const sec = Math.max(6, Math.min(60, Number(els.pollSeconds.value || 12)));
+    settings = { twelveKey: key, pollSeconds: sec };
+    localStorage.setItem(KEY.settings, JSON.stringify(settings));
+    closeSettings();
+    hardResync("Settings saved. Syncing.");
+  });
+
+  // ---------- Quote Provider Chain ----------
+  // Goal: give you real intraday if you have a key, otherwise be honest and label as REFERENCE.
+  const Quote = (() => {
+    const MIN_MOVE = 0.000001;
+    const STALE_MS = 60_000;
 
     let last = {
       price: null,
       ts: 0,
+      mode: "REFERENCE",
       source: null,
       latencyMs: null,
-      staleCount: 0,
       lastChangeTs: 0,
       lastDelta: 0
     };
-
-    const STALE_MS = 60_000;
-    const MIN_MOVE = 0.000001;
 
     function status(now = Date.now()){
       if (!last.price) return { status: "CHECKING", stale: false };
@@ -1482,35 +1445,67 @@
       return { status: stale ? "STALE" : "LIVE", stale };
     }
 
-    async function fetchOnce(timeoutMs = 5500){
-      for (const s of sources){
-        const t0 = performance.now();
-        try{
-          const controller = new AbortController();
-          const timer = setTimeout(()=> controller.abort(), timeoutMs);
+    async function fetchWithTimeout(url, timeoutMs = 6500){
+      const controller = new AbortController();
+      const timer = setTimeout(()=> controller.abort(), timeoutMs);
+      const t0 = performance.now();
+      const res = await fetch(url, { method:"GET", cache:"no-store", signal: controller.signal });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const latencyMs = Math.round(performance.now() - t0);
+      return { data, latencyMs };
+    }
 
-          const res = await fetch(s.url(), { method:"GET", cache:"no-store", signal: controller.signal });
-          clearTimeout(timer);
+    async function fetchTwelveData(){
+      const key = (settings.twelveKey || "").trim();
+      if (!key) return { ok:false };
 
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const j = await res.json();
-          const px = Number(s.parse(j));
-          if (!Number.isFinite(px) || px <= 0) throw new Error("Bad parse");
+      // TwelveData: https://twelvedata.com/docs#price
+      const url = `https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${encodeURIComponent(key)}&dp=6&_=${Date.now()}`;
+      try{
+        const { data, latencyMs } = await fetchWithTimeout(url, 6500);
+        const px = Number(data?.price);
+        if (!Number.isFinite(px) || px <= 0) throw new Error("Bad parse");
+        return { ok:true, price:px, source:"TwelveData", mode:"LIVE", latencyMs };
+      }catch(e){
+        return { ok:false, err:String(e) };
+      }
+    }
 
-          const latency = Math.round(performance.now() - t0);
-          return { ok:true, price:px, source:s.name, latencyMs:latency };
-        }catch(e){
-          // try next
+    async function fetchReference(){
+      // These are not live. They are here as a fallback when no key is set.
+      const providers = [
+        {
+          name: "exchangerate.host",
+          url: () => `https://api.exchangerate.host/latest?base=EUR&symbols=USD&_=${Date.now()}`,
+          parse: (j) => j?.rates?.USD
+        },
+        {
+          name: "open.er-api.com",
+          url: () => `https://open.er-api.com/v6/latest/EUR?_=${Date.now()}`,
+          parse: (j) => j?.rates?.USD
         }
+      ];
+
+      for (const p of providers){
+        try{
+          const { data, latencyMs } = await fetchWithTimeout(p.url(), 6500);
+          const px = Number(p.parse(data));
+          if (!Number.isFinite(px) || px <= 0) throw new Error("Bad parse");
+          return { ok:true, price:px, source:p.name, mode:"REFERENCE", latencyMs };
+        }catch(e){}
       }
       return { ok:false };
     }
 
     async function tick(updateCb){
       const now = Date.now();
-      const r = await fetchOnce();
+
+      // Prefer TwelveData if key present
+      let r = await fetchTwelveData();
+      if (!r.ok) r = await fetchReference();
       if (!r.ok){
-        last.staleCount += 1;
         updateCb?.({ ok:false, ...last, ...status(now) });
         return;
       }
@@ -1521,9 +1516,9 @@
 
       last.price = r.price;
       last.ts = now;
+      last.mode = r.mode;
       last.source = r.source;
       last.latencyMs = r.latencyMs;
-      last.staleCount = 0;
       last.lastDelta = delta;
 
       if (moved) last.lastChangeTs = now;
@@ -1535,177 +1530,170 @@
     return { tick, getLast: ()=> ({...last}) };
   })();
 
-  // ---------- TradingView scan (macro proxies) ----------
-  async function tvScan(category, ticker, timeoutMs = 5500){
-    const controller = new AbortController();
-    const timer = setTimeout(()=> controller.abort(), timeoutMs);
-
-    // categories: forex, crypto, cfd, america
-    const url = `https://scanner.tradingview.com/${encodeURIComponent(category)}/scan`;
-
-    const payload = {
-      symbols: { tickers: [ticker], query: { types: [] } },
-      columns: ["close","change","change_abs","change_pct","description"]
+  // ---------- Macro Proxies via Stooq (daily) ----------
+  // Stooq supports CSV with headers: Date,Open,High,Low,Close,Volume
+  // Note: symbols can be imperfect. This is demo-grade.
+  const Macro = (() => {
+    const series = {
+      brent: { label:"Brent (proxy)", symbol:"co1.f" },     // crude oil (generic)
+      wti:   { label:"WTI (proxy)",   symbol:"cl1.f" },     // crude oil WTI (generic)
+      gold:  { label:"Gold (proxy)",  symbol:"gc1.f" },     // gold futures continuous
+      silver:{ label:"Silver (proxy)",symbol:"si1.f" },     // silver futures continuous
+      dxy:   { label:"DXY (proxy)",   symbol:"dx1.f" }      // dollar index futures
     };
 
-    try{
-      const t0 = performance.now();
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        cache: "no-store",
-        signal: controller.signal
-      });
-      clearTimeout(timer);
-      if (!res.ok) throw new Error("TV scan failed");
-      const j = await res.json();
-      const d = j?.data?.[0]?.d;
-      if (!d) throw new Error("No data");
+    let last = {
+      brent: null, wti:null, gold:null, silver:null, dxy:null,
+      tx: { score: 0, bias: "NEUTRAL" }
+    };
 
-      return {
-        ok: true,
-        close: Number(d[0]),
-        chg: Number(d[1]),
-        chgAbs: Number(d[2]),
-        chgPct: Number(d[3]),
-        desc: d[4] || "",
-        latencyMs: Math.round(performance.now() - t0)
-      };
-    }catch(e){
-      clearTimeout(timer);
-      return { ok:false };
+    async function fetchStooq(sym){
+      const url = `https://stooq.com/q/d/l/?s=${encodeURIComponent(sym)}&i=d&_=${Date.now()}`;
+      const res = await fetch(url, { cache:"no-store" });
+      if (!res.ok) throw new Error("stooq fetch failed");
+      const txt = await res.text();
+      const lines = txt.trim().split(/\r?\n/);
+      if (lines.length < 3) throw new Error("not enough data");
+      // last line and previous line (ignore header)
+      const lastLine = lines[lines.length-1].split(",");
+      const prevLine = lines[lines.length-2].split(",");
+      const close = Number(lastLine[4]);
+      const prevClose = Number(prevLine[4]);
+      const date = lastLine[0];
+      if (!Number.isFinite(close) || !Number.isFinite(prevClose)) throw new Error("bad close");
+      const chg = close - prevClose;
+      const pct = prevClose !== 0 ? (chg / prevClose) : 0;
+      return { close, prevClose, chg, pct, date };
     }
-  }
 
-  const MacroFeed = (() => {
-    // Proxies. If one fails, others still work.
-    const instruments = {
-      brent: { cat:"cfd", ticker:"TVC:UKOIL" },
-      wti:   { cat:"cfd", ticker:"TVC:USOIL" },
-      gold:  { cat:"cfd", ticker:"TVC:GOLD" },
-      silver:{ cat:"cfd", ticker:"TVC:SILVER" },
-      dxy:   { cat:"cfd", ticker:"TVC:DXY" }
-    };
+    function fmtKpi(v, pct){
+      if (v == null) return "--";
+      const p = (pct * 100);
+      const cls = p >= 0 ? "pos" : "neg";
+      return `<span class="${cls}">${v.toFixed(2)}</span>`;
+    }
 
-    let last = { brent:null, wti:null, gold:null, silver:null, dxy:null, ts:0 };
-    let lastScore = { score: 0, bias: "NEUTRAL", p1: 0, p4: 0, oil:0, usd:0, fear:0 };
+    function fmtMeta(chg, pct, date){
+      const p = (pct * 100);
+      const cls = p >= 0 ? "pos" : "neg";
+      const sign = p >= 0 ? "+" : "";
+      return `<span class="${cls}">${sign}${p.toFixed(2)}%</span> (${sign}${chg.toFixed(2)}) · ${escapeHtml(date)}`;
+    }
 
-    function fmtChg(xPct){
-      if (!Number.isFinite(xPct)) return "--";
-      const s = (xPct >= 0) ? "+" : "";
-      return `${s}${xPct.toFixed(2)}%`;
+    function computeTransmission(){
+      // Convert daily macro changes into lever intensities (0..100).
+      // Oil up hurts EUR, DXY up hurts EUR, Gold up can mean risk-off (EUR down), but can decouple.
+      const br = last.brent?.pct ?? 0;
+      const wt = last.wti?.pct ?? 0;
+      const gd = last.gold?.pct ?? 0;
+      const sv = last.silver?.pct ?? 0;
+      const dx = last.dxy?.pct ?? 0;
+
+      // Levers (0..100), scaled for daily. These are demo scalings.
+      const oilLever = clamp(Math.abs((br+wt)/2) / 0.02, 0, 1) * 100;
+      const dollarLever = clamp(Math.abs(dx) / 0.01, 0, 1) * 100;
+      const fearLever = clamp(Math.max(0, gd - (sv*0.3)) / 0.015, 0, 1) * 100;
+
+      // Transmission score signed: negative means bearish EURUSD tendency (EUR down).
+      // Heuristic sign:
+      // - Oil up => EUR down (negative)
+      // - DXY up => EUR down (negative)
+      // - Gold up => risk-off => EUR down (negative), but smaller weight
+      const signed = (-0.45*((br+wt)/2)) + (-0.45*dx) + (-0.20*gd);
+      const score = clamp(signed / 0.02, -1, 1); // normalize
+      let bias = "NEUTRAL";
+      if (score <= -0.20) bias = "SHORT";
+      if (score >= 0.20) bias = "LONG";
+
+      last.tx = { score, bias, oilLever, dollarLever, fearLever };
+      return last.tx;
     }
 
     async function tick(){
-      const now = Date.now();
-      const [brent, wti, gold, silver, dxy] = await Promise.all([
-        tvScan(instruments.brent.cat, instruments.brent.ticker),
-        tvScan(instruments.wti.cat, instruments.wti.ticker),
-        tvScan(instruments.gold.cat, instruments.gold.ticker),
-        tvScan(instruments.silver.cat, instruments.silver.ticker),
-        tvScan(instruments.dxy.cat, instruments.dxy.ticker)
-      ]);
-      last = { brent, wti, gold, silver, dxy, ts: now };
-      render();
-      computeScore();
-      return lastScore;
+      const keys = Object.keys(series);
+      for (const k of keys){
+        try{
+          last[k] = await fetchStooq(series[k].symbol);
+        }catch(e){
+          last[k] = null;
+        }
+      }
+      return computeTransmission();
     }
 
     function render(){
-      const b = last.brent, w = last.wti, g = last.gold, s = last.silver, d = last.dxy;
+      // Values
+      els.brentV.innerHTML = last.brent ? fmtKpi(last.brent.close, last.brent.pct) : "--";
+      els.brentM.innerHTML = last.brent ? fmtMeta(last.brent.chg, last.brent.pct, last.brent.date) : "No data";
 
-      if (b?.ok){ els.brentPx.textContent = b.close.toFixed(2); els.brentChg.textContent = fmtChg(b.chgPct); }
-      if (w?.ok){ els.wtiPx.textContent = w.close.toFixed(2); els.wtiChg.textContent = fmtChg(w.chgPct); }
-      if (g?.ok){ els.goldPx.textContent = g.close.toFixed(2); els.goldChg.textContent = fmtChg(g.chgPct); }
-      if (s?.ok){ els.silverPx.textContent = s.close.toFixed(2); els.silverChg.textContent = fmtChg(s.chgPct); }
-      if (d?.ok){ els.dxyPx.textContent = d.close.toFixed(2); els.dxyChg.textContent = fmtChg(d.chgPct); }
+      els.wtiV.innerHTML = last.wti ? fmtKpi(last.wti.close, last.wti.pct) : "--";
+      els.wtiM.innerHTML = last.wti ? fmtMeta(last.wti.chg, last.wti.pct, last.wti.date) : "No data";
+
+      els.goldV.innerHTML = last.gold ? fmtKpi(last.gold.close, last.gold.pct) : "--";
+      els.goldM.innerHTML = last.gold ? fmtMeta(last.gold.chg, last.gold.pct, last.gold.date) : "No data";
+
+      els.silverV.innerHTML = last.silver ? fmtKpi(last.silver.close, last.silver.pct) : "--";
+      els.silverM.innerHTML = last.silver ? fmtMeta(last.silver.chg, last.silver.pct, last.silver.date) : "No data";
+
+      els.dxyV.innerHTML = last.dxy ? fmtKpi(last.dxy.close, last.dxy.pct) : "--";
+      els.dxyM.innerHTML = last.dxy ? fmtMeta(last.dxy.chg, last.dxy.pct, last.dxy.date) : "No data";
+
+      // Transmission summary
+      const tx = last.tx || { score:0, bias:"NEUTRAL", oilLever:0, dollarLever:0, fearLever:0 };
+      const pct = Math.round(Math.abs(tx.score) * 100);
+      const dir = tx.score < 0 ? "EUR Bearish" : (tx.score > 0 ? "EUR Bullish" : "Neutral");
+      els.txV.textContent = `${tx.bias}`;
+      els.txM.textContent = `Score ${(tx.score).toFixed(2)} · ${dir} · Intensity ${pct}%`;
+
+      // Levers
+      els.oilLeverV.textContent = `${Math.round(tx.oilLever)}%`;
+      els.dollarLeverV.textContent = `${Math.round(tx.dollarLever)}%`;
+      els.fearLeverV.textContent = `${Math.round(tx.fearLever)}%`;
+
+      els.oilLeverM.textContent = "EU energy drag proxy";
+      els.dollarLeverM.textContent = "USD strength pressure proxy";
+      els.fearLeverM.textContent = "Risk-off tone proxy";
     }
 
-    function computeScore(){
-      // Percent moves. Missing values treated as 0.
-      const b = last.brent?.ok ? last.brent.chgPct : 0;
-      const w = last.wti?.ok ? last.wti.chgPct : 0;
-      const g = last.gold?.ok ? last.gold.chgPct : 0;
-      const s = last.silver?.ok ? last.silver.chgPct : 0;
-      const d = last.dxy?.ok ? last.dxy.chgPct : 0;
+    function get(){ return structuredClone(last); }
 
-      // Levers (demo weights)
-      // Oil up hurts EUR via EU terms of trade
-      const oilLever = 0.70 * ((b + w) / 2);
-
-      // DXY up hits EURUSD directly
-      const usdLever = 1.20 * d;
-
-      // Fear lever: gold up during DXY up is risk-off; gold up with DXY down is anti-dollar
-      const fearLever = (d >= 0 ? 0.45*g : -0.18*g) + 0.05*Math.max(0, -s); // weak silver adds mild fear
-
-      // Score positive means EURUSD bearish
-      const score = oilLever + usdLever + fearLever;
-
-      let bias = "NEUTRAL";
-      if (score > 0.25) bias = "SHORT EUR/USD";
-      if (score < -0.25) bias = "LONG EUR/USD";
-
-      // Base pip ranges (scaled later by state and event risk)
-      const base1h = 12;
-      const base4h = 28;
-      const mult = clamp(Math.abs(score)/0.6, 0.45, 2.4);
-
-      const p1 = Math.round(base1h * mult);
-      const p4 = Math.round(base4h * mult);
-
-      lastScore = { score, bias, p1, p4, oil: oilLever, usd: usdLever, fear: fearLever };
-
-      // UI
-      els.macroBias.textContent = bias;
-      els.macroBias.className = "v " + (bias.includes("LONG") ? "pos" : bias.includes("SHORT") ? "neg" : "");
-      els.macroNote.textContent = `Score ${score.toFixed(2)} | Base move ~${p1}-${p4} pips (1h-4h)`;
-
-      // chips
-      els.macroBiasChip.textContent = bias.replace(" EUR/USD","");
-
-      // levers UI 0..1 meters
-      const oilN = clamp(Math.abs(oilLever)/1.2, 0, 1);
-      const usdN = clamp(Math.abs(usdLever)/1.2, 0, 1);
-      const fearN = clamp(Math.abs(fearLever)/1.2, 0, 1);
-
-      setLever(els.leverOil, els.barOil, oilN, oilLever, "Oil terms of trade pressure");
-      setLever(els.leverUsd, els.barUsd, usdN, usdLever, "Dollar strength pressure");
-      setLever(els.leverFear, els.barFear, fearN, fearLever, "Risk-off fear component");
-
-      els.noteOil.textContent = `Oil lever ${oilLever.toFixed(2)} (Brent and WTI)`;
-      els.noteUsd.textContent = `Dollar lever ${usdLever.toFixed(2)} (DXY proxy)`;
-      els.noteFear.textContent = `Fear lever ${fearLever.toFixed(2)} (gold, silver risk tone)`;
-    }
-
-    function setLever(valEl, barEl, n01, raw, label){
-      valEl.textContent = `${Math.round(n01*100)}%`;
-      barEl.style.width = `${Math.max(6, n01*100)}%`;
-      barEl.style.background = (raw >= 0) ? "rgba(255,77,77,0.78)" : "rgba(24,209,138,0.78)";
-    }
-
-    function getScore(){ return {...lastScore}; }
-
-    return { tick, getScore };
+    return { tick, render, get };
   })();
 
-  // ---------- Regime engine (stable visualization with hysteresis) ----------
+  // ---------- Event Risk (proximity) ----------
+  function computeEventRisk(){
+    // Look for HIGH impact events in next 4 hours.
+    const now = Date.now();
+    const horizonMs = 4 * 60 * 60 * 1000;
+    let risk = 0; // 0..100
+    for (const e of curatedEvents){
+      const imp = String(e.impact || "").toUpperCase();
+      if (imp !== "HIGH") continue;
+      const t = new Date(e.when).getTime();
+      if (!Number.isFinite(t)) continue;
+      const dt = t - now;
+      if (dt < 0 || dt > horizonMs) continue;
+      // closer => higher risk
+      const x = 1 - (dt / horizonMs);
+      risk = Math.max(risk, clamp(x, 0, 1) * 100);
+    }
+    return risk;
+  }
+
+  // ---------- Regime Engine ----------
   const Engine = (() => {
-    const HISTORY_N = 96;
-    const MOM_WINDOW = 8;
-    const VOL_WINDOW = 18;
+    const HISTORY_N = 80;
+    const MOM_WINDOW = 10;
+    const VOL_WINDOW = 20;
     const HOLD_TICKS = 4;
-    const PROB_TEMP = 1.35;
+    const PROB_TEMP = 1.25;
 
     let tickN = 0;
     let prices = [];
     let returns = [];
-
     let detectorState = null;
     let policyState = null;
     let hold = 0;
-    let policyHistory = [];
 
     function softmax(logits){
       const m = Math.max(...logits);
@@ -1716,17 +1704,15 @@
 
     function computeFeatures(){
       if (prices.length < 3) return null;
-
       const p = prices[prices.length-1];
       const pPrev = prices[prices.length-2];
-
       const r = (pPrev ? (p - pPrev) : 0);
       const momBase = prices[Math.max(0, prices.length-1-MOM_WINDOW)];
       const mom = momBase ? (p - momBase) : 0;
 
       const recentR = returns.slice(-VOL_WINDOW);
       const absAvg = recentR.length ? recentR.reduce((a,b)=>a+Math.abs(b),0)/recentR.length : 0;
-      const volx = clamp(absAvg / 0.00015, 0, 5);
+      const volx = clamp(absAvg / 0.00015, 0, 6);
 
       const shock = Math.abs(r) > 0.0007 ? 1 : 0;
 
@@ -1750,14 +1736,14 @@
 
       const L = new Array(8).fill(0);
 
-      L[0] = 2.4 - 0.7*vol - 0.04*momBp; // mean reversion
-      L[1] = 1.1 + 0.55*vol - 0.03*momBp; // liquidity vacuum
-      L[2] = 1.6 - 0.25*vol - 0.02*momBp; // slow drift
-      L[3] = 0.9 + 0.25*vol + 0.045*momBp; // strong trend
-      L[4] = -0.2 + 0.55*vol + 0.02*momBp + 0.04*rBp; // stop cascade
-      L[5] = -0.4 + (f.shock ? 3.0 : 0) + 0.2*vol; // news shock
-      L[6] = 0.3 + 0.18*vol + 0.35*clamp(signChanges/6,0,1) - 0.02*momBp; // dealer unwind
-      L[7] = -0.8 + 0.95*Math.max(0, vol-2.2) + 0.04*rBp + (f.shock ? 0.6 : 0); // panic
+      L[0] = 2.6 - 0.75*vol - 0.045*momBp;                      // mean reversion
+      L[1] = 1.2 + 0.60*vol - 0.035*momBp;                      // liquidity vacuum
+      L[2] = 1.7 - 0.25*vol - 0.02*momBp;                       // slow drift
+      L[3] = 0.9 + 0.28*vol + 0.05*momBp;                       // strong trend
+      L[4] = -0.2 + 0.60*vol + 0.02*momBp + 0.05*rBp;           // stop cascade
+      L[5] = -0.4 + (f.shock ? 3.0 : 0) + 0.25*vol;             // news shock
+      L[6] = 0.3 + 0.18*vol + 0.40*clamp(signChanges/6,0,1) - 0.02*momBp; // unwind
+      L[7] = -0.9 + 1.00*Math.max(0, vol-2.2) + 0.05*rBp + (f.shock ? 0.7 : 0); // panic
 
       return softmax(L);
     }
@@ -1773,7 +1759,7 @@
       const top = probs[s];
       const sorted = [...probs].sort((a,b)=>b-a);
       const gap = (sorted[0] - (sorted[1] || 0));
-      return clamp((top*0.7 + gap*0.3), 0, 1);
+      return clamp((top*0.72 + gap*0.28), 0, 1);
     }
 
     function updatePolicy(det){
@@ -1797,7 +1783,6 @@
 
     function step(price){
       tickN += 1;
-
       const p = Number(price);
       if (!Number.isFinite(p) || p <= 0) return null;
 
@@ -1819,9 +1804,6 @@
       detectorState = det;
 
       const polRes = updatePolicy(det);
-      policyHistory.unshift(polRes.policy);
-      policyHistory = policyHistory.slice(0, 12);
-
       const conf = confidence(probs, polRes.policy);
 
       return {
@@ -1835,17 +1817,14 @@
       };
     }
 
-    function getHistory(){ return policyHistory.slice(); }
-    function getRecentPrices(){ return prices.slice(); }
-
-    return { step, getHistory, getRecentPrices };
+    return { step };
   })();
 
-  // ---------- Render probability list skeleton ----------
+  // ---------- Probabilities UI ----------
   const probEls = [];
   function initProbUI(){
     els.probList.innerHTML = "";
-    STATES.forEach((s)=> {
+    STATES.forEach((s)=>{
       const row = document.createElement("div");
       row.className = "probRow";
       row.innerHTML = `
@@ -1861,79 +1840,51 @@
     });
   }
 
-  // ---------- State history boxes ----------
-  function renderHistory(history, active){
-    els.stateHistory.innerHTML = "";
-    const arr = history.length ? history : new Array(12).fill(null);
-    arr.forEach((st, i)=>{
-      const d = document.createElement("div");
-      d.className = "hbox" + ((i===0) ? " active" : "");
-      d.textContent = st ? String(st) : "-";
-      els.stateHistory.appendChild(d);
-    });
+  // ---------- Risk mapping ----------
+  function setRisk(policyState, conf){
+    let level = "--";
+    let rule = "Policy: state-aware sizing and entry gating";
 
-    els.stateBadge.textContent = active ? String(active) : "--";
-    if (active){
-      const color = STATES[active-1]?.color || "rgba(120,170,255,0.8)";
-      els.stateBadge.style.borderColor = color;
-      els.stateBadge.style.boxShadow = `0 0 0 6px rgba(120,170,255,0.12)`;
-    }
-  }
-
-  // ---------- Risk level mapping ----------
-  function setRisk(policyState, conf, eventRisk){
-    let level = "NORMAL";
-    let rule = "Rule: Trade normally. Keep size disciplined.";
-
-    if (!policyState){
-      level = "--";
-      rule = "Policy: state-aware sizing and entry gating";
-    } else {
+    if (policyState){
       if (policyState === 1) { level = "NORMAL"; rule = "Rule: Range logic favored. Avoid forcing breakouts."; }
       if (policyState === 2) { level = "ELEVATED"; rule = "Rule: Thin liquidity risk. Reduce size and demand confirmation."; }
-      if (policyState === 3) { level = "NORMAL"; rule = "Rule: Drift regime. Small edges. Avoid impulsive entries."; }
-      if (policyState === 4) { level = "ELEVATED"; rule = "Rule: Trend regime. Bias with trend. Cut countertrend attempts."; }
+      if (policyState === 3) { level = "NORMAL"; rule = "Rule: Drift regime. Small edges, avoid impulsive entries."; }
+      if (policyState === 4) { level = "ELEVATED"; rule = "Rule: Trend regime. Bias with trend. Avoid countertrend heroics."; }
       if (policyState === 5) { level = "HIGH"; rule = "Rule: Stop cascade risk. De-risk and widen filters."; }
       if (policyState === 6) { level = "HIGH"; rule = "Rule: News shock. Consider standing down around releases."; }
       if (policyState === 7) { level = "ELEVATED"; rule = "Rule: Unwind risk. Protect and demand confirmation."; }
       if (policyState === 8) { level = "CRITICAL"; rule = "Rule: Risk off. Protect capital first."; }
 
-      if (conf != null && conf < 0.35 && (level === "NORMAL")) level = "ELEVATED";
+      if (conf != null && conf < 0.33 && (level === "NORMAL")) level = "ELEVATED";
       if (conf != null && conf < 0.25 && (level === "ELEVATED")) level = "HIGH";
-
-      // Event risk bumps caution
-      if (eventRisk != null && eventRisk > 0.70 && level === "NORMAL") level = "ELEVATED";
-      if (eventRisk != null && eventRisk > 0.70 && level === "ELEVATED") level = "HIGH";
     }
 
     els.riskBig.textContent = level;
     els.riskRule.textContent = rule;
   }
 
-  // ---------- Regime log ----------
+  // ---------- Log ----------
   let logRows = loadJSON(KEY.log, []);
-  function persistLog(){
-    saveJSON(KEY.log, logRows.slice(0, 250));
-  }
-
+  function persistLog(){ localStorage.setItem(KEY.log, JSON.stringify(logRows.slice(0, 250))); }
   function renderLog(){
-    const html = logRows.slice(0, 80).map(r=>`
-      <tr>
-        <td>${escapeHtml(r.time)}</td>
-        <td>${escapeHtml(r.price)}</td>
-        <td>${escapeHtml(r.det)}</td>
-        <td>${escapeHtml(r.pol)}</td>
-        <td>${escapeHtml(r.conf)}</td>
-        <td>${escapeHtml(r.volx)}</td>
-        <td>${escapeHtml(r.mom)}</td>
-        <td>${escapeHtml(r.evt)}</td>
-        <td>${escapeHtml(r.macro)}</td>
-        <td>${escapeHtml(r.src)}</td>
-      </tr>
-    `).join("");
+    const html = logRows.slice(0, 80).map(r=>{
+      return `
+        <tr>
+          <td>${escapeHtml(r.time)}</td>
+          <td>${escapeHtml(r.price)}</td>
+          <td>${escapeHtml(r.det)}</td>
+          <td>${escapeHtml(r.pol)}</td>
+          <td>${escapeHtml(r.conf)}</td>
+          <td>${escapeHtml(r.volx)}</td>
+          <td>${escapeHtml(r.mom)}</td>
+          <td>${escapeHtml(r.macro)}</td>
+          <td>${escapeHtml(r.event)}</td>
+          <td>${escapeHtml(r.src)}</td>
+        </tr>
+      `;
+    }).join("");
     els.logBody.innerHTML = html || `<tr><td colspan="10" style="color:rgba(255,255,255,0.6)">No samples yet.</td></tr>`;
   }
-
   function addLogSample(sample){
     logRows.unshift(sample);
     logRows = logRows.slice(0, 250);
@@ -1948,10 +1899,10 @@
   }
 
   els.copyCsvBtn.addEventListener("click", async ()=>{
-    const header = ["time","eurusd","det","pol","conf","volx","mom_bp","event_risk","macro_bias","src"];
+    const header = ["time","eurusd","det","pol","conf","volx","mom_bp","macro_bias","event_risk","src"];
     const lines = [header.join(",")];
     for (const r of logRows.slice().reverse()){
-      lines.push([r.time,r.price,r.det,r.pol,r.conf,r.volx,r.mom,r.evt,r.macro,r.src].map(csvCell).join(","));
+      lines.push([r.time,r.price,r.det,r.pol,r.conf,r.volx,r.mom,r.macro,r.event,r.src].map(csvCell).join(","));
     }
     try{
       await navigator.clipboard.writeText(lines.join("\n"));
@@ -1984,379 +1935,201 @@
     }
   });
 
-  els.syncBtn.addEventListener("click", ()=>{
-    SpotFeed.tick(onSpotUpdate);
-    MacroFeed.tick().then(()=>{ /* no-op */ });
-    renderEvents();
-  });
+  els.syncBtn.addEventListener("click", ()=> hardResync("Syncing"));
 
-  // ---------- Dashboard state persistence ----------
-  let dashState = (function(){
-    try{
-      const raw = localStorage.getItem(KEY.dashboard);
-      if (!raw) return {};
-      return JSON.parse(raw) || {};
-    }catch(e){ return {}; }
-  })();
+  function hardResync(msg){
+    els.syncBtn.textContent = msg;
+    Promise.allSettled([Quote.tick(onQuoteUpdate), Macro.tick().then(()=>Macro.render())])
+      .finally(()=> setTimeout(()=> els.syncBtn.textContent = "Sync", 650));
+  }
 
+  // ---------- Dash state ----------
+  let dashState = loadObj(KEY.dashboard, {});
   function persistDashState(){
     try{ localStorage.setItem(KEY.dashboard, JSON.stringify(dashState)); }catch(e){}
   }
 
-  // ---------- Price samples for chart ----------
-  let priceSamples = loadJSON(KEY.samples, []);
-  if (!Array.isArray(priceSamples)) priceSamples = [];
-  function pushSample(px){
-    const p = Number(px);
-    if (!Number.isFinite(p) || p <= 0) return;
-    priceSamples.push({ t: Date.now(), p });
-    priceSamples = priceSamples.slice(-180);
-    saveJSON(KEY.samples, priceSamples);
-  }
-
-  // ---------- FX status helper ----------
-  let stalePolls = 0;
+  // ---------- UI: Quote status ----------
   function setFxStatus(status){
     els.fxSpotStatus.textContent = status;
     els.fxStatusDot.classList.remove("live","err");
     if (status === "LIVE") els.fxStatusDot.classList.add("live");
-    else if (status === "ERROR") els.fxStatusDot.classList.add("err");
+    if (status === "ERROR") els.fxStatusDot.classList.add("err");
   }
 
-  // ---------- Projection chart ----------
-  function drawProjectionChart(currentPx, pips1h, pips4h, biasDir, eventRisk, macroScore){
-    const c = els.projCanvas;
-    if (!c) return;
-    const ctx = c.getContext("2d");
-    const w = c.width, h = c.height;
+  // ---------- Projection cone ----------
+  function drawCone(spot, pips1h, pips4h, bias){
+    const canvas = els.cone;
+    const ctx = canvas.getContext("2d");
+    const rect = canvas.getBoundingClientRect();
 
+    // hi-dpi
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    canvas.width = Math.floor(rect.width * dpr);
+    canvas.height = Math.floor(280 * dpr);
+    canvas.style.height = "280px";
+    ctx.scale(dpr, dpr);
+
+    const w = rect.width;
+    const h = 280;
+
+    // background
     ctx.clearRect(0,0,w,h);
 
-    // Background subtle grid
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = "rgba(5,10,26,0.25)";
-    ctx.fillRect(0,0,w,h);
-
-    ctx.strokeStyle = "rgba(210,230,255,0.07)";
+    // grid
+    ctx.globalAlpha = 0.12;
+    ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = 1;
-    for (let x=0; x<=w; x+=80){
-      ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
+    const stepX = w / 12;
+    const stepY = h / 8;
+    for (let i=1;i<12;i++){
+      ctx.beginPath();
+      ctx.moveTo(i*stepX, 0);
+      ctx.lineTo(i*stepX, h);
+      ctx.stroke();
     }
-    for (let y=0; y<=h; y+=70){
-      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
+    for (let j=1;j<8;j++){
+      ctx.beginPath();
+      ctx.moveTo(0, j*stepY);
+      ctx.lineTo(w, j*stepY);
+      ctx.stroke();
     }
+    ctx.globalAlpha = 1;
 
-    const samples = priceSamples.slice(-120);
-    if (samples.length < 5 || !Number.isFinite(currentPx)) return;
+    // center line
+    const cx = w*0.52;
+    const cy = h*0.52;
 
-    const ps = samples.map(s=>s.p);
-    const minP = Math.min(...ps);
-    const maxP = Math.max(...ps);
-    const pad = (maxP - minP) * 0.15 + 0.0002;
-    const yMin = minP - pad;
-    const yMax = maxP + pad;
+    // pip to px scaling
+    const maxPips = Math.max(8, pips4h*1.2);
+    const pxPerPip = (h*0.35) / maxPips;
 
-    const x0 = 40, x1 = w - 40;
-    const y0 = 30, y1 = h - 40;
+    function yForPips(p){ return cy - (p * pxPerPip); }
 
-    function xAt(i){
-      return x0 + (i/(samples.length-1))*(x1-x0)*0.68;
-    }
-    function yAt(p){
-      const t = (p - yMin) / (yMax - yMin);
-      return y1 - t*(y1-y0);
-    }
+    // cone polygon
+    const x0 = w*0.12;
+    const x1 = w*0.52;
+    const x2 = w*0.88;
 
-    // Draw historical sparkline
-    ctx.strokeStyle = "rgba(120,170,255,0.85)";
-    ctx.lineWidth = 2;
+    const yTop1 = yForPips(pips1h);
+    const yBot1 = yForPips(-pips1h);
+    const yTop4 = yForPips(pips4h);
+    const yBot4 = yForPips(-pips4h);
+
+    // fill
+    ctx.globalAlpha = 0.22;
+    ctx.fillStyle = (bias === "LONG") ? "rgba(24,209,138,0.9)" : (bias === "SHORT" ? "rgba(255,77,77,0.9)" : "rgba(120,170,255,0.9)");
     ctx.beginPath();
-    for (let i=0;i<samples.length;i++){
-      const x = xAt(i);
-      const y = yAt(samples[i].p);
-      if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-    }
-    ctx.stroke();
-
-    // Current point
-    const curX = xAt(samples.length-1);
-    const curY = yAt(currentPx);
-    ctx.fillStyle = "rgba(233,240,255,0.92)";
-    ctx.beginPath(); ctx.arc(curX, curY, 4, 0, Math.PI*2); ctx.fill();
-
-    // Forward cone (1h and 4h ranges)
-    const pip = 0.0001;
-    const up1 = currentPx + pips1h*pip;
-    const dn1 = currentPx - pips1h*pip;
-    const up4 = currentPx + pips4h*pip;
-    const dn4 = currentPx - pips4h*pip;
-
-    const f1X = x1 - (x1-x0)*0.22;
-    const f4X = x1;
-
-    // widen cone if event risk is high
-    const widen = 1 + eventRisk*0.55;
-    const up1Y = yAt(currentPx + (up1-currentPx)*widen);
-    const dn1Y = yAt(currentPx + (dn1-currentPx)*widen);
-    const up4Y = yAt(currentPx + (up4-currentPx)*widen);
-    const dn4Y = yAt(currentPx + (dn4-currentPx)*widen);
-
-    // Cone fill
-    ctx.fillStyle = "rgba(255,255,255,0.06)";
-    ctx.beginPath();
-    ctx.moveTo(curX, curY);
-    ctx.lineTo(f1X, up1Y);
-    ctx.lineTo(f4X, up4Y);
-    ctx.lineTo(f4X, dn4Y);
-    ctx.lineTo(f1X, dn1Y);
+    ctx.moveTo(x1, cy);
+    ctx.lineTo(x2, yTop4);
+    ctx.lineTo(x2, yBot4);
     ctx.closePath();
     ctx.fill();
 
-    // Cone edges
-    ctx.strokeStyle = "rgba(255,255,255,0.18)";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(curX, curY); ctx.lineTo(f4X, up4Y); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(curX, curY); ctx.lineTo(f4X, dn4Y); ctx.stroke();
+    ctx.globalAlpha = 0.12;
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.beginPath();
+    ctx.moveTo(x0, cy);
+    ctx.lineTo(x1, yTop1);
+    ctx.lineTo(x1, yBot1);
+    ctx.closePath();
+    ctx.fill();
 
-    // Bias arrow line
-    const dir = (biasDir === "UP") ? -1 : (biasDir === "DOWN") ? 1 : 0;
-    if (dir !== 0){
-      ctx.strokeStyle = (biasDir === "UP") ? "rgba(24,209,138,0.85)" : "rgba(255,77,77,0.85)";
-      ctx.lineWidth = 2;
-      const midY = (biasDir === "UP") ? up1Y : dn1Y;
-      ctx.beginPath(); ctx.moveTo(curX, curY); ctx.lineTo(f1X, midY); ctx.stroke();
-    }
+    // lines
+    ctx.globalAlpha = 0.35;
+    ctx.strokeStyle = "rgba(255,255,255,0.95)";
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(x0, cy);
+    ctx.lineTo(x2, yTop4);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x0, cy);
+    ctx.lineTo(x2, yBot4);
+    ctx.stroke();
 
-    // Labels
-    ctx.fillStyle = "rgba(233,240,255,0.75)";
-    ctx.font = "12px " + getComputedStyle(document.documentElement).getPropertyValue("--mono");
-    ctx.fillText(`Spot ${currentPx.toFixed(5)}`, curX + 8, curY - 10);
-    ctx.fillText(`1h ±${pips1h}p`, f1X - 20, y0 + 14);
-    ctx.fillText(`4h ±${pips4h}p`, f4X - 60, y0 + 14);
+    // spot marker
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.beginPath();
+    ctx.arc(x1, cy, 3.2, 0, Math.PI*2);
+    ctx.fill();
 
-    ctx.fillStyle = "rgba(233,240,255,0.55)";
-    ctx.fillText(`EventRisk ${(eventRisk*100).toFixed(0)}%`, x0, y0 + 14);
-    ctx.fillText(`MacroScore ${macroScore.toFixed(2)}`, x0, y0 + 30);
+    // labels
+    ctx.font = "12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
+    ctx.fillStyle = "rgba(255,255,255,0.70)";
+    ctx.fillText(`Spot ${spot.toFixed(5)}`, x1 + 8, cy + 4);
+    ctx.fillText(`1h ±${Math.round(pips1h)}p`, x1 + 8, yTop1 - 8);
+    ctx.fillText(`4h ±${Math.round(pips4h)}p`, x2 - 92, yTop4 - 8);
   }
 
-  // ---------- Projection logic ----------
-  // Combines:
-  // - Policy state (vol and shock regimes)
-  // - Engine volatility proxy
-  // - Macro transmission score
-  // - Event risk
-  function computeProjection(step, macro, evt){
-    const policy = step?.policy || null;
-    const conf = step?.conf ?? null;
-    const volx = step?.features?.volx ?? 1.0;
+  // ---------- Core update loop ----------
+  let stalePolls = 0;
+  let lastMacro = Macro.get();
 
-    const eventRisk = evt?.risk ?? 0.05;
-    const macroScore = macro?.score ?? 0;
-    const macroBias = macro?.bias ?? "NEUTRAL";
-
-    // Scale by regime:
-    // - high vol regimes widen expected move
-    // - mean reversion shrinks move, trend expands
-    let regimeMult = 1.0;
-    if (policy === 1) regimeMult = 0.90;
-    if (policy === 2) regimeMult = 1.20;
-    if (policy === 3) regimeMult = 0.95;
-    if (policy === 4) regimeMult = 1.25;
-    if (policy === 5) regimeMult = 1.45;
-    if (policy === 6) regimeMult = 1.50;
-    if (policy === 7) regimeMult = 1.20;
-    if (policy === 8) regimeMult = 1.70;
-
-    const volMult = clamp(0.75 + (volx/5)*1.2, 0.75, 1.95);
-    const evtMult = 1 + eventRisk*0.65;
-    const macroMult = clamp(0.85 + Math.abs(macroScore)*0.45, 0.85, 1.75);
-
-    const base1h = macro?.p1 ?? 12;
-    const base4h = macro?.p4 ?? 28;
-
-    const p1 = Math.round(base1h * regimeMult * volMult * evtMult);
-    const p4 = Math.round(base4h * regimeMult * volMult * evtMult);
-
-    // Bias resolution:
-    // If macroBias is neutral, infer from momentum sign
-    let bias = macroBias;
-    let dir = "FLAT";
-
-    if (bias === "NEUTRAL" && step?.features){
-      const m = step.features.mom;
-      if (m > 0.00025) bias = "LONG EUR/USD";
-      if (m < -0.00025) bias = "SHORT EUR/USD";
-    }
-
-    if (bias.includes("LONG")) dir = "UP";
-    if (bias.includes("SHORT")) dir = "DOWN";
-
-    // Decision confidence: combine model confidence, macro magnitude, and event risk penalty
-    const c0 = (conf != null) ? conf : 0.35;
-    const cMacro = clamp(Math.abs(macroScore)/0.9, 0, 1);
-    const cEvtPenalty = eventRisk*0.35;
-    const decisionConf = clamp((c0*0.55 + cMacro*0.45) - cEvtPenalty, 0.05, 0.95);
-
-    return { bias, dir, p1, p4, decisionConf, regimeMult, volMult, evtMult, macroScore, eventRisk };
-  }
-
-  // ---------- Levers: event risk UI ----------
-  function renderEventLever(evt){
-    const r = evt.risk;
-    els.leverEvent.textContent = `${Math.round(r*100)}%`;
-    els.barEvent.style.width = `${Math.max(6, r*100)}%`;
-    els.barEvent.style.background = (r >= 0.70) ? "rgba(255,77,77,0.78)" : (r >= 0.35) ? "rgba(255,176,32,0.78)" : "rgba(24,209,138,0.78)";
-    els.noteEvent.textContent = evt.note;
-
-    els.eventRiskChip.textContent = evt.label;
-  }
-
-  // ---------- Hydrate UI from persisted snapshot ----------
-  function hydrateFromPersisted(){
-    if (!dashState || !dashState.lastPrice) return;
-
-    els.fxSpotPrice.textContent = Number(dashState.lastPrice).toFixed(5);
-    els.fxSpotLast.textContent = `Last good sample: ${fmtTime(dashState.lastTs || Date.now())}`;
-    els.fxSpotMeta.textContent = `Source: ${dashState.lastSrc || "--"} | Latency: --`;
-    els.fxSpotDelta.textContent = `Delta (last): 0.00000`;
-
-    els.miniPrice.textContent = Number(dashState.lastPrice).toFixed(5);
-    els.miniSrc.textContent = `Feed ${dashState.lastSrc || "--"}`;
-    els.miniDelta.textContent = "0.00000";
-
-    if (dashState.lastPolicy){
-      const pol = dashState.lastPolicy;
-      const polName = STATES[pol-1]?.name || "--";
-      const polDesc = STATES[pol-1]?.desc || "--";
-      els.policyStateTitle.textContent = `Policy State: S${pol} ${polName}`;
-      els.policyStateDesc.textContent = polDesc;
-      els.policyChip.textContent = `S${pol}`;
-      els.stateBadge.textContent = String(pol);
-      els.footPolicy.textContent = `S${pol}`;
-      renderHistory([pol], pol);
-    }
-    if (dashState.lastDetector){
-      els.detectorChip.textContent = `S${dashState.lastDetector}`;
-      els.footDetector.textContent = `S${dashState.lastDetector}`;
-    }
-    if (dashState.lastConf != null){
-      els.confChip.textContent = (dashState.lastConf*100).toFixed(1) + "%";
-    }
-    if (Array.isArray(dashState.lastProbs) && dashState.lastProbs.length === 8){
-      dashState.lastProbs.forEach((p,i)=>{
-        const pct = p*100;
-        probEls[i].bar.style.width = `${clamp(pct,0,100)}%`;
-        probEls[i].bar.style.background = STATES[i].color;
-        probEls[i].val.textContent = `${pct.toFixed(1)}%`;
-      });
-    }
-    if (dashState.lastTick){
-      els.tickChip.textContent = String(dashState.lastTick);
-    }
-    if (dashState.lastHold != null){
-      els.footHold.textContent = String(dashState.lastHold);
-    }
-  }
-
-  // ---------- Main update loop ----------
-  let latestStep = null;
-  let latestMacro = { score: 0, bias: "NEUTRAL", p1: 12, p4: 28 };
-  let latestEvent = { risk: 0.05, label:"LOW", note:"Event risk low" };
-
-  function updateProjectionUI(currentPx){
-    if (!latestStep || !Number.isFinite(currentPx)) return;
-    const proj = computeProjection(latestStep, latestMacro, latestEvent);
-
-    els.projBias.textContent = proj.bias;
-    els.projBias.className = "v " + (proj.bias.includes("LONG") ? "pos" : proj.bias.includes("SHORT") ? "neg" : "");
-
-    els.projBiasNote.textContent = `Macro score ${proj.macroScore.toFixed(2)} | Event ${(proj.eventRisk*100).toFixed(0)}%`;
-
-    els.proj1h.textContent = `±${proj.p1} pips`;
-    els.proj1hNote.textContent = `Regime x${proj.regimeMult.toFixed(2)} | Vol x${proj.volMult.toFixed(2)}`;
-
-    els.proj4h.textContent = `±${proj.p4} pips`;
-    els.proj4hNote.textContent = `Event x${proj.evtMult.toFixed(2)} | Macro weighting active`;
-
-    els.projConf.textContent = `${Math.round(proj.decisionConf*100)}%`;
-    els.projConf.className = "v " + (proj.decisionConf >= 0.65 ? "pos" : proj.decisionConf <= 0.35 ? "neg" : "");
-    els.projConfNote.textContent = proj.decisionConf >= 0.65 ? "High agreement across signals" : proj.decisionConf <= 0.35 ? "Low agreement, caution" : "Mixed signals";
-
-    els.macroBiasChip.textContent = proj.bias.includes("LONG") ? "LONG" : proj.bias.includes("SHORT") ? "SHORT" : "NEUTRAL";
-
-    drawProjectionChart(currentPx, proj.p1, proj.p4, proj.dir, proj.eventRisk, proj.macroScore);
-  }
-
-  function onSpotUpdate(s){
+  function onQuoteUpdate(q){
     const now = Date.now();
     els.lastUpdate.textContent = fmtTime(now);
 
-    // Event risk updates regardless
-    latestEvent = computeEventRisk(now);
-    renderEventLever(latestEvent);
-
-    if (!s.ok){
+    if (!q.ok){
       setFxStatus("ERROR");
-      els.fxSpotMeta.textContent = `Source: -- | Latency: --`;
-      els.fxSpotDelta.textContent = `Delta (last): 0.00000`;
+      els.miniSrc.textContent = "Provider: --";
+      els.miniLatency.textContent = "--";
+      els.miniMode.textContent = "--";
       stalePolls += 1;
       els.staleChip.textContent = String(stalePolls);
       return;
     }
 
-    // Feed panel
-    els.fxSpotPrice.textContent = s.price.toFixed(5);
-    els.fxSpotLast.textContent = `Last good sample: ${fmtTime(s.ts)}`;
-    els.fxSpotMeta.textContent = `Source: ${s.source} | Latency: ${s.latencyMs}ms`;
-    els.fxSpotDelta.textContent = `Delta (last): ${s.lastDelta.toFixed(5)}`;
+    // Quote UI
+    els.miniPrice.textContent = q.price.toFixed(5);
+    els.miniDelta.textContent = q.lastDelta.toFixed(5);
+    els.miniSrc.textContent = `Provider: ${q.source}`;
+    els.miniLatency.textContent = `${q.latencyMs}ms`;
+    els.miniMode.textContent = q.mode;
 
-    // Mini quote
-    els.miniPrice.textContent = s.price.toFixed(5);
-    els.miniSrc.textContent = `Feed ${s.source}`;
-    els.miniDelta.textContent = s.lastDelta.toFixed(5);
+    setFxStatus(q.status);
 
-    const w = clamp(Math.abs(s.lastDelta) / 0.0012, 0, 1) * 100;
-    els.miniBar.style.width = `${Math.max(10, w)}%`;
-    els.miniBar.style.background = (s.lastDelta >= 0) ? "rgba(24,209,138,0.85)" : "rgba(255,77,77,0.85)";
+    // Bar
+    const w = clamp(Math.abs(q.lastDelta) / 0.0012, 0, 1) * 100;
+    els.miniBar.style.width = `${Math.max(12, w)}%`;
+    els.miniBar.style.background = (q.lastDelta >= 0) ? "rgba(24,209,138,0.85)" : "rgba(255,77,77,0.85)";
 
-    // status and stale
-    setFxStatus(s.status);
-    if (s.status === "STALE") stalePolls += 1; else stalePolls = 0;
+    // Stale tracking
+    if (q.status === "STALE") stalePolls += 1;
+    else stalePolls = 0;
     els.staleChip.textContent = String(stalePolls);
+
+    // Mode disclaimer
+    if (q.mode === "REFERENCE"){
+      els.quoteDisclaimer.innerHTML = `Mode: <b>REFERENCE</b>. Not streaming. Set TwelveData key in Settings for intraday updates.`;
+    } else {
+      els.quoteDisclaimer.innerHTML = `Mode: <b>LIVE</b>. Intraday quote provider active.`;
+    }
 
     if (paused) return;
 
-    // push sample for chart
-    pushSample(s.price);
-
-    // Regime engine
-    const step = Engine.step(s.price);
+    // Engine step
+    const step = Engine.step(q.price);
     if (!step) return;
-    latestStep = step;
-
-    // UI from engine
-    els.tickChip.textContent = String(step.tickN);
 
     const det = step.detector;
     const pol = step.policy;
     const confPct = (step.conf * 100).toFixed(1) + "%";
 
-    const polName = STATES[pol-1]?.name || "--";
-    const polDesc = STATES[pol-1]?.desc || "Waiting for signal.";
-
-    els.policyStateTitle.textContent = `Policy State: S${pol} ${polName}`;
-    els.policyStateDesc.textContent = polDesc;
-
+    els.tickChip.textContent = String(step.tickN);
     els.detectorChip.textContent = `S${det}`;
     els.policyChip.textContent = `S${pol}`;
     els.confChip.textContent = confPct;
 
     els.hystChip.textContent = (det === pol) ? "stable" : "holding";
 
-    // Risk level (includes event risk)
-    setRisk(pol, step.conf, latestEvent.risk);
+    const polName = STATES[pol-1]?.name || "--";
+    const polDesc = STATES[pol-1]?.desc || "Waiting for signal.";
+    els.policyStateTitle.textContent = `Policy State: S${pol} ${polName}`;
+    els.policyStateDesc.textContent = polDesc;
 
-    // probability bars
+    // Prob bars
     step.probs.forEach((p, i)=>{
       const pct = (p*100);
       probEls[i].bar.style.width = `${clamp(pct, 0, 100)}%`;
@@ -2364,99 +2137,186 @@
       probEls[i].val.textContent = `${pct.toFixed(1)}%`;
     });
 
-    // history
-    renderHistory(Engine.getHistory(), pol);
+    // Macro + events influence
+    lastMacro = Macro.get();
+    const tx = lastMacro.tx || { score:0, bias:"NEUTRAL", oilLever:0, dollarLever:0, fearLever:0 };
 
-    // footer
+    const eventRisk = computeEventRisk(); // 0..100
+    els.eventRiskChip.textContent = eventRisk >= 65 ? "HIGH" : (eventRisk >= 30 ? "MED" : "LOW");
+
+    // Macro bias chip
+    els.macroBiasChip.textContent = tx.bias;
+
+    // Risk card
+    setRisk(pol, step.conf);
+
+    // Build projection
+    // Base pip range from regime volatility proxy
+    const base1h = 4 + (step.features.volx * 3.2); // 4.. ~23
+    const macroBoost = 1 + (Math.min(1, Math.abs(tx.score)) * 0.65);
+    const eventBoost = 1 + (eventRisk/100) * 0.55;
+
+    const pips1h = clamp(base1h * macroBoost * (1 + (eventRisk/100)*0.20), 3, 60);
+    const pips4h = clamp(pips1h * (2.8 * eventBoost), 8, 180);
+
+    // Trade bias: blend macro bias and regime direction (momentum sign)
+    const momBp = bp(step.features.mom);
+    let bias = "NEUTRAL";
+    if (tx.bias === "LONG" && momBp > -3) bias = "LONG";
+    if (tx.bias === "SHORT" && momBp < 3) bias = "SHORT";
+    if (bias === "NEUTRAL"){
+      if (momBp > 6) bias = "LONG";
+      if (momBp < -6) bias = "SHORT";
+    }
+
+    // Decision confidence: agreement between macro and regime
+    let agree = 0.5;
+    if ((bias === "LONG" && tx.bias === "LONG") || (bias === "SHORT" && tx.bias === "SHORT")) agree = 0.85;
+    if ((bias === "LONG" && tx.bias === "SHORT") || (bias === "SHORT" && tx.bias === "LONG")) agree = 0.25;
+    const decision = clamp((step.conf*0.65 + agree*0.35) * (1 - eventRisk/220), 0, 1);
+
+    // UI projection
+    els.tradeBias.textContent = bias;
+    els.tradeBiasMeta.textContent = `Macro ${tx.bias} · Mom ${momBp.toFixed(1)}bp · Event ${Math.round(eventRisk)}%`;
+
+    els.range1h.textContent = `±${Math.round(pips1h)} pips`;
+    els.range1hMeta.textContent = `Vol x${step.features.volx.toFixed(2)} · Macro x${macroBoost.toFixed(2)}`;
+
+    els.range4h.textContent = `±${Math.round(pips4h)} pips`;
+    els.range4hMeta.textContent = `Event x${eventBoost.toFixed(2)} · Transmission ${(tx.score).toFixed(2)}`;
+
+    els.decisionConf.textContent = `${Math.round(decision*100)}%`;
+    els.decisionConfMeta.textContent = decision < 0.35 ? "Low agreement, caution" : (decision < 0.60 ? "Mixed signals" : "Good alignment");
+
+    // Event lever display
+    els.eventLeverV.textContent = `${Math.round(eventRisk)}%`;
+    els.eventLeverM.textContent = "High impact proximity";
+
+    // Transmission lever display derived
+    els.oilLeverV.textContent = `${Math.round(tx.oilLever)}%`;
+    els.dollarLeverV.textContent = `${Math.round(tx.dollarLever)}%`;
+    els.fearLeverV.textContent = `${Math.round(tx.fearLever)}%`;
+
+    // Cone
+    drawCone(q.price, pips1h, pips4h, bias);
+
+    // Footer
     els.footPolicy.textContent = `S${pol}`;
     els.footDetector.textContent = `S${det}`;
-    els.footHold.textContent = String(step.hold);
+    els.footTx.textContent = `${tx.bias} (${tx.score.toFixed(2)})`;
 
-    // projection refresh
-    updateProjectionUI(s.price);
-
-    // persist snapshot
+    // Persist snapshot
     dashState = {
-      lastPrice: s.price,
-      lastTs: s.ts,
-      lastSrc: s.source,
+      lastPrice: q.price,
+      lastTs: q.ts,
+      lastSrc: q.source,
+      lastMode: q.mode,
       lastPolicy: pol,
       lastDetector: det,
       lastConf: step.conf,
       lastProbs: step.probs,
-      lastHold: step.hold,
-      lastTick: step.tickN
+      lastTick: step.tickN,
+      lastTx: tx,
+      lastEventRisk: eventRisk
     };
     persistDashState();
 
-    // log row
+    // Log
     addLogSample({
-      time: fmtTime(s.ts),
-      price: s.price.toFixed(5),
+      time: fmtTime(q.ts),
+      price: q.price.toFixed(5),
       det: `S${det}`,
       pol: `S${pol}`,
       conf: confPct,
       volx: step.features.volx.toFixed(2),
-      mom: bp(step.features.mom).toFixed(2),
-      evt: latestEvent.label,
-      macro: (latestMacro?.bias || "NEUTRAL").replace(" EUR/USD",""),
-      src: s.source
+      mom: momBp.toFixed(2),
+      macro: tx.bias,
+      event: `${Math.round(eventRisk)}%`,
+      src: `${q.source} (${q.mode})`
     });
   }
 
-  // ---------- Macro polling ----------
-  async function macroTick(){
-    try{
-      const score = await MacroFeed.tick();
-      latestMacro = MacroFeed.getScore();
-
-      // Recompute projection if we have a price
-      const lastPx = SpotFeed.getLast().price;
-      if (latestStep && Number.isFinite(lastPx)) updateProjectionUI(lastPx);
-    }catch(e){
-      // ignore
-    }
-  }
-
-  // ---------- Render init placeholders ----------
-  function renderEmptyHistory(){
-    renderHistory([], null);
-  }
-
-  // ---------- Start ----------
-  const POLL_MS = 12_000;
-  const MACRO_MS = 45_000;
-
-  async function start(){
+  // ---------- Hydrate ----------
+  function hydrate(){
     initProbUI();
     renderEvents();
     renderHeadlines();
     renderLog();
-    hydrateFromPersisted();
-    renderEmptyHistory();
 
-    // initial macro and event risk
-    latestEvent = computeEventRisk(Date.now());
-    renderEventLever(latestEvent);
-    await macroTick();
+    // macro
+    Macro.render();
 
-    // first spot tick
-    await SpotFeed.tick(onSpotUpdate);
+    if (dashState && dashState.lastPrice){
+      els.miniPrice.textContent = Number(dashState.lastPrice).toFixed(5);
+      els.miniSrc.textContent = `Provider: ${dashState.lastSrc || "--"}`;
+      els.miniMode.textContent = dashState.lastMode || "--";
+      els.miniLatency.textContent = "--";
+      els.miniDelta.textContent = "0.00000";
+      setFxStatus("CHECKING");
 
-    // polling loops
-    setInterval(()=> SpotFeed.tick(onSpotUpdate), POLL_MS);
-    setInterval(()=> macroTick(), MACRO_MS);
-    setInterval(()=> renderEvents(), 30_000);
-    setInterval(()=>{
-      // keep event risk current and feed projection
-      latestEvent = computeEventRisk(Date.now());
-      renderEventLever(latestEvent);
-      const lastPx = SpotFeed.getLast().price;
-      if (latestStep && Number.isFinite(lastPx)) updateProjectionUI(lastPx);
-    }, 20_000);
+      if (dashState.lastPolicy){
+        const pol = dashState.lastPolicy;
+        const polName = STATES[pol-1]?.name || "--";
+        const polDesc = STATES[pol-1]?.desc || "--";
+        els.policyStateTitle.textContent = `Policy State: S${pol} ${polName}`;
+        els.policyStateDesc.textContent = polDesc;
+        els.policyChip.textContent = `S${pol}`;
+        els.footPolicy.textContent = `S${pol}`;
+      }
+      if (dashState.lastDetector){
+        els.detectorChip.textContent = `S${dashState.lastDetector}`;
+        els.footDetector.textContent = `S${dashState.lastDetector}`;
+      }
+      if (dashState.lastConf != null){
+        els.confChip.textContent = (dashState.lastConf*100).toFixed(1) + "%";
+        setRisk(dashState.lastPolicy, dashState.lastConf);
+      }
+      if (Array.isArray(dashState.lastProbs) && dashState.lastProbs.length === 8){
+        dashState.lastProbs.forEach((p,i)=>{
+          const pct = p*100;
+          probEls[i].bar.style.width = `${clamp(pct,0,100)}%`;
+          probEls[i].bar.style.background = STATES[i].color;
+          probEls[i].val.textContent = `${pct.toFixed(1)}%`;
+        });
+      }
+      if (dashState.lastTick){
+        els.tickChip.textContent = String(dashState.lastTick);
+      }
+      if (dashState.lastTx){
+        els.macroBiasChip.textContent = dashState.lastTx.bias || "--";
+        els.footTx.textContent = `${dashState.lastTx.bias || "--"} (${Number(dashState.lastTx.score || 0).toFixed(2)})`;
+      }
+      if (dashState.lastEventRisk != null){
+        const er = Number(dashState.lastEventRisk);
+        els.eventRiskChip.textContent = er >= 65 ? "HIGH" : (er >= 30 ? "MED" : "LOW");
+      }
+    }
   }
 
-  start();
+  // ---------- Start loops ----------
+  const macroPollMs = 10 * 60 * 1000; // macro daily, but refresh every 10 minutes for demo
+  let quoteTimer = null;
+
+  function startTimers(){
+    const pollMs = Math.max(6000, Math.min(60000, Number(settings.pollSeconds || 12) * 1000));
+
+    if (quoteTimer) clearInterval(quoteTimer);
+    quoteTimer = setInterval(()=> Quote.tick(onQuoteUpdate), pollMs);
+
+    // immediate
+    Quote.tick(onQuoteUpdate);
+
+    // macro
+    Macro.tick().then(()=> Macro.render()).catch(()=>{});
+    setInterval(()=> Macro.tick().then(()=> Macro.render()).catch(()=>{}), macroPollMs);
+
+    // events countdown
+    setInterval(()=> renderEvents(), 30_000);
+  }
+
+  // ---------- Initialize ----------
+  hydrate();
+  startTimers();
 
 })();
 </script>
