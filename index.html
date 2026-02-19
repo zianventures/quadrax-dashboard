@@ -3,23 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>QuadraX Risk Dashboard</title>
+  <title>QuadraX Risk Dashboard v2</title>
   <style>
-    :root{
-      --bg0:#050a1a;
-      --bg1:#07122f;
+    /* ===== BASE RESET ===== */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    :root {
+      --bg0: #050a1a;
+      --bg1: #07122f;
       --card: rgba(10, 25, 60, 0.55);
       --card2: rgba(12, 34, 84, 0.42);
       --stroke: rgba(120, 170, 255, 0.22);
       --stroke2: rgba(120, 170, 255, 0.12);
-      --text:#e9f0ff;
+      --text: #e9f0ff;
       --muted: rgba(233,240,255,0.7);
       --muted2: rgba(233,240,255,0.55);
-      --blue:#2b6cff;
-      --green:#18d18a;
-      --amber:#ffb020;
-      --red:#ff4d4d;
-      --pink:#ff3aa5;
+      --blue: #2b6cff;
+      --green: #18d18a;
+      --amber: #ffb020;
+      --red: #ff4d4d;
+      --pink: #ff3aa5;
       --shadow: 0 18px 55px rgba(0,0,0,0.55);
       --shadow2: 0 10px 30px rgba(0,0,0,0.45);
       --radius: 22px;
@@ -28,33 +31,34 @@
       --pad2: 14px;
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --night-filter: none;
     }
 
-    html,body{height:100%;}
-    body{
-      margin:0;
+    html, body { height: 100%; }
+    body {
+      margin: 0;
       font-family: var(--font);
-      color:var(--text);
+      color: var(--text);
       background:
         radial-gradient(1200px 700px at 20% 20%, rgba(80,140,255,0.22), transparent 55%),
         radial-gradient(900px 600px at 70% 35%, rgba(22,210,170,0.16), transparent 55%),
         radial-gradient(900px 700px at 35% 85%, rgba(255,80,180,0.12), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
-      overflow-x:hidden;
+      overflow-x: hidden;
+      filter: var(--night-filter);
+      transition: filter 0.5s ease;
     }
+    body.night { --night-filter: brightness(0.58) sepia(0.09); }
 
-    .wrap{
-      max-width: 1440px;
-      margin: 22px auto 40px;
-      padding: 0 16px;
-    }
+    /* ===== LAYOUT ===== */
+    .wrap { max-width: 1440px; margin: 22px auto 40px; padding: 0 16px; }
 
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      padding: 18px 18px;
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px;
       border-radius: var(--radius);
       background: linear-gradient(180deg, rgba(50,115,255,0.55), rgba(35,85,200,0.42));
       border: 1px solid rgba(210,230,255,0.18);
@@ -65,1725 +69,1329 @@
       backdrop-filter: blur(10px);
     }
 
-    .brand{
-      display:flex;
-      align-items:center;
-      gap: 14px;
-      min-width: 320px;
-    }
-
-    .qxlogo{
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      display:grid;
-      place-items:center;
-      font-weight: 1000;
-      letter-spacing: 0.5px;
+    .brand { display: flex; align-items: center; gap: 14px; min-width: 320px; }
+    .qxlogo {
+      width: 38px; height: 38px; border-radius: 12px;
+      display: grid; place-items: center;
+      font-weight: 900; letter-spacing: 0.5px;
       background: rgba(10,25,60,0.45);
       border: 1px solid rgba(210,230,255,0.18);
-      box-shadow: var(--shadow2);
-      user-select:none;
+      box-shadow: var(--shadow2); user-select: none;
     }
+    .brand h1 { margin: 0; font-size: 18px; line-height: 1.1; }
+    .brand .sub { margin-top: 2px; font-size: 12px; color: rgba(255,255,255,0.78); }
 
-    .brand h1{
-      margin:0;
-      font-size: 18px;
-      line-height: 1.1;
-    }
-    .brand .sub{
-      margin-top: 2px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.78);
-    }
+    .top-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 
-    .top-actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap: wrap;
-      justify-content:flex-end;
-    }
-
-    .pill{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 12px;
-      border-radius: 999px;
+    .pill {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 999px;
       background: rgba(10,25,60,0.35);
-      border:1px solid rgba(210,230,255,0.16);
-      color: rgba(255,255,255,0.9);
-      font-size: 12px;
-      box-shadow: 0 8px 22px rgba(0,0,0,0.25);
-      white-space:nowrap;
+      border: 1px solid rgba(210,230,255,0.16);
+      color: rgba(255,255,255,0.9); font-size: 12px;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.25); white-space: nowrap;
     }
-    .dot{
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: var(--green);
-      box-shadow: 0 0 0 4px rgba(24,209,138,0.18);
+    .dot {
+      width: 10px; height: 10px; border-radius: 999px;
+      background: var(--green); box-shadow: 0 0 0 4px rgba(24,209,138,0.18);
     }
 
-    .btn{
-      cursor:pointer;
+    .btn {
+      cursor: pointer;
       border: 1px solid rgba(210,230,255,0.18);
       background: rgba(10,25,60,0.35);
       color: rgba(255,255,255,0.92);
-      border-radius: 999px;
-      padding: 9px 14px;
-      font-weight: 800;
-      font-size: 12px;
-      letter-spacing: 0.2px;
-      box-shadow: 0 8px 22px rgba(0,0,0,0.25);
-      user-select:none;
+      border-radius: 999px; padding: 9px 14px;
+      font-weight: 800; font-size: 12px; letter-spacing: 0.2px;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.25); user-select: none;
     }
-    .btn:hover{ filter: brightness(1.06); }
-    .btn:active{ transform: translateY(1px); }
+    .btn:hover { filter: brightness(1.08); }
+    .btn:active { transform: translateY(1px); }
+    .btn.primary { background: rgba(35,120,255,0.35); border-color: rgba(120,170,255,0.26); }
+    .btn.night-active { background: rgba(255,176,32,0.22); border-color: rgba(255,176,32,0.30); }
+    .btn.syncing { opacity: 0.6; cursor: not-allowed; }
 
-    .btn.primary{
-      background: rgba(35,120,255,0.35);
-      border-color: rgba(120,170,255,0.26);
-    }
+    .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-top: 16px; }
+    @media (max-width: 1100px) { .grid { grid-template-columns: 1fr; } .brand { min-width: unset; } }
+    .stack { display: grid; gap: 16px; }
 
-    .grid{
-      display:grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 16px;
-      margin-top: 16px;
-    }
-
-    @media (max-width: 1100px){
-      .grid{ grid-template-columns: 1fr; }
-      .brand{ min-width: unset; }
-    }
-
-    .stack{ display:grid; gap: 16px; }
-
-    .card{
+    .card {
       background: linear-gradient(180deg, rgba(10,25,60,0.55), rgba(7,12,30,0.35));
-      border:1px solid rgba(210,230,255,0.16);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow2);
-      overflow:hidden;
-      position:relative;
+      border: 1px solid rgba(210,230,255,0.16);
+      border-radius: var(--radius); box-shadow: var(--shadow2);
+      overflow: hidden; position: relative;
     }
+    .card .inner { padding: var(--pad); }
 
-    .card .inner{
-      padding: var(--pad);
+    .card-title {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 12px; margin-bottom: 12px;
     }
+    .card-title h2 {
+      margin: 0; font-size: 13px; color: rgba(255,255,255,0.82);
+      letter-spacing: 0.9px; text-transform: uppercase;
+    }
+    .card-title .hint { font-size: 12px; color: rgba(255,255,255,0.55); text-align: right; max-width: 520px; }
 
-    .card-title{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom: 12px;
-    }
+    /* ===== CURRENT MARKET STATE ===== */
+    .cmsGrid { display: grid; grid-template-columns: 1.4fr 0.9fr; gap: 14px; align-items: stretch; }
+    @media (max-width: 900px) { .cmsGrid { grid-template-columns: 1fr; } }
 
-    .card-title h2{
-      margin:0;
-      font-size: 13px;
-      color: rgba(255,255,255,0.82);
-      letter-spacing: 0.9px;
-      text-transform: uppercase;
-    }
-    .card-title .hint{
-      font-size: 12px;
-      color: rgba(255,255,255,0.55);
-      text-align:right;
-      max-width: 520px;
-    }
-
-    /* Current market state layout (grown-up, not chaotic) */
-    .cmsGrid{
-      display:grid;
-      grid-template-columns: 1.4fr 0.9fr;
-      gap: 14px;
-      align-items:stretch;
-    }
-    @media (max-width: 900px){
-      .cmsGrid{ grid-template-columns: 1fr; }
-    }
-
-    .hero{
+    .hero {
       border-radius: 22px;
-      background: radial-gradient(900px 500px at 20% 10%, rgba(120,170,255,0.15), transparent 55%),
-                  radial-gradient(700px 420px at 80% 20%, rgba(24,209,138,0.12), transparent 55%),
-                  rgba(10,25,60,0.18);
+      background:
+        radial-gradient(900px 500px at 20% 10%, rgba(120,170,255,0.15), transparent 55%),
+        radial-gradient(700px 420px at 80% 20%, rgba(24,209,138,0.12), transparent 55%),
+        rgba(10,25,60,0.18);
       border: 1px solid rgba(210,230,255,0.10);
-      padding: 18px;
-      position:relative;
-      overflow:hidden;
+      padding: 18px; position: relative; overflow: hidden;
     }
-    .hero::after{
-      content:"";
-      position:absolute;
-      inset:-2px;
+    .hero::after {
+      content: ""; position: absolute; inset: -2px;
       background: linear-gradient(120deg, rgba(120,170,255,0.10), transparent 35%, rgba(255,58,165,0.08));
-      pointer-events:none;
-      opacity:0.7;
+      pointer-events: none; opacity: 0.7;
     }
 
-    .stateBig{
-      font-size: 44px;
-      font-weight: 1000;
-      letter-spacing: 0.2px;
-      margin: 4px 0 2px;
-      position:relative;
-      z-index:1;
+    .stateBig {
+      font-size: 44px; font-weight: 900; letter-spacing: 0.2px;
+      margin: 4px 0 2px; position: relative; z-index: 1;
     }
-    .muted{ color: var(--muted); font-size: 13px; position:relative; z-index:1; }
+    .muted { color: var(--muted); font-size: 13px; position: relative; z-index: 1; }
 
-    .chipRow{
-      display:flex;
-      gap: 10px;
-      flex-wrap:wrap;
-      margin-top: 12px;
-      align-items:center;
-      position:relative;
-      z-index:1;
+    .chipRow {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px;
+      align-items: center; position: relative; z-index: 1;
     }
-    .chip{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 12px;
+    .chip {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 10px; border-radius: 999px; font-size: 12px;
       color: rgba(255,255,255,0.88);
-      background: rgba(10,25,60,0.30);
-      border: 1px solid rgba(210,230,255,0.14);
-      white-space:nowrap;
+      background: rgba(10,25,60,0.30); border: 1px solid rgba(210,230,255,0.14); white-space: nowrap;
     }
-    .chip b{ font-weight:1000; }
-
-    .pillTag{
-      font-family: var(--mono);
-      font-size: 11px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(210,230,255,0.14);
-      background: rgba(10,25,60,0.22);
-      color: rgba(255,255,255,0.86);
+    .chip b { font-weight: 900; }
+    .pillTag {
+      font-family: var(--mono); font-size: 11px; padding: 6px 10px;
+      border-radius: 999px; border: 1px solid rgba(210,230,255,0.14);
+      background: rgba(10,25,60,0.22); color: rgba(255,255,255,0.86);
     }
 
-    /* Quote panel */
-    .quoteCard{
-      border-radius: 22px;
-      background: rgba(10,25,60,0.20);
-      border: 1px solid rgba(210,230,255,0.12);
-      padding: 16px;
-      display:grid;
-      gap: 10px;
-      position:relative;
-      overflow:hidden;
-    }
-    .quoteTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-    }
-    .quoteSym{
-      display:grid;
-      gap: 2px;
-    }
-    .quoteSym .sym{
-      font-weight: 1000;
-      letter-spacing: 0.6px;
-      font-size: 12px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.85);
-    }
-    .quoteSym .prov{
-      font-size: 11px;
-      color: rgba(255,255,255,0.58);
-    }
-    .qStatus{
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(210,230,255,0.14);
-      background: rgba(10,25,60,0.26);
-      font-size: 12px;
-      font-weight: 900;
-      color: rgba(255,255,255,0.88);
-      white-space:nowrap;
-    }
-    .sdot{
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: var(--amber);
-      box-shadow: 0 0 0 4px rgba(255,176,32,0.18);
-    }
-    .sdot.live{ background: var(--green); box-shadow: 0 0 0 4px rgba(24,209,138,0.18); }
-    .sdot.err{ background: var(--red); box-shadow: 0 0 0 4px rgba(255,77,77,0.18); }
-
-    .quotePx{
-      font-size: 42px;
-      font-weight: 1000;
-      letter-spacing: 0.4px;
-      font-variant-numeric: tabular-nums;
-      line-height: 1.0;
-    }
-    .quoteMetaRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      color: rgba(255,255,255,0.62);
-      font-size: 12px;
-      font-variant-numeric: tabular-nums;
-    }
-    .sparkBar{
-      height: 7px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.10);
-      overflow:hidden;
-    }
-    .sparkBar > i{
-      display:block;
-      height:100%;
-      width: 15%;
-      border-radius: 999px;
-      background: rgba(24,209,138,0.85);
-    }
-    .quoteBadges{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 2px;
+    /* ===== REGIME TIMELINE ===== */
+    .timelineWrap { margin-top: 14px; position: relative; z-index: 1; }
+    .timelineCanvas {
+      width: 100%; height: 10px; display: block;
+      border-radius: 999px; overflow: hidden;
+      background: rgba(255,255,255,0.06);
     }
 
-    /* Inline probabilities inside current state (the “it factor” part) */
-    .probBlock{
-      margin-top: 14px;
-      padding-top: 14px;
+    /* ===== QUOTE PANEL ===== */
+    .quoteCard {
+      border-radius: 22px; background: rgba(10,25,60,0.20);
+      border: 1px solid rgba(210,230,255,0.12); padding: 16px;
+      display: grid; gap: 10px; position: relative; overflow: hidden;
+    }
+    .quoteTop { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .quoteSym .sym { font-weight: 900; letter-spacing: 0.6px; font-size: 12px; text-transform: uppercase; color: rgba(255,255,255,0.85); }
+    .quoteSym .prov { font-size: 11px; color: rgba(255,255,255,0.58); }
+    .qStatus {
+      display: inline-flex; align-items: center; gap: 8px; padding: 7px 10px;
+      border-radius: 999px; border: 1px solid rgba(210,230,255,0.14);
+      background: rgba(10,25,60,0.26); font-size: 12px; font-weight: 900;
+      color: rgba(255,255,255,0.88); white-space: nowrap;
+    }
+    .sdot { width: 10px; height: 10px; border-radius: 999px; background: var(--amber); box-shadow: 0 0 0 4px rgba(255,176,32,0.18); }
+    .sdot.live { background: var(--green); box-shadow: 0 0 0 4px rgba(24,209,138,0.18); }
+    .sdot.err { background: var(--red); box-shadow: 0 0 0 4px rgba(255,77,77,0.18); }
+
+    .quotePx { font-size: 42px; font-weight: 900; letter-spacing: 0.4px; font-variant-numeric: tabular-nums; line-height: 1.0; }
+    .quoteMetaRow { display: flex; align-items: center; justify-content: space-between; color: rgba(255,255,255,0.62); font-size: 12px; font-variant-numeric: tabular-nums; }
+    .sparkBar { height: 7px; border-radius: 999px; background: rgba(255,255,255,0.10); overflow: hidden; }
+    .sparkBar > i { display: block; height: 100%; width: 15%; border-radius: 999px; background: rgba(24,209,138,0.85); transition: width 0.4s ease; }
+    .quoteBadges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 2px; }
+
+    /* ===== PROBABILITIES ===== */
+    .probBlock {
+      margin-top: 14px; padding-top: 14px;
       border-top: 1px solid rgba(210,230,255,0.10);
-      position:relative;
-      z-index:1;
+      position: relative; z-index: 1;
     }
-    .probRow{
-      display:grid;
-      grid-template-columns: 240px 1fr 64px;
-      gap: 12px;
-      align-items:center;
-      padding: 9px 0;
+    .probRow {
+      display: grid; grid-template-columns: 200px 1fr 56px;
+      gap: 12px; align-items: center; padding: 8px 0;
       border-top: 1px solid rgba(210,230,255,0.06);
     }
-    .probRow:first-child{ border-top:none; }
-    .probName{
-      font-size: 12px;
-      color: rgba(255,255,255,0.88);
-      display:flex;
-      align-items:center;
-      gap:10px;
+    .probRow:first-child { border-top: none; }
+    .probName { font-size: 12px; color: rgba(255,255,255,0.88); display: flex; align-items: center; gap: 10px; }
+    .pdot { width: 14px; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.18); }
+    .pbar { height: 8px; border-radius: 999px; background: rgba(255,255,255,0.10); overflow: hidden; }
+    .pbar > i { display: block; height: 100%; width: 0%; border-radius: 999px; background: rgba(120,170,255,0.8); transition: width 0.5s ease; }
+    .probVal { font-size: 12px; color: rgba(255,255,255,0.78); text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* ===== RIGHT COLUMN ===== */
+    .riskLevel { text-align: center; padding: 22px 16px 14px; }
+    .riskLevel .label { font-size: 12px; letter-spacing: 0.9px; text-transform: uppercase; color: rgba(255,255,255,0.72); }
+    .riskLevel .big { font-size: 44px; font-weight: 900; margin: 6px 0 2px; }
+    .riskLevel .rule { font-size: 12px; color: rgba(255,255,255,0.68); max-width: 360px; margin: 0 auto; line-height: 1.35; }
+    .macroHint { font-size: 12px; color: rgba(255,255,255,0.62); line-height: 1.35; max-width: 420px; text-align: right; }
+
+    /* ===== MACRO GRID ===== */
+    .macroGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: stretch; }
+    .macroBox {
+      border-radius: 18px; background: rgba(10,25,60,0.25);
+      border: 1px solid rgba(210,230,255,0.12); padding: 14px;
+      min-height: 92px; display: grid; align-content: start; gap: 6px;
     }
-    .pdot{
-      width: 14px;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.18);
+    .macroBox .k { font-size: 12px; color: rgba(255,255,255,0.72); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .macroBox .v { font-size: 22px; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.1; }
+    .macroBox .meta { font-size: 12px; color: rgba(255,255,255,0.58); font-variant-numeric: tabular-nums; line-height: 1.35; }
+
+    /* Sparkline canvas inside macro box */
+    .sparkCanvas {
+      width: 100%; height: 34px; display: block;
+      border-radius: 8px; margin-top: 4px;
+      background: rgba(255,255,255,0.03);
     }
-    .pbar{
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.10);
-      overflow:hidden;
-      position:relative;
-    }
-    .pbar > i{
-      display:block;
-      height:100%;
-      width: 0%;
-      border-radius: 999px;
-      background: rgba(120,170,255,0.8);
-    }
-    .probVal{
-      font-size: 12px;
-      color: rgba(255,255,255,0.78);
-      text-align:right;
+    /* Freshness tag */
+    .freshTag {
+      font-size: 10px; color: rgba(255,255,255,0.45);
       font-variant-numeric: tabular-nums;
     }
 
-    /* Right column panels */
-    .riskLevel{
-      text-align:center;
-      padding: 22px 16px 14px;
-    }
-    .riskLevel .label{
-      font-size: 12px;
-      letter-spacing: 0.9px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.72);
-    }
-    .riskLevel .big{
-      font-size: 44px;
-      font-weight: 1000;
-      margin: 6px 0 2px;
-    }
-    .riskLevel .rule{
-      font-size: 12px;
-      color: rgba(255,255,255,0.68);
-      max-width: 360px;
-      margin: 0 auto;
-      line-height: 1.35;
+    .tagOk {
+      font-family: var(--mono); font-size: 10.5px; padding: 4px 8px;
+      border-radius: 999px; border: 1px solid rgba(210,230,255,0.14);
+      background: rgba(10,25,60,0.22); color: rgba(255,255,255,0.82); white-space: nowrap;
     }
 
-    .macroHint{
-      font-size: 12px;
-      color: rgba(255,255,255,0.62);
-      line-height: 1.35;
-      max-width: 420px;
-      text-align:right;
+    .impact {
+      display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px;
+      border-radius: 999px; border: 1px solid rgba(210,230,255,0.14);
+      background: rgba(10,25,60,0.22); font-weight: 950;
+      color: rgba(255,255,255,0.88); white-space: nowrap;
+    }
+    .folder { width: 10px; height: 10px; border-radius: 3px; background: var(--pink); box-shadow: 0 0 0 4px rgba(255,58,165,0.14); }
+    .folder.med { background: var(--amber); box-shadow: 0 0 0 4px rgba(255,176,32,0.14); }
+    .folder.low { background: rgba(255,255,255,0.30); box-shadow: none; }
+
+    /* ===== TABLES ===== */
+    .tableWrap { border-radius: 18px; background: rgba(10,25,60,0.20); border: 1px solid rgba(210,230,255,0.12); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    thead th {
+      text-align: left; padding: 12px;
+      color: rgba(255,255,255,0.78); border-bottom: 1px solid rgba(210,230,255,0.10);
+      background: rgba(10,25,60,0.22); font-weight: 900; letter-spacing: 0.6px;
+      text-transform: uppercase; font-size: 11px;
+    }
+    tbody td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(210,230,255,0.06);
+      color: rgba(255,255,255,0.82); vertical-align: top; font-variant-numeric: tabular-nums;
+    }
+    tbody tr:hover { background: rgba(255,255,255,0.04); }
+    .scroll { overflow: auto; }
+    .link { color: rgba(120,170,255,0.95); text-decoration: none; font-weight: 800; }
+    .link:hover { text-decoration: underline; }
+
+    /* ===== FORWARD PROJECTION ===== */
+    .fpGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    @media (max-width: 1100px) { .fpGrid { grid-template-columns: repeat(2, 1fr); } }
+    .fpBox {
+      border-radius: 18px; background: rgba(10,25,60,0.22);
+      border: 1px solid rgba(210,230,255,0.12); padding: 14px;
+      min-height: 92px; display: grid; gap: 6px; align-content: start;
+    }
+    .fpBox .k { font-size: 12px; color: rgba(255,255,255,0.62); }
+    .fpBox .v { font-size: 26px; font-weight: 900; }
+    .fpBox .meta { font-size: 12px; color: rgba(255,255,255,0.62); line-height: 1.35; }
+
+    /* Alert flash */
+    .fpBox.alert-breach .v { animation: alertPulse 1.2s ease-in-out 3; }
+    @keyframes alertPulse { 0%,100%{ opacity:1; } 50%{ opacity:0.3; color: var(--amber); } }
+
+    .coneWrap { border-radius: 22px; background: rgba(10,25,60,0.18); border: 1px solid rgba(210,230,255,0.10); overflow: hidden; margin-top: 12px; }
+    canvas { display: block; width: 100%; }
+    #coneCanvas { height: 260px; }
+
+    /* ===== TRANSMISSION ===== */
+    .tmGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .tmBox {
+      border-radius: 18px; background: rgba(10,25,60,0.22);
+      border: 1px solid rgba(210,230,255,0.12); padding: 14px;
+      display: grid; gap: 8px; align-content: start; min-height: 110px;
+    }
+    .tmTop { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .tmTop .k { font-size: 12px; color: rgba(255,255,255,0.78); line-height: 1.2; }
+    .tmTop .pct { font-size: 26px; font-weight: 900; font-variant-numeric: tabular-nums; }
+    .tmBar { height: 8px; border-radius: 999px; background: rgba(255,255,255,0.10); overflow: hidden; }
+    .tmBar > i { display: block; height: 100%; width: 0%; border-radius: 999px; background: rgba(120,170,255,0.8); transition: width 0.5s ease; }
+    .tmMeta { font-size: 12px; color: rgba(255,255,255,0.60); line-height: 1.35; }
+
+    /* ===== TRADINGVIEW ===== */
+    .tvWrap { border-radius: 18px; overflow: hidden; border: 1px solid rgba(210,230,255,0.12); background: rgba(10,25,60,0.20); position: relative; }
+    .tvWrap iframe { width: 100%; height: 380px; border: 0; display: block; }
+    .tvFallback {
+      display: none; position: absolute; inset: 0;
+      align-items: center; justify-content: center;
+      background: rgba(10,25,60,0.85); font-size: 13px;
+      color: rgba(255,255,255,0.7); text-align: center; gap: 8px;
+      flex-direction: column;
+    }
+    .tvFallback.show { display: flex; }
+
+    /* ===== FOOTER ===== */
+    .foot {
+      margin-top: 14px; display: flex; justify-content: space-between;
+      color: rgba(255,255,255,0.5); font-size: 12px; padding: 0 6px;
+      gap: 12px; flex-wrap: wrap;
     }
 
-    .macroGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      align-items:stretch;
+    /* ===== MODALS ===== */
+    .modalBack {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      display: none; align-items: center; justify-content: center;
+      z-index: 999; padding: 18px;
     }
-    .macroBox{
-      border-radius: 18px;
-      background: rgba(10,25,60,0.25);
-      border:1px solid rgba(210,230,255,0.12);
-      padding: 14px;
-      min-height: 92px;
-      display:grid;
-      align-content:start;
-      gap: 6px;
-    }
-    .macroBox .k{
-      font-size: 12px;
-      color: rgba(255,255,255,0.72);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .macroBox .v{
-      font-size: 22px;
-      font-weight: 1000;
-      font-variant-numeric: tabular-nums;
-      line-height: 1.1;
-    }
-    .macroBox .meta{
-      font-size: 12px;
-      color: rgba(255,255,255,0.58);
-      font-variant-numeric: tabular-nums;
-      line-height: 1.35;
-    }
-    .tagOk{
-      font-family: var(--mono);
-      font-size: 10.5px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      border:1px solid rgba(210,230,255,0.14);
-      background: rgba(10,25,60,0.22);
-      color: rgba(255,255,255,0.82);
-      white-space:nowrap;
-    }
-
-    .impact{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(210,230,255,0.14);
-      background: rgba(10,25,60,0.22);
-      font-weight: 950;
-      color: rgba(255,255,255,0.88);
-      white-space:nowrap;
-    }
-    .folder{
-      width: 10px;
-      height: 10px;
-      border-radius: 3px;
-      background: var(--pink);
-      box-shadow: 0 0 0 4px rgba(255,58,165,0.14);
-    }
-    .folder.med{ background: var(--amber); box-shadow: 0 0 0 4px rgba(255,176,32,0.14); }
-    .folder.low{ background: rgba(255,255,255,0.30); box-shadow: none; }
-
-    .tableWrap{
-      border-radius: 18px;
-      background: rgba(10,25,60,0.20);
-      border:1px solid rgba(210,230,255,0.12);
-      overflow:hidden;
-    }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      font-size: 12px;
-    }
-    thead th{
-      text-align:left;
-      padding: 12px 12px;
-      color: rgba(255,255,255,0.78);
-      border-bottom: 1px solid rgba(210,230,255,0.10);
-      background: rgba(10,25,60,0.22);
-      font-weight: 900;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      font-size: 11px;
-    }
-    tbody td{
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(210,230,255,0.06);
-      color: rgba(255,255,255,0.82);
-      vertical-align:top;
-      font-variant-numeric: tabular-nums;
-    }
-    tbody tr:hover{ background: rgba(255,255,255,0.04); }
-    .scroll{ max-height: 280px; overflow:auto; }
-
-    .link{
-      color: rgba(120,170,255,0.95);
-      text-decoration:none;
-      font-weight: 800;
-    }
-    .link:hover{ text-decoration:underline; }
-
-    /* Forward projection */
-    .fpGrid{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      align-items:stretch;
-    }
-    @media (max-width: 1100px){
-      .fpGrid{ grid-template-columns: repeat(2, 1fr); }
-    }
-    .fpBox{
-      border-radius: 18px;
-      background: rgba(10,25,60,0.22);
-      border:1px solid rgba(210,230,255,0.12);
-      padding: 14px;
-      min-height: 92px;
-      display:grid;
-      gap: 6px;
-      align-content:start;
-    }
-    .fpBox .k{ font-size: 12px; color: rgba(255,255,255,0.62); }
-    .fpBox .v{ font-size: 26px; font-weight: 1000; }
-    .fpBox .meta{ font-size: 12px; color: rgba(255,255,255,0.62); line-height:1.35; }
-
-    .coneWrap{
-      border-radius: 22px;
-      background: rgba(10,25,60,0.18);
-      border: 1px solid rgba(210,230,255,0.10);
-      overflow:hidden;
-      margin-top: 12px;
-    }
-    canvas{ display:block; width:100%; height: 260px; }
-
-    /* Transmission mechanism */
-    .tmGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .tmBox{
-      border-radius: 18px;
-      background: rgba(10,25,60,0.22);
-      border:1px solid rgba(210,230,255,0.12);
-      padding: 14px;
-      display:grid;
-      gap: 8px;
-      align-content:start;
-      min-height: 110px;
-    }
-    .tmTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-    }
-    .tmTop .k{
-      font-size: 12px;
-      color: rgba(255,255,255,0.78);
-      line-height:1.2;
-    }
-    .tmTop .pct{
-      font-size: 26px;
-      font-weight: 1000;
-      font-variant-numeric: tabular-nums;
-    }
-    .tmBar{
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.10);
-      overflow:hidden;
-    }
-    .tmBar > i{
-      display:block;
-      height:100%;
-      width: 0%;
-      border-radius: 999px;
-      background: rgba(120,170,255,0.8);
-    }
-    .tmMeta{
-      font-size: 12px;
-      color: rgba(255,255,255,0.60);
-      line-height:1.35;
-    }
-
-    /* TradingView */
-    .tvWrap{
-      border-radius: 18px;
-      overflow:hidden;
-      border: 1px solid rgba(210,230,255,0.12);
-      background: rgba(10,25,60,0.20);
-    }
-    .tvWrap iframe{
-      width:100%;
-      height: 380px;
-      border:0;
-      display:block;
-    }
-
-    /* Footer */
-    .foot{
-      margin-top: 14px;
-      display:flex;
-      justify-content:space-between;
-      color: rgba(255,255,255,0.5);
-      font-size: 12px;
-      padding: 0 6px;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    /* Modal */
-    .modalBack{
-      position:fixed;
-      inset:0;
-      background: rgba(0,0,0,0.55);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index: 999;
-      padding: 18px;
-    }
-    .modal{
-      width:min(920px, 100%);
-      border-radius: 22px;
+    .modal {
+      width: min(920px, 100%); border-radius: 22px;
       background: linear-gradient(180deg, rgba(12,34,84,0.92), rgba(6,10,24,0.88));
-      border: 1px solid rgba(210,230,255,0.18);
-      box-shadow: var(--shadow);
-      overflow:hidden;
+      border: 1px solid rgba(210,230,255,0.18); box-shadow: var(--shadow); overflow: hidden;
+      max-height: 90vh; overflow-y: auto;
     }
-    .modalHead{
-      padding: 14px 18px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      border-bottom: 1px solid rgba(210,230,255,0.12);
+    .modalHead {
+      padding: 14px 18px; display: flex; align-items: center;
+      justify-content: space-between; border-bottom: 1px solid rgba(210,230,255,0.12);
+      position: sticky; top: 0; background: rgba(12,34,84,0.95); z-index: 1;
     }
-    .modalHead h3{
-      margin:0;
-      font-size: 14px;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.86);
-    }
-    .modalBody{
-      padding: 16px 18px 18px;
-      display:grid;
-      gap: 14px;
-    }
-    textarea{
-      width:100%;
-      min-height: 170px;
-      resize: vertical;
-      border-radius: 16px;
-      border: 1px solid rgba(210,230,255,0.18);
-      background: rgba(10,25,60,0.35);
-      color: rgba(255,255,255,0.9);
-      padding: 12px;
-      font-family: var(--mono);
-      font-size: 12px;
-      line-height: 1.35;
-      outline:none;
-    }
-    .fieldRow{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      align-items:start;
-    }
-    @media (max-width: 900px){ .fieldRow{ grid-template-columns: 1fr; } }
-    .field{
-      border-radius: 16px;
-      border: 1px solid rgba(210,230,255,0.14);
-      background: rgba(10,25,60,0.22);
-      padding: 12px;
-    }
-    .field label{
-      display:block;
-      font-size: 12px;
-      color: rgba(255,255,255,0.70);
-      margin-bottom: 6px;
-      font-weight: 900;
-      letter-spacing: 0.3px;
-    }
-    .field input{
-      width:100%;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(210,230,255,0.16);
-      background: rgba(6,10,24,0.40);
-      color: rgba(255,255,255,0.92);
-      outline:none;
-      font-family: var(--mono);
-      font-size: 12px;
-    }
-    .modalActions{
-      display:flex;
-      justify-content:flex-end;
-      gap: 10px;
-      flex-wrap:wrap;
-    }
+    .modalHead h3 { margin: 0; font-size: 14px; letter-spacing: 0.6px; text-transform: uppercase; color: rgba(255,255,255,0.86); }
+    .modalBody { padding: 16px 18px 18px; display: grid; gap: 14px; }
 
-    .smallNote{
-      color: rgba(255,255,255,0.62);
-      font-size: 12px;
-      line-height: 1.35;
+    textarea {
+      width: 100%; min-height: 170px; resize: vertical;
+      border-radius: 16px; border: 1px solid rgba(210,230,255,0.18);
+      background: rgba(10,25,60,0.35); color: rgba(255,255,255,0.9);
+      padding: 12px; font-family: var(--mono); font-size: 12px; line-height: 1.35; outline: none;
     }
+    .fieldRow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+    @media (max-width: 900px) { .fieldRow { grid-template-columns: 1fr; } }
+    .field { border-radius: 16px; border: 1px solid rgba(210,230,255,0.14); background: rgba(10,25,60,0.22); padding: 12px; }
+    .field label { display: block; font-size: 12px; color: rgba(255,255,255,0.70); margin-bottom: 6px; font-weight: 900; letter-spacing: 0.3px; }
+    .field input {
+      width: 100%; padding: 10px 12px; border-radius: 12px;
+      border: 1px solid rgba(210,230,255,0.16); background: rgba(6,10,24,0.40);
+      color: rgba(255,255,255,0.92); outline: none; font-family: var(--mono); font-size: 12px;
+    }
+    .modalActions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 
-    .pos{ color: rgba(24,209,138,0.95); }
-    .neg{ color: rgba(255,77,77,0.95); }
+    .smallNote { color: rgba(255,255,255,0.62); font-size: 12px; line-height: 1.35; }
+    .validTag { font-size: 11px; margin-left: 8px; }
+    .validTag.ok { color: var(--green); }
+    .validTag.fail { color: var(--red); }
+
+    /* ===== UTILS ===== */
+    .pos { color: rgba(24,209,138,0.95); }
+    .neg { color: rgba(255,77,77,0.95); }
+
+    /* Keyboard shortcut hint tooltip */
+    .kbhint {
+      display: none; position: fixed; bottom: 18px; right: 18px;
+      background: rgba(12,34,84,0.92); border: 1px solid rgba(210,230,255,0.18);
+      border-radius: 14px; padding: 12px 16px; font-size: 12px;
+      color: rgba(255,255,255,0.80); z-index: 998; line-height: 1.7;
+      box-shadow: var(--shadow2); min-width: 200px;
+    }
+    .kbhint.show { display: block; }
+    .kbhint b { color: rgba(255,255,255,0.95); font-family: var(--mono); }
+
+    /* Alert badge */
+    .alertBadge {
+      display: none; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 999px;
+      background: rgba(255,176,32,0.18); border: 1px solid rgba(255,176,32,0.35);
+      color: rgba(255,255,255,0.9); font-size: 12px; white-space: nowrap;
+    }
+    .alertBadge.show { display: flex; }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="qxlogo">QX</div>
+<div class="wrap">
+
+  <!-- ===== TOP BAR ===== -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="qxlogo">QX</div>
+      <div>
+        <h1>QuadraX Risk Dashboard</h1>
+        <div class="sub">Executive View: 8-State Monitoring and Control System (EUR/USD + Macro Transmission)</div>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <div class="alertBadge" id="alertBadge"><span>⚡</span><span id="alertBadgeText">Alert</span></div>
+      <div class="pill"><span class="dot" id="liveDot"></span><span id="liveText">LIVE</span></div>
+      <div class="pill">Updated <b id="lastUpdate">--:--:--</b></div>
+      <button class="btn" id="pauseBtn" title="Pause/Resume (P)">Pause</button>
+      <button class="btn primary" id="syncBtn" title="Force sync (S)">Sync</button>
+      <button class="btn" id="nightBtn" title="Toggle night mode (N)">🌙 Night</button>
+      <button class="btn primary" id="exportBtn" title="Export snapshot (X)">Export</button>
+      <button class="btn" id="settingsBtn" title="Settings">Settings</button>
+      <button class="btn" id="editBtn" title="Edit events (E)">Edit Events</button>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- ===== LEFT COLUMN ===== -->
+    <div class="stack">
+
+      <!-- Current Market State -->
+      <div class="card">
+        <div class="inner">
+          <div class="card-title">
+            <h2>Current Market State</h2>
+            <div class="hint">This demo never fabricates price. For live FX, set a TwelveData key in Settings.</div>
+          </div>
+
+          <div class="cmsGrid">
+            <div class="hero">
+              <div class="stateBig" id="policyStateTitle">Policy State: --</div>
+              <div class="muted" id="policyStateDesc">Waiting for live quote sample.</div>
+
+              <div class="chipRow">
+                <div class="chip">Detector <b id="detectorChip">--</b></div>
+                <div class="chip">Policy <b id="policyChip">--</b></div>
+                <div class="chip">Confidence <b id="confChip">--</b></div>
+                <div class="chip">Hysteresis <b id="hystChip">--</b></div>
+                <div class="chip">Age <b id="ageChip">0</b></div>
+                <div class="chip">Tick <b id="tickChip">0</b></div>
+                <div class="chip">Stale <b id="staleChip">0</b></div>
+                <span class="pillTag" id="modeTag">Mode: --</span>
+              </div>
+
+              <div class="chipRow" style="margin-top:10px;">
+                <div class="chip">Macro Bias <b id="macroBiasChip">--</b></div>
+                <div class="chip">Event Risk <b id="eventRiskChip">--</b></div>
+                <div class="chip">Transmission <b id="txScoreChip">--</b></div>
+                <div class="chip">MomScore <b id="momChip">--</b></div>
+              </div>
+
+              <!-- Regime Timeline -->
+              <div class="timelineWrap">
+                <div class="muted" style="font-size:11px;margin-bottom:5px;">Regime history · last 60 ticks</div>
+                <canvas id="timelineCanvas" class="timelineCanvas"></canvas>
+              </div>
+
+              <div class="probBlock">
+                <div class="muted" style="margin-bottom:8px;">
+                  Conditional regime likelihoods P(state | features). Visualization layer, not the final alpha model.
+                </div>
+                <div id="probList"></div>
+                <div class="muted" style="margin-top:10px;">
+                  Probabilities flatten when feeds are stale or features are ambiguous. Humans still insist that means "certainty".
+                </div>
+              </div>
+            </div>
+
+            <!-- Quote Panel -->
+            <div class="quoteCard" aria-label="EURUSD quote">
+              <div class="quoteTop">
+                <div class="quoteSym">
+                  <div class="sym">EURUSD</div>
+                  <div class="prov" id="quoteProvider">Provider: --</div>
+                </div>
+                <div class="qStatus"><span class="sdot" id="fxStatusDot"></span><span id="fxSpotStatus">CHECKING</span></div>
+              </div>
+
+              <div class="quotePx" id="fxSpotPrice">--</div>
+
+              <div class="quoteMetaRow">
+                <div>Δ</div>
+                <div id="fxSpotDelta">0.00000</div>
+              </div>
+
+              <div class="sparkBar"><i id="miniBar"></i></div>
+
+              <div class="quoteBadges">
+                <span class="tagOk" id="fxLatencyTag">--</span>
+                <span class="tagOk" id="fxLastTag">Last: --</span>
+              </div>
+
+              <div class="smallNote" style="margin-top:4px;" id="fxSpotMeta">Source: --</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Forward Projection -->
+      <div class="card">
+        <div class="inner">
+          <div class="card-title">
+            <h2>Forward Projection</h2>
+            <div class="hint">Projection cone based on regime volatility + macro transmission + event proximity. It's a range, not a prophecy.</div>
+          </div>
+
+          <div class="fpGrid">
+            <div class="fpBox" id="tradeBiasBox">
+              <div class="k">Trade Bias</div>
+              <div class="v" id="tradeBias">--</div>
+              <div class="meta" id="tradeBiasMeta">Macro -- · Mom -- · Event --</div>
+            </div>
+            <div class="fpBox" id="rng1hBox">
+              <div class="k">Move Range (1h)</div>
+              <div class="v" id="rng1h">--</div>
+              <div class="meta" id="rng1hMeta">Vol x-- · Macro x--</div>
+            </div>
+            <div class="fpBox">
+              <div class="k">Move Range (4h)</div>
+              <div class="v" id="rng4h">--</div>
+              <div class="meta" id="rng4hMeta">Event x-- · Tx x--</div>
+            </div>
+            <div class="fpBox">
+              <div class="k">Decision Confidence</div>
+              <div class="v" id="decConf">--</div>
+              <div class="meta" id="decConfMeta">Low agreement, caution</div>
+            </div>
+          </div>
+
+          <div class="coneWrap">
+            <canvas id="coneCanvas"></canvas>
+          </div>
+
+          <div class="smallNote" style="margin-top:10px;">
+            Cone reflects a probabilistic range with gradient opacity. Denser near center = higher probability. If anyone confuses this for certainty, remove their trading permissions.
+          </div>
+        </div>
+      </div>
+
+      <!-- TradingView -->
+      <div class="card">
+        <div class="inner">
+          <div class="card-title">
+            <h2>Daily EUR/USD Trend</h2>
+            <div class="hint">Embedded TradingView chart. Falls back to a direct link if the embed is blocked.</div>
+          </div>
+          <div class="tvWrap" id="tvWrap">
+            <iframe
+              id="tvFrame"
+              title="TradingView EURUSD"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              src="https://s.tradingview.com/widgetembed/?frameElementId=tvchart&symbol=FX%3AEURUSD&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0b1028&studies=%5B%5D&hideideas=1&theme=dark&style=1&locale=en&withdateranges=1&hidevolume=0&allow_symbol_change=0&details=0&hotlist=0&calendar=0"
+            ></iframe>
+            <div class="tvFallback" id="tvFallback">
+              <div>Chart embed unavailable (CSP or network restriction).</div>
+              <a class="link" href="https://www.tradingview.com/chart/?symbol=FX%3AEURUSD" target="_blank" rel="noopener noreferrer">Open EUR/USD on TradingView →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="foot">
+        <div>Status: <b id="sysStatus">LIVE</b></div>
+        <div>Policy: <b id="footPolicy">--</b></div>
+        <div>Detector: <b id="footDetector">--</b></div>
+        <div>Regime Age: <b id="footAge">0</b> ticks</div>
+        <div>Hold: <b id="footHold">0</b></div>
+        <div style="opacity:0.5;font-size:11px;">P=Pause · S=Sync · E=Events · N=Night · X=Export · ?=Keys</div>
+      </div>
+    </div>
+
+    <!-- ===== RIGHT COLUMN ===== -->
+    <div class="stack">
+
+      <!-- Risk Level -->
+      <div class="card">
+        <div class="inner riskLevel">
+          <div class="label">Risk Level</div>
+          <div class="big" id="riskBig">--</div>
+          <div class="rule" id="riskRule">Policy: state-aware sizing and entry gating</div>
+        </div>
+      </div>
+
+      <!-- Macro Drivers -->
+      <div class="card">
+        <div class="inner">
+          <div class="card-title">
+            <h2>Macro Drivers</h2>
+            <div class="macroHint">ETF proxies via Stooq CSV + AllOrigins CORS. Sparklines show last 20 sessions.</div>
+          </div>
+
+          <div class="macroGrid">
+            <div class="macroBox">
+              <div class="k">Oil (USO) <span class="tagOk" id="oilTag">--</span></div>
+              <div class="v" id="oilPx">--</div>
+              <div class="meta" id="oilMeta">No data</div>
+              <canvas class="sparkCanvas" id="oilSpark"></canvas>
+            </div>
+            <div class="macroBox">
+              <div class="k">Gold (GLD) <span class="tagOk" id="goldTag">--</span></div>
+              <div class="v" id="goldPx">--</div>
+              <div class="meta" id="goldMeta">No data</div>
+              <canvas class="sparkCanvas" id="goldSpark"></canvas>
+            </div>
+            <div class="macroBox">
+              <div class="k">Silver (SLV) <span class="tagOk" id="silverTag">--</span></div>
+              <div class="v" id="silverPx">--</div>
+              <div class="meta" id="silverMeta">No data</div>
+              <canvas class="sparkCanvas" id="silverSpark"></canvas>
+            </div>
+            <div class="macroBox">
+              <div class="k">USD (UUP) <span class="tagOk" id="usdTag">--</span></div>
+              <div class="v" id="usdPx">--</div>
+              <div class="meta" id="usdMeta">No data</div>
+              <canvas class="sparkCanvas" id="usdSpark"></canvas>
+            </div>
+            <div class="macroBox" style="grid-column: 1 / span 2;">
+              <div class="k">Transmission Score</div>
+              <div class="v" id="txBig">NEUTRAL</div>
+              <div class="meta" id="txMeta">Score 0.00 · Neutral · Intensity 0%</div>
+            </div>
+          </div>
+
+          <div class="smallNote" style="margin-top:10px;">
+            In production: replace proxies with institutional feeds. The demo just needs to behave like a real system.
+          </div>
+        </div>
+      </div>
+
+      <!-- Transmission Mechanism -->
+      <div class="card">
+        <div class="inner">
+          <div class="card-title">
+            <h2>Transmission Mechanism</h2>
+            <div class="hint">Three macro levers + event proximity that drive EUR/USD around shocks.</div>
+          </div>
+
+          <div class="tmGrid">
+            <div class="tmBox">
+              <div class="tmTop">
+                <div class="k">Oil Lever (EU terms of trade)</div>
+                <div class="pct" id="oilLeverPct">0%</div>
+              </div>
+              <div class="tmBar"><i id="oilLeverBar"></i></div>
+              <div class="tmMeta" id="oilLeverMeta">EU energy drag proxy</div>
+            </div>
+            <div class="tmBox">
+              <div class="tmTop">
+                <div class="k">Dollar Lever (USD pressure)</div>
+                <div class="pct" id="usdLeverPct">0%</div>
+              </div>
+              <div class="tmBar"><i id="usdLeverBar"></i></div>
+              <div class="tmMeta" id="usdLeverMeta">USD strength pressure proxy</div>
+            </div>
+            <div class="tmBox">
+              <div class="tmTop">
+                <div class="k">Fear Lever (risk-off tone)</div>
+                <div class="pct" id="fearLeverPct">0%</div>
+              </div>
+              <div class="tmBar"><i id="fearLeverBar"></i></div>
+              <div class="tmMeta" id="fearLeverMeta">Gold bid proxy</div>
+            </div>
+            <div class="tmBox">
+              <div class="tmTop">
+                <div class="k">Event Risk (proximity)</div>
+                <div class="pct" id="eventLeverPct">0%</div>
+              </div>
+              <div class="tmBar"><i id="eventLeverBar"></i></div>
+              <div class="tmMeta" id="eventLeverMeta">High impact proximity</div>
+            </div>
+          </div>
+
+          <div class="smallNote" style="margin-top:10px;">
+            Demo mapping. Production learns pip distributions by regime × event archetype, then runs scenario cones.
+          </div>
+        </div>
+      </div>
+
+      <!-- World Events Calendar -->
+      <div class="card">
+        <div class="inner">
+          <div class="card-title">
+            <h2>World Events Calendar</h2>
+            <div class="hint">Curated list saved locally. Countdown auto-refreshes.</div>
+          </div>
+          <div class="tableWrap">
+            <div class="scroll" style="max-height:260px;">
+              <table>
+                <thead><tr><th>When</th><th>Event</th><th>Impact</th><th>Countdown</th></tr></thead>
+                <tbody id="eventsBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="muted" style="margin-top:10px;">
+            High impact events are <span class="impact"><span class="folder"></span>HIGH</span>.
+          </div>
+        </div>
+      </div>
+
+      <!-- Headlines -->
+      <div class="card">
+        <div class="inner">
+          <div class="card-title">
+            <h2>Headlines</h2>
+            <div class="hint">Curated list saved locally. Swap to a live feed when budget allows.</div>
+          </div>
+          <div class="tableWrap">
+            <div class="scroll" style="max-height:240px;">
+              <table>
+                <thead><tr><th>Time</th><th>Source</th><th>Headline</th></tr></thead>
+                <tbody id="headlinesBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="muted" style="margin-top:10px;">Click opens source in a new tab.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Keyboard shortcut hint -->
+<div class="kbhint" id="kbHint">
+  <div><b>P</b> — Pause / Resume</div>
+  <div><b>S</b> — Force sync</div>
+  <div><b>E</b> — Edit events</div>
+  <div><b>N</b> — Night mode</div>
+  <div><b>X</b> — Export snapshot</div>
+  <div><b>?</b> — Hide this</div>
+</div>
+
+<!-- Modal: Edit Events + Headlines -->
+<div class="modalBack" id="modalBack">
+  <div class="modal">
+    <div class="modalHead">
+      <h3>Edit World Events + Headlines</h3>
+      <button class="btn" id="closeModalBtn">Close</button>
+    </div>
+    <div class="modalBody">
+      <div class="smallNote">
+        Save curated items locally. Production: plug a proper calendar + headline feed then enrich with event archetypes.
+      </div>
+      <div class="fieldRow">
         <div>
-          <h1>QuadraX Risk Dashboard</h1>
-          <div class="sub">Executive View: 8-State Monitoring and Control System (EUR/USD + Macro Transmission)</div>
+          <div class="smallNote" style="margin-bottom:8px;"><b>Events JSON</b> (array: when, event, impact: HIGH|MED|LOW)</div>
+          <textarea id="eventsEditor"></textarea>
+        </div>
+        <div>
+          <div class="smallNote" style="margin-bottom:8px;"><b>Headlines JSON</b> (array: time, source, title, url)</div>
+          <textarea id="headlinesEditor"></textarea>
         </div>
       </div>
-
-      <div class="top-actions">
-        <div class="pill"><span class="dot" id="liveDot"></span><span id="liveText">LIVE</span></div>
-        <div class="pill">Last Update <b id="lastUpdate">--:--:--</b></div>
-        <button class="btn" id="pauseBtn">Pause</button>
-        <button class="btn primary" id="syncBtn">Sync</button>
-        <button class="btn" id="settingsBtn">Settings</button>
-        <button class="btn" id="editBtn">Edit Events + Headlines</button>
-      </div>
-    </div>
-
-    <div class="grid">
-      <!-- LEFT column -->
-      <div class="stack">
-        <!-- Current market state -->
-        <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Current Market State</h2>
-              <div class="hint">This demo never fabricates price. For true live FX, set a quote API key in Settings.</div>
-            </div>
-
-            <div class="cmsGrid">
-              <div class="hero">
-                <div class="stateBig" id="policyStateTitle">Policy State: --</div>
-                <div class="muted" id="policyStateDesc">Waiting for live quote sample.</div>
-
-                <div class="chipRow">
-                  <div class="chip">Detector <b id="detectorChip">--</b></div>
-                  <div class="chip">Policy <b id="policyChip">--</b></div>
-                  <div class="chip">Confidence <b id="confChip">--</b></div>
-                  <div class="chip">Hysteresis <b id="hystChip">--</b></div>
-                  <div class="chip">Tick <b id="tickChip">0</b></div>
-                  <div class="chip">Stale <b id="staleChip">0</b></div>
-                  <span class="pillTag" id="modeTag">Mode: --</span>
-                </div>
-
-                <div class="chipRow" style="margin-top:10px;">
-                  <div class="chip">Macro Bias <b id="macroBiasChip">--</b></div>
-                  <div class="chip">Event Risk <b id="eventRiskChip">--</b></div>
-                  <div class="chip">Transmission <b id="txScoreChip">--</b></div>
-                </div>
-
-                <div class="probBlock">
-                  <div class="muted" style="margin-bottom:8px;">Conditional regime likelihoods P(state | features). Visualization layer, not the final alpha model.</div>
-                  <div id="probList"></div>
-                  <div class="muted" style="margin-top:10px;">
-                    Probabilities flatten when feeds are stale or features are ambiguous. Humans still insist that means “certainty”.
-                  </div>
-                </div>
-              </div>
-
-              <div class="quoteCard" aria-label="EURUSD quote">
-                <div class="quoteTop">
-                  <div class="quoteSym">
-                    <div class="sym">EURUSD</div>
-                    <div class="prov" id="quoteProvider">Provider: --</div>
-                  </div>
-                  <div class="qStatus"><span class="sdot" id="fxStatusDot"></span><span id="fxSpotStatus">CHECKING</span></div>
-                </div>
-
-                <div class="quotePx" id="fxSpotPrice">--</div>
-
-                <div class="quoteMetaRow">
-                  <div>Δ</div>
-                  <div id="fxSpotDelta">0.00000</div>
-                </div>
-
-                <div class="sparkBar"><i id="miniBar"></i></div>
-
-                <div class="quoteBadges">
-                  <span class="tagOk" id="fxLatencyTag">--</span>
-                  <span class="tagOk" id="fxLastTag">Last: --</span>
-                </div>
-
-                <div class="smallNote" style="margin-top:4px;" id="fxSpotMeta">Source: --</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Forward projection -->
-        <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Forward Projection</h2>
-              <div class="hint">Projection cone based on regime volatility + macro transmission + event proximity. It’s a range, not a prophecy.</div>
-            </div>
-
-            <div class="fpGrid">
-              <div class="fpBox">
-                <div class="k">Trade Bias</div>
-                <div class="v" id="tradeBias">--</div>
-                <div class="meta" id="tradeBiasMeta">Macro -- · Mom -- · Event --</div>
-              </div>
-              <div class="fpBox">
-                <div class="k">Move Range (1h)</div>
-                <div class="v" id="rng1h">--</div>
-                <div class="meta" id="rng1hMeta">Vol x-- · Macro x--</div>
-              </div>
-              <div class="fpBox">
-                <div class="k">Move Range (4h)</div>
-                <div class="v" id="rng4h">--</div>
-                <div class="meta" id="rng4hMeta">Event x-- · Tx x--</div>
-              </div>
-              <div class="fpBox">
-                <div class="k">Decision Confidence</div>
-                <div class="v" id="decConf">--</div>
-                <div class="meta" id="decConfMeta">Low agreement, caution</div>
-              </div>
-            </div>
-
-            <div class="coneWrap">
-              <canvas id="coneCanvas" width="1400" height="260"></canvas>
-            </div>
-
-            <div class="smallNote" style="margin-top:10px;">
-              Cone reflects a probabilistic range, not a promise. If anyone confuses this for certainty, remove their trading permissions.
-            </div>
-          </div>
-        </div>
-
-        <!-- TradingView chart -->
-        <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Daily EUR/USD Trend</h2>
-              <div class="hint">Embedded TradingView chart. Clean, stable, doesn’t depend on your budget.</div>
-            </div>
-
-            <div class="tvWrap">
-              <iframe
-                title="TradingView EURUSD"
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-                src="https://s.tradingview.com/widgetembed/?frameElementId=tvchart&symbol=FX%3AEURUSD&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0b1028&studies=%5B%5D&hideideas=1&theme=dark&style=1&locale=en&withdateranges=1&hidevolume=0&allow_symbol_change=0&details=0&hotlist=0&calendar=0"
-              ></iframe>
-            </div>
-          </div>
-        </div>
-
-        <div class="foot">
-          <div>System Status: <b id="sysStatus">LIVE</b></div>
-          <div>Smoothed Policy: <b id="footPolicy">--</b></div>
-          <div>Detector: <b id="footDetector">--</b></div>
-          <div>Hysteresis Hold: <b id="footHold">0</b></div>
-        </div>
-      </div>
-
-      <!-- RIGHT column -->
-      <div class="stack">
-        <!-- Risk level -->
-        <div class="card">
-          <div class="inner riskLevel">
-            <div class="label">Risk Level</div>
-            <div class="big" id="riskBig">--</div>
-            <div class="rule" id="riskRule">Policy: state-aware sizing and entry gating</div>
-          </div>
-        </div>
-
-        <!-- Macro drivers -->
-        <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Macro Drivers</h2>
-              <div class="macroHint">Oil, metals, USD proxy via Stooq CSV through a CORS helper. Works on GitHub Pages without keys.</div>
-            </div>
-
-            <div class="macroGrid">
-              <div class="macroBox">
-                <div class="k">Oil (USO proxy) <span class="tagOk" id="oilTag">--</span></div>
-                <div class="v" id="oilPx">--</div>
-                <div class="meta" id="oilMeta">No data</div>
-              </div>
-              <div class="macroBox">
-                <div class="k">Gold (GLD proxy) <span class="tagOk" id="goldTag">--</span></div>
-                <div class="v" id="goldPx">--</div>
-                <div class="meta" id="goldMeta">No data</div>
-              </div>
-              <div class="macroBox">
-                <div class="k">Silver (SLV proxy) <span class="tagOk" id="silverTag">--</span></div>
-                <div class="v" id="silverPx">--</div>
-                <div class="meta" id="silverMeta">No data</div>
-              </div>
-              <div class="macroBox">
-                <div class="k">USD (UUP proxy) <span class="tagOk" id="usdTag">--</span></div>
-                <div class="v" id="usdPx">--</div>
-                <div class="meta" id="usdMeta">No data</div>
-              </div>
-              <div class="macroBox" style="grid-column: 1 / span 2;">
-                <div class="k">Transmission Score</div>
-                <div class="v" id="txBig">NEUTRAL</div>
-                <div class="meta" id="txMeta">Score 0.00 · Neutral · Intensity 0%</div>
-              </div>
-            </div>
-
-            <div class="smallNote" style="margin-top:10px;">
-              In production: replace proxies with institutional feeds and learn weights from history (bucketing by regime + event archetype). The demo just needs to behave like a real system.
-            </div>
-          </div>
-        </div>
-
-        <!-- Transmission mechanism -->
-        <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Transmission Mechanism</h2>
-              <div class="hint">Three levers that typically move EURUSD around conflict + commodity shocks, plus event proximity.</div>
-            </div>
-
-            <div class="tmGrid">
-              <div class="tmBox">
-                <div class="tmTop">
-                  <div class="k">Oil Lever (EU terms of trade)</div>
-                  <div class="pct" id="oilLeverPct">0%</div>
-                </div>
-                <div class="tmBar"><i id="oilLeverBar"></i></div>
-                <div class="tmMeta" id="oilLeverMeta">EU energy drag proxy</div>
-              </div>
-
-              <div class="tmBox">
-                <div class="tmTop">
-                  <div class="k">Dollar Lever (USD pressure)</div>
-                  <div class="pct" id="usdLeverPct">0%</div>
-                </div>
-                <div class="tmBar"><i id="usdLeverBar"></i></div>
-                <div class="tmMeta" id="usdLeverMeta">USD strength pressure proxy</div>
-              </div>
-
-              <div class="tmBox">
-                <div class="tmTop">
-                  <div class="k">Fear Lever (risk-off tone)</div>
-                  <div class="pct" id="fearLeverPct">0%</div>
-                </div>
-                <div class="tmBar"><i id="fearLeverBar"></i></div>
-                <div class="tmMeta" id="fearLeverMeta">Gold bid proxy</div>
-              </div>
-
-              <div class="tmBox">
-                <div class="tmTop">
-                  <div class="k">Event Risk (calendar proximity)</div>
-                  <div class="pct" id="eventLeverPct">0%</div>
-                </div>
-                <div class="tmBar"><i id="eventLeverBar"></i></div>
-                <div class="tmMeta" id="eventLeverMeta">High impact proximity</div>
-              </div>
-            </div>
-
-            <div class="smallNote" style="margin-top:10px;">
-              Demo mapping. Production version learns the mapping (features → expected pip distribution) by regime and event archetype, then runs scenario cones.
-            </div>
-          </div>
-        </div>
-
-        <!-- World events calendar -->
-        <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>World Events Calendar</h2>
-              <div class="hint">Curated list saved locally for demo. Countdown updates automatically.</div>
-            </div>
-            <div class="tableWrap">
-              <div class="scroll" style="max-height: 260px;">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>When</th>
-                      <th>Event</th>
-                      <th>Impact</th>
-                      <th>Countdown</th>
-                    </tr>
-                  </thead>
-                  <tbody id="eventsBody"></tbody>
-                </table>
-              </div>
-            </div>
-            <div class="muted" style="margin-top:10px;">
-              High impact events are <span class="impact"><span class="folder"></span>HIGH</span>.
-            </div>
-          </div>
-        </div>
-
-        <!-- Headlines -->
-        <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>Headlines</h2>
-              <div class="hint">Curated list saved locally. Swap to a live feed later when the budget stops screaming.</div>
-            </div>
-
-            <div class="tableWrap">
-              <div class="scroll" style="max-height: 240px;">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Time</th>
-                      <th>Source</th>
-                      <th>Headline</th>
-                    </tr>
-                  </thead>
-                  <tbody id="headlinesBody"></tbody>
-                </table>
-              </div>
-            </div>
-
-            <div class="muted" style="margin-top:10px;">
-              Click opens source in a new tab.
-            </div>
-          </div>
-        </div>
+      <div class="modalActions">
+        <button class="btn" id="resetCuratedBtn">Reset to defaults</button>
+        <button class="btn primary" id="saveCuratedBtn">Save</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Modal: edit events + headlines -->
-  <div class="modalBack" id="modalBack">
-    <div class="modal">
-      <div class="modalHead">
-        <h3>Edit World Events + Headlines</h3>
-        <button class="btn" id="closeModalBtn">Close</button>
+<!-- Modal: Settings -->
+<div class="modalBack" id="settingsBack">
+  <div class="modal">
+    <div class="modalHead">
+      <h3>Settings</h3>
+      <button class="btn" id="closeSettingsBtn">Close</button>
+    </div>
+    <div class="modalBody">
+      <div class="smallNote">
+        Paste a TwelveData key for intraday FX. Without it, free endpoints are used as fallback.
+        Macro drivers use ETF proxies through Stooq + AllOrigins (CORS bypass for GitHub Pages).
       </div>
-      <div class="modalBody">
-        <div class="smallNote">
-          This is the “demo that works” approach. Save curated items locally so everyone sees the same list after refresh on their device.
-          Production: plug a proper calendar + headline feed, then enrich with event archetypes.
-        </div>
 
-        <div class="fieldRow">
-          <div>
-            <div class="smallNote" style="margin-bottom:8px;"><b>Events JSON</b> (array of objects: when, event, impact: HIGH|MED|LOW)</div>
-            <textarea id="eventsEditor"></textarea>
-          </div>
-
-          <div>
-            <div class="smallNote" style="margin-bottom:8px;"><b>Headlines JSON</b> (array of objects: time, source, title, url)</div>
-            <textarea id="headlinesEditor"></textarea>
-          </div>
+      <div class="fieldRow">
+        <div class="field">
+          <label>TwelveData API Key (optional) <span class="validTag" id="tdKeyValidTag"></span></label>
+          <input id="tdKeyInput" placeholder="Paste key here (optional)" />
+          <div class="smallNote" style="margin-top:8px;">Validated on save. Stored in your browser only.</div>
         </div>
-
-        <div class="modalActions">
-          <button class="btn" id="resetCuratedBtn">Reset to curated defaults</button>
-          <button class="btn primary" id="saveCuratedBtn">Save</button>
+        <div class="field">
+          <label>Polling cadence (ms)</label>
+          <input id="pollInput" placeholder="12000" />
+          <div class="smallNote" style="margin-top:8px;">Min 6000ms. Too fast = throttled. Too slow = pointless.</div>
         </div>
+      </div>
+
+      <div class="fieldRow">
+        <div class="field">
+          <label>Alert: 1h range threshold (pips)</label>
+          <input id="alertThreshInput" placeholder="e.g. 20 (0 or blank = off)" />
+          <div class="smallNote" style="margin-top:8px;">Browser notification fires when projected 1h range exceeds this.</div>
+        </div>
+        <div class="field">
+          <label>Regime history depth (ticks)</label>
+          <input id="histDepthInput" placeholder="60" />
+          <div class="smallNote" style="margin-top:8px;">How many ticks to show on the timeline bar. Max 120.</div>
+        </div>
+      </div>
+
+      <div class="modalActions">
+        <button class="btn" id="resetSettingsBtn">Reset settings</button>
+        <button class="btn primary" id="saveSettingsBtn">Save</button>
       </div>
     </div>
   </div>
-
-  <!-- Modal: settings -->
-  <div class="modalBack" id="settingsBack">
-    <div class="modal">
-      <div class="modalHead">
-        <h3>Settings</h3>
-        <button class="btn" id="closeSettingsBtn">Close</button>
-      </div>
-      <div class="modalBody">
-        <div class="smallNote">
-          If you want proper intraday FX, paste a TwelveData key. If you do nothing, we fall back to free FX endpoints.
-          Macro drivers use ETF proxies through Stooq CSV, fetched via a public CORS helper because GitHub Pages won’t let you do grown-up networking.
-        </div>
-
-        <div class="fieldRow">
-          <div class="field">
-            <label>TwelveData API Key (optional)</label>
-            <input id="tdKeyInput" placeholder="Paste key here (optional)" />
-            <div class="smallNote" style="margin-top:8px;">Used for EURUSD spot. Stored locally in your browser.</div>
-          </div>
-
-          <div class="field">
-            <label>Polling cadence</label>
-            <input id="pollInput" placeholder="12000 (ms)" />
-            <div class="smallNote" style="margin-top:8px;">Default 12000ms. Too fast = throttled. Too slow = pointless.</div>
-          </div>
-        </div>
-
-        <div class="modalActions">
-          <button class="btn" id="resetSettingsBtn">Reset settings</button>
-          <button class="btn primary" id="saveSettingsBtn">Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
+</div>
 
 <script>
 /* =============================================================================
-   QuadraX Risk Dashboard (single-file demo)
-   - EURUSD spot: TwelveData (optional) -> free FX endpoints failover
-   - Macro drivers: ETF proxies (USO, GLD, SLV, UUP) via Stooq CSV
-     fetched through AllOrigins to bypass CORS on GitHub Pages
-   - Transmission mechanism: Oil, USD, Fear, Event proximity
-   - Projection cone: regime vol + transmission score + event risk
+   QuadraX Risk Dashboard v2 — Fully enhanced single-file demo
+   Fixes: parallel fetches, DPR canvas, box-sizing, font-weight, AbortController
+          reuse, 429 rate-limit backoff, persistent price history, sync debounce
+   New:   sparklines, regime timeline, gradient cone, regime age tracking,
+          momentum sign consistency, keyboard shortcuts, alert thresholds +
+          browser notifications, JSON export, night mode, API key validation,
+          iframe fallback, per-panel data freshness, structured error states
 ============================================================================= */
+(function () {
+  "use strict";
 
-(function(){
-  // ---------- Utilities ----------
-  const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
-  const fmtTime = (ms) => new Date(ms).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
-  const bp = (x)=> x * 10000;
-  const safeNum = (x, fallback=null) => (Number.isFinite(Number(x)) ? Number(x) : fallback);
+  /* ───────── Utilities ───────── */
+  const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+  const fmtTime = ms => new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const bp = x => x * 10000;
+  const minsAgo = ts => ts ? Math.round((Date.now() - ts) / 60000) : null;
 
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m]));
   }
-  function escapeAttr(s){
-    return String(s).replace(/"/g, "&quot;");
-  }
+  function escapeAttr(s) { return String(s).replace(/"/g, "&quot;"); }
 
-  // ---------- DOM ----------
+  /* ───────── DOM refs ───────── */
+  const $ = id => document.getElementById(id);
   const els = {
-    liveDot: document.getElementById("liveDot"),
-    liveText: document.getElementById("liveText"),
-    lastUpdate: document.getElementById("lastUpdate"),
-    pauseBtn: document.getElementById("pauseBtn"),
-    syncBtn: document.getElementById("syncBtn"),
-    editBtn: document.getElementById("editBtn"),
-    settingsBtn: document.getElementById("settingsBtn"),
+    liveDot: $("liveDot"), liveText: $("liveText"), lastUpdate: $("lastUpdate"),
+    pauseBtn: $("pauseBtn"), syncBtn: $("syncBtn"), editBtn: $("editBtn"),
+    settingsBtn: $("settingsBtn"), nightBtn: $("nightBtn"), exportBtn: $("exportBtn"),
+    alertBadge: $("alertBadge"), alertBadgeText: $("alertBadgeText"),
 
-    // state
-    policyStateTitle: document.getElementById("policyStateTitle"),
-    policyStateDesc: document.getElementById("policyStateDesc"),
-    detectorChip: document.getElementById("detectorChip"),
-    policyChip: document.getElementById("policyChip"),
-    confChip: document.getElementById("confChip"),
-    hystChip: document.getElementById("hystChip"),
-    tickChip: document.getElementById("tickChip"),
-    staleChip: document.getElementById("staleChip"),
-    modeTag: document.getElementById("modeTag"),
-    macroBiasChip: document.getElementById("macroBiasChip"),
-    eventRiskChip: document.getElementById("eventRiskChip"),
-    txScoreChip: document.getElementById("txScoreChip"),
-    probList: document.getElementById("probList"),
+    policyStateTitle: $("policyStateTitle"), policyStateDesc: $("policyStateDesc"),
+    detectorChip: $("detectorChip"), policyChip: $("policyChip"),
+    confChip: $("confChip"), hystChip: $("hystChip"),
+    ageChip: $("ageChip"), tickChip: $("tickChip"), staleChip: $("staleChip"),
+    modeTag: $("modeTag"), macroBiasChip: $("macroBiasChip"),
+    eventRiskChip: $("eventRiskChip"), txScoreChip: $("txScoreChip"), momChip: $("momChip"),
+    probList: $("probList"), timelineCanvas: $("timelineCanvas"),
 
-    // quote
-    quoteProvider: document.getElementById("quoteProvider"),
-    fxSpotPrice: document.getElementById("fxSpotPrice"),
-    fxSpotStatus: document.getElementById("fxSpotStatus"),
-    fxStatusDot: document.getElementById("fxStatusDot"),
-    fxSpotDelta: document.getElementById("fxSpotDelta"),
-    fxLatencyTag: document.getElementById("fxLatencyTag"),
-    fxLastTag: document.getElementById("fxLastTag"),
-    fxSpotMeta: document.getElementById("fxSpotMeta"),
-    miniBar: document.getElementById("miniBar"),
+    quoteProvider: $("quoteProvider"), fxSpotPrice: $("fxSpotPrice"),
+    fxSpotStatus: $("fxSpotStatus"), fxStatusDot: $("fxStatusDot"),
+    fxSpotDelta: $("fxSpotDelta"), fxLatencyTag: $("fxLatencyTag"),
+    fxLastTag: $("fxLastTag"), fxSpotMeta: $("fxSpotMeta"), miniBar: $("miniBar"),
 
-    // risk
-    riskBig: document.getElementById("riskBig"),
-    riskRule: document.getElementById("riskRule"),
+    riskBig: $("riskBig"), riskRule: $("riskRule"),
 
-    // macro
-    oilPx: document.getElementById("oilPx"),
-    oilMeta: document.getElementById("oilMeta"),
-    oilTag: document.getElementById("oilTag"),
-    goldPx: document.getElementById("goldPx"),
-    goldMeta: document.getElementById("goldMeta"),
-    goldTag: document.getElementById("goldTag"),
-    silverPx: document.getElementById("silverPx"),
-    silverMeta: document.getElementById("silverMeta"),
-    silverTag: document.getElementById("silverTag"),
-    usdPx: document.getElementById("usdPx"),
-    usdMeta: document.getElementById("usdMeta"),
-    usdTag: document.getElementById("usdTag"),
-    txBig: document.getElementById("txBig"),
-    txMeta: document.getElementById("txMeta"),
+    oilPx: $("oilPx"), oilMeta: $("oilMeta"), oilTag: $("oilTag"), oilSpark: $("oilSpark"),
+    goldPx: $("goldPx"), goldMeta: $("goldMeta"), goldTag: $("goldTag"), goldSpark: $("goldSpark"),
+    silverPx: $("silverPx"), silverMeta: $("silverMeta"), silverTag: $("silverTag"), silverSpark: $("silverSpark"),
+    usdPx: $("usdPx"), usdMeta: $("usdMeta"), usdTag: $("usdTag"), usdSpark: $("usdSpark"),
+    txBig: $("txBig"), txMeta: $("txMeta"),
 
-    // levers
-    oilLeverPct: document.getElementById("oilLeverPct"),
-    oilLeverBar: document.getElementById("oilLeverBar"),
-    oilLeverMeta: document.getElementById("oilLeverMeta"),
-    usdLeverPct: document.getElementById("usdLeverPct"),
-    usdLeverBar: document.getElementById("usdLeverBar"),
-    usdLeverMeta: document.getElementById("usdLeverMeta"),
-    fearLeverPct: document.getElementById("fearLeverPct"),
-    fearLeverBar: document.getElementById("fearLeverBar"),
-    fearLeverMeta: document.getElementById("fearLeverMeta"),
-    eventLeverPct: document.getElementById("eventLeverPct"),
-    eventLeverBar: document.getElementById("eventLeverBar"),
-    eventLeverMeta: document.getElementById("eventLeverMeta"),
+    oilLeverPct: $("oilLeverPct"), oilLeverBar: $("oilLeverBar"), oilLeverMeta: $("oilLeverMeta"),
+    usdLeverPct: $("usdLeverPct"), usdLeverBar: $("usdLeverBar"), usdLeverMeta: $("usdLeverMeta"),
+    fearLeverPct: $("fearLeverPct"), fearLeverBar: $("fearLeverBar"), fearLeverMeta: $("fearLeverMeta"),
+    eventLeverPct: $("eventLeverPct"), eventLeverBar: $("eventLeverBar"), eventLeverMeta: $("eventLeverMeta"),
 
-    // projection
-    tradeBias: document.getElementById("tradeBias"),
-    tradeBiasMeta: document.getElementById("tradeBiasMeta"),
-    rng1h: document.getElementById("rng1h"),
-    rng1hMeta: document.getElementById("rng1hMeta"),
-    rng4h: document.getElementById("rng4h"),
-    rng4hMeta: document.getElementById("rng4hMeta"),
-    decConf: document.getElementById("decConf"),
-    decConfMeta: document.getElementById("decConfMeta"),
-    coneCanvas: document.getElementById("coneCanvas"),
+    tradeBias: $("tradeBias"), tradeBiasMeta: $("tradeBiasMeta"),
+    rng1h: $("rng1h"), rng1hMeta: $("rng1hMeta"),
+    rng4h: $("rng4h"), rng4hMeta: $("rng4hMeta"),
+    decConf: $("decConf"), decConfMeta: $("decConfMeta"),
+    coneCanvas: $("coneCanvas"), rng1hBox: $("rng1hBox"),
 
-    // events + headlines
-    eventsBody: document.getElementById("eventsBody"),
-    headlinesBody: document.getElementById("headlinesBody"),
+    eventsBody: $("eventsBody"), headlinesBody: $("headlinesBody"),
+    sysStatus: $("sysStatus"), footPolicy: $("footPolicy"),
+    footDetector: $("footDetector"), footAge: $("footAge"), footHold: $("footHold"),
 
-    // footer
-    sysStatus: document.getElementById("sysStatus"),
-    footPolicy: document.getElementById("footPolicy"),
-    footDetector: document.getElementById("footDetector"),
-    footHold: document.getElementById("footHold"),
+    modalBack: $("modalBack"), closeModalBtn: $("closeModalBtn"),
+    saveCuratedBtn: $("saveCuratedBtn"), resetCuratedBtn: $("resetCuratedBtn"),
+    eventsEditor: $("eventsEditor"), headlinesEditor: $("headlinesEditor"),
 
-    // modals
-    modalBack: document.getElementById("modalBack"),
-    closeModalBtn: document.getElementById("closeModalBtn"),
-    saveCuratedBtn: document.getElementById("saveCuratedBtn"),
-    resetCuratedBtn: document.getElementById("resetCuratedBtn"),
-    eventsEditor: document.getElementById("eventsEditor"),
-    headlinesEditor: document.getElementById("headlinesEditor"),
+    settingsBack: $("settingsBack"), closeSettingsBtn: $("closeSettingsBtn"),
+    tdKeyInput: $("tdKeyInput"), pollInput: $("pollInput"),
+    alertThreshInput: $("alertThreshInput"), histDepthInput: $("histDepthInput"),
+    resetSettingsBtn: $("resetSettingsBtn"), saveSettingsBtn: $("saveSettingsBtn"),
+    tdKeyValidTag: $("tdKeyValidTag"),
 
-    settingsBack: document.getElementById("settingsBack"),
-    closeSettingsBtn: document.getElementById("closeSettingsBtn"),
-    tdKeyInput: document.getElementById("tdKeyInput"),
-    pollInput: document.getElementById("pollInput"),
-    resetSettingsBtn: document.getElementById("resetSettingsBtn"),
-    saveSettingsBtn: document.getElementById("saveSettingsBtn"),
+    tvFrame: $("tvFrame"), tvFallback: $("tvFallback"),
+    kbHint: $("kbHint"),
   };
 
-  // ---------- Persistence keys ----------
+  /* ───────── Persistence keys ───────── */
   const KEY = {
-    settings: "qx_settings_v2",
+    settings: "qx_settings_v3",
     events: "qx_events_v1",
     headlines: "qx_headlines_v1",
-    dash: "qx_dash_v2",
-    macro: "qx_macro_v2"
+    macro: "qx_macro_v3",
+    priceHistory: "qx_price_hist_v1",
+    regimeHistory: "qx_regime_hist_v1",
   };
 
-  function loadObj(key, fallback){
-    try{
+  function loadObj(key, fallback) {
+    try {
       const raw = localStorage.getItem(key);
       if (!raw) return fallback;
-      const parsed = JSON.parse(raw);
-      return (parsed && typeof parsed === "object") ? parsed : fallback;
-    }catch(e){ return fallback; }
+      const p = JSON.parse(raw);
+      return (p && typeof p === "object") ? p : fallback;
+    } catch { return fallback; }
   }
-  function loadJSONArr(key, fallback){
-    try{
+  function loadArr(key, fallback) {
+    try {
       const raw = localStorage.getItem(key);
       if (!raw) return fallback;
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed : fallback;
-    }catch(e){ return fallback; }
+      const p = JSON.parse(raw);
+      return Array.isArray(p) ? p : fallback;
+    } catch { return fallback; }
+  }
+  function saveKey(key, val) {
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch { }
   }
 
-  // ---------- Settings ----------
+  /* ───────── Settings ───────── */
   let settings = loadObj(KEY.settings, {
     twelvedataKey: "",
-    pollMs: 12000
+    pollMs: 12000,
+    alertThreshPips: 0,
+    histDepth: 60,
   });
 
-  // ---------- Curated defaults ----------
+  /* ───────── Curated defaults ───────── */
   const curatedEventsDefault = [
     { when: "2026-02-17T21:18:47Z", event: "Eurozone CPI (flash)", impact: "HIGH" },
     { when: "2026-02-18T17:18:47Z", event: "US Initial Jobless Claims", impact: "MED" },
     { when: "2026-02-19T21:18:47Z", event: "US GDP (advance)", impact: "HIGH" },
-    { when: "2026-02-22T15:18:47Z", event: "US Non-Farm Payrolls", impact: "HIGH" }
+    { when: "2026-02-22T15:18:47Z", event: "US Non-Farm Payrolls", impact: "HIGH" },
   ];
-
   const curatedHeadlinesDefault = [
     { time: "03:00 PM", source: "FinancialJuice", title: "Dollar firming ahead of major data window", url: "https://financialjuice.com/" },
     { time: "02:26 PM", source: "FinancialJuice", title: "Rates repricing drives short-term USD bid", url: "https://financialjuice.com/" },
-    { time: "01:06 PM", source: "Market", title: "Risk tone mixed as equities stabilize", url: "https://www.investing.com/" }
+    { time: "01:06 PM", source: "Market", title: "Risk tone mixed as equities stabilize", url: "https://www.investing.com/" },
   ];
+  let curatedEvents = loadArr(KEY.events, curatedEventsDefault);
+  let curatedHeadlines = loadArr(KEY.headlines, curatedHeadlinesDefault);
 
-  let curatedEvents = loadJSONArr(KEY.events, curatedEventsDefault);
-  let curatedHeadlines = loadJSONArr(KEY.headlines, curatedHeadlinesDefault);
+  /* ───────── Regime history ───────── */
+  let recentPolicyStates = loadArr(KEY.regimeHistory, []);
 
-  // ---------- Impact pill ----------
-  function impactPill(impact){
-    const imp = (impact || "").toUpperCase();
-    if (imp === "HIGH") return `<span class="impact"><span class="folder"></span>HIGH</span>`;
-    if (imp === "MED") return `<span class="impact"><span class="folder med"></span>MED</span>`;
+  function pushRegimeState(s) {
+    recentPolicyStates.push(s);
+    const depth = clamp(settings.histDepth || 60, 10, 120);
+    if (recentPolicyStates.length > depth) {
+      recentPolicyStates = recentPolicyStates.slice(-depth);
+    }
+    saveKey(KEY.regimeHistory, recentPolicyStates);
+  }
+
+  /* ───────── Render helpers ───────── */
+  function impactPill(impact) {
+    const i = (impact || "").toUpperCase();
+    if (i === "HIGH") return `<span class="impact"><span class="folder"></span>HIGH</span>`;
+    if (i === "MED") return `<span class="impact"><span class="folder med"></span>MED</span>`;
     return `<span class="impact"><span class="folder low"></span>LOW</span>`;
   }
 
-  function countdownText(iso){
+  function countdownText(iso) {
     const t = new Date(iso).getTime();
-    const now = Date.now();
     if (!Number.isFinite(t)) return "--";
-    const d = t - now;
-    if (d <= 0) return "Now";
-    const mins = Math.floor(d/60000);
-    const days = Math.floor(mins / (60*24));
-    const hrs = Math.floor((mins - days*60*24)/60);
-    const rem = mins - days*60*24 - hrs*60;
+    const d = t - Date.now();
+    if (d <= 0) return "Past";
+    const mins = Math.floor(d / 60000);
+    const days = Math.floor(mins / (60 * 24));
+    const hrs = Math.floor((mins - days * 60 * 24) / 60);
+    const rem = mins - days * 60 * 24 - hrs * 60;
     if (days > 0) return `${days}d ${hrs}h`;
     if (hrs > 0) return `${hrs}h ${rem}m`;
     return `${rem}m`;
   }
 
-  function renderEvents(){
-    const rows = curatedEvents
-      .slice()
-      .sort((a,b)=> new Date(a.when)-new Date(b.when))
-      .map(e=>{
-        const when = new Date(e.when);
-        const whenStr = isNaN(when.getTime()) ? String(e.when) : `${when.toLocaleDateString()} ${when.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"})}`;
-        return `
-          <tr>
-            <td>${whenStr}</td>
-            <td><a class="link" href="https://www.forexfactory.com/" target="_blank" rel="noopener noreferrer">${escapeHtml(e.event || "")}</a></td>
-            <td>${impactPill(e.impact)}</td>
-            <td>${countdownText(e.when)}</td>
-          </tr>
-        `;
-      }).join("");
+  function renderEvents() {
+    const now = Date.now();
+    const sorted = curatedEvents
+      .map(e => ({ ...e, t: new Date(e.when).getTime() }))
+      .filter(e => Number.isFinite(e.t) && e.t >= now - 3600_000)
+      .sort((a, b) => a.t - b.t);
 
-    els.eventsBody.innerHTML = rows || `<tr><td colspan="4" style="color:rgba(255,255,255,0.6)">No events set.</td></tr>`;
-  }
-
-  function renderHeadlines(){
-    const rows = curatedHeadlines.map(h=>{
-      const url = h.url || "#";
-      return `
-        <tr>
-          <td>${escapeHtml(h.time || "")}</td>
-          <td>${escapeHtml(h.source || "")}</td>
-          <td><a class="link" href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(h.title || "")}</a></td>
-        </tr>
-      `;
+    if (!sorted.length) {
+      els.eventsBody.innerHTML = `<tr><td colspan="4" style="color:rgba(255,255,255,0.6)">No upcoming events.</td></tr>`;
+      return;
+    }
+    els.eventsBody.innerHTML = sorted.map(e => {
+      const when = new Date(e.when);
+      const whenStr = isNaN(when) ? String(e.when) :
+        `${when.toLocaleDateString()} ${when.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+      return `<tr>
+        <td>${whenStr}</td>
+        <td><a class="link" href="https://www.forexfactory.com/" target="_blank" rel="noopener noreferrer">${escapeHtml(e.event || "")}</a></td>
+        <td>${impactPill(e.impact)}</td>
+        <td>${countdownText(e.when)}</td>
+      </tr>`;
     }).join("");
-
-    els.headlinesBody.innerHTML = rows || `<tr><td colspan="3" style="color:rgba(255,255,255,0.6)">No headlines set.</td></tr>`;
   }
 
-  // ---------- Event risk (proximity lever) ----------
-  function computeEventRisk01(){
+  function renderHeadlines() {
+    if (!curatedHeadlines.length) {
+      els.headlinesBody.innerHTML = `<tr><td colspan="3" style="color:rgba(255,255,255,0.6)">No headlines set.</td></tr>`;
+      return;
+    }
+    els.headlinesBody.innerHTML = curatedHeadlines.map(h => {
+      const url = h.url || "#";
+      return `<tr>
+        <td>${escapeHtml(h.time || "")}</td>
+        <td>${escapeHtml(h.source || "")}</td>
+        <td><a class="link" href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(h.title || "")}</a></td>
+      </tr>`;
+    }).join("");
+  }
+
+  /* ───────── Event risk ───────── */
+  function computeEventRisk01() {
     const now = Date.now();
     const upcoming = curatedEvents
-      .map(e => ({...e, t: new Date(e.when).getTime()}))
+      .map(e => ({ ...e, t: new Date(e.when).getTime() }))
       .filter(e => Number.isFinite(e.t) && e.t >= now);
 
     if (!upcoming.length) return 0;
-
-    // find nearest HIGH then MED then LOW
     const weights = { HIGH: 1.0, MED: 0.6, LOW: 0.25 };
     let best = 0;
 
-    for (const e of upcoming){
-      const imp = (e.impact || "LOW").toUpperCase();
-      const w = weights[imp] ?? 0.25;
-      const mins = (e.t - now)/60000;
-
-      // proximity curve: strongest within 60 minutes, fades over 24 hours
-      const prox = (mins <= 60) ? 1
-                 : (mins <= 6*60) ? (1 - (mins-60)/(5*60))*0.85
-                 : (mins <= 24*60) ? (1 - (mins-6*60)/(18*60))*0.35
-                 : 0;
-
+    for (const e of upcoming) {
+      const w = weights[(e.impact || "LOW").toUpperCase()] ?? 0.25;
+      const mins = (e.t - now) / 60000;
+      const prox = mins <= 60 ? 1
+        : mins <= 360 ? (1 - (mins - 60) / 300) * 0.85
+          : mins <= 1440 ? (1 - (mins - 360) / 1080) * 0.35
+            : 0;
       best = Math.max(best, w * prox);
     }
-
     return clamp(best, 0, 1);
   }
 
-  function labelEventRisk(r){
+  function labelEventRisk(r) {
     if (r >= 0.70) return "HIGH";
     if (r >= 0.35) return "MED";
     return "LOW";
   }
 
-  // ---------- States ----------
+  /* ───────── States ───────── */
   const STATES = [
-    { id:1, name:"Mean-Reverting", desc:"Range-bound. Fade extremes and keep size disciplined.", color:"rgba(24,209,138,0.85)" },
-    { id:2, name:"Liquidity Vacuum", desc:"Thin market, jumpy moves. Tighten risk and be selective.", color:"rgba(255,176,32,0.85)" },
-    { id:3, name:"Slow Drift", desc:"Steady grind. Small edges, avoid forcing entries.", color:"rgba(120,170,255,0.85)" },
-    { id:4, name:"Strong Trend", desc:"Directional. Trend-follow bias, avoid countertrend heroics.", color:"rgba(60,145,255,0.9)" },
-    { id:5, name:"Stop Cascade", desc:"Fast continuation on stops. Reduce leverage, widen filters.", color:"rgba(255,138,64,0.9)" },
-    { id:6, name:"News Shock", desc:"Event-driven. Consider standing down around releases.", color:"rgba(255,77,77,0.9)" },
-    { id:7, name:"Dealer Unwind", desc:"Choppy reversal risk. Focus on protection and confirmation.", color:"rgba(160,120,255,0.9)" },
-    { id:8, name:"Panic/Forced", desc:"Dislocation. Risk off. Protect capital first.", color:"rgba(255,58,165,0.9)" }
+    { id: 1, name: "Mean-Reverting",    desc: "Range-bound. Fade extremes, keep size disciplined.", color: "rgba(24,209,138,0.85)" },
+    { id: 2, name: "Liquidity Vacuum",  desc: "Thin market. Tighten risk, wait for confirmation.", color: "rgba(255,176,32,0.85)" },
+    { id: 3, name: "Slow Drift",        desc: "Steady grind. Small edges, avoid forcing entries.", color: "rgba(120,170,255,0.85)" },
+    { id: 4, name: "Strong Trend",      desc: "Directional. Trend-follow bias, avoid countertrend.", color: "rgba(60,145,255,0.9)" },
+    { id: 5, name: "Stop Cascade",      desc: "Fast continuation on stops. De-risk, widen filters.", color: "rgba(255,138,64,0.9)" },
+    { id: 6, name: "News Shock",        desc: "Event-driven. Consider standing down around releases.", color: "rgba(255,77,77,0.9)" },
+    { id: 7, name: "Dealer Unwind",     desc: "Choppy reversal risk. Protect, demand confirmation.", color: "rgba(160,120,255,0.9)" },
+    { id: 8, name: "Panic/Forced",      desc: "Dislocation. Risk off. Protect capital first.", color: "rgba(255,58,165,0.9)" },
   ];
 
-  // ---------- Probabilities UI ----------
+  /* ───────── Prob UI ───────── */
   const probEls = [];
-  function initProbUI(){
+  function initProbUI() {
     els.probList.innerHTML = "";
     probEls.length = 0;
-
-    STATES.forEach((s)=>{
+    STATES.forEach(s => {
       const row = document.createElement("div");
       row.className = "probRow";
       row.innerHTML = `
-        <div class="probName"><span class="pdot" style="background:${s.color}"></span>State ${s.id}: ${s.name}</div>
+        <div class="probName"><span class="pdot" style="background:${s.color}"></span>S${s.id}: ${s.name}</div>
         <div class="pbar"><i></i></div>
         <div class="probVal">--%</div>
       `;
       els.probList.appendChild(row);
-      probEls.push({
-        bar: row.querySelector(".pbar > i"),
-        val: row.querySelector(".probVal")
-      });
+      probEls.push({ bar: row.querySelector(".pbar > i"), val: row.querySelector(".probVal") });
     });
   }
 
-  // ---------- Risk mapping ----------
-  function setRisk(policyState, conf){
-    let level = "--";
-    let rule = "Policy: state-aware sizing and entry gating";
-
-    if (policyState){
-      if (policyState === 1) { level = "NORMAL"; rule = "Rule: Range logic favored. Avoid forcing breakouts."; }
-      if (policyState === 2) { level = "ELEVATED"; rule = "Rule: Thin liquidity risk. Reduce size and wait for confirmation."; }
-      if (policyState === 3) { level = "NORMAL"; rule = "Rule: Drift regime. Small edges, avoid impulsive entries."; }
-      if (policyState === 4) { level = "HIGH"; rule = "Rule: Trend regime. Bias with trend. Avoid countertrend heroics."; }
-      if (policyState === 5) { level = "HIGH"; rule = "Rule: Stop cascade risk. De-risk and widen filters."; }
-      if (policyState === 6) { level = "HIGH"; rule = "Rule: News shock. Consider standing down around releases."; }
-      if (policyState === 7) { level = "ELEVATED"; rule = "Rule: Unwind risk. Protect and demand confirmation."; }
-      if (policyState === 8) { level = "CRITICAL"; rule = "Rule: Risk off. Protect capital first."; }
-
-      if (conf != null && conf < 0.35 && (level === "NORMAL")) level = "ELEVATED";
-      if (conf != null && conf < 0.25 && (level === "ELEVATED")) level = "HIGH";
+  /* ───────── Risk mapping ───────── */
+  function setRisk(pol, conf) {
+    const MAP = {
+      1: ["NORMAL",   "Rule: Range logic. Avoid forcing breakouts."],
+      2: ["ELEVATED", "Rule: Thin liquidity. Reduce size, wait for confirmation."],
+      3: ["NORMAL",   "Rule: Drift regime. Small edges, avoid impulsive entries."],
+      4: ["HIGH",     "Rule: Trend regime. Bias with trend. Avoid countertrend."],
+      5: ["HIGH",     "Rule: Stop cascade risk. De-risk and widen filters."],
+      6: ["HIGH",     "Rule: News shock. Consider standing down around releases."],
+      7: ["ELEVATED", "Rule: Unwind risk. Protect and demand confirmation."],
+      8: ["CRITICAL", "Rule: Risk off. Protect capital first."],
+    };
+    let [level, rule] = MAP[pol] || ["--", "Policy: state-aware sizing and entry gating"];
+    if (conf != null) {
+      if (conf < 0.35 && level === "NORMAL") level = "ELEVATED";
+      if (conf < 0.25 && level === "ELEVATED") level = "HIGH";
     }
-
     els.riskBig.textContent = level;
     els.riskRule.textContent = rule;
+    els.riskBig.classList.remove("pos", "neg");
+    if (level === "NORMAL") els.riskBig.classList.add("pos");
+    if (level === "CRITICAL" || level === "HIGH") els.riskBig.classList.add("neg");
   }
 
-  // ---------- Quote status dot ----------
-  function setFxStatus(status){
+  /* ───────── FX status ───────── */
+  function setFxStatus(status) {
     els.fxSpotStatus.textContent = status;
-    els.fxStatusDot.classList.remove("live","err");
-    if (status === "LIVE"){
-      els.fxStatusDot.classList.add("live");
-    } else if (status === "ERROR"){
-      els.fxStatusDot.classList.add("err");
-    }
+    els.fxStatusDot.classList.remove("live", "err");
+    if (status === "LIVE") els.fxStatusDot.classList.add("live");
+    else if (status === "ERROR") els.fxStatusDot.classList.add("err");
   }
 
-  // ---------- Spot feed (TwelveData + fallback endpoints) ----------
+  /* ───────────────────────────────────────────────────────
+     SPOT FEED — TwelveData first, then parallel free fallback
+     ─────────────────────────────────────────────────────── */
   const SpotFeed = (() => {
-    // Free endpoints (can be cached / low frequency)
     const freeSources = [
-      {
-        name: "exchangerate.host",
-        url: () => `https://api.exchangerate.host/latest?base=EUR&symbols=USD&_=${Date.now()}`,
-        parse: (j) => j?.rates?.USD
-      },
-      {
-        name: "frankfurter.app",
-        url: () => `https://api.frankfurter.app/latest?from=EUR&to=USD&_=${Date.now()}`,
-        parse: (j) => j?.rates?.USD
-      },
-      {
-        name: "open.er-api.com",
-        url: () => `https://open.er-api.com/v6/latest/EUR?_=${Date.now()}`,
-        parse: (j) => j?.rates?.USD
-      }
+      { name: "exchangerate.host", url: () => `https://api.exchangerate.host/latest?base=EUR&symbols=USD&_=${Date.now()}`, parse: j => j?.rates?.USD },
+      { name: "frankfurter.app",  url: () => `https://api.frankfurter.app/latest?from=EUR&to=USD&_=${Date.now()}`,       parse: j => j?.rates?.USD },
+      { name: "open.er-api.com",  url: () => `https://open.er-api.com/v6/latest/EUR?_=${Date.now()}`,                    parse: j => j?.rates?.USD },
     ];
 
-    let last = {
-      price: null,
-      ts: 0,
-      source: null,
-      provider: null,
-      latencyMs: null,
-      staleCount: 0,
-      lastChangeTs: 0,
-      lastDelta: 0
-    };
-
+    let last = { price: null, ts: 0, source: null, provider: null, latencyMs: null, staleCount: 0, lastChangeTs: 0, lastDelta: 0 };
     const STALE_MS = 60_000;
     const MIN_MOVE = 0.000001;
+    let activeCtrl = null;
+    const backedOff = {}; // source name -> backoff-until ts
 
-    function status(now = Date.now()){
+    function status(now = Date.now()) {
       if (!last.price) return { status: "CHECKING", stale: false };
-      const stale = (now - last.lastChangeTs) > STALE_MS;
+      const stale = (now - last.ts) > STALE_MS;
       return { status: stale ? "STALE" : "LIVE", stale };
     }
 
-    async function fetchWithTimeout(url, timeoutMs=6500){
+    async function fetchWithTimeout(url, timeoutMs = 7000) {
       const t0 = performance.now();
-      const controller = new AbortController();
-      const timer = setTimeout(()=> controller.abort(), timeoutMs);
-      try{
-        const res = await fetch(url, { method:"GET", cache:"no-store", signal: controller.signal });
+      if (activeCtrl) activeCtrl.abort();
+      activeCtrl = new AbortController();
+      const timer = setTimeout(() => activeCtrl.abort(), timeoutMs);
+      try {
+        const res = await fetch(url, { method: "GET", cache: "no-store", signal: activeCtrl.signal });
         clearTimeout(timer);
+        if (res.status === 429) throw Object.assign(new Error("429"), { is429: true });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
-        return { ok:true, json, latencyMs: Math.round(performance.now() - t0) };
-      }catch(e){
+        return { ok: true, json, latencyMs: Math.round(performance.now() - t0) };
+      } catch (e) {
         clearTimeout(timer);
-        return { ok:false, err:e };
+        return { ok: false, err: e, is429: e?.is429 };
       }
     }
 
-    async function fetchTwelveData(){
+    async function fetchTwelveData() {
       const key = (settings.twelvedataKey || "").trim();
-      if (!key) return { ok:false };
-
+      if (!key) return { ok: false };
       const url = `https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${encodeURIComponent(key)}&_=${Date.now()}`;
-      const r = await fetchWithTimeout(url, 6500);
-      if (!r.ok) return { ok:false };
+      const r = await fetchWithTimeout(url, 7000);
+      if (!r.ok) return { ok: false };
       const px = Number(r.json?.price);
-      if (!Number.isFinite(px) || px <= 0) return { ok:false };
-      return { ok:true, price:px, source:"TwelveData", provider:"TwelveData", latencyMs:r.latencyMs };
+      if (!Number.isFinite(px) || px <= 0) return { ok: false };
+      return { ok: true, price: px, source: "TwelveData", provider: "TwelveData", latencyMs: r.latencyMs };
     }
 
-    async function fetchFreeOnce(){
-      for (const s of freeSources){
-        const r = await fetchWithTimeout(s.url(), 6500);
-        if (!r.ok) continue;
-        const px = Number(s.parse(r.json));
-        if (!Number.isFinite(px) || px <= 0) continue;
-        return { ok:true, price:px, source:s.name, provider:s.name, latencyMs:r.latencyMs };
-      }
-      return { ok:false };
-    }
-
-    async function tick(updateCb){
+    // Fire all free sources in parallel — take first winner
+    async function fetchFreeParallel() {
       const now = Date.now();
+      const available = freeSources.filter(s => !backedOff[s.name] || backedOff[s.name] < now);
+      if (!available.length) return { ok: false };
 
-      // try TwelveData first (best for intraday)
+      const race = available.map(s =>
+        fetchWithTimeout(s.url(), 7000).then(r => {
+          if (!r.ok) {
+            if (r.is429) backedOff[s.name] = now + 5 * 60_000; // back off 5 min on 429
+            throw new Error("fail");
+          }
+          const px = Number(s.parse(r.json));
+          if (!Number.isFinite(px) || px <= 0) throw new Error("bad px");
+          return { ok: true, price: px, source: s.name, provider: s.name, latencyMs: r.latencyMs };
+        })
+      );
+
+      try {
+        return await Promise.any(race);
+      } catch {
+        return { ok: false };
+      }
+    }
+
+    async function tick(updateCb) {
+      const now = Date.now();
       let r = await fetchTwelveData();
-      if (!r.ok) r = await fetchFreeOnce();
+      if (!r.ok) r = await fetchFreeParallel();
 
-      if (!r.ok){
+      if (!r.ok) {
         last.staleCount += 1;
-        updateCb?.({ ok:false, ...last, ...status(now) });
+        updateCb?.({ ok: false, ...last, ...status(now) });
         return;
       }
 
       const prev = last.price;
-      const moved = (prev == null) ? true : Math.abs(r.price - prev) > MIN_MOVE;
-      const delta = (prev == null) ? 0 : (r.price - prev);
+      const moved = prev == null || Math.abs(r.price - prev) > MIN_MOVE;
+      const delta = prev == null ? 0 : r.price - prev;
 
-      last.price = r.price;
-      last.ts = now;
-      last.source = r.source;
-      last.provider = r.provider;
-      last.latencyMs = r.latencyMs;
-      last.staleCount = 0;
-      last.lastDelta = delta;
-
+      last = { ...last, price: r.price, ts: now, source: r.source, provider: r.provider, latencyMs: r.latencyMs, staleCount: 0, lastDelta: delta };
       if (moved) last.lastChangeTs = now;
       if (!last.lastChangeTs) last.lastChangeTs = now;
 
-      updateCb?.({ ok:true, ...last, ...status(now) });
+      updateCb?.({ ok: true, ...last, ...status(now) });
     }
 
-    return { tick, getLast: ()=> ({...last}) };
+    return { tick, getLast: () => ({ ...last }) };
   })();
 
-  // ---------- Macro feed (Stooq CSV via AllOrigins) ----------
+  /* ───────────────────────────────────────────────────────
+     MACRO FEED — Parallel Stooq CSV fetches with sparklines
+     ─────────────────────────────────────────────────────── */
   const MacroFeed = (() => {
-    // Stooq expects e=csv
-    // We route through AllOrigins: https://api.allorigins.win/raw?url=<encoded>
-    // This is a demo hack. Production uses real feeds.
     const series = [
-      { key:"OIL", name:"USO", stooq:"uso.us", pxEl:"oilPx", metaEl:"oilMeta", tagEl:"oilTag" },
-      { key:"GOLD", name:"GLD", stooq:"gld.us", pxEl:"goldPx", metaEl:"goldMeta", tagEl:"goldTag" },
-      { key:"SILV", name:"SLV", stooq:"slv.us", pxEl:"silverPx", metaEl:"silverMeta", tagEl:"silverTag" },
-      { key:"USD",  name:"UUP", stooq:"uup.us", pxEl:"usdPx", metaEl:"usdMeta", tagEl:"usdTag" },
+      { key: "OIL",  stooq: "uso.us", pxEl: "oilPx",    metaEl: "oilMeta",    tagEl: "oilTag",    sparkEl: "oilSpark"    },
+      { key: "GOLD", stooq: "gld.us", pxEl: "goldPx",   metaEl: "goldMeta",   tagEl: "goldTag",   sparkEl: "goldSpark"   },
+      { key: "SILV", stooq: "slv.us", pxEl: "silverPx", metaEl: "silverMeta", tagEl: "silverTag", sparkEl: "silverSpark" },
+      { key: "USD",  stooq: "uup.us", pxEl: "usdPx",    metaEl: "usdMeta",    tagEl: "usdTag",    sparkEl: "usdSpark"    },
     ];
 
-    const state = loadObj(KEY.macro, {
-      last: {}, // key -> { close, prevClose, changePct, ts, src }
-    });
+    const state = loadObj(KEY.macro, { last: {} });
+    const backoff429 = {}; // key -> until-ts
 
-    function persist(){
-      try{ localStorage.setItem(KEY.macro, JSON.stringify(state)); }catch(e){}
+    function persist() { saveKey(KEY.macro, state); }
+
+    function stooqUrl(sym) {
+      return `https://stooq.com/q/d/l/?s=${encodeURIComponent(sym)}&i=d`;
     }
 
-    function stooqCsvUrl(symbol){
-      // daily: last rows include latest close
-      return `https://stooq.com/q/d/l/?s=${encodeURIComponent(symbol)}&i=d`;
-    }
-
-    async function fetchCsvViaAllOrigins(url, timeoutMs=8000){
+    async function fetchCsv(url, timeoutMs = 9000) {
       const t0 = performance.now();
-      const controller = new AbortController();
-      const timer = setTimeout(()=> controller.abort(), timeoutMs);
-      try{
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+      try {
         const prox = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-        const res = await fetch(prox, { method:"GET", cache:"no-store", signal: controller.signal });
+        const res = await fetch(prox, { method: "GET", cache: "no-store", signal: ctrl.signal });
         clearTimeout(timer);
+        if (res.status === 429) throw Object.assign(new Error("429"), { is429: true });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const text = await res.text();
-        return { ok:true, text, latencyMs: Math.round(performance.now() - t0) };
-      }catch(e){
+        return { ok: true, text, latencyMs: Math.round(performance.now() - t0) };
+      } catch (e) {
         clearTimeout(timer);
-        return { ok:false, err:e };
+        return { ok: false, err: e, is429: e?.is429 };
       }
     }
 
-    function parseStooqDailyCsv(text){
-      // format:
-      // Date,Open,High,Low,Close,Volume
-      // 2026-02-14,xx,xx,xx,xx,xxxx
-      const lines = String(text).trim().split(/\r?\n/).filter(Boolean);
+    function parseCsv(text) {
+      const lines = String(text).trim().split(/\r?\n/).filter(l => l && !l.startsWith("No data"));
       if (lines.length < 3) return null;
-      const header = lines[0].split(",");
-      const idxClose = header.findIndex(h => h.toLowerCase() === "close");
-      if (idxClose < 0) return null;
+      const hdr = lines[0].split(",");
+      const ci = hdr.findIndex(h => h.toLowerCase() === "close");
+      if (ci < 0) return null;
 
-      const lastLine = lines[lines.length - 1].split(",");
-      const prevLine = lines[lines.length - 2].split(",");
+      const dataLines = lines.slice(1);
+      const closes = dataLines.map(l => Number(l.split(",")[ci])).filter(n => Number.isFinite(n) && n > 0);
+      if (closes.length < 2) return null;
 
-      const close = Number(lastLine[idxClose]);
-      const prevClose = Number(prevLine[idxClose]);
-      const date = lastLine[0];
-
-      if (!Number.isFinite(close) || close <= 0) return null;
-      if (!Number.isFinite(prevClose) || prevClose <= 0) return null;
-
+      const close = closes.at(-1);
+      const prevClose = closes.at(-2);
+      const date = dataLines.at(-1).split(",")[0] || "";
       const changePct = (close / prevClose - 1) * 100;
-      return { close, prevClose, changePct, date };
+      return { close, prevClose, changePct, date, closes: closes.slice(-20) };
     }
 
-    function fmtPx(x){ return (Number.isFinite(x) ? x.toFixed(2) : "--"); }
-    function fmtPct(x){
-      if (!Number.isFinite(x)) return "--";
-      const s = (x >= 0 ? "+" : "") + x.toFixed(2) + "%";
-      return s;
-    }
+    function fmtPx(x) { return Number.isFinite(x) ? x.toFixed(2) : "--"; }
+    function fmtPct(x) { if (!Number.isFinite(x)) return "--"; return (x >= 0 ? "+" : "") + x.toFixed(2) + "%"; }
 
-    function paintOne(item){
+    function paintOne(item) {
       const rec = state.last[item.key];
-      const pxEl = document.getElementById(item.pxEl);
-      const metaEl = document.getElementById(item.metaEl);
-      const tagEl = document.getElementById(item.tagEl);
-
-      if (!rec){
-        pxEl.textContent = "--";
-        metaEl.textContent = "No data";
-        tagEl.textContent = "—";
+      const pxEl = $(item.pxEl), metaEl = $(item.metaEl), tagEl = $(item.tagEl), sparkEl = $(item.sparkEl);
+      if (!rec) {
+        pxEl.textContent = "--"; metaEl.textContent = "No data"; tagEl.textContent = "—";
         return;
       }
-
       pxEl.textContent = fmtPx(rec.close);
-      const pct = rec.changePct;
-      const pctStr = fmtPct(pct);
-      metaEl.innerHTML = `Δ ${pctStr} · Prev ${fmtPx(rec.prevClose)} · ${escapeHtml(rec.date || "")}`;
-      tagEl.textContent = `Stooq · ${rec.latencyMs ?? "--"}ms`;
+      const pctStr = fmtPct(rec.changePct);
+      const ma = minsAgo(rec.ts);
+      metaEl.innerHTML = `Δ ${pctStr} · Prev ${fmtPx(rec.prevClose)} · ${escapeHtml(rec.date || "")}${ma != null ? ` · ${ma}m ago` : ""}`;
+      tagEl.textContent = `${rec.latencyMs ?? "--"}ms`;
+      pxEl.classList.remove("pos", "neg");
+      if (rec.changePct > 0.05) pxEl.classList.add("pos");
+      if (rec.changePct < -0.05) pxEl.classList.add("neg");
 
-      // subtle sign styling
-      pxEl.classList.remove("pos","neg");
-      if (Number.isFinite(pct) && pct > 0.05) pxEl.classList.add("pos");
-      if (Number.isFinite(pct) && pct < -0.05) pxEl.classList.add("neg");
+      if (sparkEl && rec.closes?.length > 1) drawSparkline(sparkEl, rec.closes, rec.changePct);
     }
 
-    async function tick(){
-      for (const item of series){
-        const url = stooqCsvUrl(item.stooq);
-        const r = await fetchCsvViaAllOrigins(url);
-        if (!r.ok) continue;
+    // Fetch ALL 4 series in parallel — no more sequential 32-second worst-case
+    async function tick() {
+      const now = Date.now();
+      const tasks = series
+        .filter(item => !backoff429[item.key] || backoff429[item.key] < now)
+        .map(item =>
+          fetchCsv(stooqUrl(item.stooq)).then(r => {
+            if (!r.ok) {
+              if (r.is429) backoff429[item.key] = now + 10 * 60_000;
+              return;
+            }
+            const parsed = parseCsv(r.text);
+            if (!parsed) return;
+            state.last[item.key] = { ...parsed, ts: now, latencyMs: r.latencyMs };
+          })
+        );
 
-        const parsed = parseStooqDailyCsv(r.text);
-        if (!parsed) continue;
-
-        state.last[item.key] = {
-          ...parsed,
-          ts: Date.now(),
-          src: "stooq+allorigins",
-          latencyMs: r.latencyMs
-        };
-      }
-
+      await Promise.allSettled(tasks);
       persist();
       series.forEach(paintOne);
     }
 
-    function get(key){
-      return state.last[key] || null;
-    }
-
-    // hydrate UI from persisted macro cache
-    function hydrate(){
-      series.forEach(paintOne);
-    }
+    function get(key) { return state.last[key] || null; }
+    function hydrate() { series.forEach(paintOne); }
 
     return { tick, get, hydrate };
   })();
 
-  // ---------- Regime engine ----------
+  /* ───────────────────────────────────────────────────────
+     ENGINE — Regime detection with persistent history,
+     regime age tracking, momentum sign consistency
+     ─────────────────────────────────────────────────────── */
   const Engine = (() => {
-    const HISTORY_N = 80;
+    const HISTORY_N  = 80;
     const MOM_WINDOW = 8;
     const VOL_WINDOW = 18;
     const HOLD_TICKS = 4;
-    const PROB_TEMP = 1.35;
+    const PROB_TEMP  = 1.35;
+    const MOM_SIGN_WINDOW = 10; // for consistency score
 
     let tickN = 0;
-    let prices = [];
-    let returns = [];
+    let regimeAge = 0;
+    let lastPolicyState = null;
 
-    let detectorState = null;
-    let policyState = null;
-    let hold = 0;
+    // Rehydrate price history from localStorage
+    const savedHist = loadObj(KEY.priceHistory, { prices: [], returns: [] });
+    let prices  = Array.isArray(savedHist.prices)  ? savedHist.prices.slice(-HISTORY_N)  : [];
+    let returns = Array.isArray(savedHist.returns) ? savedHist.returns.slice(-HISTORY_N) : [];
 
-    function softmax(logits){
+    let detectorState = null, policyState = null, hold = 0;
+
+    function persistPriceHistory() {
+      saveKey(KEY.priceHistory, { prices: prices.slice(-HISTORY_N), returns: returns.slice(-HISTORY_N) });
+    }
+
+    function softmax(logits) {
       const m = Math.max(...logits);
       const exps = logits.map(v => Math.exp((v - m) / PROB_TEMP));
-      const s = exps.reduce((a,b)=>a+b,0) || 1;
-      return exps.map(v => v/s);
+      const s = exps.reduce((a, b) => a + b, 0) || 1;
+      return exps.map(v => v / s);
     }
 
-    function computeFeatures(){
+    function computeFeatures() {
       if (prices.length < 3) return null;
-
-      const p = prices[prices.length-1];
-      const pPrev = prices[prices.length-2];
-
-      const r = (pPrev ? (p - pPrev) : 0);
-      const momBase = prices[Math.max(0, prices.length-1-MOM_WINDOW)];
-      const mom = momBase ? (p - momBase) : 0;
-
+      const p = prices.at(-1);
+      const pPrev = prices.at(-2);
+      const r = pPrev ? p - pPrev : 0;
+      const momBase = prices[Math.max(0, prices.length - 1 - MOM_WINDOW)];
+      const mom = momBase ? p - momBase : 0;
       const recentR = returns.slice(-VOL_WINDOW);
-      const absAvg = recentR.length ? recentR.reduce((a,b)=>a+Math.abs(b),0)/recentR.length : 0;
+      const absAvg = recentR.length ? recentR.reduce((a, b) => a + Math.abs(b), 0) / recentR.length : 0;
       const volx = clamp(absAvg / 0.00015, 0, 5);
-
       const shock = Math.abs(r) > 0.0007 ? 1 : 0;
 
-      return { p, r, mom, volx, shock };
+      // Momentum sign consistency: what fraction of last N returns agree with momentum direction?
+      const rr = returns.slice(-MOM_SIGN_WINDOW);
+      const momDir = Math.sign(mom);
+      const agreeing = rr.filter(v => Math.sign(v) === momDir).length;
+      const momScore = rr.length > 0 ? agreeing / rr.length : 0.5;
+
+      return { p, r, mom, volx, shock, momScore };
     }
 
-    function scoreStates(f){
+    function scoreStates(f) {
       const momBp = Math.abs(bp(f.mom));
       const rBp = Math.abs(bp(f.r));
       const vol = f.volx;
@@ -1792,74 +1400,58 @@
         const rr = returns.slice(-10);
         if (rr.length < 6) return 0;
         let changes = 0;
-        for (let i=1;i<rr.length;i++){
-          if (Math.sign(rr[i]) !== Math.sign(rr[i-1])) changes++;
-        }
+        for (let i = 1; i < rr.length; i++) if (Math.sign(rr[i]) !== Math.sign(rr[i - 1])) changes++;
         return changes;
       })();
 
-      const L = new Array(8).fill(0);
-
-      L[0] = 2.4 - 0.7*vol - 0.04*momBp;                       // mean reversion
-      L[1] = 1.1 + 0.55*vol - 0.03*momBp;                      // liquidity vacuum
-      L[2] = 1.6 - 0.25*vol - 0.02*momBp;                      // slow drift
-      L[3] = 0.9 + 0.25*vol + 0.045*momBp;                     // trend
-      L[4] = -0.2 + 0.55*vol + 0.02*momBp + 0.04*rBp;          // stop cascade
-      L[5] = -0.4 + (f.shock ? 3.0 : 0) + 0.2*vol;             // news shock
-      L[6] = 0.3 + 0.18*vol + 0.35*clamp(signChanges/6,0,1) - 0.02*momBp; // unwind
-      L[7] = -0.8 + 0.95*Math.max(0, vol-2.2) + 0.04*rBp + (f.shock ? 0.6 : 0); // panic
-
+      const L = [
+        2.4 - 0.7*vol - 0.04*momBp,
+        1.1 + 0.55*vol - 0.03*momBp,
+        1.6 - 0.25*vol - 0.02*momBp,
+        0.9 + 0.25*vol + 0.045*momBp,
+        -0.2 + 0.55*vol + 0.02*momBp + 0.04*rBp,
+        -0.4 + (f.shock ? 3.0 : 0) + 0.2*vol,
+        0.3 + 0.18*vol + 0.35*clamp(signChanges/6,0,1) - 0.02*momBp,
+        -0.8 + 0.95*Math.max(0, vol-2.2) + 0.04*rBp + (f.shock ? 0.6 : 0),
+      ];
       return softmax(L);
     }
 
-    function pickState(probs){
+    function pickState(probs) {
       let best = 0;
-      for (let i=1;i<probs.length;i++) if (probs[i] > probs[best]) best = i;
-      return best+1;
+      for (let i = 1; i < probs.length; i++) if (probs[i] > probs[best]) best = i;
+      return best + 1;
     }
 
-    function confidence(probs, state){
-      const s = state-1;
-      const top = probs[s];
-      const sorted = [...probs].sort((a,b)=>b-a);
-      const gap = (sorted[0] - (sorted[1] || 0));
-      return clamp((top*0.7 + gap*0.3), 0, 1);
+    function confidence(probs, state) {
+      const sorted = [...probs].sort((a, b) => b - a);
+      return clamp(probs[state-1]*0.7 + (sorted[0] - (sorted[1]||0))*0.3, 0, 1);
     }
 
-    function updatePolicy(det){
-      if (policyState == null){
-        policyState = det;
-        hold = 0;
-        return { policy: policyState, hold, changed:true };
-      }
-      if (det === policyState){
-        hold = 0;
-        return { policy: policyState, hold, changed:false };
-      }
+    function updatePolicy(det) {
+      if (policyState == null) { policyState = det; hold = 0; return { policy: policyState, hold, changed: true }; }
+      if (det === policyState) { hold = 0; return { policy: policyState, hold, changed: false }; }
       hold += 1;
-      if (hold >= HOLD_TICKS){
-        policyState = det;
-        hold = 0;
-        return { policy: policyState, hold, changed:true };
-      }
-      return { policy: policyState, hold, changed:false };
+      if (hold >= HOLD_TICKS) { policyState = det; hold = 0; return { policy: policyState, hold, changed: true }; }
+      return { policy: policyState, hold, changed: false };
     }
 
-    function step(price){
+    function step(price) {
       tickN += 1;
-
       const p = Number(price);
       if (!Number.isFinite(p) || p <= 0) return null;
 
-      const prev = prices.length ? prices[prices.length-1] : null;
+      const prev = prices.length ? prices.at(-1) : null;
       prices.push(p);
       if (prices.length > HISTORY_N) prices.shift();
 
-      if (prev != null){
-        const r = p - prev;
-        returns.push(r);
+      if (prev != null) {
+        returns.push(p - prev);
         if (returns.length > HISTORY_N) returns.shift();
       }
+
+      // Persist every 10 ticks (avoids thrashing localStorage)
+      if (tickN % 10 === 0) persistPriceHistory();
 
       const f = computeFeatures();
       if (!f) return null;
@@ -1869,7 +1461,14 @@
       detectorState = det;
 
       const polRes = updatePolicy(det);
-      const conf = confidence(probs, polRes.policy);
+
+      // Track regime age
+      if (lastPolicyState === polRes.policy) {
+        regimeAge += 1;
+      } else {
+        regimeAge = 0;
+        lastPolicyState = polRes.policy;
+      }
 
       return {
         tickN,
@@ -1878,133 +1477,159 @@
         detector: det,
         policy: polRes.policy,
         hold: polRes.hold,
-        conf
+        conf: confidence(probs, polRes.policy),
+        regimeAge,
+        momScore: f.momScore,
       };
     }
 
     return { step };
   })();
 
-  // ---------- Macro → transmission ----------
-  function normAbsPct(x, cap=1.5){
-    // x is percent change, cap around 1.5% daily move for ETFs
+  /* ───────── Transmission computation ───────── */
+  function normAbsPct(x, cap = 1.5) {
     if (!Number.isFinite(x)) return 0;
-    const a = Math.abs(x);
-    return clamp(a / cap, 0, 1);
+    return clamp(Math.abs(x) / cap, 0, 1);
   }
 
-  function computeTransmission(){
-    const oil = MacroFeed.get("OIL");
+  function computeTransmission() {
+    const oil  = MacroFeed.get("OIL");
     const gold = MacroFeed.get("GOLD");
     const silv = MacroFeed.get("SILV");
     const usd  = MacroFeed.get("USD");
-
     const eRisk = computeEventRisk01();
 
-    // leverage sign: for EURUSD
-    // oil up -> EUR down (negative)
-    // usd up -> EUR down (negative)
-    // gold up -> risk-off; often EUR down (negative)
-    // silver up can be risk-on/growth; we treat it as slight offset to fear (optional)
-    const oilInt = normAbsPct(oil?.changePct, 2.0);     // oil proxy can swing more
-    const usdInt = normAbsPct(usd?.changePct, 1.0);
+    const oilInt  = normAbsPct(oil?.changePct,  2.0);
+    const usdInt  = normAbsPct(usd?.changePct,  1.0);
     const fearInt = normAbsPct(gold?.changePct, 1.5);
     const silvInt = normAbsPct(silv?.changePct, 2.0);
 
-    // event lever is already 0..1
-    const eventInt = eRisk;
+    const oilDir  = (oil?.changePct  ?? 0) >= 0 ? -oilInt       : +oilInt * 0.4;
+    const usdDir  = (usd?.changePct  ?? 0) >= 0 ? -usdInt       : +usdInt * 0.5;
+    const fearDir = (gold?.changePct ?? 0) >= 0 ? -fearInt      : +fearInt * 0.2;
+    const silvDir = (silv?.changePct ?? 0) >= 0 ? +silvInt*0.25 : -silvInt * 0.15;
 
-    // directional components (negative bias for EURUSD)
-    const oilDir = (oil?.changePct ?? 0) >= 0 ? -oilInt : +oilInt*0.4;  // oil down mildly supports EUR
-    const usdDir = (usd?.changePct ?? 0) >= 0 ? -usdInt : +usdInt*0.5;  // weaker USD supports EUR
-    const fearDir = (gold?.changePct ?? 0) >= 0 ? -fearInt : +fearInt*0.2;
-    const silvDir = (silv?.changePct ?? 0) >= 0 ? +silvInt*0.25 : -silvInt*0.15;
-
-    // combine into score in [-1, +1]
-    const score =
-      0.36*oilDir +
-      0.44*usdDir +
-      0.26*fearDir +
-      0.10*silvDir +
-      0.22*(-eventInt); // event proximity adds EUR risk premium
-
+    const score = clamp(
+      0.36*oilDir + 0.44*usdDir + 0.26*fearDir + 0.10*silvDir + 0.22*(-eRisk),
+      -1, 1
+    );
     const intensity = clamp(
-      0.30*oilInt + 0.30*usdInt + 0.20*fearInt + 0.10*silvInt + 0.25*eventInt,
+      0.30*oilInt + 0.30*usdInt + 0.20*fearInt + 0.10*silvInt + 0.25*eRisk,
       0, 1
     );
+    const bias = score <= -0.18 ? "USD+RISK OFF" : score >= 0.18 ? "USD WEAK/RISK ON" : "NEUTRAL";
 
-    // macro bias label
-    const bias = (score <= -0.18) ? "USD+RISK OFF" : (score >= 0.18) ? "USD WEAK / RISK ON" : "NEUTRAL";
-    return { score: clamp(score, -1, 1), intensity, bias, components: { oilInt, usdInt, fearInt, eventInt } };
+    return { score, intensity, bias, components: { oilInt, usdInt, fearInt, eventInt: eRisk } };
   }
 
-  function leverPaint(barEl, pctEl, val01, dirHint){
-    // val01 is 0..1
+  /* ───────── Lever painting ───────── */
+  function leverPaint(barEl, pctEl, val01, dirHint) {
     const pct = Math.round(val01 * 100);
     pctEl.textContent = pct + "%";
     barEl.style.width = clamp(pct, 0, 100) + "%";
-
-    // color by direction hint
-    if (dirHint === "bad"){
-      barEl.style.background = "rgba(255,77,77,0.85)";
-    } else if (dirHint === "good"){
-      barEl.style.background = "rgba(24,209,138,0.85)";
-    } else {
-      barEl.style.background = "rgba(120,170,255,0.80)";
-    }
+    barEl.style.background =
+      dirHint === "bad"  ? "rgba(255,77,77,0.85)" :
+      dirHint === "good" ? "rgba(24,209,138,0.85)" :
+                           "rgba(120,170,255,0.80)";
   }
 
-  // ---------- Projection cone drawing ----------
-  function drawCone({ spot, rng1hPips, rng4hPips, bias }){
-    const c = els.coneCanvas;
-    const ctx = c.getContext("2d");
-    const w = c.width;
-    const h = c.height;
+  /* ───────────────────────────────────────────────────────
+     CANVAS DRAWING UTILITIES
+     ─────────────────────────────────────────────────────── */
 
-    ctx.clearRect(0,0,w,h);
+  // Helper: set canvas to physical pixels correctly
+  function setupCanvas(canvas) {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const w = Math.max(rect.width, 1);
+    const h = Math.max(rect.height, 1);
+    canvas.width  = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    const ctx = canvas.getContext("2d");
+    ctx.scale(dpr, dpr);
+    return { ctx, w, h };
+  }
 
-    // background grid
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = "rgba(0,0,0,0)";
-    ctx.fillRect(0,0,w,h);
+  // Sparkline for macro asset
+  function drawSparkline(canvas, closes, changePct) {
+    if (!canvas || !closes || closes.length < 2) return;
+    const { ctx, w, h } = setupCanvas(canvas);
+    const min = Math.min(...closes);
+    const max = Math.max(...closes);
+    const range = max - min || 0.0001;
+    const isPos = changePct >= 0;
+    const colStroke = isPos ? "rgba(24,209,138,0.85)" : "rgba(255,77,77,0.75)";
+    const colFill   = isPos ? "rgba(24,209,138,0.12)" : "rgba(255,77,77,0.10)";
 
-    ctx.strokeStyle = "rgba(233,240,255,0.08)";
+    ctx.clearRect(0, 0, w, h);
+    ctx.beginPath();
+    closes.forEach((c, i) => {
+      const x = (i / (closes.length - 1)) * w;
+      const y = h - ((c - min) / range) * (h - 4) - 2;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = colStroke;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Fill area under line
+    ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath();
+    ctx.fillStyle = colFill;
+    ctx.fill();
+  }
+
+  // Regime timeline bar
+  function drawTimeline(canvas, states) {
+    if (!canvas || !states.length) return;
+    const { ctx, w, h } = setupCanvas(canvas);
+    const n = states.length;
+    const segW = w / n;
+
+    ctx.clearRect(0, 0, w, h);
+    states.forEach((s, i) => {
+      const state = STATES[s - 1];
+      ctx.fillStyle = state ? state.color : "rgba(255,255,255,0.18)";
+      ctx.fillRect(Math.floor(i * segW), 0, Math.ceil(segW) + 1, h);
+    });
+  }
+
+  // Projection cone with gradient opacity
+  function drawCone({ spot, rng1hPips, rng4hPips, bias }) {
+    const canvas = els.coneCanvas;
+    const { ctx, w, h } = setupCanvas(canvas);
+
+    ctx.clearRect(0, 0, w, h);
+
+    // Grid
+    ctx.strokeStyle = "rgba(233,240,255,0.07)";
     ctx.lineWidth = 1;
+    for (let i = 0; i <= 14; i++) { const x = i*(w/14); ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+    for (let j = 0; j <= 8; j++)  { const y = j*(h/8);  ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
 
-    const gridX = 14, gridY = 8;
-    for (let i=0;i<=gridX;i++){
-      const x = i*(w/gridX);
-      ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
-    }
-    for (let j=0;j<=gridY;j++){
-      const y = j*(h/gridY);
-      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
-    }
+    const cx = Math.round(w * 0.46);
+    const cy = Math.round(h * 0.52);
+    const x1 = Math.round(w * 0.62);
+    const x4 = Math.round(w * 0.90);
 
-    // center point
-    const cx = Math.round(w*0.46);
-    const cy = Math.round(h*0.52);
-
-    // cone extents
-    const x1 = Math.round(w*0.62); // 1h marker
-    const x4 = Math.round(w*0.90); // 4h marker
-
-    // y scale: map pips to pixels
     const maxPips = Math.max(10, rng4hPips * 1.15);
-    const pxPerPip = (h*0.35) / maxPips;
-
+    const pxPerPip = (h * 0.35) / maxPips;
     const y1 = rng1hPips * pxPerPip;
     const y4 = rng4hPips * pxPerPip;
 
-    // bias shading
-    const biasUp = (bias === "LONG");
-    const biasDn = (bias === "SHORT");
+    const biasUp = bias === "LONG";
+    const biasDn = bias === "SHORT";
 
-    // draw filled cone
-    ctx.globalAlpha = 0.55;
-    ctx.fillStyle = biasUp ? "rgba(24,209,138,0.20)" : biasDn ? "rgba(255,77,77,0.22)" : "rgba(120,170,255,0.18)";
+    // Gradient fill for cone (denser near center = higher probability)
+    const baseColor = biasUp ? [24,209,138] : biasDn ? [255,77,77] : [120,170,255];
+    const rad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.sqrt(Math.pow(x4-cx,2) + Math.pow(y4,2)));
+    rad.addColorStop(0,   `rgba(${baseColor.join(",")},0.38)`);
+    rad.addColorStop(0.5, `rgba(${baseColor.join(",")},0.18)`);
+    rad.addColorStop(1,   `rgba(${baseColor.join(",")},0.00)`);
+
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = rad;
     ctx.beginPath();
-    ctx.moveTo(cx,cy);
+    ctx.moveTo(cx, cy);
     ctx.lineTo(x1, cy - y1);
     ctx.lineTo(x4, cy - y4);
     ctx.lineTo(x4, cy + y4);
@@ -2012,266 +1637,392 @@
     ctx.closePath();
     ctx.fill();
 
-    // cone outlines
-    ctx.globalAlpha = 0.9;
-    ctx.strokeStyle = "rgba(233,240,255,0.28)";
+    // Outline edges
+    ctx.strokeStyle = "rgba(233,240,255,0.30)";
     ctx.lineWidth = 1.5;
-
     ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x4, cy - y4); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x4, cy + y4); ctx.stroke();
 
-    ctx.globalAlpha = 1;
-    // center line
-    ctx.strokeStyle = "rgba(233,240,255,0.35)";
-    ctx.beginPath(); ctx.moveTo(0,cy); ctx.lineTo(w,cy); ctx.stroke();
+    // 1h markers (dashed)
+    ctx.setLineDash([3, 4]);
+    ctx.strokeStyle = "rgba(233,240,255,0.20)";
+    ctx.beginPath(); ctx.moveTo(x1, cy - y1); ctx.lineTo(x1, cy + y1); ctx.stroke();
+    ctx.setLineDash([]);
 
-    // spot dot
+    // Center line
+    ctx.strokeStyle = "rgba(233,240,255,0.28)";
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke();
+
+    // Spot dot
     ctx.fillStyle = "rgba(233,240,255,0.95)";
     ctx.beginPath(); ctx.arc(cx, cy, 3.5, 0, Math.PI*2); ctx.fill();
 
-    // labels
-    ctx.font = "12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
+    // Labels
+    const mono = `12px ${getComputedStyle(document.documentElement).getPropertyValue("--mono").trim() || "monospace"}`;
+    ctx.font = mono;
     ctx.fillStyle = "rgba(233,240,255,0.72)";
     ctx.fillText(`Spot ${spot.toFixed(5)}`, cx + 10, cy + 4);
+    ctx.fillText(`1h ±${rng1hPips}p`, x1 - 62, 18);
+    ctx.fillText(`4h ±${rng4hPips}p`, x4 - 62, 18);
 
-    ctx.fillText(`1h ±${rng1hPips}p`, x1 - 60, 18);
-    ctx.fillText(`4h ±${rng4hPips}p`, x4 - 60, 18);
-
-    // bias tag
-    ctx.font = "14px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
-    ctx.fillStyle = biasUp ? "rgba(24,209,138,0.95)" : biasDn ? "rgba(255,77,77,0.95)" : "rgba(233,240,255,0.80)";
-    ctx.fillText(bias, 22, 24);
+    ctx.font = `bold 13px ${getComputedStyle(document.documentElement).getPropertyValue("--font").trim() || "sans-serif"}`;
+    ctx.fillStyle = biasUp ? "rgba(24,209,138,0.95)" : biasDn ? "rgba(255,77,77,0.95)" : "rgba(233,240,255,0.78)";
+    ctx.fillText(bias, 20, 24);
   }
 
-  // ---------- Projection calc ----------
-  function computeProjection(step, tx){
-    // baseline pip ranges by regime (rough demo defaults)
-    const basePips1hByState = {
-      1: 6, 2: 10, 3: 7, 4: 12, 5: 18, 6: 16, 7: 14, 8: 26
-    };
-    const pol = step?.policy || 1;
+  /* ───────── Canvas resize handling ───────── */
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (lastStep && lastSpot) updateTransmissionAndProjection(lastStep);
+      drawTimeline(els.timelineCanvas, recentPolicyStates);
+    }, 150);
+  });
+
+  /* ───────── Projection calc ───────── */
+  function computeProjection(step, tx) {
+    const basePips1h = { 1:6, 2:10, 3:7, 4:12, 5:18, 6:16, 7:14, 8:26 };
+    const pol  = step?.policy || 1;
     const volx = step?.features?.volx ?? 1;
     const momBp = bp(step?.features?.mom ?? 0);
     const conf = step?.conf ?? 0.25;
 
-    const base1h = basePips1hByState[pol] ?? 8;
-
-    // scale by vol proxy
+    const base1h = basePips1h[pol] ?? 8;
     const volMult = clamp(0.75 + 0.18*volx, 0.65, 1.85);
-
-    // transmission increases expected range by intensity
-    const txMult = clamp(1.0 + 0.55*tx.intensity, 1.0, 1.6);
-
-    // event risk inflates short-term range
-    const eRisk = tx.components.eventInt;
+    const txMult  = clamp(1.0 + 0.55*tx.intensity, 1.0, 1.6);
+    const eRisk   = tx.components.eventInt;
     const evMult1h = clamp(1.0 + 0.65*eRisk, 1.0, 1.7);
     const evMult4h = clamp(1.0 + 0.35*eRisk, 1.0, 1.35);
 
     const rng1h = Math.round(base1h * volMult * txMult * evMult1h);
     const rng4h = Math.round(rng1h * 2.6 * evMult4h);
 
-    // bias logic: blend momentum + transmission score
-    const momDir = Math.tanh(momBp / 18); // [-1, +1]
-    const score = clamp(0.55*momDir + 0.75*tx.score, -1, 1);
+    const momDir = Math.tanh(momBp / 18);
+    const score  = clamp(0.55*momDir + 0.75*tx.score, -1, 1);
+    const bias   = score >= 0.20 ? "LONG" : score <= -0.20 ? "SHORT" : "NEUTRAL";
 
-    const bias = (score >= 0.20) ? "LONG" : (score <= -0.20) ? "SHORT" : "NEUTRAL";
-
-    // decision confidence: agreement between momentum and macro + base conf
-    const agree = 1 - Math.abs(momDir - tx.score)/2; // 0..1
-    const dec = clamp(0.35*conf + 0.45*agree + 0.20*(1 - eRisk*0.6), 0, 1);
-    const decPct = Math.round(dec*100);
+    const agree  = 1 - Math.abs(momDir - tx.score) / 2;
+    const dec    = clamp(0.35*conf + 0.45*agree + 0.20*(1 - eRisk*0.6), 0, 1);
 
     return {
-      bias,
-      score,
+      bias, score,
       rng1hPips: clamp(rng1h, 3, 80),
       rng4hPips: clamp(rng4h, 6, 160),
-      decPct,
-      volMult,
-      txMult,
-      eRisk
+      decPct: Math.round(dec * 100),
+      volMult, txMult, eRisk,
     };
   }
 
-  // ---------- Curated modal wiring ----------
-  function openModal(){
-    els.eventsEditor.value = JSON.stringify(curatedEvents, null, 2);
-    els.headlinesEditor.value = JSON.stringify(curatedHeadlines, null, 2);
-    els.modalBack.style.display = "flex";
+  /* ───────── Alert / notification ───────── */
+  let lastAlertFiredAt = 0;
+  const ALERT_COOLDOWN_MS = 5 * 60_000;
+
+  function fireAlert(msg) {
+    const now = Date.now();
+    if (now - lastAlertFiredAt < ALERT_COOLDOWN_MS) return;
+    lastAlertFiredAt = now;
+
+    // Badge in topbar
+    els.alertBadge.classList.add("show");
+    els.alertBadgeText.textContent = msg;
+    setTimeout(() => els.alertBadge.classList.remove("show"), 30_000);
+
+    // Flash the 1h range box
+    els.rng1hBox.classList.add("alert-breach");
+    setTimeout(() => els.rng1hBox.classList.remove("alert-breach"), 4000);
+
+    // Browser notification if permitted
+    if ("Notification" in window && Notification.permission === "granted") {
+      try { new Notification("QuadraX Alert", { body: msg, tag: "qx-alert" }); } catch { }
+    }
   }
-  function closeModal(){
-    els.modalBack.style.display = "none";
+
+  function checkAlertThreshold(proj) {
+    const thresh = Number(settings.alertThreshPips) || 0;
+    if (thresh <= 0 || !proj) return;
+    if (proj.rng1hPips >= thresh) {
+      fireAlert(`1h range ${proj.rng1hPips}p ≥ threshold ${thresh}p · Bias: ${proj.bias}`);
+    }
   }
+
+  function requestNotificationPermission() {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }
+
+  /* ───────── Export snapshot ───────── */
+  function exportSnapshot() {
+    const snap = {
+      timestamp: new Date().toISOString(),
+      spot: SpotFeed.getLast(),
+      regime: {
+        policy: lastStep?.policy,
+        detector: lastStep?.detector,
+        conf: lastStep?.conf,
+        regimeAge: lastStep?.regimeAge,
+        momScore: lastStep?.momScore,
+        probs: lastStep?.probs,
+      },
+      macro: {
+        oil:  MacroFeed.get("OIL"),
+        gold: MacroFeed.get("GOLD"),
+        silv: MacroFeed.get("SILV"),
+        usd:  MacroFeed.get("USD"),
+      },
+      transmission: lastTx,
+      projection: lastProjection,
+      settings: { pollMs: settings.pollMs, alertThreshPips: settings.alertThreshPips },
+    };
+
+    const blob = new Blob([JSON.stringify(snap, null, 2)], { type: "application/json" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = `quadrax-snapshot-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  /* ───────── Night mode ───────── */
+  let nightMode = false;
+  function toggleNight() {
+    nightMode = !nightMode;
+    document.body.classList.toggle("night", nightMode);
+    els.nightBtn.classList.toggle("night-active", nightMode);
+    els.nightBtn.textContent = nightMode ? "☀️ Day" : "🌙 Night";
+  }
+
+  /* ───────── Keyboard shortcuts ───────── */
+  window.addEventListener("keydown", e => {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+    switch (e.key.toLowerCase()) {
+      case "p": els.pauseBtn.click(); break;
+      case "s": els.syncBtn.click(); break;
+      case "e": els.editBtn.click(); break;
+      case "n": toggleNight(); break;
+      case "x": exportSnapshot(); break;
+      case "?": els.kbHint.classList.toggle("show"); break;
+    }
+  });
+
+  /* ───────── Iframe fallback ───────── */
+  function setupIframeFallback() {
+    const frame = els.tvFrame;
+    let loaded = false;
+    frame.addEventListener("load", () => { loaded = true; });
+    setTimeout(() => {
+      if (!loaded) els.tvFallback.classList.add("show");
+    }, 9000);
+  }
+
+  /* ───────── Modal wiring ───────── */
+  function openModal()  { els.eventsEditor.value = JSON.stringify(curatedEvents, null, 2); els.headlinesEditor.value = JSON.stringify(curatedHeadlines, null, 2); els.modalBack.style.display = "flex"; }
+  function closeModal() { els.modalBack.style.display = "none"; }
   els.editBtn.addEventListener("click", openModal);
   els.closeModalBtn.addEventListener("click", closeModal);
-  els.modalBack.addEventListener("click", (e)=>{ if (e.target === els.modalBack) closeModal(); });
+  els.modalBack.addEventListener("click", e => { if (e.target === els.modalBack) closeModal(); });
 
-  els.resetCuratedBtn.addEventListener("click", ()=>{
-    curatedEvents = structuredClone(curatedEventsDefault);
-    curatedHeadlines = structuredClone(curatedHeadlinesDefault);
-    els.eventsEditor.value = JSON.stringify(curatedEvents, null, 2);
+  els.resetCuratedBtn.addEventListener("click", () => {
+    curatedEvents    = structuredClone ? structuredClone(curatedEventsDefault)    : JSON.parse(JSON.stringify(curatedEventsDefault));
+    curatedHeadlines = structuredClone ? structuredClone(curatedHeadlinesDefault) : JSON.parse(JSON.stringify(curatedHeadlinesDefault));
+    els.eventsEditor.value    = JSON.stringify(curatedEvents, null, 2);
     els.headlinesEditor.value = JSON.stringify(curatedHeadlines, null, 2);
   });
 
-  els.saveCuratedBtn.addEventListener("click", ()=>{
-    try{
+  els.saveCuratedBtn.addEventListener("click", () => {
+    try {
       const ev = JSON.parse(els.eventsEditor.value);
       const hd = JSON.parse(els.headlinesEditor.value);
       if (!Array.isArray(ev) || !Array.isArray(hd)) throw new Error("Not arrays");
-      curatedEvents = ev;
-      curatedHeadlines = hd;
-      localStorage.setItem(KEY.events, JSON.stringify(curatedEvents));
-      localStorage.setItem(KEY.headlines, JSON.stringify(curatedHeadlines));
-      renderEvents();
-      renderHeadlines();
-      closeModal();
-    }catch(err){
-      alert("Invalid JSON. Fix the JSON formatting before saving.");
-    }
+      curatedEvents = ev; curatedHeadlines = hd;
+      saveKey(KEY.events, curatedEvents);
+      saveKey(KEY.headlines, curatedHeadlines);
+      renderEvents(); renderHeadlines(); closeModal();
+    } catch { alert("Invalid JSON. Fix the formatting before saving."); }
   });
 
-  // ---------- Settings modal wiring ----------
-  function openSettings(){
-    els.tdKeyInput.value = settings.twelvedataKey || "";
-    els.pollInput.value = String(settings.pollMs || 12000);
+  /* ───────── Settings modal ───────── */
+  async function validateTwelveDataKey(key) {
+    if (!key) return null;
+    try {
+      const res = await fetch(`https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${encodeURIComponent(key)}`, { cache: "no-store" });
+      if (!res.ok) return false;
+      const j = await res.json();
+      return Number.isFinite(Number(j?.price)) && Number(j.price) > 0;
+    } catch { return false; }
+  }
+
+  function openSettings() {
+    els.tdKeyInput.value       = settings.twelvedataKey || "";
+    els.pollInput.value        = String(settings.pollMs || 12000);
+    els.alertThreshInput.value = String(settings.alertThreshPips || "");
+    els.histDepthInput.value   = String(settings.histDepth || 60);
+    els.tdKeyValidTag.textContent = "";
+    els.tdKeyValidTag.className = "validTag";
     els.settingsBack.style.display = "flex";
   }
-  function closeSettings(){
-    els.settingsBack.style.display = "none";
-  }
+  function closeSettings() { els.settingsBack.style.display = "none"; }
+
   els.settingsBtn.addEventListener("click", openSettings);
   els.closeSettingsBtn.addEventListener("click", closeSettings);
-  els.settingsBack.addEventListener("click", (e)=>{ if (e.target === els.settingsBack) closeSettings(); });
+  els.settingsBack.addEventListener("click", e => { if (e.target === els.settingsBack) closeSettings(); });
 
-  els.resetSettingsBtn.addEventListener("click", ()=>{
-    settings = { twelvedataKey: "", pollMs: 12000 };
-    localStorage.setItem(KEY.settings, JSON.stringify(settings));
+  els.resetSettingsBtn.addEventListener("click", () => {
+    settings = { twelvedataKey: "", pollMs: 12000, alertThreshPips: 0, histDepth: 60 };
+    saveKey(KEY.settings, settings);
     openSettings();
   });
 
-  els.saveSettingsBtn.addEventListener("click", ()=>{
-    const key = String(els.tdKeyInput.value || "").trim();
-    const poll = Number(els.pollInput.value || 12000);
-    settings.twelvedataKey = key;
-    settings.pollMs = Number.isFinite(poll) && poll >= 6000 ? Math.round(poll) : 12000;
-    localStorage.setItem(KEY.settings, JSON.stringify(settings));
+  els.saveSettingsBtn.addEventListener("click", async () => {
+    const key   = String(els.tdKeyInput.value || "").trim();
+    const poll  = Number(els.pollInput.value  || 12000);
+    const thresh = Number(els.alertThreshInput.value || 0);
+    const depth = Number(els.histDepthInput.value || 60);
+
+    // Validate API key if provided
+    if (key) {
+      els.tdKeyValidTag.textContent = " Checking...";
+      els.tdKeyValidTag.className = "validTag";
+      const valid = await validateTwelveDataKey(key);
+      els.tdKeyValidTag.textContent = valid ? " ✓ Valid" : " ✗ Invalid";
+      els.tdKeyValidTag.className = "validTag " + (valid ? "ok" : "fail");
+      if (valid === false) {
+        // Still allow saving but warn
+        const proceed = confirm("API key appears invalid. Save anyway?");
+        if (!proceed) return;
+      }
+    }
+
+    settings.twelvedataKey    = key;
+    settings.pollMs           = Number.isFinite(poll) && poll >= 6000 ? Math.round(poll) : 12000;
+    settings.alertThreshPips  = Number.isFinite(thresh) && thresh > 0 ? Math.round(thresh) : 0;
+    settings.histDepth        = clamp(Number.isFinite(depth) ? Math.round(depth) : 60, 10, 120);
+    saveKey(KEY.settings, settings);
+
+    if (settings.alertThreshPips > 0) requestNotificationPermission();
+
     closeSettings();
-    // apply new poll interval on next reload (simple + safe)
-    alert("Saved. Reload the page to apply polling cadence changes cleanly.");
+    alert("Saved. Reload the page for polling cadence changes to take effect.");
   });
 
-  // ---------- Pause + Sync ----------
-  let paused = false;
+  /* ───────── Pause + Sync ───────── */
+  let paused   = false;
   let stalePolls = 0;
+  let syncing  = false;
 
-  els.pauseBtn.addEventListener("click", ()=>{
+  els.pauseBtn.addEventListener("click", () => {
     paused = !paused;
     els.pauseBtn.textContent = paused ? "Resume" : "Pause";
     els.sysStatus.textContent = paused ? "PAUSED" : "LIVE";
+    els.modeTag.textContent = paused ? "Mode: PAUSED" : "Mode: FREE";
+    const pauseColor = paused ? "rgba(255,176,32,1)" : "rgba(24,209,138,1)";
+    const pauseGlow  = paused ? "0 0 0 4px rgba(255,176,32,0.18)" : "0 0 0 4px rgba(24,209,138,0.18)";
+    els.liveDot.style.background  = pauseColor;
+    els.liveDot.style.boxShadow   = pauseGlow;
+  });
 
-    if (paused){
-      els.liveDot.style.background = "rgba(255,176,32,1)";
-      els.liveDot.style.boxShadow = "0 0 0 4px rgba(255,176,32,0.18)";
-      els.modeTag.textContent = "Mode: PAUSED";
-    } else {
-      els.liveDot.style.background = "rgba(24,209,138,1)";
-      els.liveDot.style.boxShadow = "0 0 0 4px rgba(24,209,138,0.18)";
+  els.nightBtn.addEventListener("click", toggleNight);
+  els.exportBtn.addEventListener("click", exportSnapshot);
+
+  els.syncBtn.addEventListener("click", async () => {
+    if (syncing) return;
+    syncing = true;
+    els.syncBtn.textContent = "Syncing…";
+    els.syncBtn.classList.add("syncing");
+    try {
+      await SpotFeed.tick(onSpotUpdate);
+      await MacroFeed.tick();
+      updateTransmissionAndProjection(lastStep);
+    } finally {
+      syncing = false;
+      els.syncBtn.textContent = "Sync";
+      els.syncBtn.classList.remove("syncing");
     }
   });
 
-  els.syncBtn.addEventListener("click", async ()=>{
-    await SpotFeed.tick(onSpotUpdate);
-    await MacroFeed.tick();
-    updateTransmissionAndProjection(lastStep);
-  });
-
-  // ---------- Transmission + projection update ----------
+  /* ───────── State tracking ───────── */
   let lastSpot = null;
   let lastStep = null;
+  let lastTx   = null;
+  let lastProjection = null;
 
-  function updateTransmissionAndProjection(step){
-    // compute transmission from macro + events
+  /* ───────── Transmission + projection update ───────── */
+  function updateTransmissionAndProjection(step) {
     const tx = computeTransmission();
+    lastTx = tx;
 
-    // chips
     els.macroBiasChip.textContent = tx.bias;
-    const eRisk = tx.components.eventInt;
-    els.eventRiskChip.textContent = labelEventRisk(eRisk);
+    els.eventRiskChip.textContent = labelEventRisk(tx.components.eventInt);
+    els.txScoreChip.textContent   = tx.score.toFixed(2);
 
-    const txScoreStr = tx.score.toFixed(2);
-    els.txScoreChip.textContent = txScoreStr;
-
-    // macro transmission card
+    const txScoreStr   = tx.score.toFixed(2);
     const intensityPct = Math.round(tx.intensity * 100);
     let txLabel = "NEUTRAL";
     if (tx.score <= -0.18) txLabel = "BEAR EURUSD";
-    if (tx.score >= 0.18) txLabel = "BULL EURUSD";
+    if (tx.score >=  0.18) txLabel = "BULL EURUSD";
 
-    els.txBig.textContent = txLabel;
+    els.txBig.textContent  = txLabel;
     els.txMeta.textContent = `Score ${txScoreStr} · ${tx.bias} · Intensity ${intensityPct}%`;
 
-    // levers (0..1)
-    leverPaint(els.oilLeverBar, els.oilLeverPct, tx.components.oilInt, (MacroFeed.get("OIL")?.changePct ?? 0) >= 0 ? "bad" : "good");
-    els.oilLeverMeta.textContent = "EU energy drag proxy (USO daily change)";
-
-    leverPaint(els.usdLeverBar, els.usdLeverPct, tx.components.usdInt, (MacroFeed.get("USD")?.changePct ?? 0) >= 0 ? "bad" : "good");
-    els.usdLeverMeta.textContent = "USD pressure proxy (UUP daily change)";
-
-    leverPaint(els.fearLeverBar, els.fearLeverPct, tx.components.fearInt, (MacroFeed.get("GOLD")?.changePct ?? 0) >= 0 ? "bad" : "good");
-    els.fearLeverMeta.textContent = "Risk-off tone proxy (GLD daily change)";
-
+    leverPaint(els.oilLeverBar,   els.oilLeverPct,   tx.components.oilInt,   (MacroFeed.get("OIL")?.changePct  ?? 0) >= 0 ? "bad" : "good");
+    leverPaint(els.usdLeverBar,   els.usdLeverPct,   tx.components.usdInt,   (MacroFeed.get("USD")?.changePct  ?? 0) >= 0 ? "bad" : "good");
+    leverPaint(els.fearLeverBar,  els.fearLeverPct,  tx.components.fearInt,  (MacroFeed.get("GOLD")?.changePct ?? 0) >= 0 ? "bad" : "good");
     leverPaint(els.eventLeverBar, els.eventLeverPct, tx.components.eventInt, tx.components.eventInt >= 0.35 ? "bad" : "neutral");
-    els.eventLeverMeta.textContent = "High impact proximity (calendar)";
+    els.oilLeverMeta.textContent   = "EU energy drag proxy (USO daily Δ)";
+    els.usdLeverMeta.textContent   = "USD pressure proxy (UUP daily Δ)";
+    els.fearLeverMeta.textContent  = "Risk-off tone proxy (GLD daily Δ)";
+    els.eventLeverMeta.textContent = "High-impact event proximity";
 
-    // if we have a step + spot, project
-    if (step && lastSpot && Number.isFinite(lastSpot.price)){
+    if (step && lastSpot && Number.isFinite(lastSpot.price)) {
       const proj = computeProjection(step, tx);
+      lastProjection = proj;
+
+      checkAlertThreshold(proj);
 
       els.tradeBias.textContent = proj.bias;
-      els.tradeBias.classList.remove("pos","neg");
-      if (proj.bias === "LONG") els.tradeBias.classList.add("pos");
+      els.tradeBias.classList.remove("pos", "neg");
+      if (proj.bias === "LONG")  els.tradeBias.classList.add("pos");
       if (proj.bias === "SHORT") els.tradeBias.classList.add("neg");
 
-      const momBp = bp(step.features.mom).toFixed(1);
-      els.tradeBiasMeta.textContent = `Macro ${txLabel} · Mom ${momBp}bp · Event ${Math.round(proj.eRisk*100)}%`;
+      const momBpStr = bp(step.features.mom).toFixed(1);
+      els.tradeBiasMeta.textContent = `Macro ${txLabel} · Mom ${momBpStr}bp · Event ${Math.round(proj.eRisk*100)}%`;
 
       els.rng1h.textContent = `±${proj.rng1hPips} pips`;
-      els.rng1hMeta.textContent = `Vol x${proj.volMult.toFixed(2)} · Macro x${proj.txMult.toFixed(2)}`;
+      els.rng1hMeta.textContent = `Vol ×${proj.volMult.toFixed(2)} · Macro ×${proj.txMult.toFixed(2)}`;
 
       els.rng4h.textContent = `±${proj.rng4hPips} pips`;
-      els.rng4hMeta.textContent = `Event x${(1.0 + 0.35*proj.eRisk).toFixed(2)} · Tx ${txScoreStr}`;
+      els.rng4hMeta.textContent = `Event ×${(1.0 + 0.35*proj.eRisk).toFixed(2)} · Tx ${txScoreStr}`;
 
       els.decConf.textContent = `${proj.decPct}%`;
-      els.decConf.classList.remove("pos","neg");
+      els.decConf.classList.remove("pos", "neg");
       if (proj.decPct >= 55) els.decConf.classList.add("pos");
       if (proj.decPct <= 30) els.decConf.classList.add("neg");
+      els.decConfMeta.textContent =
+        proj.decPct >= 55 ? "Higher agreement" :
+        proj.decPct >= 40 ? "Mixed signals" : "Low agreement, caution";
 
-      els.decConfMeta.textContent = proj.decPct >= 55 ? "Higher agreement" : proj.decPct >= 40 ? "Mixed agreement" : "Low agreement, caution";
-
-      // draw cone
       drawCone({ spot: lastSpot.price, rng1hPips: proj.rng1hPips, rng4hPips: proj.rng4hPips, bias: proj.bias });
     } else {
-      // keep placeholders reasonable
-      els.tradeBias.textContent = "--";
-      els.rng1h.textContent = "--";
-      els.rng4h.textContent = "--";
-      els.decConf.textContent = "--";
+      ["tradeBias","rng1h","rng4h","decConf"].forEach(id => { $(id).textContent = "--"; });
     }
   }
 
-  // ---------- Spot update handler ----------
-  function onSpotUpdate(s){
+  /* ───────── Spot update handler ───────── */
+  function onSpotUpdate(s) {
     const now = Date.now();
     els.lastUpdate.textContent = fmtTime(now);
 
-    if (!s.ok){
+    if (!s.ok) {
       setFxStatus("ERROR");
       els.quoteProvider.textContent = "Provider: --";
-      els.fxSpotMeta.textContent = "Source: --";
-      els.fxLatencyTag.textContent = "--";
-      els.fxLastTag.textContent = "Last: --";
-      els.fxSpotDelta.textContent = "0.00000";
-      els.modeTag.textContent = "Mode: ERROR";
+      els.fxSpotMeta.textContent    = "Source: --";
+      els.fxLatencyTag.textContent  = "--";
+      els.fxLastTag.textContent     = "Last: --";
+      els.fxSpotDelta.textContent   = "0.00000";
+      els.modeTag.textContent       = "Mode: ERROR";
       stalePolls += 1;
       els.staleChip.textContent = String(stalePolls);
       return;
@@ -2279,24 +2030,21 @@
 
     lastSpot = s;
 
-    // quote UI
-    els.fxSpotPrice.textContent = s.price.toFixed(5);
+    els.fxSpotPrice.textContent   = s.price.toFixed(5);
     els.quoteProvider.textContent = `Provider: ${s.provider || s.source || "--"}`;
-    els.fxSpotMeta.textContent = `Source: ${s.source} · Cache: none · Demo safe`;
-    els.fxSpotDelta.textContent = s.lastDelta.toFixed(5);
-    els.fxLatencyTag.textContent = `${s.latencyMs ?? "--"}ms`;
-    els.fxLastTag.textContent = `Last: ${fmtTime(s.ts)}`;
-    els.modeTag.textContent = settings.twelvedataKey ? "Mode: LIVE" : "Mode: FREE";
+    els.fxSpotMeta.textContent    = `Source: ${s.source} · Demo safe`;
+    els.fxSpotDelta.textContent   = s.lastDelta.toFixed(5);
+    els.fxLatencyTag.textContent  = `${s.latencyMs ?? "--"}ms`;
+    els.fxLastTag.textContent     = `Last: ${fmtTime(s.ts)}`;
+    els.modeTag.textContent       = settings.twelvedataKey ? "Mode: LIVE" : "Mode: FREE";
 
-    // delta spark bar
+    // Delta spark
     const w = clamp(Math.abs(s.lastDelta) / 0.0012, 0, 1) * 100;
-    els.miniBar.style.width = `${Math.max(10, w)}%`;
-    els.miniBar.style.background = (s.lastDelta >= 0) ? "rgba(24,209,138,0.85)" : "rgba(255,77,77,0.85)";
+    els.miniBar.style.width      = `${Math.max(10, w)}%`;
+    els.miniBar.style.background = s.lastDelta >= 0 ? "rgba(24,209,138,0.85)" : "rgba(255,77,77,0.85)";
 
     setFxStatus(s.status);
-
-    if (s.status === "STALE") stalePolls += 1;
-    else stalePolls = 0;
+    stalePolls = s.status === "STALE" ? stalePolls + 1 : 0;
     els.staleChip.textContent = String(stalePolls);
 
     if (paused) return;
@@ -2306,79 +2054,67 @@
 
     lastStep = step;
 
-    // state UI
-    els.tickChip.textContent = String(step.tickN);
-    const det = step.detector;
-    const pol = step.policy;
+    // Push to regime timeline
+    pushRegimeState(step.policy);
+    drawTimeline(els.timelineCanvas, recentPolicyStates);
 
-    const confPct = (step.conf * 100).toFixed(1) + "%";
+    // Chip updates
+    els.tickChip.textContent   = String(step.tickN);
+    els.ageChip.textContent    = String(step.regimeAge);
+    els.momChip.textContent    = `${Math.round(step.momScore * 100)}%`;
+    els.footAge.textContent    = String(step.regimeAge);
+
+    const pol = step.policy;
+    const det = step.detector;
     const polName = STATES[pol-1]?.name || "--";
     const polDesc = STATES[pol-1]?.desc || "Waiting for signal.";
 
     els.policyStateTitle.textContent = `Policy State: S${pol} ${polName}`;
-    els.policyStateDesc.textContent = polDesc;
+    els.policyStateDesc.textContent  = polDesc;
+    els.detectorChip.textContent     = `S${det}`;
+    els.policyChip.textContent       = `S${pol}`;
+    els.confChip.textContent         = `${(step.conf*100).toFixed(1)}%`;
+    els.hystChip.textContent         = det === pol ? "stable" : "holding";
 
-    els.detectorChip.textContent = `S${det}`;
-    els.policyChip.textContent = `S${pol}`;
-    els.confChip.textContent = confPct;
-
-    els.hystChip.textContent = (det === pol) ? "stable" : "holding";
-
-    // risk card
     setRisk(pol, step.conf);
 
-    // probabilities
-    step.probs.forEach((p, i)=>{
-      const pct = (p*100);
-      probEls[i].bar.style.width = `${clamp(pct, 0, 100)}%`;
+    step.probs.forEach((p, i) => {
+      const pct = p * 100;
+      probEls[i].bar.style.width      = `${clamp(pct, 0, 100)}%`;
       probEls[i].bar.style.background = STATES[i].color;
-      probEls[i].val.textContent = `${pct.toFixed(1)}%`;
+      probEls[i].val.textContent      = `${pct.toFixed(1)}%`;
     });
 
-    // footer
-    els.footPolicy.textContent = `S${pol}`;
+    els.footPolicy.textContent   = `S${pol}`;
     els.footDetector.textContent = `S${det}`;
-    els.footHold.textContent = String(step.hold);
+    els.footHold.textContent     = String(step.hold);
 
-    // update transmission + projection
     updateTransmissionAndProjection(step);
   }
 
-  // ---------- Start ----------
-  async function start(){
+  /* ───────── Start ───────── */
+  async function start() {
     initProbUI();
     renderEvents();
     renderHeadlines();
-
-    // hydrate macro cache immediately
     MacroFeed.hydrate();
+    setupIframeFallback();
 
-    // initial transmission even before fresh macro
+    // Redraw timeline from history
+    drawTimeline(els.timelineCanvas, recentPolicyStates);
+
+    // First spot + macro ticks (parallel)
+    await Promise.allSettled([
+      SpotFeed.tick(onSpotUpdate),
+      MacroFeed.tick(),
+    ]);
     updateTransmissionAndProjection(lastStep);
 
-    // first tick
-    await SpotFeed.tick(onSpotUpdate);
-
-    // macro tick now, then periodically
-    await MacroFeed.tick();
-    updateTransmissionAndProjection(lastStep);
-
-    // cadence
-    const poll = Number(settings.pollMs) || 12000;
-
-    setInterval(()=> SpotFeed.tick(onSpotUpdate), poll);
-
-    // macro can be slower (daily data)
-    setInterval(async ()=>{
-      await MacroFeed.tick();
-      updateTransmissionAndProjection(lastStep);
-    }, 90_000);
-
-    // countdown refresh
-    setInterval(()=>{
-      renderEvents();
-      updateTransmissionAndProjection(lastStep);
-    }, 30_000);
+    // Polling intervals
+    const poll = Math.max(Number(settings.pollMs) || 12000, 6000);
+    setInterval(() => SpotFeed.tick(onSpotUpdate), poll);
+    setInterval(async () => { await MacroFeed.tick(); updateTransmissionAndProjection(lastStep); }, 90_000);
+    setInterval(() => { renderEvents(); updateTransmissionAndProjection(lastStep); }, 30_000);
   }
 
   start();
