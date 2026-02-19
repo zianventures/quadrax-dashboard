@@ -4,38 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>QuadraX Risk Dashboard</title>
-
   <style>
     :root{
-      --bg0:#040816;
+      --bg0:#050a1a;
       --bg1:#07122f;
-      --bg2:#0b1a42;
-
       --card: rgba(10, 25, 60, 0.55);
       --card2: rgba(12, 34, 84, 0.42);
-
-      --stroke: rgba(140, 185, 255, 0.22);
-      --stroke2: rgba(140, 185, 255, 0.12);
-
+      --stroke: rgba(120, 170, 255, 0.22);
+      --stroke2: rgba(120, 170, 255, 0.12);
       --text:#e9f0ff;
-      --muted: rgba(233,240,255,0.72);
+      --muted: rgba(233,240,255,0.7);
       --muted2: rgba(233,240,255,0.55);
-
       --blue:#2b6cff;
       --green:#18d18a;
       --amber:#ffb020;
       --red:#ff4d4d;
       --pink:#ff3aa5;
-      --violet:#a078ff;
-
       --shadow: 0 18px 55px rgba(0,0,0,0.55);
       --shadow2: 0 10px 30px rgba(0,0,0,0.45);
-
       --radius: 22px;
       --radius2: 16px;
       --pad: 18px;
       --pad2: 14px;
-
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
@@ -46,20 +36,19 @@
       font-family: var(--font);
       color:var(--text);
       background:
-        radial-gradient(1200px 700px at 18% 18%, rgba(80,140,255,0.24), transparent 55%),
-        radial-gradient(900px 600px at 72% 30%, rgba(22,210,170,0.16), transparent 55%),
-        radial-gradient(900px 700px at 40% 86%, rgba(255,80,180,0.12), transparent 60%),
+        radial-gradient(1200px 700px at 20% 20%, rgba(80,140,255,0.22), transparent 55%),
+        radial-gradient(900px 600px at 70% 35%, rgba(22,210,170,0.16), transparent 55%),
+        radial-gradient(900px 700px at 35% 85%, rgba(255,80,180,0.12), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
       overflow-x:hidden;
     }
 
     .wrap{
       max-width: 1440px;
-      margin: 22px auto 44px;
+      margin: 22px auto 40px;
       padding: 0 16px;
     }
 
-    /* Top bar */
     .topbar{
       display:flex;
       align-items:center;
@@ -80,32 +69,32 @@
       display:flex;
       align-items:center;
       gap: 14px;
-      min-width: 300px;
+      min-width: 320px;
     }
 
     .qxlogo{
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
       display:grid;
       place-items:center;
       font-weight: 1000;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.5px;
       background: rgba(10,25,60,0.45);
       border: 1px solid rgba(210,230,255,0.18);
       box-shadow: var(--shadow2);
+      user-select:none;
     }
 
     .brand h1{
       margin:0;
       font-size: 18px;
       line-height: 1.1;
-      letter-spacing: 0.2px;
     }
     .brand .sub{
-      margin-top: 3px;
+      margin-top: 2px;
       font-size: 12px;
-      color: rgba(255,255,255,0.8);
+      color: rgba(255,255,255,0.78);
     }
 
     .top-actions{
@@ -124,7 +113,7 @@
       border-radius: 999px;
       background: rgba(10,25,60,0.35);
       border:1px solid rgba(210,230,255,0.16);
-      color: rgba(255,255,255,0.92);
+      color: rgba(255,255,255,0.9);
       font-size: 12px;
       box-shadow: 0 8px 22px rgba(0,0,0,0.25);
       white-space:nowrap;
@@ -158,13 +147,13 @@
       border-color: rgba(120,170,255,0.26);
     }
 
-    /* Layout */
     .grid{
       display:grid;
-      grid-template-columns: 2.2fr 1fr;
+      grid-template-columns: 2fr 1fr;
       gap: 16px;
       margin-top: 16px;
     }
+
     @media (max-width: 1100px){
       .grid{ grid-template-columns: 1fr; }
       .brand{ min-width: unset; }
@@ -173,14 +162,17 @@
     .stack{ display:grid; gap: 16px; }
 
     .card{
-      background: linear-gradient(180deg, rgba(10,25,60,0.58), rgba(7,12,30,0.36));
+      background: linear-gradient(180deg, rgba(10,25,60,0.55), rgba(7,12,30,0.35));
       border:1px solid rgba(210,230,255,0.16);
       border-radius: var(--radius);
       box-shadow: var(--shadow2);
       overflow:hidden;
       position:relative;
     }
-    .card .inner{ padding: var(--pad); }
+
+    .card .inner{
+      padding: var(--pad);
+    }
 
     .card-title{
       display:flex;
@@ -189,6 +181,7 @@
       gap:12px;
       margin-bottom: 12px;
     }
+
     .card-title h2{
       margin:0;
       font-size: 13px;
@@ -200,58 +193,57 @@
       font-size: 12px;
       color: rgba(255,255,255,0.55);
       text-align:right;
-      max-width: 420px;
+      max-width: 520px;
     }
 
-    /* HERO Current Market State */
+    /* Current market state layout (grown-up, not chaotic) */
+    .cmsGrid{
+      display:grid;
+      grid-template-columns: 1.4fr 0.9fr;
+      gap: 14px;
+      align-items:stretch;
+    }
+    @media (max-width: 900px){
+      .cmsGrid{ grid-template-columns: 1fr; }
+    }
+
     .hero{
-      position:relative;
+      border-radius: 22px;
+      background: radial-gradient(900px 500px at 20% 10%, rgba(120,170,255,0.15), transparent 55%),
+                  radial-gradient(700px 420px at 80% 20%, rgba(24,209,138,0.12), transparent 55%),
+                  rgba(10,25,60,0.18);
+      border: 1px solid rgba(210,230,255,0.10);
       padding: 18px;
-      border-radius: var(--radius);
-      background:
-        radial-gradient(900px 420px at 30% 20%, rgba(120,170,255,0.20), transparent 60%),
-        radial-gradient(780px 420px at 80% 65%, rgba(24,209,138,0.10), transparent 60%),
-        linear-gradient(180deg, rgba(8,18,42,0.60), rgba(5,10,24,0.28));
-      border: 1px solid rgba(210,230,255,0.14);
+      position:relative;
       overflow:hidden;
     }
-    .hero::before{
+    .hero::after{
       content:"";
       position:absolute;
       inset:-2px;
-      background:
-        radial-gradient(420px 240px at 18% 30%, rgba(255,58,165,0.06), transparent 60%),
-        radial-gradient(520px 260px at 70% 10%, rgba(255,176,32,0.05), transparent 60%);
+      background: linear-gradient(120deg, rgba(120,170,255,0.10), transparent 35%, rgba(255,58,165,0.08));
       pointer-events:none;
+      opacity:0.7;
     }
-    .heroGrid{
-      display:grid;
-      grid-template-columns: 1.7fr 0.9fr;
-      gap: 14px;
-      align-items: stretch;
+
+    .stateBig{
+      font-size: 44px;
+      font-weight: 1000;
+      letter-spacing: 0.2px;
+      margin: 4px 0 2px;
       position:relative;
       z-index:1;
     }
-    @media (max-width: 900px){
-      .heroGrid{ grid-template-columns: 1fr; }
-    }
+    .muted{ color: var(--muted); font-size: 13px; position:relative; z-index:1; }
 
-    .heroTitle{
-      font-size: 42px;
-      font-weight: 1100;
-      letter-spacing: 0.2px;
-      margin: 4px 0 6px;
-      line-height: 1.08;
-      text-shadow: 0 12px 42px rgba(0,0,0,0.45);
-    }
-    .heroSub{ color: var(--muted); font-size: 13px; max-width: 740px; }
-
-    .chips{
+    .chipRow{
       display:flex;
       gap: 10px;
       flex-wrap:wrap;
       margin-top: 12px;
       align-items:center;
+      position:relative;
+      z-index:1;
     }
     .chip{
       display:flex;
@@ -260,95 +252,66 @@
       padding: 7px 10px;
       border-radius: 999px;
       font-size: 12px;
-      color: rgba(255,255,255,0.9);
+      color: rgba(255,255,255,0.88);
       background: rgba(10,25,60,0.30);
       border: 1px solid rgba(210,230,255,0.14);
       white-space:nowrap;
     }
-    .chip b{ font-weight: 950; font-variant-numeric: tabular-nums; }
-    .chip.kpi{
-      background: rgba(10,25,60,0.40);
-      border-color: rgba(120,170,255,0.22);
+    .chip b{ font-weight:1000; }
+
+    .pillTag{
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(210,230,255,0.14);
+      background: rgba(10,25,60,0.22);
+      color: rgba(255,255,255,0.86);
     }
 
-    /* Quote box (fixed readability) */
+    /* Quote panel */
     .quoteCard{
-      border-radius: 18px;
-      background: linear-gradient(180deg, rgba(10,25,60,0.40), rgba(6,10,24,0.20));
-      border:1px solid rgba(210,230,255,0.14);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-      padding: 14px 14px 12px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      min-height: 172px;
+      border-radius: 22px;
+      background: rgba(10,25,60,0.20);
+      border: 1px solid rgba(210,230,255,0.12);
+      padding: 16px;
+      display:grid;
+      gap: 10px;
+      position:relative;
+      overflow:hidden;
     }
     .quoteTop{
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content:space-between;
       gap: 10px;
     }
-    .quotePair{
-      font-size: 12px;
-      color: rgba(255,255,255,0.82);
+    .quoteSym{
+      display:grid;
+      gap: 2px;
+    }
+    .quoteSym .sym{
+      font-weight: 1000;
       letter-spacing: 0.6px;
-      text-transform: uppercase;
-      font-weight: 900;
-    }
-    .quoteSrc{
-      font-size: 11px;
-      color: rgba(255,255,255,0.55);
-      text-align:right;
-    }
-    .quotePx{
-      margin-top: 10px;
-      font-size: 34px;
-      font-weight: 1100;
-      letter-spacing: 0.2px;
-      font-variant-numeric: tabular-nums;
-      line-height: 1;
-    }
-    .quoteDeltaRow{
-      margin-top: 8px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      color: rgba(255,255,255,0.65);
       font-size: 12px;
-      font-variant-numeric: tabular-nums;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
     }
-    .quoteBar{
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.10);
-      overflow:hidden;
-      margin-top: 10px;
+    .quoteSym .prov{
+      font-size: 11px;
+      color: rgba(255,255,255,0.58);
     }
-    .quoteBar > i{
-      display:block;
-      height:100%;
-      width: 18%;
-      background: rgba(24,209,138,0.85);
-      border-radius: 999px;
-    }
-    .quoteBadge{
-      margin-top: 10px;
-      display:flex;
-      gap: 8px;
-      flex-wrap:wrap;
-    }
-    .tag{
+    .qStatus{
       display:inline-flex;
       align-items:center;
-      gap:8px;
+      gap: 8px;
       padding: 7px 10px;
       border-radius: 999px;
-      border:1px solid rgba(210,230,255,0.14);
+      border: 1px solid rgba(210,230,255,0.14);
       background: rgba(10,25,60,0.26);
       font-size: 12px;
       font-weight: 900;
-      color: rgba(255,255,255,0.9);
+      color: rgba(255,255,255,0.88);
       white-space:nowrap;
     }
     .sdot{
@@ -361,42 +324,55 @@
     .sdot.live{ background: var(--green); box-shadow: 0 0 0 4px rgba(24,209,138,0.18); }
     .sdot.err{ background: var(--red); box-shadow: 0 0 0 4px rgba(255,77,77,0.18); }
 
-    /* Risk level card */
-    .riskLevel{
-      text-align:center;
-      padding: 22px 16px 14px;
-    }
-    .riskLevel .label{
-      font-size: 12px;
-      letter-spacing: 0.9px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.72);
-    }
-    .riskLevel .big{
+    .quotePx{
       font-size: 42px;
-      font-weight: 1100;
-      margin: 6px 0 2px;
-      letter-spacing: 0.2px;
+      font-weight: 1000;
+      letter-spacing: 0.4px;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.0;
     }
-    .riskLevel .rule{
+    .quoteMetaRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      color: rgba(255,255,255,0.62);
       font-size: 12px;
-      color: rgba(255,255,255,0.68);
-      max-width: 320px;
-      margin: 0 auto;
+      font-variant-numeric: tabular-nums;
+    }
+    .sparkBar{
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      overflow:hidden;
+    }
+    .sparkBar > i{
+      display:block;
+      height:100%;
+      width: 15%;
+      border-radius: 999px;
+      background: rgba(24,209,138,0.85);
+    }
+    .quoteBadges{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 2px;
     }
 
-    /* Probabilities compact inside hero */
-    .probCompact{
+    /* Inline probabilities inside current state (the “it factor” part) */
+    .probBlock{
       margin-top: 14px;
-      padding-top: 12px;
+      padding-top: 14px;
       border-top: 1px solid rgba(210,230,255,0.10);
+      position:relative;
+      z-index:1;
     }
     .probRow{
       display:grid;
-      grid-template-columns: 210px 1fr 68px;
-      gap: 10px;
+      grid-template-columns: 240px 1fr 64px;
+      gap: 12px;
       align-items:center;
-      padding: 8px 0;
+      padding: 9px 0;
       border-top: 1px solid rgba(210,230,255,0.06);
     }
     .probRow:first-child{ border-top:none; }
@@ -406,16 +382,12 @@
       display:flex;
       align-items:center;
       gap:10px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow: ellipsis;
     }
     .pdot{
       width: 14px;
       height: 6px;
       border-radius: 999px;
       background: rgba(255,255,255,0.18);
-      flex: 0 0 auto;
     }
     .pbar{
       height: 8px;
@@ -438,127 +410,85 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* Macro drivers */
-    .kpiGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    /* Right column panels */
+    .riskLevel{
+      text-align:center;
+      padding: 22px 16px 14px;
     }
-    @media (max-width: 540px){
-      .kpiGrid{ grid-template-columns: 1fr; }
+    .riskLevel .label{
+      font-size: 12px;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.72);
     }
-    .kpi{
-      border-radius: 18px;
-      background: rgba(10,25,60,0.25);
-      border:1px solid rgba(210,230,255,0.12);
-      padding: 14px;
-      min-height: 112px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
+    .riskLevel .big{
+      font-size: 44px;
+      font-weight: 1000;
+      margin: 6px 0 2px;
     }
-    .kpi .k{ font-size: 12px; color: rgba(255,255,255,0.70); }
-    .kpi .v{
-      margin-top: 8px;
-      font-size: 26px;
-      font-weight: 1100;
-      letter-spacing: 0.2px;
-      font-variant-numeric: tabular-nums;
+    .riskLevel .rule{
+      font-size: 12px;
+      color: rgba(255,255,255,0.68);
+      max-width: 360px;
+      margin: 0 auto;
+      line-height: 1.35;
     }
-    .kpi .m{
-      margin-top: 6px;
+
+    .macroHint{
       font-size: 12px;
       color: rgba(255,255,255,0.62);
       line-height: 1.35;
-      font-variant-numeric: tabular-nums;
+      max-width: 420px;
+      text-align:right;
     }
-    .pos{ color: rgba(24,209,138,0.95); }
-    .neg{ color: rgba(255,77,77,0.95); }
 
-    /* Forward projection */
-    .projTop{
+    .macroGrid{
       display:grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 12px;
-      margin-bottom: 12px;
+      align-items:stretch;
     }
-    @media (max-width: 900px){
-      .projTop{ grid-template-columns: 1fr 1fr; }
-    }
-    .projBox{
+    .macroBox{
       border-radius: 18px;
       background: rgba(10,25,60,0.25);
       border:1px solid rgba(210,230,255,0.12);
       padding: 14px;
-      min-height: 88px;
+      min-height: 92px;
+      display:grid;
+      align-content:start;
+      gap: 6px;
     }
-    .projBox .k{ font-size: 12px; color: rgba(255,255,255,0.66); }
-    .projBox .v{
-      margin-top: 8px;
+    .macroBox .k{
+      font-size: 12px;
+      color: rgba(255,255,255,0.72);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .macroBox .v{
       font-size: 22px;
-      font-weight: 1100;
-      letter-spacing: 0.2px;
+      font-weight: 1000;
       font-variant-numeric: tabular-nums;
+      line-height: 1.1;
     }
-    .projBox .m{ margin-top: 6px; font-size: 12px; color: rgba(255,255,255,0.60); }
-
-    .canvasWrap{
-      border-radius: 18px;
-      background: rgba(10,25,60,0.20);
-      border:1px solid rgba(210,230,255,0.12);
-      overflow:hidden;
-      position:relative;
-    }
-    canvas{ display:block; width:100%; height: 280px; }
-    .canvasNote{
-      padding: 10px 2px 0;
+    .macroBox .meta{
+      font-size: 12px;
       color: rgba(255,255,255,0.58);
-      font-size: 12px;
-    }
-
-    /* Tables */
-    .tableWrap{
-      border-radius: 18px;
-      background: rgba(10,25,60,0.20);
-      border:1px solid rgba(210,230,255,0.12);
-      overflow:hidden;
-    }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      font-size: 12px;
-    }
-    thead th{
-      text-align:left;
-      padding: 12px 12px;
-      color: rgba(255,255,255,0.78);
-      border-bottom: 1px solid rgba(210,230,255,0.10);
-      background: rgba(10,25,60,0.22);
-      font-weight: 950;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      font-size: 11px;
-    }
-    tbody td{
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(210,230,255,0.06);
-      color: rgba(255,255,255,0.82);
-      vertical-align:top;
       font-variant-numeric: tabular-nums;
+      line-height: 1.35;
     }
-    tbody tr:hover{ background: rgba(255,255,255,0.04); }
-    .scroll{
-      max-height: 300px;
-      overflow:auto;
+    .tagOk{
+      font-family: var(--mono);
+      font-size: 10.5px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border:1px solid rgba(210,230,255,0.14);
+      background: rgba(10,25,60,0.22);
+      color: rgba(255,255,255,0.82);
+      white-space:nowrap;
     }
-    .link{
-      color: rgba(120,170,255,0.95);
-      text-decoration:none;
-      font-weight: 850;
-    }
-    .link:hover{ text-decoration:underline; }
 
-    /* Impact pills */
     .impact{
       display:inline-flex;
       align-items:center;
@@ -581,7 +511,130 @@
     .folder.med{ background: var(--amber); box-shadow: 0 0 0 4px rgba(255,176,32,0.14); }
     .folder.low{ background: rgba(255,255,255,0.30); box-shadow: none; }
 
-    /* TradingView card */
+    .tableWrap{
+      border-radius: 18px;
+      background: rgba(10,25,60,0.20);
+      border:1px solid rgba(210,230,255,0.12);
+      overflow:hidden;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size: 12px;
+    }
+    thead th{
+      text-align:left;
+      padding: 12px 12px;
+      color: rgba(255,255,255,0.78);
+      border-bottom: 1px solid rgba(210,230,255,0.10);
+      background: rgba(10,25,60,0.22);
+      font-weight: 900;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+    tbody td{
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(210,230,255,0.06);
+      color: rgba(255,255,255,0.82);
+      vertical-align:top;
+      font-variant-numeric: tabular-nums;
+    }
+    tbody tr:hover{ background: rgba(255,255,255,0.04); }
+    .scroll{ max-height: 280px; overflow:auto; }
+
+    .link{
+      color: rgba(120,170,255,0.95);
+      text-decoration:none;
+      font-weight: 800;
+    }
+    .link:hover{ text-decoration:underline; }
+
+    /* Forward projection */
+    .fpGrid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      align-items:stretch;
+    }
+    @media (max-width: 1100px){
+      .fpGrid{ grid-template-columns: repeat(2, 1fr); }
+    }
+    .fpBox{
+      border-radius: 18px;
+      background: rgba(10,25,60,0.22);
+      border:1px solid rgba(210,230,255,0.12);
+      padding: 14px;
+      min-height: 92px;
+      display:grid;
+      gap: 6px;
+      align-content:start;
+    }
+    .fpBox .k{ font-size: 12px; color: rgba(255,255,255,0.62); }
+    .fpBox .v{ font-size: 26px; font-weight: 1000; }
+    .fpBox .meta{ font-size: 12px; color: rgba(255,255,255,0.62); line-height:1.35; }
+
+    .coneWrap{
+      border-radius: 22px;
+      background: rgba(10,25,60,0.18);
+      border: 1px solid rgba(210,230,255,0.10);
+      overflow:hidden;
+      margin-top: 12px;
+    }
+    canvas{ display:block; width:100%; height: 260px; }
+
+    /* Transmission mechanism */
+    .tmGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .tmBox{
+      border-radius: 18px;
+      background: rgba(10,25,60,0.22);
+      border:1px solid rgba(210,230,255,0.12);
+      padding: 14px;
+      display:grid;
+      gap: 8px;
+      align-content:start;
+      min-height: 110px;
+    }
+    .tmTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .tmTop .k{
+      font-size: 12px;
+      color: rgba(255,255,255,0.78);
+      line-height:1.2;
+    }
+    .tmTop .pct{
+      font-size: 26px;
+      font-weight: 1000;
+      font-variant-numeric: tabular-nums;
+    }
+    .tmBar{
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      overflow:hidden;
+    }
+    .tmBar > i{
+      display:block;
+      height:100%;
+      width: 0%;
+      border-radius: 999px;
+      background: rgba(120,170,255,0.8);
+    }
+    .tmMeta{
+      font-size: 12px;
+      color: rgba(255,255,255,0.60);
+      line-height:1.35;
+    }
+
+    /* TradingView */
     .tvWrap{
       border-radius: 18px;
       overflow:hidden;
@@ -621,7 +674,7 @@
     .modal{
       width:min(920px, 100%);
       border-radius: 22px;
-      background: linear-gradient(180deg, rgba(12,34,84,0.94), rgba(6,10,24,0.90));
+      background: linear-gradient(180deg, rgba(12,34,84,0.92), rgba(6,10,24,0.88));
       border: 1px solid rgba(210,230,255,0.18);
       box-shadow: var(--shadow);
       overflow:hidden;
@@ -645,8 +698,9 @@
       display:grid;
       gap: 14px;
     }
-    textarea, input[type="text"]{
+    textarea{
       width:100%;
+      min-height: 170px;
       resize: vertical;
       border-radius: 16px;
       border: 1px solid rgba(210,230,255,0.18);
@@ -657,32 +711,54 @@
       font-size: 12px;
       line-height: 1.35;
       outline:none;
-      box-sizing: border-box;
     }
-    textarea{ min-height: 160px; }
+    .fieldRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items:start;
+    }
+    @media (max-width: 900px){ .fieldRow{ grid-template-columns: 1fr; } }
+    .field{
+      border-radius: 16px;
+      border: 1px solid rgba(210,230,255,0.14);
+      background: rgba(10,25,60,0.22);
+      padding: 12px;
+    }
+    .field label{
+      display:block;
+      font-size: 12px;
+      color: rgba(255,255,255,0.70);
+      margin-bottom: 6px;
+      font-weight: 900;
+      letter-spacing: 0.3px;
+    }
+    .field input{
+      width:100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(210,230,255,0.16);
+      background: rgba(6,10,24,0.40);
+      color: rgba(255,255,255,0.92);
+      outline:none;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
     .modalActions{
       display:flex;
       justify-content:flex-end;
       gap: 10px;
       flex-wrap:wrap;
     }
-    .row2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    @media (max-width: 800px){
-      .row2{ grid-template-columns: 1fr; }
-    }
-    .help{
-      font-size: 12px;
+
+    .smallNote{
       color: rgba(255,255,255,0.62);
+      font-size: 12px;
       line-height: 1.35;
     }
-    .danger{
-      color: rgba(255,77,77,0.90);
-      font-weight: 900;
-    }
+
+    .pos{ color: rgba(24,209,138,0.95); }
+    .neg{ color: rgba(255,77,77,0.95); }
   </style>
 </head>
 
@@ -708,10 +784,9 @@
     </div>
 
     <div class="grid">
-      <!-- LEFT -->
+      <!-- LEFT column -->
       <div class="stack">
-
-        <!-- HERO: Current market state -->
+        <!-- Current market state -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
@@ -719,143 +794,121 @@
               <div class="hint">This demo never fabricates price. For true live FX, set a quote API key in Settings.</div>
             </div>
 
-            <div class="hero">
-              <div class="heroGrid">
-                <div>
-                  <div class="heroTitle" id="policyStateTitle">Policy State: --</div>
-                  <div class="heroSub" id="policyStateDesc">Waiting for market data sample.</div>
+            <div class="cmsGrid">
+              <div class="hero">
+                <div class="stateBig" id="policyStateTitle">Policy State: --</div>
+                <div class="muted" id="policyStateDesc">Waiting for live quote sample.</div>
 
-                  <div class="chips">
-                    <div class="chip">Detector <b id="detectorChip">--</b></div>
-                    <div class="chip">Policy <b id="policyChip">--</b></div>
-                    <div class="chip kpi">Confidence <b id="confChip">--</b></div>
-                    <div class="chip">Hysteresis <b id="hystChip">--</b></div>
-                    <div class="chip">Tick <b id="tickChip">0</b></div>
-                    <div class="chip">Stale <b id="staleChip">0</b></div>
-                    <div class="chip kpi">Macro Bias <b id="macroBiasChip">--</b></div>
-                    <div class="chip kpi">Event Risk <b id="eventRiskChip">--</b></div>
-                  </div>
-
-                  <div class="probCompact" id="probList"></div>
-
-                  <div class="canvasNote" id="heroNote">
-                    Premium look, yes. Premium data, only if you feed it premium data. Humans hate that part.
-                  </div>
+                <div class="chipRow">
+                  <div class="chip">Detector <b id="detectorChip">--</b></div>
+                  <div class="chip">Policy <b id="policyChip">--</b></div>
+                  <div class="chip">Confidence <b id="confChip">--</b></div>
+                  <div class="chip">Hysteresis <b id="hystChip">--</b></div>
+                  <div class="chip">Tick <b id="tickChip">0</b></div>
+                  <div class="chip">Stale <b id="staleChip">0</b></div>
+                  <span class="pillTag" id="modeTag">Mode: --</span>
                 </div>
 
-                <div class="quoteCard">
-                  <div>
-                    <div class="quoteTop">
-                      <div>
-                        <div class="quotePair">EURUSD</div>
-                        <div class="quoteSrc" id="miniSrc">Provider: --</div>
-                      </div>
-                      <div class="tag" title="Quote health"><span class="sdot" id="fxStatusDot"></span><span id="fxSpotStatus">CHECKING</span></div>
-                    </div>
-
-                    <div class="quotePx" id="miniPrice">--</div>
-
-                    <div class="quoteDeltaRow">
-                      <div>Δ</div>
-                      <div id="miniDelta">0.00000</div>
-                    </div>
-
-                    <div class="quoteBar"><i id="miniBar"></i></div>
-
-                    <div class="quoteBadge">
-                      <div class="tag" title="Latency"><span style="opacity:.7">⏱</span><span id="miniLatency">--</span></div>
-                      <div class="tag" title="Mode"><span style="opacity:.7">⚙</span><span id="miniMode">--</span></div>
-                    </div>
-                  </div>
-
-                  <div class="help" id="quoteDisclaimer" style="margin-top:10px;">
-                    If you see “REFERENCE”, your provider is not streaming. Set TwelveData key to get real intraday updates.
-                  </div>
+                <div class="chipRow" style="margin-top:10px;">
+                  <div class="chip">Macro Bias <b id="macroBiasChip">--</b></div>
+                  <div class="chip">Event Risk <b id="eventRiskChip">--</b></div>
+                  <div class="chip">Transmission <b id="txScoreChip">--</b></div>
                 </div>
 
+                <div class="probBlock">
+                  <div class="muted" style="margin-bottom:8px;">Conditional regime likelihoods P(state | features). Visualization layer, not the final alpha model.</div>
+                  <div id="probList"></div>
+                  <div class="muted" style="margin-top:10px;">
+                    Probabilities flatten when feeds are stale or features are ambiguous. Humans still insist that means “certainty”.
+                  </div>
+                </div>
+              </div>
+
+              <div class="quoteCard" aria-label="EURUSD quote">
+                <div class="quoteTop">
+                  <div class="quoteSym">
+                    <div class="sym">EURUSD</div>
+                    <div class="prov" id="quoteProvider">Provider: --</div>
+                  </div>
+                  <div class="qStatus"><span class="sdot" id="fxStatusDot"></span><span id="fxSpotStatus">CHECKING</span></div>
+                </div>
+
+                <div class="quotePx" id="fxSpotPrice">--</div>
+
+                <div class="quoteMetaRow">
+                  <div>Δ</div>
+                  <div id="fxSpotDelta">0.00000</div>
+                </div>
+
+                <div class="sparkBar"><i id="miniBar"></i></div>
+
+                <div class="quoteBadges">
+                  <span class="tagOk" id="fxLatencyTag">--</span>
+                  <span class="tagOk" id="fxLastTag">Last: --</span>
+                </div>
+
+                <div class="smallNote" style="margin-top:4px;" id="fxSpotMeta">Source: --</div>
               </div>
             </div>
-
           </div>
         </div>
 
-        <!-- Forward Projection -->
+        <!-- Forward projection -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
               <h2>Forward Projection</h2>
-              <div class="hint">Projection cone based on regime volatility + macro transmission + event proximity.</div>
+              <div class="hint">Projection cone based on regime volatility + macro transmission + event proximity. It’s a range, not a prophecy.</div>
             </div>
 
-            <div class="projTop">
-              <div class="projBox">
+            <div class="fpGrid">
+              <div class="fpBox">
                 <div class="k">Trade Bias</div>
                 <div class="v" id="tradeBias">--</div>
-                <div class="m" id="tradeBiasMeta">Macro + regime blend</div>
+                <div class="meta" id="tradeBiasMeta">Macro -- · Mom -- · Event --</div>
               </div>
-              <div class="projBox">
+              <div class="fpBox">
                 <div class="k">Move Range (1h)</div>
-                <div class="v" id="range1h">--</div>
-                <div class="m" id="range1hMeta">Regime scaled</div>
+                <div class="v" id="rng1h">--</div>
+                <div class="meta" id="rng1hMeta">Vol x-- · Macro x--</div>
               </div>
-              <div class="projBox">
+              <div class="fpBox">
                 <div class="k">Move Range (4h)</div>
-                <div class="v" id="range4h">--</div>
-                <div class="m" id="range4hMeta">Event and macro weighted</div>
+                <div class="v" id="rng4h">--</div>
+                <div class="meta" id="rng4hMeta">Event x-- · Tx x--</div>
               </div>
-              <div class="projBox">
+              <div class="fpBox">
                 <div class="k">Decision Confidence</div>
-                <div class="v" id="decisionConf">--</div>
-                <div class="m" id="decisionConfMeta">Agreement between signals</div>
+                <div class="v" id="decConf">--</div>
+                <div class="meta" id="decConfMeta">Low agreement, caution</div>
               </div>
             </div>
 
-            <div class="canvasWrap">
-              <canvas id="cone"></canvas>
+            <div class="coneWrap">
+              <canvas id="coneCanvas" width="1400" height="260"></canvas>
             </div>
-            <div class="canvasNote" id="coneNote">
+
+            <div class="smallNote" style="margin-top:10px;">
               Cone reflects a probabilistic range, not a promise. If anyone confuses this for certainty, remove their trading permissions.
             </div>
           </div>
         </div>
 
-        <!-- Regime Log -->
+        <!-- TradingView chart -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
-              <h2>Regime Log</h2>
-              <div class="hint">CSV-style telemetry (latest on top)</div>
+              <h2>Daily EUR/USD Trend</h2>
+              <div class="hint">Embedded TradingView chart. Clean, stable, doesn’t depend on your budget.</div>
             </div>
 
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
-              <button class="btn" id="copyCsvBtn">Copy as CSV</button>
-              <button class="btn" id="clearLogBtn">Clear</button>
-            </div>
-
-            <div class="tableWrap">
-              <div class="scroll" style="max-height: 320px;">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Time</th>
-                      <th>EURUSD</th>
-                      <th>DET</th>
-                      <th>POL</th>
-                      <th>CONF</th>
-                      <th>VOL X</th>
-                      <th>MOM (bp)</th>
-                      <th>MACRO</th>
-                      <th>EVENT</th>
-                      <th>SRC</th>
-                    </tr>
-                  </thead>
-                  <tbody id="logBody"></tbody>
-                </table>
-              </div>
-            </div>
-
-            <div class="help" style="margin-top:10px;">
-              Tip: Copy CSV and paste into Excel. It splits cleanly. Your coworkers will be impressed by basic clipboard functionality.
+            <div class="tvWrap">
+              <iframe
+                title="TradingView EURUSD"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                src="https://s.tradingview.com/widgetembed/?frameElementId=tvchart&symbol=FX%3AEURUSD&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0b1028&studies=%5B%5D&hideideas=1&theme=dark&style=1&locale=en&withdateranges=1&hidevolume=0&allow_symbol_change=0&details=0&hotlist=0&calendar=0"
+              ></iframe>
             </div>
           </div>
         </div>
@@ -864,14 +917,13 @@
           <div>System Status: <b id="sysStatus">LIVE</b></div>
           <div>Smoothed Policy: <b id="footPolicy">--</b></div>
           <div>Detector: <b id="footDetector">--</b></div>
-          <div>Transmission: <b id="footTx">--</b></div>
+          <div>Hysteresis Hold: <b id="footHold">0</b></div>
         </div>
       </div>
 
-      <!-- RIGHT -->
+      <!-- RIGHT column -->
       <div class="stack">
-
-        <!-- Risk -->
+        <!-- Risk level -->
         <div class="card">
           <div class="inner riskLevel">
             <div class="label">Risk Level</div>
@@ -880,91 +932,101 @@
           </div>
         </div>
 
-        <!-- Macro Drivers -->
+        <!-- Macro drivers -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
               <h2>Macro Drivers</h2>
-              <div class="hint">Oil, metals, DXY proxies. Daily data via Stooq. Works on GitHub Pages without keys.</div>
+              <div class="macroHint">Oil, metals, USD proxy via Stooq CSV through a CORS helper. Works on GitHub Pages without keys.</div>
             </div>
 
-            <div class="kpiGrid">
-              <div class="kpi">
-                <div class="k">Brent (proxy)</div>
-                <div class="v" id="brentV">--</div>
-                <div class="m" id="brentM">--</div>
+            <div class="macroGrid">
+              <div class="macroBox">
+                <div class="k">Oil (USO proxy) <span class="tagOk" id="oilTag">--</span></div>
+                <div class="v" id="oilPx">--</div>
+                <div class="meta" id="oilMeta">No data</div>
               </div>
-              <div class="kpi">
-                <div class="k">WTI (proxy)</div>
-                <div class="v" id="wtiV">--</div>
-                <div class="m" id="wtiM">--</div>
+              <div class="macroBox">
+                <div class="k">Gold (GLD proxy) <span class="tagOk" id="goldTag">--</span></div>
+                <div class="v" id="goldPx">--</div>
+                <div class="meta" id="goldMeta">No data</div>
               </div>
-              <div class="kpi">
-                <div class="k">Gold (proxy)</div>
-                <div class="v" id="goldV">--</div>
-                <div class="m" id="goldM">--</div>
+              <div class="macroBox">
+                <div class="k">Silver (SLV proxy) <span class="tagOk" id="silverTag">--</span></div>
+                <div class="v" id="silverPx">--</div>
+                <div class="meta" id="silverMeta">No data</div>
               </div>
-              <div class="kpi">
-                <div class="k">Silver (proxy)</div>
-                <div class="v" id="silverV">--</div>
-                <div class="m" id="silverM">--</div>
+              <div class="macroBox">
+                <div class="k">USD (UUP proxy) <span class="tagOk" id="usdTag">--</span></div>
+                <div class="v" id="usdPx">--</div>
+                <div class="meta" id="usdMeta">No data</div>
               </div>
-              <div class="kpi">
-                <div class="k">USD Index (DXY proxy)</div>
-                <div class="v" id="dxyV">--</div>
-                <div class="m" id="dxyM">--</div>
-              </div>
-              <div class="kpi">
+              <div class="macroBox" style="grid-column: 1 / span 2;">
                 <div class="k">Transmission Score</div>
-                <div class="v" id="txV">--</div>
-                <div class="m" id="txM">--</div>
+                <div class="v" id="txBig">NEUTRAL</div>
+                <div class="meta" id="txMeta">Score 0.00 · Neutral · Intensity 0%</div>
               </div>
             </div>
 
-            <div class="help" style="margin-top:10px;">
-              In production: replace proxies with broker feed + learned mapping from macro to expected pip distribution.
+            <div class="smallNote" style="margin-top:10px;">
+              In production: replace proxies with institutional feeds and learn weights from history (bucketing by regime + event archetype). The demo just needs to behave like a real system.
             </div>
           </div>
         </div>
 
-        <!-- Transmission Mechanism -->
+        <!-- Transmission mechanism -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
               <h2>Transmission Mechanism</h2>
-              <div class="hint">Three levers that typically move EURUSD around conflict and commodity shocks.</div>
+              <div class="hint">Three levers that typically move EURUSD around conflict + commodity shocks, plus event proximity.</div>
             </div>
 
-            <div class="kpiGrid">
-              <div class="kpi">
-                <div class="k">Oil Lever (EU terms of trade)</div>
-                <div class="v" id="oilLeverV">0%</div>
-                <div class="m" id="oilLeverM">Derived from Brent and WTI moves</div>
+            <div class="tmGrid">
+              <div class="tmBox">
+                <div class="tmTop">
+                  <div class="k">Oil Lever (EU terms of trade)</div>
+                  <div class="pct" id="oilLeverPct">0%</div>
+                </div>
+                <div class="tmBar"><i id="oilLeverBar"></i></div>
+                <div class="tmMeta" id="oilLeverMeta">EU energy drag proxy</div>
               </div>
-              <div class="kpi">
-                <div class="k">Dollar Lever (DXY pressure)</div>
-                <div class="v" id="dollarLeverV">0%</div>
-                <div class="m" id="dollarLeverM">Derived from USD index proxy</div>
+
+              <div class="tmBox">
+                <div class="tmTop">
+                  <div class="k">Dollar Lever (USD pressure)</div>
+                  <div class="pct" id="usdLeverPct">0%</div>
+                </div>
+                <div class="tmBar"><i id="usdLeverBar"></i></div>
+                <div class="tmMeta" id="usdLeverMeta">USD strength pressure proxy</div>
               </div>
-              <div class="kpi">
-                <div class="k">Fear Lever (gold risk-off)</div>
-                <div class="v" id="fearLeverV">0%</div>
-                <div class="m" id="fearLeverM">Derived from gold and silver tone</div>
+
+              <div class="tmBox">
+                <div class="tmTop">
+                  <div class="k">Fear Lever (risk-off tone)</div>
+                  <div class="pct" id="fearLeverPct">0%</div>
+                </div>
+                <div class="tmBar"><i id="fearLeverBar"></i></div>
+                <div class="tmMeta" id="fearLeverMeta">Gold bid proxy</div>
               </div>
-              <div class="kpi">
-                <div class="k">Event Risk (calendar proximity)</div>
-                <div class="v" id="eventLeverV">0%</div>
-                <div class="m" id="eventLeverM">Higher when high-impact events are near</div>
+
+              <div class="tmBox">
+                <div class="tmTop">
+                  <div class="k">Event Risk (calendar proximity)</div>
+                  <div class="pct" id="eventLeverPct">0%</div>
+                </div>
+                <div class="tmBar"><i id="eventLeverBar"></i></div>
+                <div class="tmMeta" id="eventLeverMeta">High impact proximity</div>
               </div>
             </div>
 
-            <div class="help" style="margin-top:10px;">
-              This is a demo mapping. The production version should learn weights from history and update per regime.
+            <div class="smallNote" style="margin-top:10px;">
+              Demo mapping. Production version learns the mapping (features → expected pip distribution) by regime and event archetype, then runs scenario cones.
             </div>
           </div>
         </div>
 
-        <!-- World events -->
+        <!-- World events calendar -->
         <div class="card">
           <div class="inner">
             <div class="card-title">
@@ -986,7 +1048,7 @@
                 </table>
               </div>
             </div>
-            <div class="help" style="margin-top:10px;">
+            <div class="muted" style="margin-top:10px;">
               High impact events are <span class="impact"><span class="folder"></span>HIGH</span>.
             </div>
           </div>
@@ -997,7 +1059,7 @@
           <div class="inner">
             <div class="card-title">
               <h2>Headlines</h2>
-              <div class="hint">Curated list saved locally. You can swap to a live news API later.</div>
+              <div class="hint">Curated list saved locally. Swap to a live feed later when the budget stops screaming.</div>
             </div>
 
             <div class="tableWrap">
@@ -1015,31 +1077,11 @@
               </div>
             </div>
 
-            <div class="help" style="margin-top:10px;">
-              Click opens source in a new tab. Humans love clicking things.
+            <div class="muted" style="margin-top:10px;">
+              Click opens source in a new tab.
             </div>
           </div>
         </div>
-
-        <!-- TradingView chart -->
-        <div class="card">
-          <div class="inner">
-            <div class="card-title">
-              <h2>EUR/USD Live Chart</h2>
-              <div class="hint">TradingView embed is live visually. We do not scrape it.</div>
-            </div>
-
-            <div class="tvWrap">
-              <iframe
-                title="TradingView EURUSD"
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-                src="https://s.tradingview.com/widgetembed/?frameElementId=tvchart&symbol=FX%3AEURUSD&interval=15&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0b1028&studies=%5B%5D&hideideas=1&theme=dark&style=1&locale=en&withdateranges=1&hidevolume=0&allow_symbol_change=0&details=0&hotlist=0&calendar=0"
-              ></iframe>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   </div>
@@ -1052,31 +1094,32 @@
         <button class="btn" id="closeModalBtn">Close</button>
       </div>
       <div class="modalBody">
-        <div class="help">
-          Curated demo mode: save lists locally so each viewer has consistent content.
-          Production mode: swap to a backend feed and stop trusting humans to type JSON.
+        <div class="smallNote">
+          This is the “demo that works” approach. Save curated items locally so everyone sees the same list after refresh on their device.
+          Production: plug a proper calendar + headline feed, then enrich with event archetypes.
         </div>
 
-        <div class="row2">
+        <div class="fieldRow">
           <div>
-            <div class="help" style="margin-bottom:8px;"><b>Events JSON</b> (array of objects: when, event, impact: HIGH|MED|LOW)</div>
+            <div class="smallNote" style="margin-bottom:8px;"><b>Events JSON</b> (array of objects: when, event, impact: HIGH|MED|LOW)</div>
             <textarea id="eventsEditor"></textarea>
           </div>
+
           <div>
-            <div class="help" style="margin-bottom:8px;"><b>Headlines JSON</b> (array of objects: time, source, title, url)</div>
+            <div class="smallNote" style="margin-bottom:8px;"><b>Headlines JSON</b> (array of objects: time, source, title, url)</div>
             <textarea id="headlinesEditor"></textarea>
           </div>
         </div>
 
         <div class="modalActions">
-          <button class="btn" id="resetCuratedBtn">Reset defaults</button>
+          <button class="btn" id="resetCuratedBtn">Reset to curated defaults</button>
           <button class="btn primary" id="saveCuratedBtn">Save</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal: Settings -->
+  <!-- Modal: settings -->
   <div class="modalBack" id="settingsBack">
     <div class="modal">
       <div class="modalHead">
@@ -1084,34 +1127,27 @@
         <button class="btn" id="closeSettingsBtn">Close</button>
       </div>
       <div class="modalBody">
-        <div class="help">
-          Your EURUSD is stuck because most free endpoints update slowly. If you want intraday updates without building a backend, set a quote API key.
-          Recommended for demo: <b>TwelveData</b>.
+        <div class="smallNote">
+          If you want proper intraday FX, paste a TwelveData key. If you do nothing, we fall back to free FX endpoints.
+          Macro drivers use ETF proxies through Stooq CSV, fetched via a public CORS helper because GitHub Pages won’t let you do grown-up networking.
         </div>
 
-        <div class="row2">
-          <div>
-            <div class="help" style="margin-bottom:8px;"><b>TwelveData API Key</b> (optional)</div>
-            <input type="text" id="twelveKey" placeholder="Paste key here (stored locally in your browser)" />
-            <div class="help" style="margin-top:8px;">
-              If empty, dashboard falls back to slow “reference” providers. That is why it looks frozen.
-            </div>
+        <div class="fieldRow">
+          <div class="field">
+            <label>TwelveData API Key (optional)</label>
+            <input id="tdKeyInput" placeholder="Paste key here (optional)" />
+            <div class="smallNote" style="margin-top:8px;">Used for EURUSD spot. Stored locally in your browser.</div>
           </div>
-          <div>
-            <div class="help" style="margin-bottom:8px;"><b>Quote Update Interval</b> (seconds)</div>
-            <input type="text" id="pollSeconds" placeholder="12" />
-            <div class="help" style="margin-top:8px;">
-              Lower is not always better. Free APIs throttle. Your patience is also a rate limit.
-            </div>
-          </div>
-        </div>
 
-        <div class="help">
-          <span class="danger">Reality check:</span> If you want tick-grade pricing, you need a broker feed. This demo proves UI, logic, and integration points.
+          <div class="field">
+            <label>Polling cadence</label>
+            <input id="pollInput" placeholder="12000 (ms)" />
+            <div class="smallNote" style="margin-top:8px;">Default 12000ms. Too fast = throttled. Too slow = pointless.</div>
+          </div>
         </div>
 
         <div class="modalActions">
-          <button class="btn" id="resetSettingsBtn">Reset</button>
+          <button class="btn" id="resetSettingsBtn">Reset settings</button>
           <button class="btn primary" id="saveSettingsBtn">Save</button>
         </div>
       </div>
@@ -1119,50 +1155,28 @@
   </div>
 
 <script>
-(function(){
-  /* ============================================================
-     QuadraX Risk Dashboard (Demo-Grade, Production-Ready Structure)
-     - Quote Provider chain with real intraday option (TwelveData)
-     - Macro proxies (Oil, Metals, DXY) via Stooq daily data
-     - Transmission score => pip range projection cone
-     - Regime engine drives probabilities and risk mapping
-     - Curated Events + Headlines editable and persisted
-  ============================================================ */
+/* =============================================================================
+   QuadraX Risk Dashboard (single-file demo)
+   - EURUSD spot: TwelveData (optional) -> free FX endpoints failover
+   - Macro drivers: ETF proxies (USO, GLD, SLV, UUP) via Stooq CSV
+     fetched through AllOrigins to bypass CORS on GitHub Pages
+   - Transmission mechanism: Oil, USD, Fear, Event proximity
+   - Projection cone: regime vol + transmission score + event risk
+============================================================================= */
 
+(function(){
   // ---------- Utilities ----------
   const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
   const fmtTime = (ms) => new Date(ms).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
+  const bp = (x)=> x * 10000;
   const safeNum = (x, fallback=null) => (Number.isFinite(Number(x)) ? Number(x) : fallback);
-  const bp = (x)=> x * 10000; // price diff to basis points
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
   }
-  function escapeAttr(s){ return String(s).replace(/"/g, "&quot;"); }
-
-  // ---------- Keys ----------
-  const KEY = {
-    dashboard: "qx_dashboard_state_v2",
-    events: "qx_events_v1",
-    headlines: "qx_headlines_v1",
-    log: "qx_regime_log_v2",
-    settings: "qx_settings_v1"
-  };
-
-  // ---------- Settings ----------
-  const defaultSettings = {
-    twelveKey: "",
-    pollSeconds: 12
-  };
-  function loadObj(key, fallback){
-    try{
-      const raw = localStorage.getItem(key);
-      if (!raw) return fallback;
-      const o = JSON.parse(raw);
-      return (o && typeof o === "object") ? {...fallback, ...o} : fallback;
-    }catch(e){ return fallback; }
+  function escapeAttr(s){
+    return String(s).replace(/"/g, "&quot;");
   }
-  let settings = loadObj(KEY.settings, defaultSettings);
 
   // ---------- DOM ----------
   const els = {
@@ -1174,6 +1188,7 @@
     editBtn: document.getElementById("editBtn"),
     settingsBtn: document.getElementById("settingsBtn"),
 
+    // state
     policyStateTitle: document.getElementById("policyStateTitle"),
     policyStateDesc: document.getElementById("policyStateDesc"),
     detectorChip: document.getElementById("detectorChip"),
@@ -1182,61 +1197,79 @@
     hystChip: document.getElementById("hystChip"),
     tickChip: document.getElementById("tickChip"),
     staleChip: document.getElementById("staleChip"),
+    modeTag: document.getElementById("modeTag"),
     macroBiasChip: document.getElementById("macroBiasChip"),
     eventRiskChip: document.getElementById("eventRiskChip"),
+    txScoreChip: document.getElementById("txScoreChip"),
     probList: document.getElementById("probList"),
 
-    miniSrc: document.getElementById("miniSrc"),
-    miniPrice: document.getElementById("miniPrice"),
-    miniDelta: document.getElementById("miniDelta"),
-    miniBar: document.getElementById("miniBar"),
-    miniLatency: document.getElementById("miniLatency"),
-    miniMode: document.getElementById("miniMode"),
+    // quote
+    quoteProvider: document.getElementById("quoteProvider"),
+    fxSpotPrice: document.getElementById("fxSpotPrice"),
     fxSpotStatus: document.getElementById("fxSpotStatus"),
     fxStatusDot: document.getElementById("fxStatusDot"),
-    quoteDisclaimer: document.getElementById("quoteDisclaimer"),
+    fxSpotDelta: document.getElementById("fxSpotDelta"),
+    fxLatencyTag: document.getElementById("fxLatencyTag"),
+    fxLastTag: document.getElementById("fxLastTag"),
+    fxSpotMeta: document.getElementById("fxSpotMeta"),
+    miniBar: document.getElementById("miniBar"),
 
+    // risk
     riskBig: document.getElementById("riskBig"),
     riskRule: document.getElementById("riskRule"),
 
-    // Projection
+    // macro
+    oilPx: document.getElementById("oilPx"),
+    oilMeta: document.getElementById("oilMeta"),
+    oilTag: document.getElementById("oilTag"),
+    goldPx: document.getElementById("goldPx"),
+    goldMeta: document.getElementById("goldMeta"),
+    goldTag: document.getElementById("goldTag"),
+    silverPx: document.getElementById("silverPx"),
+    silverMeta: document.getElementById("silverMeta"),
+    silverTag: document.getElementById("silverTag"),
+    usdPx: document.getElementById("usdPx"),
+    usdMeta: document.getElementById("usdMeta"),
+    usdTag: document.getElementById("usdTag"),
+    txBig: document.getElementById("txBig"),
+    txMeta: document.getElementById("txMeta"),
+
+    // levers
+    oilLeverPct: document.getElementById("oilLeverPct"),
+    oilLeverBar: document.getElementById("oilLeverBar"),
+    oilLeverMeta: document.getElementById("oilLeverMeta"),
+    usdLeverPct: document.getElementById("usdLeverPct"),
+    usdLeverBar: document.getElementById("usdLeverBar"),
+    usdLeverMeta: document.getElementById("usdLeverMeta"),
+    fearLeverPct: document.getElementById("fearLeverPct"),
+    fearLeverBar: document.getElementById("fearLeverBar"),
+    fearLeverMeta: document.getElementById("fearLeverMeta"),
+    eventLeverPct: document.getElementById("eventLeverPct"),
+    eventLeverBar: document.getElementById("eventLeverBar"),
+    eventLeverMeta: document.getElementById("eventLeverMeta"),
+
+    // projection
     tradeBias: document.getElementById("tradeBias"),
     tradeBiasMeta: document.getElementById("tradeBiasMeta"),
-    range1h: document.getElementById("range1h"),
-    range1hMeta: document.getElementById("range1hMeta"),
-    range4h: document.getElementById("range4h"),
-    range4hMeta: document.getElementById("range4hMeta"),
-    decisionConf: document.getElementById("decisionConf"),
-    decisionConfMeta: document.getElementById("decisionConfMeta"),
-    cone: document.getElementById("cone"),
-    coneNote: document.getElementById("coneNote"),
+    rng1h: document.getElementById("rng1h"),
+    rng1hMeta: document.getElementById("rng1hMeta"),
+    rng4h: document.getElementById("rng4h"),
+    rng4hMeta: document.getElementById("rng4hMeta"),
+    decConf: document.getElementById("decConf"),
+    decConfMeta: document.getElementById("decConfMeta"),
+    coneCanvas: document.getElementById("coneCanvas"),
 
-    // Macro KPIs
-    brentV: document.getElementById("brentV"),
-    brentM: document.getElementById("brentM"),
-    wtiV: document.getElementById("wtiV"),
-    wtiM: document.getElementById("wtiM"),
-    goldV: document.getElementById("goldV"),
-    goldM: document.getElementById("goldM"),
-    silverV: document.getElementById("silverV"),
-    silverM: document.getElementById("silverM"),
-    dxyV: document.getElementById("dxyV"),
-    dxyM: document.getElementById("dxyM"),
-    txV: document.getElementById("txV"),
-    txM: document.getElementById("txM"),
-
-    oilLeverV: document.getElementById("oilLeverV"),
-    oilLeverM: document.getElementById("oilLeverM"),
-    dollarLeverV: document.getElementById("dollarLeverV"),
-    dollarLeverM: document.getElementById("dollarLeverM"),
-    fearLeverV: document.getElementById("fearLeverV"),
-    fearLeverM: document.getElementById("fearLeverM"),
-    eventLeverV: document.getElementById("eventLeverV"),
-    eventLeverM: document.getElementById("eventLeverM"),
-
-    // Events + headlines
+    // events + headlines
     eventsBody: document.getElementById("eventsBody"),
     headlinesBody: document.getElementById("headlinesBody"),
+
+    // footer
+    sysStatus: document.getElementById("sysStatus"),
+    footPolicy: document.getElementById("footPolicy"),
+    footDetector: document.getElementById("footDetector"),
+    footHold: document.getElementById("footHold"),
+
+    // modals
     modalBack: document.getElementById("modalBack"),
     closeModalBtn: document.getElementById("closeModalBtn"),
     saveCuratedBtn: document.getElementById("saveCuratedBtn"),
@@ -1244,52 +1277,32 @@
     eventsEditor: document.getElementById("eventsEditor"),
     headlinesEditor: document.getElementById("headlinesEditor"),
 
-    // Settings modal
     settingsBack: document.getElementById("settingsBack"),
     closeSettingsBtn: document.getElementById("closeSettingsBtn"),
-    twelveKey: document.getElementById("twelveKey"),
-    pollSeconds: document.getElementById("pollSeconds"),
+    tdKeyInput: document.getElementById("tdKeyInput"),
+    pollInput: document.getElementById("pollInput"),
     resetSettingsBtn: document.getElementById("resetSettingsBtn"),
     saveSettingsBtn: document.getElementById("saveSettingsBtn"),
-
-    // Log
-    logBody: document.getElementById("logBody"),
-    copyCsvBtn: document.getElementById("copyCsvBtn"),
-    clearLogBtn: document.getElementById("clearLogBtn"),
-
-    // Footer
-    sysStatus: document.getElementById("sysStatus"),
-    footPolicy: document.getElementById("footPolicy"),
-    footDetector: document.getElementById("footDetector"),
-    footTx: document.getElementById("footTx"),
   };
 
-  // ---------- States ----------
-  const STATES = [
-    { id:1, name:"Mean-Reverting", desc:"Range-bound. Fade extremes and keep size disciplined.", color:"rgba(24,209,138,0.85)" },
-    { id:2, name:"Liquidity Vacuum", desc:"Thin market, jumpy moves. Tighten risk and be selective.", color:"rgba(255,176,32,0.85)" },
-    { id:3, name:"Slow Drift", desc:"Steady grind. Small edges, avoid forcing entries.", color:"rgba(120,170,255,0.85)" },
-    { id:4, name:"Strong Trend", desc:"Directional. Trend-follow bias, avoid countertrend heroics.", color:"rgba(60,145,255,0.9)" },
-    { id:5, name:"Stop Cascade", desc:"Fast continuation on stops. Reduce leverage, widen filters.", color:"rgba(255,138,64,0.9)" },
-    { id:6, name:"News Shock", desc:"Event-driven. Consider standing down around releases.", color:"rgba(255,77,77,0.9)" },
-    { id:7, name:"Dealer Unwind", desc:"Choppy reversal risk. Focus on protection and confirmation.", color:"rgba(160,120,255,0.9)" },
-    { id:8, name:"Panic/Forced", desc:"Dislocation. Risk off. Protect capital first.", color:"rgba(255,58,165,0.9)" }
-  ];
+  // ---------- Persistence keys ----------
+  const KEY = {
+    settings: "qx_settings_v2",
+    events: "qx_events_v1",
+    headlines: "qx_headlines_v1",
+    dash: "qx_dash_v2",
+    macro: "qx_macro_v2"
+  };
 
-  // ---------- Curated defaults ----------
-  const curatedEventsDefault = [
-    { when: "2026-02-17T21:18:47Z", event: "Eurozone CPI (flash)", impact: "HIGH" },
-    { when: "2026-02-18T17:18:47Z", event: "US Initial Jobless Claims", impact: "MED" },
-    { when: "2026-02-19T21:18:47Z", event: "US GDP (advance)", impact: "HIGH" },
-    { when: "2026-02-22T15:18:47Z", event: "US Non-Farm Payrolls", impact: "HIGH" }
-  ];
-  const curatedHeadlinesDefault = [
-    { time: "03:00 PM", source: "FinancialJuice", title: "Dollar firming ahead of major data window", url: "https://financialjuice.com/" },
-    { time: "02:26 PM", source: "FinancialJuice", title: "Rates repricing drives short-term USD bid", url: "https://financialjuice.com/" },
-    { time: "01:06 PM", source: "Market", title: "Risk tone mixed as equities stabilize", url: "https://www.investing.com/" }
-  ];
-
-  function loadJSON(key, fallback){
+  function loadObj(key, fallback){
+    try{
+      const raw = localStorage.getItem(key);
+      if (!raw) return fallback;
+      const parsed = JSON.parse(raw);
+      return (parsed && typeof parsed === "object") ? parsed : fallback;
+    }catch(e){ return fallback; }
+  }
+  function loadJSONArr(key, fallback){
     try{
       const raw = localStorage.getItem(key);
       if (!raw) return fallback;
@@ -1298,10 +1311,30 @@
     }catch(e){ return fallback; }
   }
 
-  let curatedEvents = loadJSON(KEY.events, curatedEventsDefault);
-  let curatedHeadlines = loadJSON(KEY.headlines, curatedHeadlinesDefault);
+  // ---------- Settings ----------
+  let settings = loadObj(KEY.settings, {
+    twelvedataKey: "",
+    pollMs: 12000
+  });
 
-  // ---------- Events render ----------
+  // ---------- Curated defaults ----------
+  const curatedEventsDefault = [
+    { when: "2026-02-17T21:18:47Z", event: "Eurozone CPI (flash)", impact: "HIGH" },
+    { when: "2026-02-18T17:18:47Z", event: "US Initial Jobless Claims", impact: "MED" },
+    { when: "2026-02-19T21:18:47Z", event: "US GDP (advance)", impact: "HIGH" },
+    { when: "2026-02-22T15:18:47Z", event: "US Non-Farm Payrolls", impact: "HIGH" }
+  ];
+
+  const curatedHeadlinesDefault = [
+    { time: "03:00 PM", source: "FinancialJuice", title: "Dollar firming ahead of major data window", url: "https://financialjuice.com/" },
+    { time: "02:26 PM", source: "FinancialJuice", title: "Rates repricing drives short-term USD bid", url: "https://financialjuice.com/" },
+    { time: "01:06 PM", source: "Market", title: "Risk tone mixed as equities stabilize", url: "https://www.investing.com/" }
+  ];
+
+  let curatedEvents = loadJSONArr(KEY.events, curatedEventsDefault);
+  let curatedHeadlines = loadJSONArr(KEY.headlines, curatedHeadlinesDefault);
+
+  // ---------- Impact pill ----------
   function impactPill(impact){
     const imp = (impact || "").toUpperCase();
     if (imp === "HIGH") return `<span class="impact"><span class="folder"></span>HIGH</span>`;
@@ -1359,85 +1392,144 @@
     els.headlinesBody.innerHTML = rows || `<tr><td colspan="3" style="color:rgba(255,255,255,0.6)">No headlines set.</td></tr>`;
   }
 
-  // ---------- Modal: edit events ----------
-  function openModal(){
-    els.eventsEditor.value = JSON.stringify(curatedEvents, null, 2);
-    els.headlinesEditor.value = JSON.stringify(curatedHeadlines, null, 2);
-    els.modalBack.style.display = "flex";
-  }
-  function closeModal(){ els.modalBack.style.display = "none"; }
+  // ---------- Event risk (proximity lever) ----------
+  function computeEventRisk01(){
+    const now = Date.now();
+    const upcoming = curatedEvents
+      .map(e => ({...e, t: new Date(e.when).getTime()}))
+      .filter(e => Number.isFinite(e.t) && e.t >= now);
 
-  els.editBtn.addEventListener("click", openModal);
-  els.closeModalBtn.addEventListener("click", closeModal);
-  els.modalBack.addEventListener("click", (e)=>{ if (e.target === els.modalBack) closeModal(); });
+    if (!upcoming.length) return 0;
 
-  els.resetCuratedBtn.addEventListener("click", ()=>{
-    curatedEvents = structuredClone(curatedEventsDefault);
-    curatedHeadlines = structuredClone(curatedHeadlinesDefault);
-    els.eventsEditor.value = JSON.stringify(curatedEvents, null, 2);
-    els.headlinesEditor.value = JSON.stringify(curatedHeadlines, null, 2);
-  });
+    // find nearest HIGH then MED then LOW
+    const weights = { HIGH: 1.0, MED: 0.6, LOW: 0.25 };
+    let best = 0;
 
-  els.saveCuratedBtn.addEventListener("click", ()=>{
-    try{
-      const ev = JSON.parse(els.eventsEditor.value);
-      const hd = JSON.parse(els.headlinesEditor.value);
-      if (!Array.isArray(ev) || !Array.isArray(hd)) throw new Error("Not arrays");
-      curatedEvents = ev;
-      curatedHeadlines = hd;
-      localStorage.setItem(KEY.events, JSON.stringify(curatedEvents));
-      localStorage.setItem(KEY.headlines, JSON.stringify(curatedHeadlines));
-      renderEvents();
-      renderHeadlines();
-      closeModal();
-    }catch(err){
-      alert("Invalid JSON. Fix formatting before saving.");
+    for (const e of upcoming){
+      const imp = (e.impact || "LOW").toUpperCase();
+      const w = weights[imp] ?? 0.25;
+      const mins = (e.t - now)/60000;
+
+      // proximity curve: strongest within 60 minutes, fades over 24 hours
+      const prox = (mins <= 60) ? 1
+                 : (mins <= 6*60) ? (1 - (mins-60)/(5*60))*0.85
+                 : (mins <= 24*60) ? (1 - (mins-6*60)/(18*60))*0.35
+                 : 0;
+
+      best = Math.max(best, w * prox);
     }
-  });
 
-  // ---------- Modal: Settings ----------
-  function openSettings(){
-    els.twelveKey.value = settings.twelveKey || "";
-    els.pollSeconds.value = String(settings.pollSeconds || 12);
-    els.settingsBack.style.display = "flex";
+    return clamp(best, 0, 1);
   }
-  function closeSettings(){ els.settingsBack.style.display = "none"; }
 
-  els.settingsBtn.addEventListener("click", openSettings);
-  els.closeSettingsBtn.addEventListener("click", closeSettings);
-  els.settingsBack.addEventListener("click", (e)=>{ if (e.target === els.settingsBack) closeSettings(); });
+  function labelEventRisk(r){
+    if (r >= 0.70) return "HIGH";
+    if (r >= 0.35) return "MED";
+    return "LOW";
+  }
 
-  els.resetSettingsBtn.addEventListener("click", ()=>{
-    settings = {...defaultSettings};
-    localStorage.setItem(KEY.settings, JSON.stringify(settings));
-    els.twelveKey.value = "";
-    els.pollSeconds.value = String(defaultSettings.pollSeconds);
-  });
+  // ---------- States ----------
+  const STATES = [
+    { id:1, name:"Mean-Reverting", desc:"Range-bound. Fade extremes and keep size disciplined.", color:"rgba(24,209,138,0.85)" },
+    { id:2, name:"Liquidity Vacuum", desc:"Thin market, jumpy moves. Tighten risk and be selective.", color:"rgba(255,176,32,0.85)" },
+    { id:3, name:"Slow Drift", desc:"Steady grind. Small edges, avoid forcing entries.", color:"rgba(120,170,255,0.85)" },
+    { id:4, name:"Strong Trend", desc:"Directional. Trend-follow bias, avoid countertrend heroics.", color:"rgba(60,145,255,0.9)" },
+    { id:5, name:"Stop Cascade", desc:"Fast continuation on stops. Reduce leverage, widen filters.", color:"rgba(255,138,64,0.9)" },
+    { id:6, name:"News Shock", desc:"Event-driven. Consider standing down around releases.", color:"rgba(255,77,77,0.9)" },
+    { id:7, name:"Dealer Unwind", desc:"Choppy reversal risk. Focus on protection and confirmation.", color:"rgba(160,120,255,0.9)" },
+    { id:8, name:"Panic/Forced", desc:"Dislocation. Risk off. Protect capital first.", color:"rgba(255,58,165,0.9)" }
+  ];
 
-  els.saveSettingsBtn.addEventListener("click", ()=>{
-    const key = (els.twelveKey.value || "").trim();
-    const sec = Math.max(6, Math.min(60, Number(els.pollSeconds.value || 12)));
-    settings = { twelveKey: key, pollSeconds: sec };
-    localStorage.setItem(KEY.settings, JSON.stringify(settings));
-    closeSettings();
-    hardResync("Settings saved. Syncing.");
-  });
+  // ---------- Probabilities UI ----------
+  const probEls = [];
+  function initProbUI(){
+    els.probList.innerHTML = "";
+    probEls.length = 0;
 
-  // ---------- Quote Provider Chain ----------
-  // Goal: give you real intraday if you have a key, otherwise be honest and label as REFERENCE.
-  const Quote = (() => {
-    const MIN_MOVE = 0.000001;
-    const STALE_MS = 60_000;
+    STATES.forEach((s)=>{
+      const row = document.createElement("div");
+      row.className = "probRow";
+      row.innerHTML = `
+        <div class="probName"><span class="pdot" style="background:${s.color}"></span>State ${s.id}: ${s.name}</div>
+        <div class="pbar"><i></i></div>
+        <div class="probVal">--%</div>
+      `;
+      els.probList.appendChild(row);
+      probEls.push({
+        bar: row.querySelector(".pbar > i"),
+        val: row.querySelector(".probVal")
+      });
+    });
+  }
+
+  // ---------- Risk mapping ----------
+  function setRisk(policyState, conf){
+    let level = "--";
+    let rule = "Policy: state-aware sizing and entry gating";
+
+    if (policyState){
+      if (policyState === 1) { level = "NORMAL"; rule = "Rule: Range logic favored. Avoid forcing breakouts."; }
+      if (policyState === 2) { level = "ELEVATED"; rule = "Rule: Thin liquidity risk. Reduce size and wait for confirmation."; }
+      if (policyState === 3) { level = "NORMAL"; rule = "Rule: Drift regime. Small edges, avoid impulsive entries."; }
+      if (policyState === 4) { level = "HIGH"; rule = "Rule: Trend regime. Bias with trend. Avoid countertrend heroics."; }
+      if (policyState === 5) { level = "HIGH"; rule = "Rule: Stop cascade risk. De-risk and widen filters."; }
+      if (policyState === 6) { level = "HIGH"; rule = "Rule: News shock. Consider standing down around releases."; }
+      if (policyState === 7) { level = "ELEVATED"; rule = "Rule: Unwind risk. Protect and demand confirmation."; }
+      if (policyState === 8) { level = "CRITICAL"; rule = "Rule: Risk off. Protect capital first."; }
+
+      if (conf != null && conf < 0.35 && (level === "NORMAL")) level = "ELEVATED";
+      if (conf != null && conf < 0.25 && (level === "ELEVATED")) level = "HIGH";
+    }
+
+    els.riskBig.textContent = level;
+    els.riskRule.textContent = rule;
+  }
+
+  // ---------- Quote status dot ----------
+  function setFxStatus(status){
+    els.fxSpotStatus.textContent = status;
+    els.fxStatusDot.classList.remove("live","err");
+    if (status === "LIVE"){
+      els.fxStatusDot.classList.add("live");
+    } else if (status === "ERROR"){
+      els.fxStatusDot.classList.add("err");
+    }
+  }
+
+  // ---------- Spot feed (TwelveData + fallback endpoints) ----------
+  const SpotFeed = (() => {
+    // Free endpoints (can be cached / low frequency)
+    const freeSources = [
+      {
+        name: "exchangerate.host",
+        url: () => `https://api.exchangerate.host/latest?base=EUR&symbols=USD&_=${Date.now()}`,
+        parse: (j) => j?.rates?.USD
+      },
+      {
+        name: "frankfurter.app",
+        url: () => `https://api.frankfurter.app/latest?from=EUR&to=USD&_=${Date.now()}`,
+        parse: (j) => j?.rates?.USD
+      },
+      {
+        name: "open.er-api.com",
+        url: () => `https://open.er-api.com/v6/latest/EUR?_=${Date.now()}`,
+        parse: (j) => j?.rates?.USD
+      }
+    ];
 
     let last = {
       price: null,
       ts: 0,
-      mode: "REFERENCE",
       source: null,
+      provider: null,
       latencyMs: null,
+      staleCount: 0,
       lastChangeTs: 0,
       lastDelta: 0
     };
+
+    const STALE_MS = 60_000;
+    const MIN_MOVE = 0.000001;
 
     function status(now = Date.now()){
       if (!last.price) return { status: "CHECKING", stale: false };
@@ -1445,56 +1537,41 @@
       return { status: stale ? "STALE" : "LIVE", stale };
     }
 
-    async function fetchWithTimeout(url, timeoutMs = 6500){
+    async function fetchWithTimeout(url, timeoutMs=6500){
+      const t0 = performance.now();
       const controller = new AbortController();
       const timer = setTimeout(()=> controller.abort(), timeoutMs);
-      const t0 = performance.now();
-      const res = await fetch(url, { method:"GET", cache:"no-store", signal: controller.signal });
-      clearTimeout(timer);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const latencyMs = Math.round(performance.now() - t0);
-      return { data, latencyMs };
-    }
-
-    async function fetchTwelveData(){
-      const key = (settings.twelveKey || "").trim();
-      if (!key) return { ok:false };
-
-      // TwelveData: https://twelvedata.com/docs#price
-      const url = `https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${encodeURIComponent(key)}&dp=6&_=${Date.now()}`;
       try{
-        const { data, latencyMs } = await fetchWithTimeout(url, 6500);
-        const px = Number(data?.price);
-        if (!Number.isFinite(px) || px <= 0) throw new Error("Bad parse");
-        return { ok:true, price:px, source:"TwelveData", mode:"LIVE", latencyMs };
+        const res = await fetch(url, { method:"GET", cache:"no-store", signal: controller.signal });
+        clearTimeout(timer);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        return { ok:true, json, latencyMs: Math.round(performance.now() - t0) };
       }catch(e){
-        return { ok:false, err:String(e) };
+        clearTimeout(timer);
+        return { ok:false, err:e };
       }
     }
 
-    async function fetchReference(){
-      // These are not live. They are here as a fallback when no key is set.
-      const providers = [
-        {
-          name: "exchangerate.host",
-          url: () => `https://api.exchangerate.host/latest?base=EUR&symbols=USD&_=${Date.now()}`,
-          parse: (j) => j?.rates?.USD
-        },
-        {
-          name: "open.er-api.com",
-          url: () => `https://open.er-api.com/v6/latest/EUR?_=${Date.now()}`,
-          parse: (j) => j?.rates?.USD
-        }
-      ];
+    async function fetchTwelveData(){
+      const key = (settings.twelvedataKey || "").trim();
+      if (!key) return { ok:false };
 
-      for (const p of providers){
-        try{
-          const { data, latencyMs } = await fetchWithTimeout(p.url(), 6500);
-          const px = Number(p.parse(data));
-          if (!Number.isFinite(px) || px <= 0) throw new Error("Bad parse");
-          return { ok:true, price:px, source:p.name, mode:"REFERENCE", latencyMs };
-        }catch(e){}
+      const url = `https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${encodeURIComponent(key)}&_=${Date.now()}`;
+      const r = await fetchWithTimeout(url, 6500);
+      if (!r.ok) return { ok:false };
+      const px = Number(r.json?.price);
+      if (!Number.isFinite(px) || px <= 0) return { ok:false };
+      return { ok:true, price:px, source:"TwelveData", provider:"TwelveData", latencyMs:r.latencyMs };
+    }
+
+    async function fetchFreeOnce(){
+      for (const s of freeSources){
+        const r = await fetchWithTimeout(s.url(), 6500);
+        if (!r.ok) continue;
+        const px = Number(s.parse(r.json));
+        if (!Number.isFinite(px) || px <= 0) continue;
+        return { ok:true, price:px, source:s.name, provider:s.name, latencyMs:r.latencyMs };
       }
       return { ok:false };
     }
@@ -1502,10 +1579,12 @@
     async function tick(updateCb){
       const now = Date.now();
 
-      // Prefer TwelveData if key present
+      // try TwelveData first (best for intraday)
       let r = await fetchTwelveData();
-      if (!r.ok) r = await fetchReference();
+      if (!r.ok) r = await fetchFreeOnce();
+
       if (!r.ok){
+        last.staleCount += 1;
         updateCb?.({ ok:false, ...last, ...status(now) });
         return;
       }
@@ -1516,9 +1595,10 @@
 
       last.price = r.price;
       last.ts = now;
-      last.mode = r.mode;
       last.source = r.source;
+      last.provider = r.provider;
       last.latencyMs = r.latencyMs;
+      last.staleCount = 0;
       last.lastDelta = delta;
 
       if (moved) last.lastChangeTs = now;
@@ -1530,167 +1610,149 @@
     return { tick, getLast: ()=> ({...last}) };
   })();
 
-  // ---------- Macro Proxies via Stooq (daily) ----------
-  // Stooq supports CSV with headers: Date,Open,High,Low,Close,Volume
-  // Note: symbols can be imperfect. This is demo-grade.
-  const Macro = (() => {
-    const series = {
-      brent: { label:"Brent (proxy)", symbol:"co1.f" },     // crude oil (generic)
-      wti:   { label:"WTI (proxy)",   symbol:"cl1.f" },     // crude oil WTI (generic)
-      gold:  { label:"Gold (proxy)",  symbol:"gc1.f" },     // gold futures continuous
-      silver:{ label:"Silver (proxy)",symbol:"si1.f" },     // silver futures continuous
-      dxy:   { label:"DXY (proxy)",   symbol:"dx1.f" }      // dollar index futures
-    };
+  // ---------- Macro feed (Stooq CSV via AllOrigins) ----------
+  const MacroFeed = (() => {
+    // Stooq expects e=csv
+    // We route through AllOrigins: https://api.allorigins.win/raw?url=<encoded>
+    // This is a demo hack. Production uses real feeds.
+    const series = [
+      { key:"OIL", name:"USO", stooq:"uso.us", pxEl:"oilPx", metaEl:"oilMeta", tagEl:"oilTag" },
+      { key:"GOLD", name:"GLD", stooq:"gld.us", pxEl:"goldPx", metaEl:"goldMeta", tagEl:"goldTag" },
+      { key:"SILV", name:"SLV", stooq:"slv.us", pxEl:"silverPx", metaEl:"silverMeta", tagEl:"silverTag" },
+      { key:"USD",  name:"UUP", stooq:"uup.us", pxEl:"usdPx", metaEl:"usdMeta", tagEl:"usdTag" },
+    ];
 
-    let last = {
-      brent: null, wti:null, gold:null, silver:null, dxy:null,
-      tx: { score: 0, bias: "NEUTRAL" }
-    };
+    const state = loadObj(KEY.macro, {
+      last: {}, // key -> { close, prevClose, changePct, ts, src }
+    });
 
-    async function fetchStooq(sym){
-      const url = `https://stooq.com/q/d/l/?s=${encodeURIComponent(sym)}&i=d&_=${Date.now()}`;
-      const res = await fetch(url, { cache:"no-store" });
-      if (!res.ok) throw new Error("stooq fetch failed");
-      const txt = await res.text();
-      const lines = txt.trim().split(/\r?\n/);
-      if (lines.length < 3) throw new Error("not enough data");
-      // last line and previous line (ignore header)
-      const lastLine = lines[lines.length-1].split(",");
-      const prevLine = lines[lines.length-2].split(",");
-      const close = Number(lastLine[4]);
-      const prevClose = Number(prevLine[4]);
+    function persist(){
+      try{ localStorage.setItem(KEY.macro, JSON.stringify(state)); }catch(e){}
+    }
+
+    function stooqCsvUrl(symbol){
+      // daily: last rows include latest close
+      return `https://stooq.com/q/d/l/?s=${encodeURIComponent(symbol)}&i=d`;
+    }
+
+    async function fetchCsvViaAllOrigins(url, timeoutMs=8000){
+      const t0 = performance.now();
+      const controller = new AbortController();
+      const timer = setTimeout(()=> controller.abort(), timeoutMs);
+      try{
+        const prox = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+        const res = await fetch(prox, { method:"GET", cache:"no-store", signal: controller.signal });
+        clearTimeout(timer);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        return { ok:true, text, latencyMs: Math.round(performance.now() - t0) };
+      }catch(e){
+        clearTimeout(timer);
+        return { ok:false, err:e };
+      }
+    }
+
+    function parseStooqDailyCsv(text){
+      // format:
+      // Date,Open,High,Low,Close,Volume
+      // 2026-02-14,xx,xx,xx,xx,xxxx
+      const lines = String(text).trim().split(/\r?\n/).filter(Boolean);
+      if (lines.length < 3) return null;
+      const header = lines[0].split(",");
+      const idxClose = header.findIndex(h => h.toLowerCase() === "close");
+      if (idxClose < 0) return null;
+
+      const lastLine = lines[lines.length - 1].split(",");
+      const prevLine = lines[lines.length - 2].split(",");
+
+      const close = Number(lastLine[idxClose]);
+      const prevClose = Number(prevLine[idxClose]);
       const date = lastLine[0];
-      if (!Number.isFinite(close) || !Number.isFinite(prevClose)) throw new Error("bad close");
-      const chg = close - prevClose;
-      const pct = prevClose !== 0 ? (chg / prevClose) : 0;
-      return { close, prevClose, chg, pct, date };
+
+      if (!Number.isFinite(close) || close <= 0) return null;
+      if (!Number.isFinite(prevClose) || prevClose <= 0) return null;
+
+      const changePct = (close / prevClose - 1) * 100;
+      return { close, prevClose, changePct, date };
     }
 
-    function fmtKpi(v, pct){
-      if (v == null) return "--";
-      const p = (pct * 100);
-      const cls = p >= 0 ? "pos" : "neg";
-      return `<span class="${cls}">${v.toFixed(2)}</span>`;
+    function fmtPx(x){ return (Number.isFinite(x) ? x.toFixed(2) : "--"); }
+    function fmtPct(x){
+      if (!Number.isFinite(x)) return "--";
+      const s = (x >= 0 ? "+" : "") + x.toFixed(2) + "%";
+      return s;
     }
 
-    function fmtMeta(chg, pct, date){
-      const p = (pct * 100);
-      const cls = p >= 0 ? "pos" : "neg";
-      const sign = p >= 0 ? "+" : "";
-      return `<span class="${cls}">${sign}${p.toFixed(2)}%</span> (${sign}${chg.toFixed(2)}) · ${escapeHtml(date)}`;
-    }
+    function paintOne(item){
+      const rec = state.last[item.key];
+      const pxEl = document.getElementById(item.pxEl);
+      const metaEl = document.getElementById(item.metaEl);
+      const tagEl = document.getElementById(item.tagEl);
 
-    function computeTransmission(){
-      // Convert daily macro changes into lever intensities (0..100).
-      // Oil up hurts EUR, DXY up hurts EUR, Gold up can mean risk-off (EUR down), but can decouple.
-      const br = last.brent?.pct ?? 0;
-      const wt = last.wti?.pct ?? 0;
-      const gd = last.gold?.pct ?? 0;
-      const sv = last.silver?.pct ?? 0;
-      const dx = last.dxy?.pct ?? 0;
+      if (!rec){
+        pxEl.textContent = "--";
+        metaEl.textContent = "No data";
+        tagEl.textContent = "—";
+        return;
+      }
 
-      // Levers (0..100), scaled for daily. These are demo scalings.
-      const oilLever = clamp(Math.abs((br+wt)/2) / 0.02, 0, 1) * 100;
-      const dollarLever = clamp(Math.abs(dx) / 0.01, 0, 1) * 100;
-      const fearLever = clamp(Math.max(0, gd - (sv*0.3)) / 0.015, 0, 1) * 100;
+      pxEl.textContent = fmtPx(rec.close);
+      const pct = rec.changePct;
+      const pctStr = fmtPct(pct);
+      metaEl.innerHTML = `Δ ${pctStr} · Prev ${fmtPx(rec.prevClose)} · ${escapeHtml(rec.date || "")}`;
+      tagEl.textContent = `Stooq · ${rec.latencyMs ?? "--"}ms`;
 
-      // Transmission score signed: negative means bearish EURUSD tendency (EUR down).
-      // Heuristic sign:
-      // - Oil up => EUR down (negative)
-      // - DXY up => EUR down (negative)
-      // - Gold up => risk-off => EUR down (negative), but smaller weight
-      const signed = (-0.45*((br+wt)/2)) + (-0.45*dx) + (-0.20*gd);
-      const score = clamp(signed / 0.02, -1, 1); // normalize
-      let bias = "NEUTRAL";
-      if (score <= -0.20) bias = "SHORT";
-      if (score >= 0.20) bias = "LONG";
-
-      last.tx = { score, bias, oilLever, dollarLever, fearLever };
-      return last.tx;
+      // subtle sign styling
+      pxEl.classList.remove("pos","neg");
+      if (Number.isFinite(pct) && pct > 0.05) pxEl.classList.add("pos");
+      if (Number.isFinite(pct) && pct < -0.05) pxEl.classList.add("neg");
     }
 
     async function tick(){
-      const keys = Object.keys(series);
-      for (const k of keys){
-        try{
-          last[k] = await fetchStooq(series[k].symbol);
-        }catch(e){
-          last[k] = null;
-        }
+      for (const item of series){
+        const url = stooqCsvUrl(item.stooq);
+        const r = await fetchCsvViaAllOrigins(url);
+        if (!r.ok) continue;
+
+        const parsed = parseStooqDailyCsv(r.text);
+        if (!parsed) continue;
+
+        state.last[item.key] = {
+          ...parsed,
+          ts: Date.now(),
+          src: "stooq+allorigins",
+          latencyMs: r.latencyMs
+        };
       }
-      return computeTransmission();
+
+      persist();
+      series.forEach(paintOne);
     }
 
-    function render(){
-      // Values
-      els.brentV.innerHTML = last.brent ? fmtKpi(last.brent.close, last.brent.pct) : "--";
-      els.brentM.innerHTML = last.brent ? fmtMeta(last.brent.chg, last.brent.pct, last.brent.date) : "No data";
-
-      els.wtiV.innerHTML = last.wti ? fmtKpi(last.wti.close, last.wti.pct) : "--";
-      els.wtiM.innerHTML = last.wti ? fmtMeta(last.wti.chg, last.wti.pct, last.wti.date) : "No data";
-
-      els.goldV.innerHTML = last.gold ? fmtKpi(last.gold.close, last.gold.pct) : "--";
-      els.goldM.innerHTML = last.gold ? fmtMeta(last.gold.chg, last.gold.pct, last.gold.date) : "No data";
-
-      els.silverV.innerHTML = last.silver ? fmtKpi(last.silver.close, last.silver.pct) : "--";
-      els.silverM.innerHTML = last.silver ? fmtMeta(last.silver.chg, last.silver.pct, last.silver.date) : "No data";
-
-      els.dxyV.innerHTML = last.dxy ? fmtKpi(last.dxy.close, last.dxy.pct) : "--";
-      els.dxyM.innerHTML = last.dxy ? fmtMeta(last.dxy.chg, last.dxy.pct, last.dxy.date) : "No data";
-
-      // Transmission summary
-      const tx = last.tx || { score:0, bias:"NEUTRAL", oilLever:0, dollarLever:0, fearLever:0 };
-      const pct = Math.round(Math.abs(tx.score) * 100);
-      const dir = tx.score < 0 ? "EUR Bearish" : (tx.score > 0 ? "EUR Bullish" : "Neutral");
-      els.txV.textContent = `${tx.bias}`;
-      els.txM.textContent = `Score ${(tx.score).toFixed(2)} · ${dir} · Intensity ${pct}%`;
-
-      // Levers
-      els.oilLeverV.textContent = `${Math.round(tx.oilLever)}%`;
-      els.dollarLeverV.textContent = `${Math.round(tx.dollarLever)}%`;
-      els.fearLeverV.textContent = `${Math.round(tx.fearLever)}%`;
-
-      els.oilLeverM.textContent = "EU energy drag proxy";
-      els.dollarLeverM.textContent = "USD strength pressure proxy";
-      els.fearLeverM.textContent = "Risk-off tone proxy";
+    function get(key){
+      return state.last[key] || null;
     }
 
-    function get(){ return structuredClone(last); }
+    // hydrate UI from persisted macro cache
+    function hydrate(){
+      series.forEach(paintOne);
+    }
 
-    return { tick, render, get };
+    return { tick, get, hydrate };
   })();
 
-  // ---------- Event Risk (proximity) ----------
-  function computeEventRisk(){
-    // Look for HIGH impact events in next 4 hours.
-    const now = Date.now();
-    const horizonMs = 4 * 60 * 60 * 1000;
-    let risk = 0; // 0..100
-    for (const e of curatedEvents){
-      const imp = String(e.impact || "").toUpperCase();
-      if (imp !== "HIGH") continue;
-      const t = new Date(e.when).getTime();
-      if (!Number.isFinite(t)) continue;
-      const dt = t - now;
-      if (dt < 0 || dt > horizonMs) continue;
-      // closer => higher risk
-      const x = 1 - (dt / horizonMs);
-      risk = Math.max(risk, clamp(x, 0, 1) * 100);
-    }
-    return risk;
-  }
-
-  // ---------- Regime Engine ----------
+  // ---------- Regime engine ----------
   const Engine = (() => {
     const HISTORY_N = 80;
-    const MOM_WINDOW = 10;
-    const VOL_WINDOW = 20;
+    const MOM_WINDOW = 8;
+    const VOL_WINDOW = 18;
     const HOLD_TICKS = 4;
-    const PROB_TEMP = 1.25;
+    const PROB_TEMP = 1.35;
 
     let tickN = 0;
     let prices = [];
     let returns = [];
+
     let detectorState = null;
     let policyState = null;
     let hold = 0;
@@ -1704,15 +1766,17 @@
 
     function computeFeatures(){
       if (prices.length < 3) return null;
+
       const p = prices[prices.length-1];
       const pPrev = prices[prices.length-2];
+
       const r = (pPrev ? (p - pPrev) : 0);
       const momBase = prices[Math.max(0, prices.length-1-MOM_WINDOW)];
       const mom = momBase ? (p - momBase) : 0;
 
       const recentR = returns.slice(-VOL_WINDOW);
       const absAvg = recentR.length ? recentR.reduce((a,b)=>a+Math.abs(b),0)/recentR.length : 0;
-      const volx = clamp(absAvg / 0.00015, 0, 6);
+      const volx = clamp(absAvg / 0.00015, 0, 5);
 
       const shock = Math.abs(r) > 0.0007 ? 1 : 0;
 
@@ -1736,14 +1800,14 @@
 
       const L = new Array(8).fill(0);
 
-      L[0] = 2.6 - 0.75*vol - 0.045*momBp;                      // mean reversion
-      L[1] = 1.2 + 0.60*vol - 0.035*momBp;                      // liquidity vacuum
-      L[2] = 1.7 - 0.25*vol - 0.02*momBp;                       // slow drift
-      L[3] = 0.9 + 0.28*vol + 0.05*momBp;                       // strong trend
-      L[4] = -0.2 + 0.60*vol + 0.02*momBp + 0.05*rBp;           // stop cascade
-      L[5] = -0.4 + (f.shock ? 3.0 : 0) + 0.25*vol;             // news shock
-      L[6] = 0.3 + 0.18*vol + 0.40*clamp(signChanges/6,0,1) - 0.02*momBp; // unwind
-      L[7] = -0.9 + 1.00*Math.max(0, vol-2.2) + 0.05*rBp + (f.shock ? 0.7 : 0); // panic
+      L[0] = 2.4 - 0.7*vol - 0.04*momBp;                       // mean reversion
+      L[1] = 1.1 + 0.55*vol - 0.03*momBp;                      // liquidity vacuum
+      L[2] = 1.6 - 0.25*vol - 0.02*momBp;                      // slow drift
+      L[3] = 0.9 + 0.25*vol + 0.045*momBp;                     // trend
+      L[4] = -0.2 + 0.55*vol + 0.02*momBp + 0.04*rBp;          // stop cascade
+      L[5] = -0.4 + (f.shock ? 3.0 : 0) + 0.2*vol;             // news shock
+      L[6] = 0.3 + 0.18*vol + 0.35*clamp(signChanges/6,0,1) - 0.02*momBp; // unwind
+      L[7] = -0.8 + 0.95*Math.max(0, vol-2.2) + 0.04*rBp + (f.shock ? 0.6 : 0); // panic
 
       return softmax(L);
     }
@@ -1759,7 +1823,7 @@
       const top = probs[s];
       const sorted = [...probs].sort((a,b)=>b-a);
       const gap = (sorted[0] - (sorted[1] || 0));
-      return clamp((top*0.72 + gap*0.28), 0, 1);
+      return clamp((top*0.7 + gap*0.3), 0, 1);
     }
 
     function updatePolicy(det){
@@ -1783,6 +1847,7 @@
 
     function step(price){
       tickN += 1;
+
       const p = Number(price);
       if (!Number.isFinite(p) || p <= 0) return null;
 
@@ -1820,316 +1885,449 @@
     return { step };
   })();
 
-  // ---------- Probabilities UI ----------
-  const probEls = [];
-  function initProbUI(){
-    els.probList.innerHTML = "";
-    STATES.forEach((s)=>{
-      const row = document.createElement("div");
-      row.className = "probRow";
-      row.innerHTML = `
-        <div class="probName"><span class="pdot" style="background:${s.color}"></span>State ${s.id}: ${s.name}</div>
-        <div class="pbar"><i></i></div>
-        <div class="probVal">--%</div>
-      `;
-      els.probList.appendChild(row);
-      probEls.push({
-        bar: row.querySelector(".pbar > i"),
-        val: row.querySelector(".probVal")
-      });
-    });
+  // ---------- Macro → transmission ----------
+  function normAbsPct(x, cap=1.5){
+    // x is percent change, cap around 1.5% daily move for ETFs
+    if (!Number.isFinite(x)) return 0;
+    const a = Math.abs(x);
+    return clamp(a / cap, 0, 1);
   }
 
-  // ---------- Risk mapping ----------
-  function setRisk(policyState, conf){
-    let level = "--";
-    let rule = "Policy: state-aware sizing and entry gating";
+  function computeTransmission(){
+    const oil = MacroFeed.get("OIL");
+    const gold = MacroFeed.get("GOLD");
+    const silv = MacroFeed.get("SILV");
+    const usd  = MacroFeed.get("USD");
 
-    if (policyState){
-      if (policyState === 1) { level = "NORMAL"; rule = "Rule: Range logic favored. Avoid forcing breakouts."; }
-      if (policyState === 2) { level = "ELEVATED"; rule = "Rule: Thin liquidity risk. Reduce size and demand confirmation."; }
-      if (policyState === 3) { level = "NORMAL"; rule = "Rule: Drift regime. Small edges, avoid impulsive entries."; }
-      if (policyState === 4) { level = "ELEVATED"; rule = "Rule: Trend regime. Bias with trend. Avoid countertrend heroics."; }
-      if (policyState === 5) { level = "HIGH"; rule = "Rule: Stop cascade risk. De-risk and widen filters."; }
-      if (policyState === 6) { level = "HIGH"; rule = "Rule: News shock. Consider standing down around releases."; }
-      if (policyState === 7) { level = "ELEVATED"; rule = "Rule: Unwind risk. Protect and demand confirmation."; }
-      if (policyState === 8) { level = "CRITICAL"; rule = "Rule: Risk off. Protect capital first."; }
+    const eRisk = computeEventRisk01();
 
-      if (conf != null && conf < 0.33 && (level === "NORMAL")) level = "ELEVATED";
-      if (conf != null && conf < 0.25 && (level === "ELEVATED")) level = "HIGH";
+    // leverage sign: for EURUSD
+    // oil up -> EUR down (negative)
+    // usd up -> EUR down (negative)
+    // gold up -> risk-off; often EUR down (negative)
+    // silver up can be risk-on/growth; we treat it as slight offset to fear (optional)
+    const oilInt = normAbsPct(oil?.changePct, 2.0);     // oil proxy can swing more
+    const usdInt = normAbsPct(usd?.changePct, 1.0);
+    const fearInt = normAbsPct(gold?.changePct, 1.5);
+    const silvInt = normAbsPct(silv?.changePct, 2.0);
+
+    // event lever is already 0..1
+    const eventInt = eRisk;
+
+    // directional components (negative bias for EURUSD)
+    const oilDir = (oil?.changePct ?? 0) >= 0 ? -oilInt : +oilInt*0.4;  // oil down mildly supports EUR
+    const usdDir = (usd?.changePct ?? 0) >= 0 ? -usdInt : +usdInt*0.5;  // weaker USD supports EUR
+    const fearDir = (gold?.changePct ?? 0) >= 0 ? -fearInt : +fearInt*0.2;
+    const silvDir = (silv?.changePct ?? 0) >= 0 ? +silvInt*0.25 : -silvInt*0.15;
+
+    // combine into score in [-1, +1]
+    const score =
+      0.36*oilDir +
+      0.44*usdDir +
+      0.26*fearDir +
+      0.10*silvDir +
+      0.22*(-eventInt); // event proximity adds EUR risk premium
+
+    const intensity = clamp(
+      0.30*oilInt + 0.30*usdInt + 0.20*fearInt + 0.10*silvInt + 0.25*eventInt,
+      0, 1
+    );
+
+    // macro bias label
+    const bias = (score <= -0.18) ? "USD+RISK OFF" : (score >= 0.18) ? "USD WEAK / RISK ON" : "NEUTRAL";
+    return { score: clamp(score, -1, 1), intensity, bias, components: { oilInt, usdInt, fearInt, eventInt } };
+  }
+
+  function leverPaint(barEl, pctEl, val01, dirHint){
+    // val01 is 0..1
+    const pct = Math.round(val01 * 100);
+    pctEl.textContent = pct + "%";
+    barEl.style.width = clamp(pct, 0, 100) + "%";
+
+    // color by direction hint
+    if (dirHint === "bad"){
+      barEl.style.background = "rgba(255,77,77,0.85)";
+    } else if (dirHint === "good"){
+      barEl.style.background = "rgba(24,209,138,0.85)";
+    } else {
+      barEl.style.background = "rgba(120,170,255,0.80)";
+    }
+  }
+
+  // ---------- Projection cone drawing ----------
+  function drawCone({ spot, rng1hPips, rng4hPips, bias }){
+    const c = els.coneCanvas;
+    const ctx = c.getContext("2d");
+    const w = c.width;
+    const h = c.height;
+
+    ctx.clearRect(0,0,w,h);
+
+    // background grid
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = "rgba(0,0,0,0)";
+    ctx.fillRect(0,0,w,h);
+
+    ctx.strokeStyle = "rgba(233,240,255,0.08)";
+    ctx.lineWidth = 1;
+
+    const gridX = 14, gridY = 8;
+    for (let i=0;i<=gridX;i++){
+      const x = i*(w/gridX);
+      ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
+    }
+    for (let j=0;j<=gridY;j++){
+      const y = j*(h/gridY);
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
     }
 
-    els.riskBig.textContent = level;
-    els.riskRule.textContent = rule;
+    // center point
+    const cx = Math.round(w*0.46);
+    const cy = Math.round(h*0.52);
+
+    // cone extents
+    const x1 = Math.round(w*0.62); // 1h marker
+    const x4 = Math.round(w*0.90); // 4h marker
+
+    // y scale: map pips to pixels
+    const maxPips = Math.max(10, rng4hPips * 1.15);
+    const pxPerPip = (h*0.35) / maxPips;
+
+    const y1 = rng1hPips * pxPerPip;
+    const y4 = rng4hPips * pxPerPip;
+
+    // bias shading
+    const biasUp = (bias === "LONG");
+    const biasDn = (bias === "SHORT");
+
+    // draw filled cone
+    ctx.globalAlpha = 0.55;
+    ctx.fillStyle = biasUp ? "rgba(24,209,138,0.20)" : biasDn ? "rgba(255,77,77,0.22)" : "rgba(120,170,255,0.18)";
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(x1, cy - y1);
+    ctx.lineTo(x4, cy - y4);
+    ctx.lineTo(x4, cy + y4);
+    ctx.lineTo(x1, cy + y1);
+    ctx.closePath();
+    ctx.fill();
+
+    // cone outlines
+    ctx.globalAlpha = 0.9;
+    ctx.strokeStyle = "rgba(233,240,255,0.28)";
+    ctx.lineWidth = 1.5;
+
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x4, cy - y4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x4, cy + y4); ctx.stroke();
+
+    ctx.globalAlpha = 1;
+    // center line
+    ctx.strokeStyle = "rgba(233,240,255,0.35)";
+    ctx.beginPath(); ctx.moveTo(0,cy); ctx.lineTo(w,cy); ctx.stroke();
+
+    // spot dot
+    ctx.fillStyle = "rgba(233,240,255,0.95)";
+    ctx.beginPath(); ctx.arc(cx, cy, 3.5, 0, Math.PI*2); ctx.fill();
+
+    // labels
+    ctx.font = "12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
+    ctx.fillStyle = "rgba(233,240,255,0.72)";
+    ctx.fillText(`Spot ${spot.toFixed(5)}`, cx + 10, cy + 4);
+
+    ctx.fillText(`1h ±${rng1hPips}p`, x1 - 60, 18);
+    ctx.fillText(`4h ±${rng4hPips}p`, x4 - 60, 18);
+
+    // bias tag
+    ctx.font = "14px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
+    ctx.fillStyle = biasUp ? "rgba(24,209,138,0.95)" : biasDn ? "rgba(255,77,77,0.95)" : "rgba(233,240,255,0.80)";
+    ctx.fillText(bias, 22, 24);
   }
 
-  // ---------- Log ----------
-  let logRows = loadJSON(KEY.log, []);
-  function persistLog(){ localStorage.setItem(KEY.log, JSON.stringify(logRows.slice(0, 250))); }
-  function renderLog(){
-    const html = logRows.slice(0, 80).map(r=>{
-      return `
-        <tr>
-          <td>${escapeHtml(r.time)}</td>
-          <td>${escapeHtml(r.price)}</td>
-          <td>${escapeHtml(r.det)}</td>
-          <td>${escapeHtml(r.pol)}</td>
-          <td>${escapeHtml(r.conf)}</td>
-          <td>${escapeHtml(r.volx)}</td>
-          <td>${escapeHtml(r.mom)}</td>
-          <td>${escapeHtml(r.macro)}</td>
-          <td>${escapeHtml(r.event)}</td>
-          <td>${escapeHtml(r.src)}</td>
-        </tr>
-      `;
-    }).join("");
-    els.logBody.innerHTML = html || `<tr><td colspan="10" style="color:rgba(255,255,255,0.6)">No samples yet.</td></tr>`;
-  }
-  function addLogSample(sample){
-    logRows.unshift(sample);
-    logRows = logRows.slice(0, 250);
-    persistLog();
-    renderLog();
+  // ---------- Projection calc ----------
+  function computeProjection(step, tx){
+    // baseline pip ranges by regime (rough demo defaults)
+    const basePips1hByState = {
+      1: 6, 2: 10, 3: 7, 4: 12, 5: 18, 6: 16, 7: 14, 8: 26
+    };
+    const pol = step?.policy || 1;
+    const volx = step?.features?.volx ?? 1;
+    const momBp = bp(step?.features?.mom ?? 0);
+    const conf = step?.conf ?? 0.25;
+
+    const base1h = basePips1hByState[pol] ?? 8;
+
+    // scale by vol proxy
+    const volMult = clamp(0.75 + 0.18*volx, 0.65, 1.85);
+
+    // transmission increases expected range by intensity
+    const txMult = clamp(1.0 + 0.55*tx.intensity, 1.0, 1.6);
+
+    // event risk inflates short-term range
+    const eRisk = tx.components.eventInt;
+    const evMult1h = clamp(1.0 + 0.65*eRisk, 1.0, 1.7);
+    const evMult4h = clamp(1.0 + 0.35*eRisk, 1.0, 1.35);
+
+    const rng1h = Math.round(base1h * volMult * txMult * evMult1h);
+    const rng4h = Math.round(rng1h * 2.6 * evMult4h);
+
+    // bias logic: blend momentum + transmission score
+    const momDir = Math.tanh(momBp / 18); // [-1, +1]
+    const score = clamp(0.55*momDir + 0.75*tx.score, -1, 1);
+
+    const bias = (score >= 0.20) ? "LONG" : (score <= -0.20) ? "SHORT" : "NEUTRAL";
+
+    // decision confidence: agreement between momentum and macro + base conf
+    const agree = 1 - Math.abs(momDir - tx.score)/2; // 0..1
+    const dec = clamp(0.35*conf + 0.45*agree + 0.20*(1 - eRisk*0.6), 0, 1);
+    const decPct = Math.round(dec*100);
+
+    return {
+      bias,
+      score,
+      rng1hPips: clamp(rng1h, 3, 80),
+      rng4hPips: clamp(rng4h, 6, 160),
+      decPct,
+      volMult,
+      txMult,
+      eRisk
+    };
   }
 
-  function csvCell(v){
-    const s = String(v ?? "");
-    if (/[",\n]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
-    return s;
+  // ---------- Curated modal wiring ----------
+  function openModal(){
+    els.eventsEditor.value = JSON.stringify(curatedEvents, null, 2);
+    els.headlinesEditor.value = JSON.stringify(curatedHeadlines, null, 2);
+    els.modalBack.style.display = "flex";
   }
+  function closeModal(){
+    els.modalBack.style.display = "none";
+  }
+  els.editBtn.addEventListener("click", openModal);
+  els.closeModalBtn.addEventListener("click", closeModal);
+  els.modalBack.addEventListener("click", (e)=>{ if (e.target === els.modalBack) closeModal(); });
 
-  els.copyCsvBtn.addEventListener("click", async ()=>{
-    const header = ["time","eurusd","det","pol","conf","volx","mom_bp","macro_bias","event_risk","src"];
-    const lines = [header.join(",")];
-    for (const r of logRows.slice().reverse()){
-      lines.push([r.time,r.price,r.det,r.pol,r.conf,r.volx,r.mom,r.macro,r.event,r.src].map(csvCell).join(","));
-    }
+  els.resetCuratedBtn.addEventListener("click", ()=>{
+    curatedEvents = structuredClone(curatedEventsDefault);
+    curatedHeadlines = structuredClone(curatedHeadlinesDefault);
+    els.eventsEditor.value = JSON.stringify(curatedEvents, null, 2);
+    els.headlinesEditor.value = JSON.stringify(curatedHeadlines, null, 2);
+  });
+
+  els.saveCuratedBtn.addEventListener("click", ()=>{
     try{
-      await navigator.clipboard.writeText(lines.join("\n"));
-      els.copyCsvBtn.textContent = "Copied";
-      setTimeout(()=> els.copyCsvBtn.textContent = "Copy as CSV", 900);
-    }catch(e){
-      alert("Clipboard copy failed. Browser says no.");
+      const ev = JSON.parse(els.eventsEditor.value);
+      const hd = JSON.parse(els.headlinesEditor.value);
+      if (!Array.isArray(ev) || !Array.isArray(hd)) throw new Error("Not arrays");
+      curatedEvents = ev;
+      curatedHeadlines = hd;
+      localStorage.setItem(KEY.events, JSON.stringify(curatedEvents));
+      localStorage.setItem(KEY.headlines, JSON.stringify(curatedHeadlines));
+      renderEvents();
+      renderHeadlines();
+      closeModal();
+    }catch(err){
+      alert("Invalid JSON. Fix the JSON formatting before saving.");
     }
   });
 
-  els.clearLogBtn.addEventListener("click", ()=>{
-    if (!confirm("Clear regime log?")) return;
-    logRows = [];
-    persistLog();
-    renderLog();
+  // ---------- Settings modal wiring ----------
+  function openSettings(){
+    els.tdKeyInput.value = settings.twelvedataKey || "";
+    els.pollInput.value = String(settings.pollMs || 12000);
+    els.settingsBack.style.display = "flex";
+  }
+  function closeSettings(){
+    els.settingsBack.style.display = "none";
+  }
+  els.settingsBtn.addEventListener("click", openSettings);
+  els.closeSettingsBtn.addEventListener("click", closeSettings);
+  els.settingsBack.addEventListener("click", (e)=>{ if (e.target === els.settingsBack) closeSettings(); });
+
+  els.resetSettingsBtn.addEventListener("click", ()=>{
+    settings = { twelvedataKey: "", pollMs: 12000 };
+    localStorage.setItem(KEY.settings, JSON.stringify(settings));
+    openSettings();
+  });
+
+  els.saveSettingsBtn.addEventListener("click", ()=>{
+    const key = String(els.tdKeyInput.value || "").trim();
+    const poll = Number(els.pollInput.value || 12000);
+    settings.twelvedataKey = key;
+    settings.pollMs = Number.isFinite(poll) && poll >= 6000 ? Math.round(poll) : 12000;
+    localStorage.setItem(KEY.settings, JSON.stringify(settings));
+    closeSettings();
+    // apply new poll interval on next reload (simple + safe)
+    alert("Saved. Reload the page to apply polling cadence changes cleanly.");
   });
 
   // ---------- Pause + Sync ----------
   let paused = false;
+  let stalePolls = 0;
+
   els.pauseBtn.addEventListener("click", ()=>{
     paused = !paused;
     els.pauseBtn.textContent = paused ? "Resume" : "Pause";
     els.sysStatus.textContent = paused ? "PAUSED" : "LIVE";
+
     if (paused){
       els.liveDot.style.background = "rgba(255,176,32,1)";
       els.liveDot.style.boxShadow = "0 0 0 4px rgba(255,176,32,0.18)";
+      els.modeTag.textContent = "Mode: PAUSED";
     } else {
       els.liveDot.style.background = "rgba(24,209,138,1)";
       els.liveDot.style.boxShadow = "0 0 0 4px rgba(24,209,138,0.18)";
     }
   });
 
-  els.syncBtn.addEventListener("click", ()=> hardResync("Syncing"));
+  els.syncBtn.addEventListener("click", async ()=>{
+    await SpotFeed.tick(onSpotUpdate);
+    await MacroFeed.tick();
+    updateTransmissionAndProjection(lastStep);
+  });
 
-  function hardResync(msg){
-    els.syncBtn.textContent = msg;
-    Promise.allSettled([Quote.tick(onQuoteUpdate), Macro.tick().then(()=>Macro.render())])
-      .finally(()=> setTimeout(()=> els.syncBtn.textContent = "Sync", 650));
-  }
+  // ---------- Transmission + projection update ----------
+  let lastSpot = null;
+  let lastStep = null;
 
-  // ---------- Dash state ----------
-  let dashState = loadObj(KEY.dashboard, {});
-  function persistDashState(){
-    try{ localStorage.setItem(KEY.dashboard, JSON.stringify(dashState)); }catch(e){}
-  }
+  function updateTransmissionAndProjection(step){
+    // compute transmission from macro + events
+    const tx = computeTransmission();
 
-  // ---------- UI: Quote status ----------
-  function setFxStatus(status){
-    els.fxSpotStatus.textContent = status;
-    els.fxStatusDot.classList.remove("live","err");
-    if (status === "LIVE") els.fxStatusDot.classList.add("live");
-    if (status === "ERROR") els.fxStatusDot.classList.add("err");
-  }
+    // chips
+    els.macroBiasChip.textContent = tx.bias;
+    const eRisk = tx.components.eventInt;
+    els.eventRiskChip.textContent = labelEventRisk(eRisk);
 
-  // ---------- Projection cone ----------
-  function drawCone(spot, pips1h, pips4h, bias){
-    const canvas = els.cone;
-    const ctx = canvas.getContext("2d");
-    const rect = canvas.getBoundingClientRect();
+    const txScoreStr = tx.score.toFixed(2);
+    els.txScoreChip.textContent = txScoreStr;
 
-    // hi-dpi
-    const dpr = Math.max(1, window.devicePixelRatio || 1);
-    canvas.width = Math.floor(rect.width * dpr);
-    canvas.height = Math.floor(280 * dpr);
-    canvas.style.height = "280px";
-    ctx.scale(dpr, dpr);
+    // macro transmission card
+    const intensityPct = Math.round(tx.intensity * 100);
+    let txLabel = "NEUTRAL";
+    if (tx.score <= -0.18) txLabel = "BEAR EURUSD";
+    if (tx.score >= 0.18) txLabel = "BULL EURUSD";
 
-    const w = rect.width;
-    const h = 280;
+    els.txBig.textContent = txLabel;
+    els.txMeta.textContent = `Score ${txScoreStr} · ${tx.bias} · Intensity ${intensityPct}%`;
 
-    // background
-    ctx.clearRect(0,0,w,h);
+    // levers (0..1)
+    leverPaint(els.oilLeverBar, els.oilLeverPct, tx.components.oilInt, (MacroFeed.get("OIL")?.changePct ?? 0) >= 0 ? "bad" : "good");
+    els.oilLeverMeta.textContent = "EU energy drag proxy (USO daily change)";
 
-    // grid
-    ctx.globalAlpha = 0.12;
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1;
-    const stepX = w / 12;
-    const stepY = h / 8;
-    for (let i=1;i<12;i++){
-      ctx.beginPath();
-      ctx.moveTo(i*stepX, 0);
-      ctx.lineTo(i*stepX, h);
-      ctx.stroke();
+    leverPaint(els.usdLeverBar, els.usdLeverPct, tx.components.usdInt, (MacroFeed.get("USD")?.changePct ?? 0) >= 0 ? "bad" : "good");
+    els.usdLeverMeta.textContent = "USD pressure proxy (UUP daily change)";
+
+    leverPaint(els.fearLeverBar, els.fearLeverPct, tx.components.fearInt, (MacroFeed.get("GOLD")?.changePct ?? 0) >= 0 ? "bad" : "good");
+    els.fearLeverMeta.textContent = "Risk-off tone proxy (GLD daily change)";
+
+    leverPaint(els.eventLeverBar, els.eventLeverPct, tx.components.eventInt, tx.components.eventInt >= 0.35 ? "bad" : "neutral");
+    els.eventLeverMeta.textContent = "High impact proximity (calendar)";
+
+    // if we have a step + spot, project
+    if (step && lastSpot && Number.isFinite(lastSpot.price)){
+      const proj = computeProjection(step, tx);
+
+      els.tradeBias.textContent = proj.bias;
+      els.tradeBias.classList.remove("pos","neg");
+      if (proj.bias === "LONG") els.tradeBias.classList.add("pos");
+      if (proj.bias === "SHORT") els.tradeBias.classList.add("neg");
+
+      const momBp = bp(step.features.mom).toFixed(1);
+      els.tradeBiasMeta.textContent = `Macro ${txLabel} · Mom ${momBp}bp · Event ${Math.round(proj.eRisk*100)}%`;
+
+      els.rng1h.textContent = `±${proj.rng1hPips} pips`;
+      els.rng1hMeta.textContent = `Vol x${proj.volMult.toFixed(2)} · Macro x${proj.txMult.toFixed(2)}`;
+
+      els.rng4h.textContent = `±${proj.rng4hPips} pips`;
+      els.rng4hMeta.textContent = `Event x${(1.0 + 0.35*proj.eRisk).toFixed(2)} · Tx ${txScoreStr}`;
+
+      els.decConf.textContent = `${proj.decPct}%`;
+      els.decConf.classList.remove("pos","neg");
+      if (proj.decPct >= 55) els.decConf.classList.add("pos");
+      if (proj.decPct <= 30) els.decConf.classList.add("neg");
+
+      els.decConfMeta.textContent = proj.decPct >= 55 ? "Higher agreement" : proj.decPct >= 40 ? "Mixed agreement" : "Low agreement, caution";
+
+      // draw cone
+      drawCone({ spot: lastSpot.price, rng1hPips: proj.rng1hPips, rng4hPips: proj.rng4hPips, bias: proj.bias });
+    } else {
+      // keep placeholders reasonable
+      els.tradeBias.textContent = "--";
+      els.rng1h.textContent = "--";
+      els.rng4h.textContent = "--";
+      els.decConf.textContent = "--";
     }
-    for (let j=1;j<8;j++){
-      ctx.beginPath();
-      ctx.moveTo(0, j*stepY);
-      ctx.lineTo(w, j*stepY);
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-
-    // center line
-    const cx = w*0.52;
-    const cy = h*0.52;
-
-    // pip to px scaling
-    const maxPips = Math.max(8, pips4h*1.2);
-    const pxPerPip = (h*0.35) / maxPips;
-
-    function yForPips(p){ return cy - (p * pxPerPip); }
-
-    // cone polygon
-    const x0 = w*0.12;
-    const x1 = w*0.52;
-    const x2 = w*0.88;
-
-    const yTop1 = yForPips(pips1h);
-    const yBot1 = yForPips(-pips1h);
-    const yTop4 = yForPips(pips4h);
-    const yBot4 = yForPips(-pips4h);
-
-    // fill
-    ctx.globalAlpha = 0.22;
-    ctx.fillStyle = (bias === "LONG") ? "rgba(24,209,138,0.9)" : (bias === "SHORT" ? "rgba(255,77,77,0.9)" : "rgba(120,170,255,0.9)");
-    ctx.beginPath();
-    ctx.moveTo(x1, cy);
-    ctx.lineTo(x2, yTop4);
-    ctx.lineTo(x2, yBot4);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.globalAlpha = 0.12;
-    ctx.fillStyle = "rgba(255,255,255,0.9)";
-    ctx.beginPath();
-    ctx.moveTo(x0, cy);
-    ctx.lineTo(x1, yTop1);
-    ctx.lineTo(x1, yBot1);
-    ctx.closePath();
-    ctx.fill();
-
-    // lines
-    ctx.globalAlpha = 0.35;
-    ctx.strokeStyle = "rgba(255,255,255,0.95)";
-    ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    ctx.moveTo(x0, cy);
-    ctx.lineTo(x2, yTop4);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(x0, cy);
-    ctx.lineTo(x2, yBot4);
-    ctx.stroke();
-
-    // spot marker
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = "rgba(255,255,255,0.9)";
-    ctx.beginPath();
-    ctx.arc(x1, cy, 3.2, 0, Math.PI*2);
-    ctx.fill();
-
-    // labels
-    ctx.font = "12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
-    ctx.fillStyle = "rgba(255,255,255,0.70)";
-    ctx.fillText(`Spot ${spot.toFixed(5)}`, x1 + 8, cy + 4);
-    ctx.fillText(`1h ±${Math.round(pips1h)}p`, x1 + 8, yTop1 - 8);
-    ctx.fillText(`4h ±${Math.round(pips4h)}p`, x2 - 92, yTop4 - 8);
   }
 
-  // ---------- Core update loop ----------
-  let stalePolls = 0;
-  let lastMacro = Macro.get();
-
-  function onQuoteUpdate(q){
+  // ---------- Spot update handler ----------
+  function onSpotUpdate(s){
     const now = Date.now();
     els.lastUpdate.textContent = fmtTime(now);
 
-    if (!q.ok){
+    if (!s.ok){
       setFxStatus("ERROR");
-      els.miniSrc.textContent = "Provider: --";
-      els.miniLatency.textContent = "--";
-      els.miniMode.textContent = "--";
+      els.quoteProvider.textContent = "Provider: --";
+      els.fxSpotMeta.textContent = "Source: --";
+      els.fxLatencyTag.textContent = "--";
+      els.fxLastTag.textContent = "Last: --";
+      els.fxSpotDelta.textContent = "0.00000";
+      els.modeTag.textContent = "Mode: ERROR";
       stalePolls += 1;
       els.staleChip.textContent = String(stalePolls);
       return;
     }
 
-    // Quote UI
-    els.miniPrice.textContent = q.price.toFixed(5);
-    els.miniDelta.textContent = q.lastDelta.toFixed(5);
-    els.miniSrc.textContent = `Provider: ${q.source}`;
-    els.miniLatency.textContent = `${q.latencyMs}ms`;
-    els.miniMode.textContent = q.mode;
+    lastSpot = s;
 
-    setFxStatus(q.status);
+    // quote UI
+    els.fxSpotPrice.textContent = s.price.toFixed(5);
+    els.quoteProvider.textContent = `Provider: ${s.provider || s.source || "--"}`;
+    els.fxSpotMeta.textContent = `Source: ${s.source} · Cache: none · Demo safe`;
+    els.fxSpotDelta.textContent = s.lastDelta.toFixed(5);
+    els.fxLatencyTag.textContent = `${s.latencyMs ?? "--"}ms`;
+    els.fxLastTag.textContent = `Last: ${fmtTime(s.ts)}`;
+    els.modeTag.textContent = settings.twelvedataKey ? "Mode: LIVE" : "Mode: FREE";
 
-    // Bar
-    const w = clamp(Math.abs(q.lastDelta) / 0.0012, 0, 1) * 100;
-    els.miniBar.style.width = `${Math.max(12, w)}%`;
-    els.miniBar.style.background = (q.lastDelta >= 0) ? "rgba(24,209,138,0.85)" : "rgba(255,77,77,0.85)";
+    // delta spark bar
+    const w = clamp(Math.abs(s.lastDelta) / 0.0012, 0, 1) * 100;
+    els.miniBar.style.width = `${Math.max(10, w)}%`;
+    els.miniBar.style.background = (s.lastDelta >= 0) ? "rgba(24,209,138,0.85)" : "rgba(255,77,77,0.85)";
 
-    // Stale tracking
-    if (q.status === "STALE") stalePolls += 1;
+    setFxStatus(s.status);
+
+    if (s.status === "STALE") stalePolls += 1;
     else stalePolls = 0;
     els.staleChip.textContent = String(stalePolls);
 
-    // Mode disclaimer
-    if (q.mode === "REFERENCE"){
-      els.quoteDisclaimer.innerHTML = `Mode: <b>REFERENCE</b>. Not streaming. Set TwelveData key in Settings for intraday updates.`;
-    } else {
-      els.quoteDisclaimer.innerHTML = `Mode: <b>LIVE</b>. Intraday quote provider active.`;
-    }
-
     if (paused) return;
 
-    // Engine step
-    const step = Engine.step(q.price);
+    const step = Engine.step(s.price);
     if (!step) return;
 
+    lastStep = step;
+
+    // state UI
+    els.tickChip.textContent = String(step.tickN);
     const det = step.detector;
     const pol = step.policy;
-    const confPct = (step.conf * 100).toFixed(1) + "%";
 
-    els.tickChip.textContent = String(step.tickN);
+    const confPct = (step.conf * 100).toFixed(1) + "%";
+    const polName = STATES[pol-1]?.name || "--";
+    const polDesc = STATES[pol-1]?.desc || "Waiting for signal.";
+
+    els.policyStateTitle.textContent = `Policy State: S${pol} ${polName}`;
+    els.policyStateDesc.textContent = polDesc;
+
     els.detectorChip.textContent = `S${det}`;
     els.policyChip.textContent = `S${pol}`;
     els.confChip.textContent = confPct;
 
     els.hystChip.textContent = (det === pol) ? "stable" : "holding";
 
-    const polName = STATES[pol-1]?.name || "--";
-    const polDesc = STATES[pol-1]?.desc || "Waiting for signal.";
-    els.policyStateTitle.textContent = `Policy State: S${pol} ${polName}`;
-    els.policyStateDesc.textContent = polDesc;
+    // risk card
+    setRisk(pol, step.conf);
 
-    // Prob bars
+    // probabilities
     step.probs.forEach((p, i)=>{
       const pct = (p*100);
       probEls[i].bar.style.width = `${clamp(pct, 0, 100)}%`;
@@ -2137,186 +2335,53 @@
       probEls[i].val.textContent = `${pct.toFixed(1)}%`;
     });
 
-    // Macro + events influence
-    lastMacro = Macro.get();
-    const tx = lastMacro.tx || { score:0, bias:"NEUTRAL", oilLever:0, dollarLever:0, fearLever:0 };
-
-    const eventRisk = computeEventRisk(); // 0..100
-    els.eventRiskChip.textContent = eventRisk >= 65 ? "HIGH" : (eventRisk >= 30 ? "MED" : "LOW");
-
-    // Macro bias chip
-    els.macroBiasChip.textContent = tx.bias;
-
-    // Risk card
-    setRisk(pol, step.conf);
-
-    // Build projection
-    // Base pip range from regime volatility proxy
-    const base1h = 4 + (step.features.volx * 3.2); // 4.. ~23
-    const macroBoost = 1 + (Math.min(1, Math.abs(tx.score)) * 0.65);
-    const eventBoost = 1 + (eventRisk/100) * 0.55;
-
-    const pips1h = clamp(base1h * macroBoost * (1 + (eventRisk/100)*0.20), 3, 60);
-    const pips4h = clamp(pips1h * (2.8 * eventBoost), 8, 180);
-
-    // Trade bias: blend macro bias and regime direction (momentum sign)
-    const momBp = bp(step.features.mom);
-    let bias = "NEUTRAL";
-    if (tx.bias === "LONG" && momBp > -3) bias = "LONG";
-    if (tx.bias === "SHORT" && momBp < 3) bias = "SHORT";
-    if (bias === "NEUTRAL"){
-      if (momBp > 6) bias = "LONG";
-      if (momBp < -6) bias = "SHORT";
-    }
-
-    // Decision confidence: agreement between macro and regime
-    let agree = 0.5;
-    if ((bias === "LONG" && tx.bias === "LONG") || (bias === "SHORT" && tx.bias === "SHORT")) agree = 0.85;
-    if ((bias === "LONG" && tx.bias === "SHORT") || (bias === "SHORT" && tx.bias === "LONG")) agree = 0.25;
-    const decision = clamp((step.conf*0.65 + agree*0.35) * (1 - eventRisk/220), 0, 1);
-
-    // UI projection
-    els.tradeBias.textContent = bias;
-    els.tradeBiasMeta.textContent = `Macro ${tx.bias} · Mom ${momBp.toFixed(1)}bp · Event ${Math.round(eventRisk)}%`;
-
-    els.range1h.textContent = `±${Math.round(pips1h)} pips`;
-    els.range1hMeta.textContent = `Vol x${step.features.volx.toFixed(2)} · Macro x${macroBoost.toFixed(2)}`;
-
-    els.range4h.textContent = `±${Math.round(pips4h)} pips`;
-    els.range4hMeta.textContent = `Event x${eventBoost.toFixed(2)} · Transmission ${(tx.score).toFixed(2)}`;
-
-    els.decisionConf.textContent = `${Math.round(decision*100)}%`;
-    els.decisionConfMeta.textContent = decision < 0.35 ? "Low agreement, caution" : (decision < 0.60 ? "Mixed signals" : "Good alignment");
-
-    // Event lever display
-    els.eventLeverV.textContent = `${Math.round(eventRisk)}%`;
-    els.eventLeverM.textContent = "High impact proximity";
-
-    // Transmission lever display derived
-    els.oilLeverV.textContent = `${Math.round(tx.oilLever)}%`;
-    els.dollarLeverV.textContent = `${Math.round(tx.dollarLever)}%`;
-    els.fearLeverV.textContent = `${Math.round(tx.fearLever)}%`;
-
-    // Cone
-    drawCone(q.price, pips1h, pips4h, bias);
-
-    // Footer
+    // footer
     els.footPolicy.textContent = `S${pol}`;
     els.footDetector.textContent = `S${det}`;
-    els.footTx.textContent = `${tx.bias} (${tx.score.toFixed(2)})`;
+    els.footHold.textContent = String(step.hold);
 
-    // Persist snapshot
-    dashState = {
-      lastPrice: q.price,
-      lastTs: q.ts,
-      lastSrc: q.source,
-      lastMode: q.mode,
-      lastPolicy: pol,
-      lastDetector: det,
-      lastConf: step.conf,
-      lastProbs: step.probs,
-      lastTick: step.tickN,
-      lastTx: tx,
-      lastEventRisk: eventRisk
-    };
-    persistDashState();
-
-    // Log
-    addLogSample({
-      time: fmtTime(q.ts),
-      price: q.price.toFixed(5),
-      det: `S${det}`,
-      pol: `S${pol}`,
-      conf: confPct,
-      volx: step.features.volx.toFixed(2),
-      mom: momBp.toFixed(2),
-      macro: tx.bias,
-      event: `${Math.round(eventRisk)}%`,
-      src: `${q.source} (${q.mode})`
-    });
+    // update transmission + projection
+    updateTransmissionAndProjection(step);
   }
 
-  // ---------- Hydrate ----------
-  function hydrate(){
+  // ---------- Start ----------
+  async function start(){
     initProbUI();
     renderEvents();
     renderHeadlines();
-    renderLog();
 
-    // macro
-    Macro.render();
+    // hydrate macro cache immediately
+    MacroFeed.hydrate();
 
-    if (dashState && dashState.lastPrice){
-      els.miniPrice.textContent = Number(dashState.lastPrice).toFixed(5);
-      els.miniSrc.textContent = `Provider: ${dashState.lastSrc || "--"}`;
-      els.miniMode.textContent = dashState.lastMode || "--";
-      els.miniLatency.textContent = "--";
-      els.miniDelta.textContent = "0.00000";
-      setFxStatus("CHECKING");
+    // initial transmission even before fresh macro
+    updateTransmissionAndProjection(lastStep);
 
-      if (dashState.lastPolicy){
-        const pol = dashState.lastPolicy;
-        const polName = STATES[pol-1]?.name || "--";
-        const polDesc = STATES[pol-1]?.desc || "--";
-        els.policyStateTitle.textContent = `Policy State: S${pol} ${polName}`;
-        els.policyStateDesc.textContent = polDesc;
-        els.policyChip.textContent = `S${pol}`;
-        els.footPolicy.textContent = `S${pol}`;
-      }
-      if (dashState.lastDetector){
-        els.detectorChip.textContent = `S${dashState.lastDetector}`;
-        els.footDetector.textContent = `S${dashState.lastDetector}`;
-      }
-      if (dashState.lastConf != null){
-        els.confChip.textContent = (dashState.lastConf*100).toFixed(1) + "%";
-        setRisk(dashState.lastPolicy, dashState.lastConf);
-      }
-      if (Array.isArray(dashState.lastProbs) && dashState.lastProbs.length === 8){
-        dashState.lastProbs.forEach((p,i)=>{
-          const pct = p*100;
-          probEls[i].bar.style.width = `${clamp(pct,0,100)}%`;
-          probEls[i].bar.style.background = STATES[i].color;
-          probEls[i].val.textContent = `${pct.toFixed(1)}%`;
-        });
-      }
-      if (dashState.lastTick){
-        els.tickChip.textContent = String(dashState.lastTick);
-      }
-      if (dashState.lastTx){
-        els.macroBiasChip.textContent = dashState.lastTx.bias || "--";
-        els.footTx.textContent = `${dashState.lastTx.bias || "--"} (${Number(dashState.lastTx.score || 0).toFixed(2)})`;
-      }
-      if (dashState.lastEventRisk != null){
-        const er = Number(dashState.lastEventRisk);
-        els.eventRiskChip.textContent = er >= 65 ? "HIGH" : (er >= 30 ? "MED" : "LOW");
-      }
-    }
+    // first tick
+    await SpotFeed.tick(onSpotUpdate);
+
+    // macro tick now, then periodically
+    await MacroFeed.tick();
+    updateTransmissionAndProjection(lastStep);
+
+    // cadence
+    const poll = Number(settings.pollMs) || 12000;
+
+    setInterval(()=> SpotFeed.tick(onSpotUpdate), poll);
+
+    // macro can be slower (daily data)
+    setInterval(async ()=>{
+      await MacroFeed.tick();
+      updateTransmissionAndProjection(lastStep);
+    }, 90_000);
+
+    // countdown refresh
+    setInterval(()=>{
+      renderEvents();
+      updateTransmissionAndProjection(lastStep);
+    }, 30_000);
   }
 
-  // ---------- Start loops ----------
-  const macroPollMs = 10 * 60 * 1000; // macro daily, but refresh every 10 minutes for demo
-  let quoteTimer = null;
-
-  function startTimers(){
-    const pollMs = Math.max(6000, Math.min(60000, Number(settings.pollSeconds || 12) * 1000));
-
-    if (quoteTimer) clearInterval(quoteTimer);
-    quoteTimer = setInterval(()=> Quote.tick(onQuoteUpdate), pollMs);
-
-    // immediate
-    Quote.tick(onQuoteUpdate);
-
-    // macro
-    Macro.tick().then(()=> Macro.render()).catch(()=>{});
-    setInterval(()=> Macro.tick().then(()=> Macro.render()).catch(()=>{}), macroPollMs);
-
-    // events countdown
-    setInterval(()=> renderEvents(), 30_000);
-  }
-
-  // ---------- Initialize ----------
-  hydrate();
-  startTimers();
+  start();
 
 })();
 </script>
