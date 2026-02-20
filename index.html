@@ -860,6 +860,8 @@ let lastSpot=null,lastFullState=null,paused=false,syncing=false;
 
 // ── MASTER COMPUTE TICK ───────────────────────────────────────────────────
 async function onSpotUpdate(s){
+  // READER: never compute locally - all state comes from Firebase
+  if(FirebaseSync.configured&&FirebaseSync.role==="READER")return;
   const now=Date.now();const lu=$("lastUpdate");if(lu)lu.textContent=fmtTime(now);
   if(!s.ok){setFxStatus("ERROR");return;}
   lastSpot=s;
@@ -893,11 +895,19 @@ async function onSpotUpdate(s){
 async function readerPoll(){
   if(FirebaseSync.role!=="READER"||!FirebaseSync.configured)return;
   const st=await FirebaseSync.pullState();
-  if(!st){const pst=$("policyStateDesc");if(pst)pst.textContent="Waiting for MASTER...";return;}
+  if(!st){
+    // No fresh state yet - show waiting message but don't render stale local compute
+    const pst=$("policyStateTitle");if(pst)pst.textContent="Waiting for MASTER data...";
+    const psd=$("policyStateDesc");if(psd)psd.textContent="FB READER connected. MASTER must be running and writing state.";
+    const lu=$("lastUpdate");if(lu)lu.textContent=fmtTime(Date.now());
+    setFxStatus("CHECKING");
+    return;
+  }
   lastFullState=st;
   applyFullStateToUI(st);
   updateSessionUI();updateProjAccuracyUI();
-  const lu=$("lastUpdate");if(lu)lu.textContent=fmtTime(st.ts||Date.now());
+  // Show MASTER's timestamp so team can see data freshness
+  const lu=$("lastUpdate");if(lu)lu.textContent=fmtTime(st.ts||Date.now())+" (M)";
   setFxStatus("LIVE");
 }
 
@@ -938,18 +948,26 @@ async function start(){
   updateCorrUI(CorrEngine.getCorrelations());
   updateSharpeUI({sharpe:null,winRate:null,openPL:null,totalSignals:0,totalPips:0,openBias:null,equity:[0]});
   FirebaseSync.init(settings.fbUrl,settings.fbRole);
-  await Promise.allSettled([SpotFeed.tick(onSpotUpdate),MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()]);
+  // READER skips spot feed entirely - spot price arrives via Firebase state
+  const initFeeds=FirebaseSync.configured&&FirebaseSync.role==="READER"
+    ?[MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()]
+    :[SpotFeed.tick(onSpotUpdate),MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()];
+  await Promise.allSettled(initFeeds);
   renderEvents();renderHeadlines();
   const poll=Math.max(Number(settings.pollMs)||12000,6000);
   if(FirebaseSync.configured&&FirebaseSync.role==="READER"){
-    // READER mode: pull complete state from Firebase every 5s, no local computation
+    // READER mode: ONLY pull Firebase state. No spot feed. No local Engine calls.
+    // Firebase state already contains spotPrice from MASTER.
     readerPoll();
     setInterval(readerPoll,5000);
+    // READERs still fetch macro/events/headlines for their own display panels
     setInterval(async()=>{await MacroFeed.tick();MacroFeed.hydrate();},90000);
     setInterval(async()=>{await EventsFeed.tick();renderEvents();},5*60*1000);
     setInterval(async()=>{await HeadlinesFeed.tick();renderHeadlines();},5*60*1000);
     setInterval(updateSessionUI,30000);
     setInterval(updateProjAccuracyUI,60000);
+    // Countdown timer for events still needs updating
+    setInterval(renderEvents,30000);
   }else{
     // MASTER mode: full compute loop
     setInterval(()=>SpotFeed.tick(onSpotUpdate),poll);
