@@ -251,7 +251,7 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
 <div class="wrap">
 <div class="topbar">
   <div class="brand">
-    <div class="qxlogo">QX</div>
+    <div class="qxlogo">4X</div>
     <div><h1>QuadraX Dashboard</h1><div class="sub">HMM &middot; PB3 &middot; Session &middot; Archetype &middot; Corr &middot; Adaptive Projection Learning &mdash; Full Team Sync</div></div>
   </div>
   <div class="top-actions">
@@ -269,7 +269,7 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
 <div class="grid">
 <div class="stack">
   <div class="card"><div class="inner">
-    <div class="card-title"><h2>Current Market State &middot; HMM Regime Engine</h2><div class="hint">8-state HMM. Deterministic from same price source = all instances converge to same state after warmup. Firebase sync optional.</div></div>
+    <div class="card-title"><h2>Current Market State &middot; HMM Regime Engine</h2><div class="hint">8-state HMM. Deterministic: same EUR/USD feed = identical state on every device after warmup (~20 ticks). No MASTER required — run standalone or sync via Firebase.</div></div>
     <div class="cmsGrid">
       <div class="hero">
         <div class="stateBig" id="policyStateTitle">Policy State: --</div>
@@ -621,11 +621,11 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
       <div class="syncPanel">
         <div class="sh">&#128257; Team Sync via Firebase</div>
         <div class="sd">All instances using the same Firebase database will share the same computed regime state in real-time. The engine is also deterministic (all instances computing from the same EUR/USD source converge to the same state after ~20 ticks without Firebase).</div>
-        <div class="sd"><b>How it works v5:</b> MASTER computes the complete state (HMM probs, PB3 bars, cone, archetype, all graphics data) and writes the entire payload to Firebase every tick. READERs pull this every 5 seconds and render pixel-identical visuals &mdash; no local computation. Every display on every device will be identical.<br><br><b>Setup:</b> 1) Go to firebase.google.com &rarr; Create project &rarr; Realtime Database &rarr; Start in test mode. 2) Copy your database URL (e.g. https://my-project-default-rtdb.firebaseio.com). 3) Paste below. 4) All team members use the same URL. The MASTER instance writes state; READER instances display it.</div>
+        <div class="sd"><b>Recommended: AUTO mode (no single point of failure)</b><br>The HMM engine is fully deterministic. Every instance fetching the same EUR/USD price feed will independently converge to <em>identical state</em> within ~20 ticks (~4 minutes). No PC needs to stay on. Firebase is optional &mdash; it just speeds up convergence and shares projection logs.<br><br><b>READER mode requires MASTER to be running.</b> If that PC sleeps or closes the tab, READERs go stale. Use AUTO instead so everyone computes independently and stays live.<br><br><b>Firebase setup (optional, for faster convergence + projection sharing):</b> 1) Go to firebase.google.com &rarr; Create project &rarr; Realtime Database &rarr; Start in test mode. 2) Copy your database URL (e.g. https://my-project-default-rtdb.firebaseio.com). 3) Paste below. 4) All team members use the same URL. The MASTER instance writes state; READER instances display it.</div>
         <div class="fieldRow" style="margin-top:6px">
           <div class="field"><label>Firebase Database URL (optional)</label><input id="fbUrlInput" placeholder="https://your-project.firebaseio.com"></div>
           <div class="field"><label>Sync Role</label>
-            <select id="fbRoleInput"><option value="MASTER">MASTER (compute + write full state)</option><option value="READER">READER (receive full state from MASTER)</option></select>
+            <select id="fbRoleInput"><option value="AUTO">AUTO (recommended) — compute independently, sync when MASTER online</option><option value="MASTER">MASTER (compute + write to Firebase)</option><option value="READER">READER (receive from MASTER only — requires MASTER online)</option></select>
           </div>
         </div>
         <div class="smallNote" id="fbStatus" style="margin-top:4px">Firebase: not configured</div>
@@ -649,7 +649,7 @@ const KEY={s:"qx_s_v5",sg:"qx_sg_v1",rh:"qx_rh_v3",proj:"qx_proj_v1"};
 function loadObj(k,fb){try{const r=localStorage.getItem(k);if(!r)return fb;const p=JSON.parse(r);return(p&&typeof p==="object")?p:fb;}catch{return fb;}}
 function loadArr(k,fb){try{const r=localStorage.getItem(k);if(!r)return fb;const p=JSON.parse(r);return Array.isArray(p)?p:fb;}catch{return fb;}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
-let settings=loadObj(KEY.s,{twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbUrl:"",fbRole:"MASTER",calibMult:1.0,biasConfAdj:1.0});
+let settings=loadObj(KEY.s,{twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbUrl:"",fbRole:"AUTO",calibMult:1.0,biasConfAdj:1.0});
 const STATES=[
   {id:1,name:"Mean-Reverting",  desc:"Range-bound. Fade extremes, keep size disciplined.",       color:"rgba(24,209,138,.85)"},
   {id:2,name:"Liquidity Vacuum",desc:"Thin market. Reduce size, wait for confirmation.",          color:"rgba(255,176,32,.85)"},
@@ -945,21 +945,39 @@ const FirebaseSync=(()=>{
   let dbUrl=null,role="MASTER",instanceId=Math.random().toString(36).slice(2,11);
   function init(url,r){
     dbUrl=url?(url.replace(/\/$/,"").replace(/\.json$/,"")):null;
-    role=r||"MASTER";
+    role=r||"AUTO";
     const el=$("fbStatus");
-    if(el)el.textContent=dbUrl?"Firebase: "+dbUrl.split("/").pop()+" | Role: "+role+" | ID: "+instanceId:"Firebase: not configured";
+    if(el)el.textContent=dbUrl?"Firebase: "+dbUrl.split("/").pop()+" | Role: "+role+" | ID: "+instanceId:"Firebase: not configured (running standalone - fully functional)";
     updateBadge();
   }
   async function api(method,path,data){if(!dbUrl)return null;try{const opts={method,headers:{"Content-Type":"application/json"},cache:"no-store"};if(data)opts.body=JSON.stringify(data);const r=await fetch(dbUrl+"/qx5/"+path+".json",opts);if(!r.ok)return null;return method==="GET"?r.json():true;}catch{return null;}}
-  async function writeFullState(payload){if(!dbUrl||role!=="MASTER")return;await api("PUT","state",{...payload,masterId:instanceId,ts:Date.now()});}
-  async function pullState(){if(!dbUrl||role!=="READER")return null;const s=await api("GET","state",null);if(!s||!s.ts)return null;if(Date.now()-s.ts>90000)return null;return s;}
+  async function writeFullState(payload){
+    // MASTER and AUTO both write state
+    if(!dbUrl||role==="READER")return;
+    await api("PUT","state",{...payload,masterId:instanceId,ts:Date.now()});
+  }
+  async function pullState(){
+    // Only READER pulls blindly. AUTO reads but also computes locally.
+    if(!dbUrl||role==="AUTO"||role==="MASTER")return null;
+    const s=await api("GET","state",null);if(!s||!s.ts)return null;
+    if(Date.now()-s.ts>90000)return null;
+    return s;
+  }
+  // AUTO: try to read state but fallback to local compute gracefully
+  async function peekState(){
+    if(!dbUrl)return null;
+    const s=await api("GET","state",null);
+    if(!s||!s.ts||Date.now()-s.ts>60000)return null;
+    return s;
+  }
   function updateBadge(){
     const sb=$("syncBadge");if(!sb)return;
-    if(!dbUrl){sb.className="syncBadge warming";return;}
+    if(!dbUrl){sb.className="syncBadge synced";sb.innerHTML='<span class="dot"></span><span>STANDALONE</span>';return;}
     if(role==="MASTER"){sb.className="syncBadge fbmaster";sb.innerHTML='<span class="dot"></span><span>FB MASTER</span>';}
-    else{sb.className="syncBadge fbreader";sb.innerHTML='<span class="dot"></span><span>FB READER</span>';}
+    else if(role==="READER"){sb.className="syncBadge fbreader";sb.innerHTML='<span class="dot"></span><span>FB READER</span>';}
+    else{sb.className="syncBadge fbmaster";sb.innerHTML='<span class="dot"></span><span>AUTO SYNC</span>';}
   }
-  return{init,writeFullState,pullState,updateBadge,get role(){return role;},get configured(){return!!dbUrl;}};
+  return{init,writeFullState,pullState,peekState,updateBadge,get role(){return role;},get configured(){return!!dbUrl;},get isReader(){return role==="READER";}};
 })();
 
 // ── CANVAS ────────────────────────────────────────────────────────────────
@@ -1063,12 +1081,20 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba){
     qSignals:typeof _q!=='undefined'?_q?.signals:null,
   };
 }
-// Inject signal stats into state for READER rendering
+// Inject signal stats + projection data into state for READER rendering
 function injectSignalStats(state,sigStats){
   state.sigSharpe=sigStats.sharpe;state.sigWinRate=sigStats.winRate;state.sigOpenPL=sigStats.openPL;
   state.sigTotalPips=sigStats.totalPips;state.sigOpenBias=sigStats.openBias;state.sigTotalSignals=sigStats.totalSignals;
   // Only send last 60 equity points to keep payload small
   state.sigEquity=sigStats.equity.slice(-60);
+  // Also inject projection tracker data so READERs see accuracy
+  const projS=ProjTracker.getStats();
+  state.projDir1h=projS.dir1hRate;state.projRng1h=projS.rng1hRate;
+  state.projDir4h=projS.dir4hRate;state.projRng4h=projS.rng4hRate;
+  state.projN1h=projS.n1h;state.projN4h=projS.n4h;
+  state.projTotal=projS.total;state.projPending=projS.pending;
+  state.projCalibMult=ProjTracker.getCalibMult();
+  state.projBiasAdj=ProjTracker.getBiasConfAdj();
   return state;
 }
 
@@ -1151,6 +1177,25 @@ function applyFullStateToUI(st){
   const fp=$("footPolicy"),fd=$("footDetector"),fa=$("footAge");
   if(fp)fp.textContent="S"+st.policy;if(fd)fd.textContent="S"+st.detector;if(fa)fa.textContent=String(st.regimeAge);
   updateWarmupBadge(st.tickN,st.warmed);
+  // Projection Accuracy for READER: render from MASTER's computed stats
+  if(FirebaseSync.isReader&&st.projTotal!=null){
+    const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
+    const setV=(id,v,ok,bad)=>{const el=$(id);if(!el)return;el.textContent=v;el.classList.remove("pos","neg");if(ok)el.classList.add("pos");else if(bad)el.classList.add("neg");};
+    setV("pa1hDir",fmt(st.projDir1h),st.projDir1h>=0.55,st.projDir1h!=null&&st.projDir1h<0.45);
+    setV("pa1hRng",fmt(st.projRng1h),st.projRng1h>=0.60&&st.projRng1h<=0.82,false);
+    setV("pa4hDir",fmt(st.projDir4h),st.projDir4h>=0.55,st.projDir4h!=null&&st.projDir4h<0.45);
+    setV("pa4hRng",fmt(st.projRng4h),st.projRng4h>=0.60&&st.projRng4h<=0.82,false);
+    setV("paCalibMult",(st.projCalibMult||1).toFixed(3)+"x",Math.abs((st.projCalibMult||1)-1)<0.05,false);
+    const ptn=$("paTotalN"),ptm=$("paTotalMeta");
+    if(ptn)ptn.textContent=String(st.projTotal||0);
+    if(ptm)ptm.textContent=((st.projTotal||0)-(st.projPending||0))+" resolved, "+(st.projPending||0)+" pending";
+    const p1dm=$("pa1hDirMeta");if(p1dm)p1dm.textContent="n="+(st.projN1h||0)+" scored";
+    const p4dm=$("pa4hDirMeta");if(p4dm)p4dm.textContent="n="+(st.projN4h||0)+" scored";
+    const ready=Math.min(st.projN1h||0,st.projN4h||0)>=5;
+    const ps=$("paStatus");if(ps)ps.textContent=ready?"Active from MASTER":"Collecting on MASTER ("+Math.min(st.projN1h||0,st.projN4h||0)+"/5)";
+    const pca=$("paConeAdj"),cm=st.projCalibMult||1;
+    if(pca)pca.textContent=cm>1.05?"Widening":cm<0.95?"Tightening":"Neutral";
+  }
   // Quant Engine for READER: render from state fields
   if(st.qH!=null){updateQuantUI({H:st.qH,ac1:st.qAC1||0,ac2:0,ac3:0,ac4:0,ac5:0,kelly:{f:st.qKelly||0,pct:Math.round(Math.abs(st.qKelly||0)*100)},volRegime:{ratio:st.qVRratio||1,regime:st.qVR||'NORMAL'},hist:{bins:[],min:0,max:0},halfLife:null,signals:st.qSignals||[],conviction:st.qConviction||0,onCount:st.qOnCount||0,againstCount:st.qAgainstCount||0});}
   // Signal Performance: if state has signal stats (from MASTER), render them
@@ -1298,7 +1343,7 @@ function paintFxPair(key,pxId,metaId,tagId,sparkId,changePct){
 function setRisk(pol,cf){const MAP={1:["NORMAL","Range logic. Fade extremes."],2:["ELEVATED","Thin liquidity. Reduce size."],3:["NORMAL","Drift regime. Small edges."],4:["HIGH","Trend regime. Bias with trend."],5:["HIGH","Stop cascade. De-risk."],6:["HIGH","News shock. Consider standing down."],7:["ELEVATED","Unwind risk. Protect capital."],8:["CRITICAL","Risk off. Protect capital first."]};let[level,rule]=MAP[pol]||["--","State-aware sizing"];if(cf!=null){if(cf<.35&&level==="NORMAL")level="ELEVATED";if(cf<.25&&level==="ELEVATED")level="HIGH";}const rb=$("riskBig"),rr=$("riskRule");if(rb){rb.textContent=level;rb.classList.remove("pos","neg");if(level==="NORMAL")rb.classList.add("pos");if(["CRITICAL","HIGH"].includes(level))rb.classList.add("neg");}if(rr)rr.textContent=rule;}
 function setFxStatus(st){const fs=$("fxSpotStatus"),fd=$("fxStatusDot");if(fs)fs.textContent=st;if(fd){fd.classList.remove("live","err");if(st==="LIVE")fd.classList.add("live");else if(st==="ERROR"||st==="STALE")fd.classList.add("err");}}
 function updateSessionUI(){const{openSessions,primary,isOverlap,dayInfo,minsLeft}=SessionEngine.compute();SessionEngine.SESS.forEach(s=>{const box=$("sb_"+s.id),st=$("ss_"+s.id);if(!box||!st)return;const isOpen=openSessions.includes(s.id),isOL=isOverlap&&(s.id==="LONDON"||s.id==="NEW_YORK");box.style.borderColor=isOpen?s.color.replace(/[\d.]+\)$/,"0.40)"):"rgba(180,220,255,.10)";box.style.background=isOpen?s.color.replace(/[\d.]+\)$/,"0.07)"):"rgba(8,20,52,.22)";st.textContent=isOL?"Overlap":isOpen?"Open":"Closed";st.className="sStat "+(isOL?"overlap":isOpen?"open":"closed");});const cdn=$("currentDayName"),csl=$("currentSessionLabel"),den=$("dayEffectNote"),sob=$("sessionOverlapBadge"),sml=$("sessionMinsLeft");if(cdn)cdn.textContent=dayInfo.name;if(csl)csl.textContent=primary?"Session: "+primary.label:"Session: Closed";if(den)den.textContent=dayInfo.effect;if(sob){sob.textContent=isOverlap?"LDN/NY OVERLAP - Highest Vol":openSessions.length?openSessions.join("+")+" Open":"All sessions closed";sob.style.color=isOverlap?"rgba(100,180,255,.92)":"rgba(255,255,255,.58)";}if(sml)sml.textContent=minsLeft!=null?"~"+minsLeft+"m left":"";}
-function updateWarmupBadge(tickN,warmed){if(FirebaseSync.configured)return;const sb=$("syncBadge");if(!sb)return;if(!warmed){sb.className="syncBadge warming";sb.innerHTML='<span class="dot amber"></span><span>Warming '+tickN+"/"+Engine.WARMUP+"</span>";}else{sb.className="syncBadge synced";sb.innerHTML='<span class="dot"></span><span>SYNCED (det)</span>';}}
+function updateWarmupBadge(tickN,warmed){if(FirebaseSync.isReader)return;const sb=$("syncBadge");if(!sb)return;if(!warmed){sb.className="syncBadge warming";sb.innerHTML='<span class="dot amber"></span><span>Warming '+tickN+"/"+Engine.WARMUP+"</span>";}else{sb.className="syncBadge synced";sb.innerHTML='<span class="dot"></span><span>SYNCED (det)</span>';}}
 function updateSharpeUI(stats){const sv=$("sharpeVal"),sm=$("sharpeMeta");if(sv&&sm){if(stats.sharpe!=null&&Number.isFinite(stats.sharpe)){sv.textContent=stats.sharpe.toFixed(2);sv.classList.remove("pos","neg");if(stats.sharpe>=2.5)sv.classList.add("pos");else if(stats.sharpe<0)sv.classList.add("neg");sm.textContent=stats.sharpe>=2.5?"Target met":"Below target 2.5";}else{sv.textContent="--";sm.textContent="Need >=20 signals ("+stats.totalSignals+")";}}const wr=$("winRateVal"),wrm=$("winRateMeta");if(wr&&wrm){if(stats.winRate!=null){wr.textContent=Math.round(stats.winRate*100)+"%";wr.classList.remove("pos","neg");if(stats.winRate>=.55)wr.classList.add("pos");else if(stats.winRate<.40)wr.classList.add("neg");wrm.textContent=stats.totalSignals+" closed signals";}else{wr.textContent="--";wrm.textContent="No closed signals";}}const pl=$("openPLVal"),plm=$("openPLMeta");if(pl&&plm){if(stats.openPL!=null){pl.textContent=(stats.openPL>=0?"+":"")+stats.openPL.toFixed(1)+" p";pl.classList.remove("pos","neg");if(stats.openPL>0)pl.classList.add("pos");else if(stats.openPL<0)pl.classList.add("neg");plm.textContent=stats.openBias?"Open "+stats.openBias:"--";}else{pl.textContent="--";plm.textContent="No open signal";}}const cp=$("cumPipsVal");if(cp){cp.textContent=(stats.totalPips>=0?"+":"")+stats.totalPips.toFixed(1)+" p";cp.classList.remove("pos","neg");if(stats.totalPips>0)cp.classList.add("pos");else if(stats.totalPips<0)cp.classList.add("neg");}const fs=$("footSharpe");if(fs)fs.textContent=stats.sharpe!=null?stats.sharpe.toFixed(2):"--";drawEquity(stats.equity.length>=2?stats.equity:[0,0]);}
 function updateCorrUI(corrs){const assets=[{key:"OIL",label:"Brent (BZ=F)",dir:"Negative"},{key:"GOLD",label:"Gold COMEX (GC=F)",dir:"Positive"},{key:"SILV",label:"Silver COMEX (SI=F)",dir:"Positive"},{key:"USD",label:"DXY (DX-Y.NYB)",dir:"Negative"},{key:"GBP",label:"GBP/USD",dir:"Positive (r≈80-95%)"},{key:"AUD",label:"AUD/USD",dir:"Positive (r≈70-90%)"},{key:"NZD",label:"NZD/USD",dir:"Positive (r≈65-85%)"}];const cb=$("corrBody");if(!cb)return;cb.innerHTML=assets.map(a=>{const c=corrs[a.key]||{r:0,tStat:0,n:0,sig:"ns"};const rStr=c.n>=5?c.r.toFixed(3):"--",tStr=c.n>=5?c.tStat.toFixed(2):"--";const sigClass=c.sig==="**"?"sig2":c.sig==="*"?"sig1":"sigNS";const rClass=c.r>.05?"corrPos":c.r<-.05?"corrNeg":"";return"<tr><td>"+a.label+"</td><td class='"+rClass+"'>"+rStr+"</td><td>"+tStr+"</td><td class='"+sigClass+"'>"+c.sig+"</td><td>"+c.n+"</td><td style='color:rgba(255,255,255,.45);font-size:10px'>"+a.dir+"</td></tr>";}).join("");}
 
@@ -1313,7 +1358,7 @@ let lastSpot=null,lastFullState=null,paused=false,syncing=false;
 // ── MASTER COMPUTE TICK ───────────────────────────────────────────────────
 async function onSpotUpdate(s){
   // READER: never compute locally - all state comes from Firebase
-  if(FirebaseSync.configured&&FirebaseSync.role==="READER")return;
+  if(FirebaseSync.isReader)return;
   const now=Date.now();const lu=$("lastUpdate");if(lu)lu.textContent=fmtTime(now);
   if(!s.ok){setFxStatus("ERROR");return;}
   lastSpot=s;
@@ -1399,7 +1444,7 @@ if(rpBtn)rpBtn.addEventListener("click",()=>{if(confirm("Reset all projection lo
 if(saveBtn)saveBtn.addEventListener("click",async()=>{
   const key=String($("tdKeyInput")?.value||"").trim(),poll=Number($("pollInput")?.value||12000),thresh=Number($("alertThreshInput")?.value||0),depth=Number($("histDepthInput")?.value||60),fbUrl=String($("fbUrlInput")?.value||"").trim(),fbRole=$("fbRoleInput")?.value||"MASTER";
   if(key){const tv=$("tdKeyValidTag");if(tv){tv.textContent=" Checking...";tv.className="vTag";}const valid=await validateTDKey(key);if(tv){tv.textContent=valid?" Valid":" Invalid";tv.className="vTag "+(valid?"ok":"fail");}if(valid===false&&!confirm("API key appears invalid. Save anyway?"))return;}
-  settings.twelvedataKey=key;settings.pollMs=Number.isFinite(poll)&&poll>=6000?Math.round(poll):12000;settings.alertThreshPips=Number.isFinite(thresh)&&thresh>0?Math.round(thresh):0;settings.histDepth=clamp(Number.isFinite(depth)?Math.round(depth):60,10,120);settings.fbUrl=fbUrl;settings.fbRole=fbRole;
+  settings.twelvedataKey=key;settings.pollMs=Number.isFinite(poll)&&poll>=6000?Math.round(poll):12000;settings.alertThreshPips=Number.isFinite(thresh)&&thresh>0?Math.round(thresh):0;settings.histDepth=clamp(Number.isFinite(depth)?Math.round(depth):60,10,120);settings.fbUrl=fbUrl;settings.fbRole=fbRole||'AUTO';
   save(KEY.s,settings);FirebaseSync.init(fbUrl,fbRole);
   if(settings.alertThreshPips>0&&"Notification"in window&&Notification.permission==="default")Notification.requestPermission();
   closeSettings();alert("Saved. MASTER/READER role applied immediately.");
@@ -1424,7 +1469,7 @@ async function start(){
   updateSharpeUI({sharpe:null,winRate:null,openPL:null,totalSignals:0,totalPips:0,openBias:null,equity:[0]});
   FirebaseSync.init(settings.fbUrl,settings.fbRole);
   // READER skips spot feed entirely - spot price arrives via Firebase state
-  const initFeeds=FirebaseSync.configured&&FirebaseSync.role==="READER"
+  const initFeeds=FirebaseSync.isReader
     ?[MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()]
     :[SpotFeed.tick(onSpotUpdate),MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()];
   await Promise.allSettled(initFeeds);
@@ -1432,7 +1477,7 @@ async function start(){
   setTimeout(async()=>{await MacroFeed.tick();MacroFeed.hydrate();},3000);
   renderEvents();renderHeadlines();
   const poll=Math.max(Number(settings.pollMs)||12000,6000);
-  if(FirebaseSync.configured&&FirebaseSync.role==="READER"){
+  if(FirebaseSync.isReader){
     // READER mode: ONLY pull Firebase state. No spot feed. No local Engine calls.
     // Firebase state already contains spotPrice from MASTER.
     readerPoll();
