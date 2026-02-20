@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>QuadraX Dashboard</title>
+<title>QuadraX Dashboard v4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -30,7 +30,7 @@ body.night{--night:brightness(.52) sepia(.12) hue-rotate(-5deg)}
 .syncBadge{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;font-size:11px;font-family:var(--mono);white-space:nowrap;border:1px solid;transition:all .4s}
 .syncBadge.warming{background:rgba(255,176,32,.15);border-color:rgba(255,176,32,.35);color:rgba(255,200,80,.90)}
 .syncBadge.synced{background:rgba(24,209,138,.12);border-color:rgba(24,209,138,.30);color:rgba(24,209,138,.90)}
-.syncBadge.firebase{background:rgba(43,108,255,.15);border-color:rgba(43,108,255,.35);color:rgba(100,180,255,.90);animation:fbPulse 3s ease infinite}
+.syncBadge.fbmaster{background:rgba(43,108,255,.18);border-color:rgba(43,108,255,.40);color:rgba(120,190,255,.95);animation:fbPulse 3s ease infinite}.syncBadge.fbreader{background:rgba(160,100,255,.15);border-color:rgba(160,100,255,.38);color:rgba(180,140,255,.95);animation:fbPulse 2s ease infinite}
 @keyframes fbPulse{0%,100%{box-shadow:0 0 0 0 rgba(43,108,255,.20)}50%{box-shadow:0 0 0 5px rgba(43,108,255,0)}}
 .alertBadge{display:none;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;background:rgba(255,176,32,.22);border:1px solid rgba(255,176,32,.40);color:#fff;font-size:11px;animation:bpulse 2s ease infinite}
 .alertBadge.show{display:flex}
@@ -177,6 +177,21 @@ tbody tr:hover{background:rgba(255,255,255,.03)}
 .tvWrap iframe{width:100%;height:330px;border:0;display:block}
 .tvFb{display:none;position:absolute;inset:0;align-items:center;justify-content:center;background:rgba(8,20,52,.88);font-size:12px;color:rgba(255,255,255,.60);text-align:center;gap:8px;flex-direction:column}
 .tvFb.show{display:flex}
+.paGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:11px}
+@media(max-width:900px){.paGrid{grid-template-columns:1fr 1fr}}
+.paBox{border-radius:14px;background:rgba(8,20,52,.22);border:1px solid rgba(180,220,255,.10);padding:12px;display:grid;gap:4px}
+.paBox .k{font-size:10px;color:rgba(255,255,255,.48);text-transform:uppercase;letter-spacing:.6px}
+.paBox .v{font-size:22px;font-weight:700;font-family:var(--mono)}
+.paBox .meta{font-size:10px;color:rgba(255,255,255,.44);line-height:1.4}
+.paCalibRow{border-radius:14px;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.paCalibRow .ck{font-size:10px;color:rgba(255,255,255,.50);text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px}
+.paCalibRow .cv{font-size:15px;font-weight:700;font-family:var(--mono)}
+.paLog{border-radius:14px;background:rgba(8,20,52,.20);border:1px solid rgba(180,220,255,.10);overflow:hidden;margin-top:9px}
+.paLogLabel{padding:7px 12px 4px;font-size:10px;color:rgba(255,255,255,.44);text-transform:uppercase;letter-spacing:.6px}
+.paLogTable{width:100%;border-collapse:collapse;font-size:10.5px}
+.paLogTable th{text-align:left;padding:6px 10px;color:rgba(255,255,255,.55);border-bottom:1px solid rgba(180,220,255,.07);background:rgba(8,20,52,.22);font-size:9.5px;text-transform:uppercase;letter-spacing:.6px}
+.paLogTable td{padding:6px 10px;border-bottom:1px solid rgba(180,220,255,.04);font-family:var(--mono);font-size:10.5px}
+.hit{color:var(--green)}.miss{color:var(--red)}.pending{color:rgba(255,255,255,.35)}
 .foot{margin-top:10px;display:flex;justify-content:space-between;color:rgba(255,255,255,.40);font-size:10.5px;padding:0 4px;gap:8px;flex-wrap:wrap;font-family:var(--mono)}
 .mBack{position:fixed;inset:0;background:rgba(0,0,0,.60);display:none;align-items:center;justify-content:center;z-index:999;padding:16px}
 .modal{width:min(960px,100%);border-radius:var(--r);background:linear-gradient(160deg,rgba(10,28,76,.94),rgba(5,8,20,.90));border:1px solid rgba(180,220,255,.16);box-shadow:var(--sh);max-height:90vh;overflow-y:auto}
@@ -204,7 +219,7 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
 <div class="topbar">
   <div class="brand">
     <div class="qxlogo">QX</div>
-    <div><h1>QuadraX Dashboard</h1><div class="sub">HMM Regime &middot; PB3 &middot; Session Intel &middot; Sharpe &middot; Archetype &middot; Corr Matrix &mdash; Team Sync</div></div>
+    <div><h1>QuadraX v5</h1><div class="sub">HMM &middot; PB3 &middot; Session &middot; Archetype &middot; Corr &middot; Adaptive Projection Learning &mdash; Full Team Sync</div></div>
   </div>
   <div class="top-actions">
     <div class="alertBadge" id="alertBadge">&#9889;<span id="alertBadgeText">Alert</span></div>
@@ -255,12 +270,20 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
   </div></div>
 
   <div class="card"><div class="inner">
-    <div class="card-title"><h2>Forward Projection &middot; Regime-Conditioned Cone</h2><div class="hint">Width = regime vol x macro tx x event proximity. Radial gradient = probability density. Not a price target.</div></div>
+    <div class="card-title"><h2>Forward Projection &middot; Regime-Conditioned Cone</h2><div class="hint">Cone self-calibrates from historical accuracy. Adaptive multiplier adjusts when range hit rate drifts outside 50-80%.</div></div>
     <div class="fpGrid">
       <div class="fpBox"><div class="k">Trade Bias</div><div class="v" id="tradeBias">--</div><div class="meta" id="tradeBiasMeta">--</div></div>
       <div class="fpBox" id="rng1hBox"><div class="k">Move Range 1h</div><div class="v" id="rng1h">--</div><div class="meta" id="rng1hMeta">--</div></div>
       <div class="fpBox"><div class="k">Move Range 4h</div><div class="v" id="rng4h">--</div><div class="meta" id="rng4hMeta">--</div></div>
       <div class="fpBox"><div class="k">Decision Conf</div><div class="v" id="decConf">--</div><div class="meta" id="decConfMeta">Low agreement</div></div>
+    </div>
+    <div style="display:flex;gap:9px;margin-top:9px;flex-wrap:wrap">
+      <span class="tagOk">Calib x<span id="calibMult">1.00</span></span>
+      <span class="tagOk">1h Dir <span id="calib1hDir">--%</span></span>
+      <span class="tagOk">1h Rng <span id="calib1hRng">--%</span></span>
+      <span class="tagOk">4h Dir <span id="calib4hDir">--%</span></span>
+      <span class="tagOk">4h Rng <span id="calib4hRng">--%</span></span>
+      <span class="tagOk">n=<span id="calibN">0</span></span>
     </div>
     <div class="coneWrap"><canvas id="coneCanvas"></canvas></div>
     <div class="smallNote" style="margin-top:9px">Cone is a probabilistic range. Not a target price.</div>
@@ -281,6 +304,27 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
     </div>
   </div></div>
 
+  <div class="card"><div class="inner">
+    <div class="card-title"><h2>Projection Accuracy &middot; Adaptive Learning</h2><div class="hint">Every LONG/SHORT call is scored at 1h and 4h. Hit rates drive cone width calibration and bias confidence weighting. Engine self-improves over time.</div></div>
+    <div class="paGrid">
+      <div class="paBox"><div class="k">1h Direction Hit</div><div class="v" id="pa1hDir">--</div><div class="meta" id="pa1hDirMeta">n=0 scored</div></div>
+      <div class="paBox"><div class="k">1h Range Hit</div><div class="v" id="pa1hRng">--</div><div class="meta" id="pa1hRngMeta">Target 60-80%</div></div>
+      <div class="paBox"><div class="k">4h Direction Hit</div><div class="v" id="pa4hDir">--</div><div class="meta" id="pa4hDirMeta">n=0 scored</div></div>
+      <div class="paBox"><div class="k">4h Range Hit</div><div class="v" id="pa4hRng">--</div><div class="meta" id="pa4hRngMeta">Target 60-80%</div></div>
+      <div class="paBox"><div class="k">Calibration Mult</div><div class="v" id="paCalibMult">1.00x</div><div class="meta" id="paCalibMeta">Cone width factor</div></div>
+      <div class="paBox"><div class="k">Logged / Resolved</div><div class="v" id="paTotalN">0</div><div class="meta" id="paTotalMeta">0 resolved, 0 pending</div></div>
+    </div>
+    <div class="paCalibRow" id="paCalibRow" style="background:rgba(8,20,52,.28);border:1px solid rgba(180,220,255,.10)">
+      <div><div class="ck">Engine Status</div><div class="cv" id="paStatus">Collecting data...</div></div>
+      <div><div class="ck">Cone Adaptation</div><div class="cv" id="paConeAdj">Neutral</div></div>
+      <div><div class="ck">Bias Adaptation</div><div class="cv" id="paBiasAdj">Neutral</div></div>
+    </div>
+    <div class="paLog">
+      <div class="paLogLabel">Recent projection log &mdash; last 20 calls</div>
+      <div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Time</th><th>Bias</th><th>1h Range</th><th>4h Range</th><th>1h Dir</th><th>1h Rng</th><th>4h Dir</th><th>4h Rng</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
+    </div>
+    <div class="smallNote" style="margin-top:9px">Scores resolve automatically. 1h outcomes scored at +60min, 4h at +240min. Need 10+ resolved before multiplier adapts.</div>
+  </div></div>
   <div class="card"><div class="inner">
     <div class="card-title"><h2>Signal Performance &middot; Rolling Sharpe</h2><div class="hint">Hypothetical P&amp;L on live bias signals. Sharpe annualized. Target 2.5. Needs 20+ closed signals.</div></div>
     <div class="sharpeGrid">
@@ -414,38 +458,35 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
       <div class="syncPanel">
         <div class="sh">&#128257; Team Sync via Firebase</div>
         <div class="sd">All instances using the same Firebase database will share the same computed regime state in real-time. The engine is also deterministic (all instances computing from the same EUR/USD source converge to the same state after ~20 ticks without Firebase).</div>
-        <div class="sd"><b>Setup:</b> 1) Go to firebase.google.com &rarr; Create project &rarr; Realtime Database &rarr; Start in test mode. 2) Copy your database URL (e.g. https://my-project-default-rtdb.firebaseio.com). 3) Paste below. 4) All team members use the same URL. The MASTER instance writes state; READER instances display it.</div>
+        <div class="sd"><b>How it works v5:</b> MASTER computes the complete state (HMM probs, PB3 bars, cone, archetype, all graphics data) and writes the entire payload to Firebase every tick. READERs pull this every 5 seconds and render pixel-identical visuals &mdash; no local computation. Every display on every device will be identical.<br><br><b>Setup:</b> 1) Go to firebase.google.com &rarr; Create project &rarr; Realtime Database &rarr; Start in test mode. 2) Copy your database URL (e.g. https://my-project-default-rtdb.firebaseio.com). 3) Paste below. 4) All team members use the same URL. The MASTER instance writes state; READER instances display it.</div>
         <div class="fieldRow" style="margin-top:6px">
           <div class="field"><label>Firebase Database URL (optional)</label><input id="fbUrlInput" placeholder="https://your-project.firebaseio.com"></div>
           <div class="field"><label>Sync Role</label>
-            <select id="fbRoleInput"><option value="AUTO">AUTO (first writer = master)</option><option value="MASTER">MASTER (always compute + write)</option><option value="READER">READER (always read, skip compute)</option></select>
+            <select id="fbRoleInput"><option value="MASTER">MASTER (compute + write full state)</option><option value="READER">READER (receive full state from MASTER)</option></select>
           </div>
         </div>
         <div class="smallNote" id="fbStatus" style="margin-top:4px">Firebase: not configured</div>
       </div>
-      <div class="mActions"><button class="btn" id="resetSettingsBtn">Reset defaults</button><button class="btn primary" id="saveSettingsBtn">Save</button></div>
+      <div class="mActions"><button class="btn" id="resetProjBtn">Reset Projection Log</button><button class="btn" id="resetSettingsBtn">Reset Settings</button><button class="btn primary" id="saveSettingsBtn">Save</button></div>
     </div>
   </div>
 </div>
 <script>
 (function(){"use strict";
-
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const fmtTime=ms=>new Date(ms).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+const fmtTS=ms=>new Date(ms).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
 const bp=x=>x*10000;
 const minsAgo=ts=>ts?Math.round((Date.now()-ts)/60000):null;
 const $=id=>document.getElementById(id);
 const escH=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 const escA=s=>String(s).replace(/"/g,'&quot;');
-
 function pearsonR(xs,ys){const n=Math.min(xs.length,ys.length);if(n<5)return{r:0,tStat:0,n,sig:"ns"};const mx=xs.slice(0,n).reduce((a,b)=>a+b,0)/n,my=ys.slice(0,n).reduce((a,b)=>a+b,0)/n;let num=0,dx2=0,dy2=0;for(let i=0;i<n;i++){const dx=xs[i]-mx,dy=ys[i]-my;num+=dx*dy;dx2+=dx*dx;dy2+=dy*dy;}const r=(dx2*dy2===0)?0:num/Math.sqrt(dx2*dy2);const rc=clamp(r,-.9999,.9999),t=rc*Math.sqrt(n-2)/Math.sqrt(1-rc*rc),at=Math.abs(t);return{r:rc,tStat:t,n,sig:at>2.576?"**":at>1.960?"*":"ns"};}
-
-const KEY={s:"qx_s_v4b",sg:"qx_sg_v1",rh:"qx_rh_v3"};
+const KEY={s:"qx_s_v5",sg:"qx_sg_v1",rh:"qx_rh_v3",proj:"qx_proj_v1"};
 function loadObj(k,fb){try{const r=localStorage.getItem(k);if(!r)return fb;const p=JSON.parse(r);return(p&&typeof p==="object")?p:fb;}catch{return fb;}}
 function loadArr(k,fb){try{const r=localStorage.getItem(k);if(!r)return fb;const p=JSON.parse(r);return Array.isArray(p)?p:fb;}catch{return fb;}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
-let settings=loadObj(KEY.s,{twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbUrl:"",fbRole:"AUTO"});
-
+let settings=loadObj(KEY.s,{twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbUrl:"",fbRole:"MASTER",calibMult:1.0,biasConfAdj:1.0});
 const STATES=[
   {id:1,name:"Mean-Reverting",  desc:"Range-bound. Fade extremes, keep size disciplined.",       color:"rgba(24,209,138,.85)"},
   {id:2,name:"Liquidity Vacuum",desc:"Thin market. Reduce size, wait for confirmation.",          color:"rgba(255,176,32,.85)"},
@@ -458,188 +499,49 @@ const STATES=[
 ];
 const probEls=[];
 function initProbUI(){$("probList").innerHTML="";probEls.length=0;STATES.forEach(s=>{const row=document.createElement("div");row.className="probRow";row.innerHTML=`<div class="probName"><span class="pdot" style="background:${s.color}"></span>S${s.id}: ${s.name}</div><div class="pbar"><i></i></div><div class="probVal">--%</div>`;$("probList").appendChild(row);probEls.push({bar:row.querySelector(".pbar>i"),val:row.querySelector(".probVal")});});}
-
 let recentStates=loadArr(KEY.rh,[]);
 function pushState(s){recentStates.push(s);const d=clamp(settings.histDepth||60,10,120);if(recentStates.length>d)recentStates=recentStates.slice(-d);save(KEY.rh,recentStates);}
 
-// ── SPOT FEED ────────────────────────────────────────────────────────────
 const SpotFeed=(()=>{
-  const free=[
-    {name:"exchangerate.host",url:()=>`https://api.exchangerate.host/latest?base=EUR&symbols=USD&_=${Date.now()}`,parse:j=>j?.rates?.USD},
-    {name:"frankfurter.app",url:()=>`https://api.frankfurter.app/latest?from=EUR&to=USD&_=${Date.now()}`,parse:j=>j?.rates?.USD},
-    {name:"open.er-api.com",url:()=>`https://open.er-api.com/v6/latest/EUR?_=${Date.now()}`,parse:j=>j?.rates?.USD},
-  ];
+  const free=[{name:"exchangerate.host",url:()=>`https://api.exchangerate.host/latest?base=EUR&symbols=USD&_=${Date.now()}`,parse:j=>j?.rates?.USD},{name:"frankfurter.app",url:()=>`https://api.frankfurter.app/latest?from=EUR&to=USD&_=${Date.now()}`,parse:j=>j?.rates?.USD},{name:"open.er-api.com",url:()=>`https://open.er-api.com/v6/latest/EUR?_=${Date.now()}`,parse:j=>j?.rates?.USD}];
   let last={price:null,ts:0,source:null,provider:null,latencyMs:null,staleCount:0,lastChangeTs:0,lastDelta:0};
   const STALE=60000,MIN=0.000001;let ctrl=null;const bo={};
   const status=(now=Date.now())=>!last.price?{status:"CHECKING",stale:false}:{status:(now-last.ts)>STALE?"STALE":"LIVE",stale:(now-last.ts)>STALE};
-  async function ft(url,ms=7000){const t0=performance.now();if(ctrl)ctrl.abort();ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),ms);try{const res=await fetch(url,{method:"GET",cache:"no-store",signal:ctrl.signal});clearTimeout(timer);if(res.status===429)throw Object.assign(new Error("429"),{is429:true});if(!res.ok)throw new Error("HTTP "+res.status);return{ok:true,json:await res.json(),latencyMs:Math.round(performance.now()-t0)};}catch(e){clearTimeout(timer);return{ok:false,err:e,is429:e?.is429};}}
+  async function ft(url,ms=7000){const t0=performance.now();if(ctrl)ctrl.abort();ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),ms);try{const res=await fetch(url,{method:"GET",cache:"no-store",signal:ctrl.signal});clearTimeout(timer);if(res.status===429)throw Object.assign(new Error("429"),{is429:true});if(!res.ok)throw new Error();return{ok:true,json:await res.json(),latencyMs:Math.round(performance.now()-t0)};}catch(e){clearTimeout(timer);return{ok:false,is429:e?.is429};}}
   async function fetchTD(){const key=(settings.twelvedataKey||"").trim();if(!key)return{ok:false};const r=await ft(`https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${encodeURIComponent(key)}&_=${Date.now()}`);if(!r.ok)return{ok:false};const px=Number(r.json?.price);if(!Number.isFinite(px)||px<=0)return{ok:false};return{ok:true,price:px,source:"TwelveData",provider:"TwelveData",latencyMs:r.latencyMs};}
   async function fetchFree(){const now=Date.now();const av=free.filter(s=>!bo[s.name]||bo[s.name]<now);if(!av.length)return{ok:false};try{return await Promise.any(av.map(s=>ft(s.url(),7000).then(r=>{if(!r.ok){if(r.is429)bo[s.name]=now+300000;throw new Error();}const px=Number(s.parse(r.json));if(!Number.isFinite(px)||px<=0)throw new Error();return{ok:true,price:px,source:s.name,provider:s.name,latencyMs:r.latencyMs};})));}catch{return{ok:false};}}
   async function tick(cb){const now=Date.now();let r=await fetchTD();if(!r.ok)r=await fetchFree();if(!r.ok){last.staleCount++;cb?.({ok:false,...last,...status(now)});return;}const prev=last.price,moved=prev==null||Math.abs(r.price-prev)>MIN;last={...last,price:r.price,ts:now,source:r.source,provider:r.provider,latencyMs:r.latencyMs,staleCount:0,lastDelta:prev==null?0:r.price-prev};if(moved)last.lastChangeTs=now;if(!last.lastChangeTs)last.lastChangeTs=now;cb?.({ok:true,...last,...status(now)});}
   return{tick,getLast:()=>({...last})};
 })();
 
-// ── MACRO FEED: Yahoo Finance via AllOrigins ──────────────────────────────
-// Symbols: BZ=F (Brent), GC=F (Gold COMEX), SI=F (Silver COMEX), DX-Y.NYB (DXY)
 const MacroFeed=(()=>{
-  const series=[
-    {key:"OIL", sym:"BZ=F",   label:"Brent Crude", unit:"$/bbl", pxEl:"oilPx",    metaEl:"oilMeta",    tagEl:"oilTag",    sparkEl:"oilSpark",   txCap:3.0},
-    {key:"GOLD",sym:"GC=F",   label:"Gold COMEX",  unit:"$/oz",  pxEl:"goldPx",   metaEl:"goldMeta",   tagEl:"goldTag",   sparkEl:"goldSpark",  txCap:1.5},
-    {key:"SILV",sym:"SI=F",   label:"Silver COMEX",unit:"$/oz",  pxEl:"silverPx", metaEl:"silverMeta", tagEl:"silverTag", sparkEl:"silverSpark",txCap:2.5},
-    {key:"USD", sym:"DX-Y.NYB",label:"DXY",        unit:"index", pxEl:"usdPx",    metaEl:"usdMeta",    tagEl:"usdTag",    sparkEl:"usdSpark",   txCap:0.8},
-  ];
-  let cache={};
-  const bo={};
-  async function fetchYahoo(sym){
-    const t0=performance.now();
-    const yUrl=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=2mo`;
-    const prox=`https://api.allorigins.win/raw?url=${encodeURIComponent(yUrl)}`;
-    const c=new AbortController();const timer=setTimeout(()=>c.abort(),12000);
-    try{
-      const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});
-      clearTimeout(timer);
-      if(res.status===429)throw Object.assign(new Error("429"),{is429:true});
-      if(!res.ok)throw new Error("HTTP "+res.status);
-      const json=await res.json();
-      const result=json?.chart?.result?.[0];
-      if(!result)throw new Error("No chart result");
-      const meta=result.meta;
-      const rawCloses=(result.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null&&Number.isFinite(v));
-      if(rawCloses.length<2)throw new Error("No closes");
-      const close=meta.regularMarketPrice||rawCloses.at(-1);
-      const prevClose=meta.previousClose||meta.chartPreviousClose||rawCloses.at(-2);
-      return{ok:true,close,prevClose,changePct:prevClose?(close/prevClose-1)*100:0,closes:rawCloses.slice(-20),latencyMs:Math.round(performance.now()-t0),source:"Yahoo/"+sym};
-    }catch(e){clearTimeout(timer);return{ok:false,err:e,is429:e?.is429};}
-  }
-  const fmtPx=(x,sym)=>!Number.isFinite(x)?"--":sym==="SI=F"?x.toFixed(2):x<10?x.toFixed(4):x<100?x.toFixed(2):x.toFixed(2);
+  const series=[{key:"OIL",sym:"BZ=F",label:"Brent",pxEl:"oilPx",metaEl:"oilMeta",tagEl:"oilTag",sparkEl:"oilSpark"},{key:"GOLD",sym:"GC=F",label:"Gold",pxEl:"goldPx",metaEl:"goldMeta",tagEl:"goldTag",sparkEl:"goldSpark"},{key:"SILV",sym:"SI=F",label:"Silver",pxEl:"silverPx",metaEl:"silverMeta",tagEl:"silverTag",sparkEl:"silverSpark"},{key:"USD",sym:"DX-Y.NYB",label:"DXY",pxEl:"usdPx",metaEl:"usdMeta",tagEl:"usdTag",sparkEl:"usdSpark"}];
+  let cache={};const bo={};
+  async function fetchYahoo(sym){const t0=performance.now();const prox="https://api.allorigins.win/raw?url="+encodeURIComponent("https://query1.finance.yahoo.com/v8/finance/chart/"+encodeURIComponent(sym)+"?interval=1d&range=2mo");const c=new AbortController();const timer=setTimeout(()=>c.abort(),12000);try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(timer);if(res.status===429)throw Object.assign(new Error("429"),{is429:true});if(!res.ok)throw new Error();const json=await res.json();const result=json?.chart?.result?.[0];if(!result)throw new Error();const meta=result.meta;const rawCloses=(result.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null&&Number.isFinite(v));if(rawCloses.length<2)throw new Error();const close=meta.regularMarketPrice||rawCloses.at(-1);const prevClose=meta.previousClose||meta.chartPreviousClose||rawCloses.at(-2);return{ok:true,close,prevClose,changePct:prevClose?(close/prevClose-1)*100:0,closes:rawCloses.slice(-20),latencyMs:Math.round(performance.now()-t0)};}catch(e){clearTimeout(timer);return{ok:false,is429:e?.is429};}}
+  const fmtPx=x=>!Number.isFinite(x)?"--":x<10?x.toFixed(4):x.toFixed(2);
   const fmtPct=x=>!Number.isFinite(x)?"--":(x>=0?"+":"")+x.toFixed(2)+"%";
-  function paintOne(item){
-    const rec=cache[item.key];
-    const pEl=$(item.pxEl),mEl=$(item.metaEl),tEl=$(item.tagEl),sEl=$(item.sparkEl);
-    if(!rec){pEl.textContent="--";mEl.textContent="No data";tEl.textContent="--";tEl.className="liveBadge error";return;}
-    pEl.textContent=fmtPx(rec.close,item.sym);
-    const ma=minsAgo(rec.ts);
-    mEl.textContent=fmtPct(rec.changePct)+" Prev "+fmtPx(rec.prevClose,item.sym)+(ma!=null?" "+ma+"m ago":"");
-    tEl.textContent=item.label;tEl.className="liveBadge "+(ma!=null&&ma<120?"live":"stale");
-    pEl.classList.remove("pos","neg");
-    if(rec.changePct>0.05)pEl.classList.add("pos");
-    if(rec.changePct<-0.05)pEl.classList.add("neg");
-    if(sEl&&rec.closes?.length>1)drawSparkline(sEl,rec.closes,rec.changePct);
-  }
-  async function tick(){
-    const now=Date.now();
-    await Promise.allSettled(series.filter(i=>!bo[i.key]||bo[i.key]<now).map(item=>
-      fetchYahoo(item.sym).then(r=>{
-        if(!r.ok){if(r.is429)bo[item.key]=now+600000;return;}
-        cache[item.key]={...r,ts:now};
-      })
-    ));
-    series.forEach(paintOne);
-  }
-  const get=k=>cache[k]||null;
-  const hydrate=()=>series.forEach(paintOne);
-  return{tick,get,hydrate,series};
+  function paintOne(item){const rec=cache[item.key],pEl=$(item.pxEl),mEl=$(item.metaEl),tEl=$(item.tagEl),sEl=$(item.sparkEl);if(!rec){if(pEl)pEl.textContent="--";if(mEl)mEl.textContent="No data";if(tEl){tEl.textContent=item.label;tEl.className="liveBadge error";}return;}if(pEl)pEl.textContent=fmtPx(rec.close);const ma=minsAgo(rec.ts);if(mEl)mEl.textContent=fmtPct(rec.changePct)+" Prev "+fmtPx(rec.prevClose)+(ma!=null?" "+ma+"m ago":"");if(tEl){tEl.textContent=item.label;tEl.className="liveBadge "+(ma!=null&&ma<120?"live":"stale");}if(pEl){pEl.classList.remove("pos","neg");if(rec.changePct>0.05)pEl.classList.add("pos");if(rec.changePct<-0.05)pEl.classList.add("neg");}if(sEl&&rec.closes?.length>1)drawSparkline(sEl,rec.closes,rec.changePct);}
+  async function tick(){const now=Date.now();await Promise.allSettled(series.filter(i=>!bo[i.key]||bo[i.key]<now).map(item=>fetchYahoo(item.sym).then(r=>{if(!r.ok){if(r.is429)bo[item.key]=now+600000;return;}cache[item.key]={...r,ts:now};})));series.forEach(paintOne);}
+  return{tick,get:k=>cache[k]||null,hydrate:()=>series.forEach(paintOne)};
 })();
 
-// ── LIVE EVENTS FEED (Forex Factory) ────────────────────────────────────
 const EventsFeed=(()=>{
-  let cache=[],lastFetch=0;
-  const TTL=30*60*1000;
-  const FF_URL="https://nfs.faireconomy.media/ff_calendar_thisweek.json";
-  async function fetch_ff(){
-    const prox=`https://api.allorigins.win/raw?url=${encodeURIComponent(FF_URL)}`;
-    const c=new AbortController();const timer=setTimeout(()=>c.abort(),12000);
-    try{
-      const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});
-      clearTimeout(timer);
-      if(!res.ok)throw new Error("HTTP "+res.status);
-      const json=await res.json();
-      if(!Array.isArray(json))throw new Error("Not array");
-      // Filter HIGH/MED impact for USD and EUR
-      return json.filter(e=>
-        (e.impact==="High"||e.impact==="Medium")&&
-        (e.country==="USD"||e.country==="EUR")
-      ).map(e=>({
-        when:e.date,
-        event:e.title+" ("+e.country+")",
-        impact:e.impact==="High"?"HIGH":"MED",
-        forecast:e.forecast||"",
-        previous:e.previous||"",
-      }));
-    }catch(err){clearTimeout(timer);return null;}
-  }
-  async function tick(){
-    const now=Date.now();
-    if(now-lastFetch<TTL&&cache.length>0)return;
-    const data=await fetch_ff();
-    if(data){cache=data;lastFetch=now;$("calBadge").className="liveBadge live";$("calBadge").textContent="LIVE";$("calLastFetch").textContent="Updated "+fmtTime(now);}
-    else{$("calBadge").className="liveBadge stale";$("calBadge").textContent="RETRY";$("calLastFetch").textContent="Fetch failed - will retry";}
-    renderEvents();
-  }
-  function get(){return cache;}
-  return{tick,get};
+  let cache=[],lastFetch=0;const TTL=5*60*1000;
+  async function tick(){const now=Date.now();if(now-lastFetch<TTL&&cache.length>0)return;const prox="https://api.allorigins.win/raw?url="+encodeURIComponent("https://nfs.faireconomy.media/ff_calendar_thisweek.json");const c=new AbortController();const timer=setTimeout(()=>c.abort(),12000);try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(timer);if(!res.ok)throw new Error();const json=await res.json();if(!Array.isArray(json))throw new Error();cache=json.filter(e=>(e.impact==="High"||e.impact==="Medium")&&(e.country==="USD"||e.country==="EUR")).map(e=>({when:e.date,event:e.title+" ("+e.country+")",impact:e.impact==="High"?"HIGH":"MED",forecast:e.forecast||"",previous:e.previous||""}));lastFetch=now;const cb=$("calBadge");if(cb){cb.className="liveBadge live";cb.textContent="LIVE";}const cl=$("calLastFetch");if(cl)cl.textContent="Updated "+fmtTime(now);}catch{clearTimeout(timer);const cb=$("calBadge");if(cb){cb.className="liveBadge stale";cb.textContent="RETRY";}const cl=$("calLastFetch");if(cl)cl.textContent="Fetch failed - retrying";}renderEvents();}
+  return{tick,get:()=>cache};
 })();
 
-// ── LIVE HEADLINES FEED (RSS) ────────────────────────────────────────────
 const HeadlinesFeed=(()=>{
-  const SOURCES=[
-    {url:"https://www.forexlive.com/feed/news",name:"ForexLive"},
-    {url:"https://www.fxstreet.com/rss/news",name:"FXStreet"},
-  ];
-  let cache=[];let lastFetch=0;const TTL=5*60*1000;
-  async function fetchRSS(src){
-    const prox=`https://api.allorigins.win/raw?url=${encodeURIComponent(src.url)}`;
-    const c=new AbortController();const timer=setTimeout(()=>c.abort(),10000);
-    try{
-      const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});
-      clearTimeout(timer);
-      if(!res.ok)throw new Error("HTTP "+res.status);
-      const text=await res.text();
-      const parser=new DOMParser();
-      const doc=parser.parseFromString(text,"application/xml");
-      const items=[...doc.querySelectorAll("item")].slice(0,6);
-      return items.map(item=>{
-        const rawPub=item.querySelector("pubDate")?.textContent||"";
-        let timeStr="--";
-        try{const d=new Date(rawPub);if(!isNaN(d))timeStr=d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})+" "+d.toLocaleDateString([],{month:"short",day:"numeric"});}catch{}
-        const title=(item.querySelector("title")?.textContent||"").replace(/<!\[CDATA\[|\]\]>/g,"").trim();
-        const link=(item.querySelector("link")?.textContent||item.querySelector("guid")?.textContent||"#").trim();
-        return{time:timeStr,source:src.name,title,url:link};
-      }).filter(h=>h.title);
-    }catch(e){clearTimeout(timer);return[];}
-  }
-  async function tick(){
-    const now=Date.now();
-    if(now-lastFetch<TTL&&cache.length>0)return;
-    const results=await Promise.allSettled(SOURCES.map(s=>fetchRSS(s)));
-    const all=[];
-    results.forEach(r=>{if(r.status==="fulfilled")all.push(...r.value);});
-    if(all.length>0){
-      cache=all.sort((a,b)=>{
-        try{return new Date(b.time).getTime()-new Date(a.time).getTime();}catch{return 0;}
-      }).slice(0,12);
-      lastFetch=now;
-      $("headBadge").className="liveBadge live";$("headBadge").textContent="LIVE";
-      $("headLastFetch").textContent="Updated "+fmtTime(now)+" | "+all.length+" headlines from "+SOURCES.length+" sources";
-    }else{
-      $("headBadge").className="liveBadge stale";$("headBadge").textContent="RETRY";
-      $("headLastFetch").textContent="RSS fetch failed. Retrying...";
-    }
-    renderHeadlines();
-  }
-  function get(){return cache;}
-  return{tick,get};
+  const SOURCES=[{url:"https://www.forexlive.com/feed/news",name:"ForexLive"},{url:"https://www.fxstreet.com/rss/news",name:"FXStreet"}];
+  let cache=[],lastFetch=0;const TTL=5*60*1000;
+  async function tick(){const now=Date.now();if(now-lastFetch<TTL&&cache.length>0)return;const results=await Promise.allSettled(SOURCES.map(async src=>{const prox="https://api.allorigins.win/raw?url="+encodeURIComponent(src.url);const c=new AbortController();const timer=setTimeout(()=>c.abort(),10000);try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(timer);if(!res.ok)throw new Error();const text=await res.text();const doc=new DOMParser().parseFromString(text,"application/xml");return[...doc.querySelectorAll("item")].slice(0,6).map(item=>{const rawPub=item.querySelector("pubDate")?.textContent||"";let ts="--";try{const d=new Date(rawPub);if(!isNaN(d))ts=fmtTS(d);}catch{}const title=(item.querySelector("title")?.textContent||"").replace(/<!\[CDATA\[|\]\]>/g,"").trim();const link=(item.querySelector("link")?.textContent||item.querySelector("guid")?.textContent||"#").trim();return{time:ts,source:src.name,title,url:link};}).filter(h=>h.title);}catch(e){clearTimeout(timer);return[];}}));const all=[];results.forEach(r=>{if(r.status==="fulfilled")all.push(...r.value);});if(all.length>0){cache=all.slice(0,12);lastFetch=now;const hb=$("headBadge");if(hb){hb.className="liveBadge live";hb.textContent="LIVE";}const hl=$("headLastFetch");if(hl)hl.textContent="Updated "+fmtTime(now);}else{const hb=$("headBadge");if(hb){hb.className="liveBadge stale";hb.textContent="RETRY";}const hl=$("headLastFetch");if(hl)hl.textContent="RSS fetch failed.";}renderHeadlines();}
+  return{tick,get:()=>cache};
 })();
 
-// ── ENGINE (stateless per session - deterministic convergence) ───────────
 const Engine=(()=>{
-  const HN=80,MW=8,VW=18,HT=4,PT=1.35,MSW=10;
-  const WARMUP=20;
-  let tickN=0,regAge=0,lastPol=null;
-  let prices=[],returns=[];
-  let polState=null,hold=0;
-  let TM=Array.from({length:8},()=>new Array(8).fill(0));
-  let prevPol=null;
+  const HN=80,MW=8,VW=18,HT=4,PT=1.35,MSW=10,WARMUP=20;
+  let tickN=0,regAge=0,lastPol=null;let prices=[],returns=[];let polState=null,hold=0;
+  let TM=Array.from({length:8},()=>new Array(8).fill(0));let prevPol=null;
   const softmax=lg=>{const m=Math.max(...lg),e=lg.map(v=>Math.exp((v-m)/PT)),s=e.reduce((a,b)=>a+b,0)||1;return e.map(v=>v/s);};
   function feats(){if(prices.length<3)return null;const p=prices.at(-1),pp=prices.at(-2),r=pp?p-pp:0;const mb=prices[Math.max(0,prices.length-1-MW)],mom=mb?p-mb:0;const rr=returns.slice(-VW),avg=rr.length?rr.reduce((a,b)=>a+Math.abs(b),0)/rr.length:0;const volx=clamp(avg/0.00015,0,5),shock=Math.abs(r)>0.0007?1:0;const rrm=returns.slice(-MSW),md=Math.sign(mom);const momScore=rrm.length>0?rrm.filter(v=>Math.sign(v)===md).length/rrm.length:0.5;return{p,r,mom,volx,shock,momScore};}
   function scoreStates(f){const mb=Math.abs(bp(f.mom)),rb=Math.abs(bp(f.r)),v=f.volx;const sc=returns.slice(-10);const sig=sc.length<6?0:sc.reduce((c,_,i)=>i>0&&Math.sign(sc[i])!==Math.sign(sc[i-1])?c+1:c,0);return softmax([2.4-.7*v-.04*mb,1.1+.55*v-.03*mb,1.6-.25*v-.02*mb,.9+.25*v+.045*mb,-.2+.55*v+.02*mb+.04*rb,-.4+(f.shock?3:0)+.2*v,.3+.18*v+.35*clamp(sig/6,0,1)-.02*mb,-.8+.95*Math.max(0,v-2.2)+.04*rb+(f.shock?.6:0)]);}
@@ -648,26 +550,13 @@ const Engine=(()=>{
   function updatePol(det){if(polState==null){polState=det;hold=0;return{policy:polState,hold};}if(det===polState){hold=0;return{policy:polState,hold};}hold++;if(hold>=HT){polState=det;hold=0;return{policy:polState,hold};}return{policy:polState,hold};}
   const transRow=si=>{const row=TM[si],total=row.reduce((a,b)=>a+b,0);return total>0?row.map(v=>v/total):new Array(8).fill(.125);};
   function predictNext(pol){const row=transRow(pol-1);let bi=0;for(let i=1;i<row.length;i++)if(row[i]>row[bi])bi=i;return{state:bi+1,prob:row[bi]};}
-  function step(price){
-    tickN++;const p=Number(price);if(!Number.isFinite(p)||p<=0)return null;
-    const prev=prices.length?prices.at(-1):null;
-    prices.push(p);if(prices.length>HN)prices.shift();
-    if(prev!=null){returns.push(p-prev);if(returns.length>HN)returns.shift();}
-    const f=feats();if(!f)return null;
-    const probs=scoreStates(f),det=pick(probs),pr=updatePol(det),pol=pr.policy;
-    if(prevPol!=null&&prevPol!==pol)TM[prevPol-1][pol-1]++;
-    if(prevPol!==pol)prevPol=pol;
-    regAge=(lastPol===pol)?regAge+1:0;lastPol=pol;
-    const warmed=tickN>=WARMUP;
-    return{tickN,features:f,probs,detector:det,policy:pol,hold:pr.hold,conf:conf(probs,pol),regimeAge:regAge,momScore:f.momScore,predictedNext:predictNext(pol),TM,warmed,warmupPct:Math.min(1,tickN/WARMUP)};
-  }
+  function step(price){tickN++;const p=Number(price);if(!Number.isFinite(p)||p<=0)return null;const prev=prices.length?prices.at(-1):null;prices.push(p);if(prices.length>HN)prices.shift();if(prev!=null){returns.push(p-prev);if(returns.length>HN)returns.shift();}const f=feats();if(!f)return null;const probs=scoreStates(f),det=pick(probs),pr=updatePol(det),pol=pr.policy;if(prevPol!=null&&prevPol!==pol)TM[prevPol-1][pol-1]++;if(prevPol!==pol)prevPol=pol;regAge=(lastPol===pol)?regAge+1:0;lastPol=pol;return{tickN,features:f,probs,detector:det,policy:pol,hold:pr.hold,conf:conf(probs,pol),regimeAge:regAge,momScore:f.momScore,predictedNext:predictNext(pol),TM,warmed:tickN>=WARMUP};}
   return{step,getTM:()=>TM,WARMUP};
 })();
 
-// ── SESSION ENGINE ────────────────────────────────────────────────────────
 const SessionEngine=(()=>{
   const SESS=[{id:"SYDNEY",label:"Sydney",startH:21,endH:30,color:"rgba(255,176,32,.85)"},{id:"TOKYO",label:"Tokyo",startH:0,endH:9,color:"rgba(160,120,255,.85)"},{id:"LONDON",label:"London",startH:7,endH:16,color:"rgba(24,209,138,.85)"},{id:"NEW_YORK",label:"New York",startH:12,endH:21,color:"rgba(43,108,255,.90)"}];
-  const DAY={1:{name:"MONDAY",effect:"Follows Friday close. Weekend gaps common. Liquidity builds through morning."},2:{name:"TUESDAY",effect:"Can see reversions to Monday trend. Fade if Monday move was not sustained."},3:{name:"WEDNESDAY",effect:"Mid-week trend continuation. Fed speakers frequent. Watch NY afternoon."},4:{name:"THURSDAY",effect:"US Jobless Claims 12:30 UTC. Often most volatile day. Clear directional moves."},5:{name:"FRIDAY",effect:"Position closing before weekend. USD bid into NY close. Reversion risk at end-of-day."}};
+  const DAY={1:{name:"MONDAY",effect:"Follows Friday close. Weekend gaps common. Liquidity builds through morning."},2:{name:"TUESDAY",effect:"Reversions to Monday trend common. Fade if Monday move was not sustained."},3:{name:"WEDNESDAY",effect:"Mid-week continuation. Fed speakers frequent. Watch NY afternoon."},4:{name:"THURSDAY",effect:"US Jobless Claims 12:30 UTC. Often most volatile day. Clear directional moves."},5:{name:"FRIDAY",effect:"Position closing before weekend. USD bid into NY close. Reversion risk at end-of-day."}};
   const utcH=()=>{const d=new Date();return d.getUTCHours()+d.getUTCMinutes()/60;};
   const isOpen=s=>{const h=utcH();return s.endH>24?(h>=s.startH||h<(s.endH-24)):(h>=s.startH&&h<s.endH);};
   function minsToEnd(s){const d=new Date(),um=d.getUTCHours()*60+d.getUTCMinutes(),em=(s.endH%24)*60;let diff=em-um;if(diff<0)diff+=1440;return diff;}
@@ -675,19 +564,16 @@ const SessionEngine=(()=>{
   return{compute,SESS};
 })();
 
-// ── PB3 MODEL ──────────────────────────────────────────────────────────────
 const PB3=(()=>{
-  function compute(step,tx){if(!step)return{panic:0,bubble:0,boom:0,bust:0,dominant:"NORMAL",note:"Insufficient data."};const{volx=1,momScore=.5,mom=0}=step.features||{};const{conf=.3,regimeAge=0,policy=1}=step;const fearInt=tx?.components?.fearInt??0,mb=Math.abs(bp(mom));const panic=clamp(.30*clamp(volx/4,0,1)+.30*fearInt+.25*([6,7,8].includes(policy)?1:0)+.15*(1-momScore),0,1);const bubble=clamp(.30*clamp(regimeAge/60,0,1)+.25*(1-clamp(volx/3,0,1))+.25*clamp(mb/30,0,1)+.20*conf,0,1);const boom=clamp(.35*momScore+.30*clamp(mb/25,0,1)+.20*(policy===4?1:0)+.15*clamp(volx/3,0,1),0,1);const bust=clamp(.35*clamp(volx/3.5,0,1)+.30*([5,7].includes(policy)?1:0)+.20*(1-momScore)+.15*clamp(regimeAge/30,0,1),0,1);const scores={PANIC:panic,BUBBLE:bubble,BOOM:boom,BUST:bust};let dom="NORMAL",ds=0;for(const[k,v]of Object.entries(scores))if(v>ds){ds=v;dom=k;}if(ds<.22)dom="NORMAL";const notes={PANIC:"Capital flight in progress. Sell EUR, buy USD+Gold. Short EUR/USD if confirmed.",BUBBLE:"Euphoric extension. Reversal risk high. Reduce size, tighten stops.",BOOM:"Clean directional momentum. MomScore supports trend. Bias with trend, trail stops.",BUST:"Post-move collapse risk. Vol rising into reversal. Mean-revert or stand aside.",NORMAL:"No dominant behavioral pattern. Standard regime-based rules apply."};return{panic,bubble,boom,bust,dominant:dom,dominantScore:ds,note:notes[dom]};}
+  function compute(step,tx){if(!step)return{panic:0,bubble:0,boom:0,bust:0,dominant:"NORMAL",note:"Insufficient data."};const{volx=1,momScore=.5,mom=0}=step.features||{};const{conf=.3,regimeAge=0,policy=1}=step;const fearInt=tx?.components?.fearInt??0,mb=Math.abs(bp(mom));const panic=clamp(.30*clamp(volx/4,0,1)+.30*fearInt+.25*([6,7,8].includes(policy)?1:0)+.15*(1-momScore),0,1);const bubble=clamp(.30*clamp(regimeAge/60,0,1)+.25*(1-clamp(volx/3,0,1))+.25*clamp(mb/30,0,1)+.20*conf,0,1);const boom=clamp(.35*momScore+.30*clamp(mb/25,0,1)+.20*(policy===4?1:0)+.15*clamp(volx/3,0,1),0,1);const bust=clamp(.35*clamp(volx/3.5,0,1)+.30*([5,7].includes(policy)?1:0)+.20*(1-momScore)+.15*clamp(regimeAge/30,0,1),0,1);const scores={PANIC:panic,BUBBLE:bubble,BOOM:boom,BUST:bust};let dom="NORMAL",ds=0;for(const[k,v]of Object.entries(scores))if(v>ds){ds=v;dom=k;}if(ds<.22)dom="NORMAL";const notes={PANIC:"Capital flight in progress. Short EUR/USD if confirmed.",BUBBLE:"Euphoric extension. Reversal risk high. Reduce size.",BOOM:"Clean directional momentum. Bias with trend, trail stops.",BUST:"Post-move collapse risk. Mean-revert or stand aside.",NORMAL:"No dominant behavioral pattern. Standard regime rules."};return{panic,bubble,boom,bust,dominant:dom,dominantScore:ds,note:notes[dom]};}
   return{compute};
 })();
 
-// ── EVENT CLASSIFIER ───────────────────────────────────────────────────────
 const Classifier=(()=>{
-  function classify(tx){if(!tx)return{archetype:"--",confidence:0,eurusdBias:"NEUTRAL",note:"Waiting for macro data.",analog:""};const{oilInt=0,usdInt=0,fearInt=0,eventInt=0}=tx.components||{};const total=oilInt+usdInt+fearInt+eventInt;if(total<.15)return{archetype:"QUIET TAPE",confidence:.60,eurusdBias:"NEUTRAL",note:"All macro levers below threshold. Price driven by micro-structure and order flow.",analog:"Watch session overlaps for direction clues."};const isSupply=oilInt>.35&&oilInt>fearInt*1.4&&oilInt>usdInt*1.2;const isRiskOff=fearInt>.35&&usdInt>.25&&fearInt>oilInt*1.2;const isCombined=oilInt>.30&&fearInt>.30&&usdInt>.30;const isLocalized=total<.40&&!isSupply&&!isRiskOff;const isRate=usdInt>.35&&fearInt<.25&&oilInt<.25;if(isCombined)return{archetype:"COMBINED SHOCK",confidence:clamp(total*.8,0,.95),eurusdBias:"BEARISH",note:"All three major levers elevated. Strait of Hormuz-type event. Maximum EUR/USD downside.",analog:"Analog: Gulf War 1990-91, Ukraine energy crisis 2022 (EUR/USD to 0.96)."};if(isSupply)return{archetype:"SUPPLY SHOCK",confidence:clamp(oilInt*1.2,0,.92),eurusdBias:"BEARISH",note:"Oil lever dominant. EU imports 90% of Brent. Energy costs worsen EU trade balance. Petrodollar demand rises.",analog:"Analog: Iran sanctions 2011-12 (EUR/USD 1.45 to 1.20). NOT 2003 Iraq (USD already weak)."};if(isRiskOff)return{archetype:"RISK-OFF PANIC",confidence:clamp((fearInt+usdInt)*.65,0,.90),eurusdBias:"BEARISH",note:"Fear+USD dominant. Classic decoupling: EUR/USD falls while Gold spikes. Capital flight from Europe.",analog:"Analog: 9/11 USD bid, Ukraine invasion Feb 2022 (EUR/USD -10% in weeks)."};if(isRate)return{archetype:"RATE / DOLLAR PLAY",confidence:clamp(usdInt*1.3,0,.88),eurusdBias:tx.score<-.1?"BEARISH":tx.score>.1?"BULLISH":"NEUTRAL",note:"DXY dominant without commodity shock. Fed/ECB rate differential repricing. Watch rate futures.",analog:"Analog: Fed pivot cycles, ECB-behind-curve 2022."};if(isLocalized)return{archetype:"LOCALIZED EVENT",confidence:.55,eurusdBias:"NEUTRAL",note:"Muted lever intensity. Supply impact too small or geographically isolated.",analog:"Analog: Venezuela Maduro 2026 - sanctions-isolated, muted EUR/USD."};return{archetype:"MIXED SIGNALS",confidence:.42,eurusdBias:tx.score<-.15?"BEARISH":tx.score>.15?"BULLISH":"NEUTRAL",note:"Multiple levers active without dominant narrative. Direction ambiguous. Reduce size.",analog:"Requires case-by-case analysis of which lever is driving the move."};}
+  function classify(tx){if(!tx)return{archetype:"--",confidence:0,eurusdBias:"NEUTRAL",note:"Waiting for macro data.",analog:""};const{oilInt=0,usdInt=0,fearInt=0}=tx.components||{};const total=oilInt+usdInt+fearInt;if(total<.15)return{archetype:"QUIET TAPE",confidence:.60,eurusdBias:"NEUTRAL",note:"All macro levers below threshold. Price driven by micro-structure.",analog:"Watch session overlaps."};const isSupply=oilInt>.35&&oilInt>fearInt*1.4&&oilInt>usdInt*1.2;const isRiskOff=fearInt>.35&&usdInt>.25&&fearInt>oilInt*1.2;const isCombined=oilInt>.30&&fearInt>.30&&usdInt>.30;const isLocalized=total<.40&&!isSupply&&!isRiskOff;const isRate=usdInt>.35&&fearInt<.25&&oilInt<.25;if(isCombined)return{archetype:"COMBINED SHOCK",confidence:clamp(total*.8,0,.95),eurusdBias:"BEARISH",note:"All three major levers elevated. Maximum EUR/USD downside.",analog:"Analog: Gulf War 1990-91, Ukraine energy crisis 2022."};if(isSupply)return{archetype:"SUPPLY SHOCK",confidence:clamp(oilInt*1.2,0,.92),eurusdBias:"BEARISH",note:"Brent lever dominant. EU imports 90% of Brent. Worsens EU trade balance.",analog:"Analog: Iran sanctions 2011-12 (EUR/USD 1.45 to 1.20)."};if(isRiskOff)return{archetype:"RISK-OFF PANIC",confidence:clamp((fearInt+usdInt)*.65,0,.90),eurusdBias:"BEARISH",note:"Fear+USD dominant. EUR/USD falls while Gold spikes. Capital flight.",analog:"Analog: 9/11, Ukraine invasion Feb 2022."};if(isRate)return{archetype:"RATE / DOLLAR PLAY",confidence:clamp(usdInt*1.3,0,.88),eurusdBias:tx.score<-.1?"BEARISH":tx.score>.1?"BULLISH":"NEUTRAL",note:"DXY dominant without commodity shock. Fed/ECB rate differential repricing.",analog:"Analog: Fed pivot cycles, ECB-behind-curve 2022."};if(isLocalized)return{archetype:"LOCALIZED EVENT",confidence:.55,eurusdBias:"NEUTRAL",note:"Muted lever intensity. Impact too small or geographically isolated.",analog:""};return{archetype:"MIXED SIGNALS",confidence:.42,eurusdBias:tx.score<-.15?"BEARISH":tx.score>.15?"BULLISH":"NEUTRAL",note:"Multiple levers active without dominant narrative. Reduce size.",analog:""};}
   return{classify};
 })();
 
-// ── CORRELATION ENGINE ─────────────────────────────────────────────────────
 const CorrEngine=(()=>{
   const MAX=60;let eurRet=[],mc={OIL:[],GOLD:[],SILV:[],USD:[]},cumEur=0;
   const pushEur=r=>{cumEur+=r;};
@@ -696,12 +582,9 @@ const CorrEngine=(()=>{
   return{pushEur,onMacroUpdate,getCorrelations};
 })();
 
-// ── SIGNAL TRACKER ─────────────────────────────────────────────────────────
 const SignalTracker=(()=>{
-  const ROLLING=30;
-  const saved=loadObj(KEY.sg,{returns:[],equity:[0],openBias:null,entryPrice:null,totalPips:0,wins:0,losses:0});
-  let ret=Array.isArray(saved.returns)?saved.returns.slice(-100):[];
-  let equity=Array.isArray(saved.equity)?saved.equity.slice(-100):[0];
+  const ROLLING=30;const saved=loadObj(KEY.sg,{returns:[],equity:[0],openBias:null,entryPrice:null,totalPips:0,wins:0,losses:0});
+  let ret=Array.isArray(saved.returns)?saved.returns.slice(-100):[];let equity=Array.isArray(saved.equity)?saved.equity.slice(-100):[0];
   let openBias=saved.openBias||null,entryPrice=saved.entryPrice||null,totalPips=saved.totalPips||0,wins=saved.wins||0,losses=saved.losses||0;
   function persist(){if((ret.length+wins+losses)%5===0)save(KEY.sg,{returns:ret.slice(-100),equity:equity.slice(-100),openBias,entryPrice,totalPips,wins,losses});}
   function rollingStats(arr){const n=arr.length;if(n<2)return{sharpe:null};const mean=arr.reduce((a,b)=>a+b,0)/n,v=arr.reduce((s,x)=>s+(x-mean)**2,0)/(n-1),std=Math.sqrt(v);return{sharpe:std>0?(mean/std)*Math.sqrt(252):null};}
@@ -710,269 +593,374 @@ const SignalTracker=(()=>{
   return{update,getStats};
 })();
 
-// ── FIREBASE SYNC ─────────────────────────────────────────────────────────
-const FirebaseSync=(()=>{
-  let dbUrl=null,role="AUTO",instanceId=Math.random().toString(36).slice(2,11);
-  let isMaster=false,lastMasterPing=0,masterTTL=45000;
-  function init(url,r){
-    dbUrl=url?(url.replace(/\/$/,"").replace(/\.json$/,"")):null;
-    role=r||"AUTO";
-    if(dbUrl)$("fbStatus").textContent="Firebase: "+dbUrl+" | Role: "+role+" | ID: "+instanceId;
-    else $("fbStatus").textContent="Firebase: not configured";
+// ── PROJECTION ACCURACY TRACKER ──────────────────────────────────────────
+const ProjTracker=(()=>{
+  const MIN_N=10;
+  let log=loadArr(KEY.proj,[]).slice(-200);
+  let calibMult=Number(settings.calibMult)||1.0;
+  let biasConfAdj=Number(settings.biasConfAdj)||1.0;
+
+  function logProjection({spot,bias,r1,r4,policy}){
+    if(!spot||bias==="NEUTRAL")return;
+    // Don't log more often than every 10 minutes to avoid flooding
+    const last=log.length?log.at(-1):null;
+    if(last&&(Date.now()-last.ts)<10*60*1000)return;
+    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,policy,outcome1h:null,outcome4h:null});
+    if(log.length>200)log=log.slice(-200);
+    _persist();
   }
-  async function apiGet(path){if(!dbUrl)return null;try{const r=await fetch(dbUrl+"/qx/"+path+".json",{method:"GET",cache:"no-store"});if(!r.ok)return null;const j=await r.json();return j;}catch{return null;}}
-  async function apiPut(path,data){if(!dbUrl)return false;try{await fetch(dbUrl+"/qx/"+path+".json",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});return true;}catch{return false;}}
-  async function tryBecomeMaster(){
-    const m=await apiGet("master");
-    const now=Date.now();
-    if(!m||!m.ts||(now-m.ts)>masterTTL){await apiPut("master",{id:instanceId,ts:now});isMaster=true;return;}
-    isMaster=(m.id===instanceId);
+
+  function scoreOutcomes(currentSpot){
+    if(!Number.isFinite(currentSpot))return;
+    const now=Date.now();let changed=false;
+    log.forEach(p=>{
+      const ageMins=(now-p.ts)/60000;
+      const movePips=(currentSpot-p.spot)*10000;
+      const dirOk=p.bias==="LONG"?movePips>0:movePips<0;
+      if(p.outcome1h===null&&ageMins>=60){p.outcome1h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r1,movePips,ageMins};changed=true;}
+      if(p.outcome4h===null&&ageMins>=240){p.outcome4h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r4,movePips,ageMins};changed=true;}
+    });
+    if(changed){_adapt();_persist();}
   }
-  async function writeState(state){
-    if(!dbUrl)return;
-    if(role==="READER")return;
-    if(role==="AUTO"&&!isMaster)return;
-    await apiPut("state",{...state,ts:Date.now(),id:instanceId});
-    await apiPut("master",{id:instanceId,ts:Date.now()});
+
+  function _stats(){
+    const r1=log.filter(p=>p.outcome1h!==null),r4=log.filter(p=>p.outcome4h!==null);
+    return{
+      n1h:r1.length,
+      dir1hRate:r1.length?r1.filter(p=>p.outcome1h.dirHit).length/r1.length:null,
+      rng1hRate:r1.length?r1.filter(p=>p.outcome1h.rngHit).length/r1.length:null,
+      n4h:r4.length,
+      dir4hRate:r4.length?r4.filter(p=>p.outcome4h.dirHit).length/r4.length:null,
+      rng4hRate:r4.length?r4.filter(p=>p.outcome4h.rngHit).length/r4.length:null,
+      total:log.length,
+      pending:log.filter(p=>p.outcome1h===null||p.outcome4h===null).length,
+    };
   }
-  async function readState(){if(!dbUrl)return null;if(role==="MASTER")return null;return apiGet("state");}
-  async function tick(){
-    if(!dbUrl)return;
-    if(role==="AUTO")await tryBecomeMaster();
-    updateSyncBadge();
+
+  function _adapt(){
+    const s=_stats();
+    // CONE: target range hit rate 60-80%. Outside that range -> adjust
+    if(s.n1h>=MIN_N&&s.rng1hRate!=null){
+      if(s.rng1hRate<0.50)calibMult=clamp(calibMult*1.06,0.40,3.0);       // too narrow -> widen
+      else if(s.rng1hRate>0.82)calibMult=clamp(calibMult*0.96,0.40,3.0);  // too wide -> tighten
+    }
+    // BIAS CONFIDENCE: direction < 50% -> downweight; > 62% -> upweight
+    if(s.n1h>=MIN_N&&s.dir1hRate!=null){
+      if(s.dir1hRate<0.48)biasConfAdj=clamp(biasConfAdj*0.94,0.20,1.60);
+      else if(s.dir1hRate>0.62)biasConfAdj=clamp(biasConfAdj*1.04,0.20,1.60);
+    }
+    calibMult=Math.round(calibMult*1000)/1000;
+    biasConfAdj=Math.round(biasConfAdj*1000)/1000;
+    settings.calibMult=calibMult;settings.biasConfAdj=biasConfAdj;
+    save(KEY.s,settings);
   }
-  function updateSyncBadge(){
-    const sb=$("syncBadge"),sd=$("syncDot");
-    if(!dbUrl)return;
-    if(role==="READER"){sb.className="syncBadge firebase";sd.className="dot";sb.querySelector("span")&&(sb.innerHTML='<span class="dot"></span><span>FB READER</span>');}
-    else if(isMaster||role==="MASTER"){sb.className="syncBadge firebase";sb.innerHTML='<span class="dot"></span><span>FB MASTER</span>';}
-    else{sb.className="syncBadge firebase";sb.innerHTML='<span class="dot amber"></span><span>FB SYNC</span>';}
-  }
-  return{init,writeState,readState,tick,get isMaster(){return isMaster;},get role(){return role;}};
+
+  function _persist(){save(KEY.proj,log.slice(-200));}
+  function reset(){log=[];calibMult=1.0;biasConfAdj=1.0;settings.calibMult=1.0;settings.biasConfAdj=1.0;save(KEY.s,settings);save(KEY.proj,[]);updateProjAccuracyUI();}
+  return{logProjection,scoreOutcomes,getStats:_stats,getCalibMult:()=>calibMult,getBiasConfAdj:()=>biasConfAdj,getLog:()=>log.slice(-20).reverse(),reset};
 })();
 
-// ── CANVAS UTILITIES ──────────────────────────────────────────────────────
+// ── FIREBASE: writes/reads the COMPLETE state so READERs are pixel-identical ──
+const FirebaseSync=(()=>{
+  let dbUrl=null,role="MASTER",instanceId=Math.random().toString(36).slice(2,11);
+  function init(url,r){
+    dbUrl=url?(url.replace(/\/$/,"").replace(/\.json$/,"")):null;
+    role=r||"MASTER";
+    const el=$("fbStatus");
+    if(el)el.textContent=dbUrl?"Firebase: "+dbUrl.split("/").pop()+" | Role: "+role+" | ID: "+instanceId:"Firebase: not configured";
+    updateBadge();
+  }
+  async function api(method,path,data){if(!dbUrl)return null;try{const opts={method,headers:{"Content-Type":"application/json"},cache:"no-store"};if(data)opts.body=JSON.stringify(data);const r=await fetch(dbUrl+"/qx5/"+path+".json",opts);if(!r.ok)return null;return method==="GET"?r.json():true;}catch{return null;}}
+  async function writeFullState(payload){if(!dbUrl||role!=="MASTER")return;await api("PUT","state",{...payload,masterId:instanceId,ts:Date.now()});}
+  async function pullState(){if(!dbUrl||role!=="READER")return null;const s=await api("GET","state",null);if(!s||!s.ts)return null;if(Date.now()-s.ts>90000)return null;return s;}
+  function updateBadge(){
+    const sb=$("syncBadge");if(!sb)return;
+    if(!dbUrl){sb.className="syncBadge warming";return;}
+    if(role==="MASTER"){sb.className="syncBadge fbmaster";sb.innerHTML='<span class="dot"></span><span>FB MASTER</span>';}
+    else{sb.className="syncBadge fbreader";sb.innerHTML='<span class="dot"></span><span>FB READER</span>';}
+  }
+  return{init,writeFullState,pullState,updateBadge,get role(){return role;},get configured(){return!!dbUrl;}};
+})();
+
+// ── CANVAS ────────────────────────────────────────────────────────────────
 function setupCanvas(canvas){const dpr=window.devicePixelRatio||1;const rect=canvas.getBoundingClientRect();const w=Math.max(rect.width,1),h=Math.max(rect.height,1);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);const ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);return{ctx,w,h};}
 function drawSparkline(canvas,closes,changePct){if(!canvas||!closes?.length)return;const{ctx,w,h}=setupCanvas(canvas);const mn=Math.min(...closes),mx=Math.max(...closes),range=mx-mn||.0001;const isPos=changePct>=0;ctx.clearRect(0,0,w,h);ctx.beginPath();closes.forEach((c,i)=>{const x=(i/(closes.length-1))*w,y=h-((c-mn)/range)*(h-4)-2;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.strokeStyle=isPos?"rgba(24,209,138,.82)":"rgba(255,77,77,.72)";ctx.lineWidth=1.5;ctx.stroke();ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fillStyle=isPos?"rgba(24,209,138,.10)":"rgba(255,77,77,.08)";ctx.fill();}
 function drawTimeline(canvas,states){if(!canvas||!states.length)return;const{ctx,w,h}=setupCanvas(canvas);const n=states.length,sw=w/n;ctx.clearRect(0,0,w,h);states.forEach((s,i)=>{const st=STATES[s-1];ctx.fillStyle=st?st.color:"rgba(255,255,255,.15)";ctx.fillRect(Math.floor(i*sw),0,Math.ceil(sw)+1,h);});}
-function drawCone({spot,r1,r4,bias}){const canvas=$("coneCanvas");const{ctx,w,h}=setupCanvas(canvas);ctx.clearRect(0,0,w,h);ctx.strokeStyle="rgba(232,239,255,.06)";ctx.lineWidth=1;for(let i=0;i<=14;i++){const x=i*(w/14);ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}for(let j=0;j<=8;j++){const y=j*(h/8);ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}const cx=Math.round(w*.44),cy=Math.round(h*.52),x1=Math.round(w*.60),x4=Math.round(w*.88);const maxP=Math.max(10,r4*1.15),ppp=(h*.33)/maxP,y1=r1*ppp,y4=r4*ppp;const bu=bias==="LONG",bd=bias==="SHORT",base=bu?[24,209,138]:bd?[255,77,77]:[100,160,255];const rad=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.sqrt((x4-cx)**2+y4**2));rad.addColorStop(0,"rgba("+base.join(",")+",0.42)");rad.addColorStop(.5,"rgba("+base.join(",")+",0.18)");rad.addColorStop(1,"rgba("+base.join(",")+",0.00)");ctx.fillStyle=rad;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x1,cy-y1);ctx.lineTo(x4,cy-y4);ctx.lineTo(x4,cy+y4);ctx.lineTo(x1,cy+y1);ctx.closePath();ctx.fill();ctx.strokeStyle="rgba(232,239,255,.28)";ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x4,cy-y4);ctx.stroke();ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x4,cy+y4);ctx.stroke();ctx.setLineDash([3,4]);ctx.strokeStyle="rgba(232,239,255,.18)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x1,cy-y1);ctx.lineTo(x1,cy+y1);ctx.stroke();ctx.setLineDash([]);ctx.strokeStyle="rgba(232,239,255,.25)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();ctx.fillStyle="rgba(232,239,255,.90)";ctx.beginPath();ctx.arc(cx,cy,3.5,0,Math.PI*2);ctx.fill();ctx.font="12px ui-monospace,monospace";ctx.fillStyle="rgba(232,239,255,.60)";ctx.fillText("Spot "+spot.toFixed(5),cx+10,cy-6);ctx.fillText("1h \xb1"+r1+"p",x1-50,18);ctx.fillText("4h \xb1"+r4+"p",x4-50,18);ctx.font="bold 14px ui-sans-serif,sans-serif";ctx.fillStyle=bu?"rgba(24,209,138,.95)":bd?"rgba(255,77,77,.95)":"rgba(232,239,255,.75)";ctx.fillText(bias,18,24);}
+function drawCone(spot,r1,r4,bias,calibMult){const canvas=$("coneCanvas");if(!canvas)return;const{ctx,w,h}=setupCanvas(canvas);ctx.clearRect(0,0,w,h);ctx.strokeStyle="rgba(232,239,255,.06)";ctx.lineWidth=1;for(let i=0;i<=14;i++){const x=i*(w/14);ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}for(let j=0;j<=8;j++){const y=j*(h/8);ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}const cm=calibMult||1,cr1=r1*cm,cr4=r4*cm;const cx=Math.round(w*.44),cy=Math.round(h*.52),x1=Math.round(w*.60),x4=Math.round(w*.88);const maxP=Math.max(10,cr4*1.15),ppp=(h*.33)/maxP,y1=cr1*ppp,y4=cr4*ppp;const bu=bias==="LONG",bd=bias==="SHORT",base=bu?[24,209,138]:bd?[255,77,77]:[100,160,255];const rad=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.sqrt((x4-cx)**2+y4**2));rad.addColorStop(0,"rgba("+base.join(",")+",0.42)");rad.addColorStop(.5,"rgba("+base.join(",")+",0.18)");rad.addColorStop(1,"rgba("+base.join(",")+",0.00)");ctx.fillStyle=rad;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x1,cy-y1);ctx.lineTo(x4,cy-y4);ctx.lineTo(x4,cy+y4);ctx.lineTo(x1,cy+y1);ctx.closePath();ctx.fill();ctx.strokeStyle="rgba(232,239,255,.28)";ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x4,cy-y4);ctx.stroke();ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x4,cy+y4);ctx.stroke();ctx.setLineDash([3,4]);ctx.strokeStyle="rgba(232,239,255,.18)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x1,cy-y1);ctx.lineTo(x1,cy+y1);ctx.stroke();ctx.setLineDash([]);ctx.strokeStyle="rgba(232,239,255,.25)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();ctx.fillStyle="rgba(232,239,255,.90)";ctx.beginPath();ctx.arc(cx,cy,3.5,0,Math.PI*2);ctx.fill();ctx.font="12px ui-monospace,monospace";ctx.fillStyle="rgba(232,239,255,.60)";ctx.fillText("Spot "+spot.toFixed(5),cx+10,cy-6);ctx.fillText("1h \xb1"+Math.round(cr1)+"p",x1-50,18);ctx.fillText("4h \xb1"+Math.round(cr4)+"p",x4-50,18);ctx.font="bold 14px ui-sans-serif,sans-serif";ctx.fillStyle=bu?"rgba(24,209,138,.95)":bd?"rgba(255,77,77,.95)":"rgba(232,239,255,.75)";ctx.fillText(bias,18,24);if(Math.abs(cm-1)>0.01){ctx.font="11px ui-monospace,monospace";ctx.fillStyle="rgba(255,176,32,.80)";ctx.fillText("calib x"+cm.toFixed(2),18,42);}}
 function drawEquity(arr){const canvas=$("equityCanvas");if(!canvas||arr.length<2)return;const{ctx,w,h}=setupCanvas(canvas);const mn=Math.min(...arr),mx=Math.max(...arr),range=mx-mn||.0001;const isPos=arr.at(-1)>=0;ctx.clearRect(0,0,w,h);ctx.beginPath();arr.forEach((v,i)=>{const x=(i/(arr.length-1))*w,y=h-((v-mn)/range)*(h-4)-2;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.strokeStyle=isPos?"rgba(24,209,138,.85)":"rgba(255,77,77,.75)";ctx.lineWidth=2;ctx.stroke();ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fillStyle=isPos?"rgba(24,209,138,.10)":"rgba(255,77,77,.08)";ctx.fill();if(mn<0&&mx>0){const zy=h-((0-mn)/range)*(h-4)-2;ctx.strokeStyle="rgba(232,239,255,.22)";ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(0,zy);ctx.lineTo(w,zy);ctx.stroke();ctx.setLineDash([]);}}
 function drawTM(matrix){const body=$("tmBody");if(!body)return;const rows=[];for(let i=0;i<8;i++){const row=matrix[i],total=row.reduce((a,b)=>a+b,0),norm=total>0?row.map(v=>v/total):new Array(8).fill(0);const cells=norm.map((v,j)=>{const alpha=clamp(v*4,0,.85);const col=v>.3?STATES[j].color.replace(/[\d.]+\)$/,alpha+")"):"rgba(255,255,255,"+(alpha*.5)+")";const txt=v>.01?Math.round(v*100)+"%":"";return"<td style='background:"+col+";color:rgba(255,255,255,"+Math.max(v*3,.6)+");font-size:9px'>"+txt+"</td>";}).join("");rows.push("<tr><td class='rl'>S"+(i+1)+"</td>"+cells+"</tr>");}body.innerHTML=rows.join("");}
-
 let resizeTimer;
-window.addEventListener("resize",()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(lastStep&&lastSpot)updateAll();drawTimeline($("timelineCanvas"),recentStates);},150);});
+window.addEventListener("resize",()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(lastFullState)applyFullStateToUI(lastFullState);},200);});
 
-// ── RENDER HELPERS ─────────────────────────────────────────────────────────
+// ── RENDER HELPERS ────────────────────────────────────────────────────────
 const impactPill=i=>{const v=(i||"").toUpperCase();if(v==="HIGH")return'<span class="impact"><span class="folder"></span>HIGH</span>';if(v==="MED")return'<span class="impact"><span class="folder med"></span>MED</span>';return'<span class="impact"><span class="folder low"></span>LOW</span>';};
 function countdownText(iso){const t=new Date(iso).getTime();if(!Number.isFinite(t))return"--";const d=t-Date.now();if(d<=0)return"Past";const mins=Math.floor(d/60000),days=Math.floor(mins/1440),hrs=Math.floor((mins-days*1440)/60),rem=mins-days*1440-hrs*60;if(days>0)return days+"d "+hrs+"h";if(hrs>0)return hrs+"h "+rem+"m";return rem+"m";}
-function renderEvents(){
-  const liveCal=EventsFeed.get();
-  let events=liveCal.length>0?liveCal:[];
-  const now=Date.now();
-  const sorted=events.map(e=>({...e,t:new Date(e.when).getTime()})).filter(e=>Number.isFinite(e.t)&&e.t>=now-3600000).sort((a,b)=>a.t-b.t).slice(0,10);
-  if(!sorted.length){$("eventsBody").innerHTML="<tr><td colspan='6' style='color:rgba(255,255,255,.5)'>No upcoming HIGH/MED impact USD/EUR events this week.</td></tr>";return;}
-  $("eventsBody").innerHTML=sorted.map(e=>{
-    const w=new Date(e.when);const ws=isNaN(w)?"--":w.toLocaleDateString()+" "+w.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
-    return "<tr><td>"+ws+"</td><td><a class='link' href='https://www.forexfactory.com/calendar' target='_blank' rel='noopener noreferrer'>"+escH(e.event||"")+"</a></td><td>"+impactPill(e.impact)+"</td><td style='font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.6)'>"+escH(e.forecast||"--")+"</td><td style='font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.6)'>"+escH(e.previous||"--")+"</td><td>"+countdownText(e.when)+"</td></tr>";
+function renderEvents(){const sorted=EventsFeed.get().map(e=>({...e,t:new Date(e.when).getTime()})).filter(e=>Number.isFinite(e.t)&&e.t>=Date.now()-3600000).sort((a,b)=>a.t-b.t).slice(0,10);const tb=$("eventsBody");if(!tb)return;if(!sorted.length){tb.innerHTML="<tr><td colspan='6' style='color:rgba(255,255,255,.5)'>No upcoming HIGH/MED impact events.</td></tr>";return;}tb.innerHTML=sorted.map(e=>{const w=new Date(e.when),ws=isNaN(w)?"--":w.toLocaleDateString()+" "+w.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});return"<tr><td>"+ws+"</td><td><a class='link' href='https://www.forexfactory.com/calendar' target='_blank' rel='noopener noreferrer'>"+escH(e.event||"")+"</a></td><td>"+impactPill(e.impact)+"</td><td style='font-family:var(--mono);color:rgba(255,255,255,.6)'>"+escH(e.forecast||"--")+"</td><td style='font-family:var(--mono);color:rgba(255,255,255,.6)'>"+escH(e.previous||"--")+"</td><td>"+countdownText(e.when)+"</td></tr>";}).join("");}
+function renderHeadlines(){const h=HeadlinesFeed.get();const tb=$("headlinesBody");if(!tb)return;if(!h.length){tb.innerHTML="<tr><td colspan='3' style='color:rgba(255,255,255,.5)'>Fetching live headlines...</td></tr>";return;}tb.innerHTML=h.map(hl=>"<tr><td style='white-space:nowrap;font-size:10.5px'>"+escH(hl.time||"")+"</td><td style='font-size:10.5px;white-space:nowrap'>"+escH(hl.source||"")+"</td><td><a class='link' href='"+escA(hl.url||"#")+"' target='_blank' rel='noopener noreferrer'>"+escH(hl.title||"")+"</a></td></tr>").join("");}
+
+// ── TRANSMISSION & PROJECTION ─────────────────────────────────────────────
+const normAbsPct=(x,cap)=>!Number.isFinite(x)?0:clamp(Math.abs(x)/cap,0,1);
+function computeEventRisk(){const now=Date.now(),wt={HIGH:1.0,MED:0.6,LOW:.25};const up=EventsFeed.get().map(e=>({...e,t:new Date(e.when).getTime()})).filter(e=>Number.isFinite(e.t)&&e.t>=now);let best=0;for(const e of up){const w=wt[(e.impact||"LOW").toUpperCase()]??.25,mins=(e.t-now)/60000;const prox=mins<=60?1:mins<=360?(1-(mins-60)/300)*.85:mins<=1440?(1-(mins-360)/1080)*.35:0;best=Math.max(best,w*prox);}return clamp(best,0,1);}
+function computeTx(){const oil=MacroFeed.get("OIL"),gold=MacroFeed.get("GOLD"),silv=MacroFeed.get("SILV"),usd=MacroFeed.get("USD"),eRisk=computeEventRisk();const oilInt=normAbsPct(oil?.changePct,3.0),usdInt=normAbsPct(usd?.changePct,0.8),fearInt=normAbsPct(gold?.changePct,1.5),silvInt=normAbsPct(silv?.changePct,2.5);const oilDir=(oil?.changePct??0)>=0?-oilInt:oilInt*.4,usdDir=(usd?.changePct??0)>=0?-usdInt:usdInt*.5,fearDir=(gold?.changePct??0)>=0?-fearInt:fearInt*.2,silvDir=(silv?.changePct??0)>=0?silvInt*.25:-silvInt*.15;const score=clamp(.36*oilDir+.44*usdDir+.26*fearDir+.10*silvDir+.22*(-eRisk),-1,1);const intensity=clamp(.30*oilInt+.30*usdInt+.20*fearInt+.10*silvInt+.25*eRisk,0,1);const bias=score<=-.18?"USD+RISK OFF":score>=.18?"USD WEAK/RISK ON":"NEUTRAL";return{score,intensity,bias,components:{oilInt,usdInt,fearInt,silvInt,eventInt:eRisk}};}
+function leverPaint(barEl,pctEl,val,dir){const pct=Math.round(val*100);if(pctEl)pctEl.textContent=pct+"%";if(barEl){barEl.style.width=clamp(pct,0,100)+"%";barEl.style.background=dir==="bad"?"rgba(255,77,77,.82)":dir==="good"?"rgba(24,209,138,.82)":"rgba(100,160,255,.78)";}}
+function computeProj(step,tx,cm,ba){const base1h={1:6,2:10,3:7,4:12,5:18,6:16,7:14,8:26};const pol=step?.policy||1,volx=step?.features?.volx??1,momBp=bp(step?.features?.mom??0),conf=(step?.conf??.25)*(ba||1);const volMult=clamp(.75+.18*volx,.65,1.85),txMult=clamp(1.0+.55*tx.intensity,1.0,1.6),eRisk=tx.components.eventInt;const r1Raw=Math.round((base1h[pol]??8)*volMult*txMult*clamp(1.0+.65*eRisk,1,1.7));const r4Raw=Math.round(r1Raw*2.6*clamp(1.0+.35*eRisk,1,1.35));const momDir=Math.tanh(momBp/18),score=clamp(.55*momDir+.75*tx.score,-1,1);const bias=score>=.20?"LONG":score<=-.20?"SHORT":"NEUTRAL";const agree=1-Math.abs(momDir-tx.score)/2,dec=clamp(.35*conf+.45*agree+.20*(1-eRisk*.6),0,1);return{bias,r1:clamp(r1Raw,3,80),r4:clamp(r4Raw,6,160),decPct:Math.round(dec*100),volMult,txMult,eRisk};}
+
+// ── BUILD FULL STATE (MASTER packs everything, READERs unpack and render) ──
+function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba){
+  return{
+    spotPrice:spot?.price,spotDelta:spot?.lastDelta,spotSource:spot?.source,spotTs:spot?.ts,
+    policy:step.policy,detector:step.detector,conf:step.conf,hold:step.hold,
+    regimeAge:step.regimeAge,momScore:step.momScore,tickN:step.tickN,warmed:step.warmed,
+    probs:step.probs,predictedNext:step.predictedNext,
+    stateName:STATES[step.policy-1]?.name,stateDesc:STATES[step.policy-1]?.desc,
+    recentStates:recentSts,TM:step.TM,
+    bias:proj.bias,r1:proj.r1,r4:proj.r4,decPct:proj.decPct,volMult:proj.volMult,txMult:proj.txMult,eRisk:proj.eRisk,
+    calibMult:cm,biasConfAdj:ba,
+    pb3Panic:pb3.panic,pb3Bubble:pb3.bubble,pb3Boom:pb3.boom,pb3Bust:pb3.bust,
+    pb3Dominant:pb3.dominant,pb3Note:pb3.note,
+    archetype:arch.archetype,archConf:arch.confidence,archBias:arch.eurusdBias,archNote:arch.note,archAnalog:arch.analog,
+    txScore:tx.score,txIntensity:tx.intensity,txBias:tx.bias,
+    oilInt:tx.components.oilInt,usdInt:tx.components.usdInt,fearInt:tx.components.fearInt,eventInt:tx.components.eventInt,
+    oilChg:MacroFeed.get("OIL")?.changePct,goldChg:MacroFeed.get("GOLD")?.changePct,usdChg:MacroFeed.get("USD")?.changePct,
+    ts:Date.now(),
+  };
+}
+
+// ── APPLY FULL STATE TO UI: works for MASTER (local) and READER (from Firebase) ──
+function applyFullStateToUI(st){
+  if(!st)return;
+  // Regime
+  $("policyStateTitle").textContent="Policy State: S"+st.policy+" "+st.stateName;
+  $("policyStateDesc").textContent=st.stateDesc+(FirebaseSync.role==="READER"&&st.masterId?" [FB MASTER "+st.masterId.slice(0,6)+"]":"");
+  $("detectorChip").textContent="S"+st.detector;$("policyChip").textContent="S"+st.policy;
+  $("confChip").textContent=(st.conf*100).toFixed(1)+"%";$("hystChip").textContent=st.detector===st.policy?"stable":"holding";
+  $("ageChip").textContent=String(st.regimeAge);$("tickChip").textContent=st.tickN+"/"+Engine.WARMUP;
+  $("momChip").textContent=Math.round(st.momScore*100)+"%";
+  $("nextStateChip").textContent="S"+st.predictedNext.state+" ("+Math.round(st.predictedNext.prob*100)+"%)";
+  if(probEls.length===8&&st.probs?.length===8)
+    st.probs.forEach((p,i)=>{probEls[i].bar.style.width=clamp(p*100,0,100)+"%";probEls[i].bar.style.background=STATES[i].color;probEls[i].val.textContent=(p*100).toFixed(1)+"%";});
+  if(st.recentStates?.length){drawTimeline($("timelineCanvas"),st.recentStates);const td=$("timelineDepth");if(td)td.textContent=st.recentStates.length;}
+  if(st.TM)drawTM(st.TM);
+  // Spot
+  if(st.spotPrice){
+    $("fxSpotPrice").textContent=st.spotPrice.toFixed(5);
+    $("fxSpotDelta").textContent=(st.spotDelta||0).toFixed(5);
+    $("fxSpotMeta").textContent="Source: "+st.spotSource;
+    $("fxLastTag").textContent="Last: "+fmtTime(st.spotTs||Date.now());
+    const dw=clamp(Math.abs(st.spotDelta||0)/.0012,0,1)*100;
+    const mb=$("miniBar");if(mb){mb.style.width=Math.max(10,dw)+"%";mb.style.background=(st.spotDelta||0)>=0?"rgba(24,209,138,.85)":"rgba(255,77,77,.85)";}
+  }
+  setRisk(st.policy,st.conf);
+  // PB3 - full color-coded rendering
+  const pbData={PANIC:st.pb3Panic,BUBBLE:st.pb3Bubble,BOOM:st.pb3Boom,BUST:st.pb3Bust};
+  const pbLabels={PANIC:"pb3Panic",BUBBLE:"pb3Bubble",BOOM:"pb3Boom",BUST:"pb3Bust"};
+  for(const[k,v]of Object.entries(pbData)){const pct=Math.round((v||0)*100);const pe=$(pbLabels[k]+"Pct"),pb=$(pbLabels[k]+"Bar");if(pe)pe.textContent=pct+"%";if(pb)pb.style.width=clamp(pct,0,100)+"%";}
+  const pbColors={PANIC:"rgba(255,77,77,.18),rgba(255,77,77,.08)",BUBBLE:"rgba(255,176,32,.18),rgba(255,176,32,.08)",BOOM:"rgba(24,209,138,.18),rgba(24,209,138,.08)",BUST:"rgba(255,138,64,.18),rgba(255,138,64,.08)",NORMAL:"rgba(8,20,52,.28),rgba(8,20,52,.28)"};
+  const pbBorders={PANIC:"rgba(255,77,77,.35)",BUBBLE:"rgba(255,176,32,.35)",BOOM:"rgba(24,209,138,.35)",BUST:"rgba(255,138,64,.35)",NORMAL:"rgba(180,220,255,.10)"};
+  const pbTxtColors={PANIC:"rgba(255,100,100,.95)",BUBBLE:"rgba(255,176,32,.95)",BOOM:"rgba(24,209,138,.95)",BUST:"rgba(255,138,64,.95)",NORMAL:"rgba(232,239,255,.65)"};
+  const dom=st.pb3Dominant||"NORMAL",pbRow=$("pb3Dom");
+  if(pbRow){const[bg1,bg2]=(pbColors[dom]||pbColors.NORMAL).split(",");pbRow.style.background="linear-gradient(135deg,"+bg1.trim()+","+bg2.trim()+")";pbRow.style.borderColor=pbBorders[dom]||pbBorders.NORMAL;}
+  const pds=$("pb3DomState"),pdn=$("pb3DomNote");
+  if(pds){pds.textContent=dom;pds.style.color=pbTxtColors[dom]||pbTxtColors.NORMAL;}
+  if(pdn)pdn.textContent=st.pb3Note||"";
+  // Archetype - full color-coded rendering
+  const arcBg={"COMBINED SHOCK":"rgba(255,58,165,.15)","SUPPLY SHOCK":"rgba(255,77,77,.15)","RISK-OFF PANIC":"rgba(255,176,32,.15)","LOCALIZED EVENT":"rgba(120,170,255,.12)","RATE / DOLLAR PLAY":"rgba(43,108,255,.15)","QUIET TAPE":"rgba(8,20,52,.28)","MIXED SIGNALS":"rgba(100,80,200,.12)","--":"rgba(8,20,52,.28)"};
+  const arcBorder={"COMBINED SHOCK":"rgba(255,58,165,.35)","SUPPLY SHOCK":"rgba(255,77,77,.30)","RISK-OFF PANIC":"rgba(255,176,32,.30)","LOCALIZED EVENT":"rgba(120,170,255,.25)","RATE / DOLLAR PLAY":"rgba(43,108,255,.30)","QUIET TAPE":"rgba(180,220,255,.10)","MIXED SIGNALS":"rgba(140,100,220,.25)","--":"rgba(180,220,255,.10)"};
+  const am=$("archMain");if(am){am.style.background=arcBg[st.archetype]||arcBg["--"];am.style.border="1px solid "+(arcBorder[st.archetype]||arcBorder["--"]);}
+  const at=$("archType"),ac=$("archConf"),ab=$("archBias"),an=$("archNote"),aa=$("archAnalog");
+  if(at)at.textContent=st.archetype;
+  if(ac)ac.textContent="Confidence: "+Math.round((st.archConf||0)*100)+"%";
+  if(ab)ab.innerHTML="EUR/USD Bias: <b class='"+(st.archBias==="BEARISH"?"neg":st.archBias==="BULLISH"?"pos":"")+"'>"+st.archBias+"</b>";
+  if(an)an.textContent=st.archNote||"";if(aa)aa.textContent=st.archAnalog||"";
+  // Projection
+  const tb=$("tradeBias");if(tb){tb.textContent=st.bias;tb.classList.remove("pos","neg");if(st.bias==="LONG")tb.classList.add("pos");if(st.bias==="SHORT")tb.classList.add("neg");}
+  const tbm=$("tradeBiasMeta");if(tbm)tbm.textContent=st.txBias+" | Event "+Math.round(st.eRisk*100)+"%";
+  const r1el=$("rng1h"),r1m=$("rng1hMeta"),r4el=$("rng4h"),r4m=$("rng4hMeta");
+  if(r1el)r1el.textContent="\xb1"+st.r1+" pips";if(r1m)r1m.textContent="Vol x"+st.volMult.toFixed(2)+" Macro x"+st.txMult.toFixed(2);
+  if(r4el)r4el.textContent="\xb1"+st.r4+" pips";if(r4m)r4m.textContent="4h scaled | Tx "+st.txScore.toFixed(2);
+  const dc=$("decConf"),dcm=$("decConfMeta");if(dc){dc.textContent=st.decPct+"%";dc.classList.remove("pos","neg");if(st.decPct>=55)dc.classList.add("pos");if(st.decPct<=30)dc.classList.add("neg");}
+  if(dcm)dcm.textContent=st.decPct>=55?"Higher agreement":st.decPct>=40?"Mixed signals":"Caution";
+  const cm=$("calibMult");if(cm)cm.textContent=(st.calibMult||1).toFixed(2);
+  drawCone(st.spotPrice||1.05,st.r1,st.r4,st.bias,st.calibMult||1);
+  // Transmission
+  const mbc=$("macroBiasChip"),tsc=$("txScoreChip"),erc=$("eventRiskChip");
+  if(mbc)mbc.textContent=st.txBias;if(tsc)tsc.textContent=st.txScore.toFixed(2);
+  if(erc)erc.textContent=st.eventInt>=.70?"HIGH":st.eventInt>=.35?"MED":"LOW";
+  const tb2=$("txBig"),tm=$("txMeta");
+  if(tb2)tb2.textContent=st.txScore<=-.18?"BEAR EURUSD":st.txScore>=.18?"BULL EURUSD":"NEUTRAL";
+  if(tm)tm.textContent="Score "+st.txScore.toFixed(2)+" | "+st.txBias+" | Intensity "+Math.round(st.txIntensity*100)+"%";
+  leverPaint($("oilLeverBar"),$("oilLeverPct"),st.oilInt,(st.oilChg??0)>=0?"bad":"good");
+  leverPaint($("usdLeverBar"),$("usdLeverPct"),st.usdInt,(st.usdChg??0)>=0?"bad":"good");
+  leverPaint($("fearLeverBar"),$("fearLeverPct"),st.fearInt,(st.goldChg??0)>=0?"bad":"good");
+  leverPaint($("eventLeverBar"),$("eventLeverPct"),st.eventInt,st.eventInt>=.35?"bad":"neutral");
+  // Footer
+  const fp=$("footPolicy"),fd=$("footDetector"),fa=$("footAge");
+  if(fp)fp.textContent="S"+st.policy;if(fd)fd.textContent="S"+st.detector;if(fa)fa.textContent=String(st.regimeAge);
+  updateWarmupBadge(st.tickN,st.warmed);
+}
+
+// ── PROJECTION ACCURACY UI ────────────────────────────────────────────────
+function updateProjAccuracyUI(){
+  const s=ProjTracker.getStats(),cm=ProjTracker.getCalibMult(),ba=ProjTracker.getBiasConfAdj();
+  const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
+  const setV=(id,v,ok,bad)=>{const el=$(id);if(!el)return;el.textContent=v;el.classList.remove("pos","neg");if(ok)el.classList.add("pos");else if(bad)el.classList.add("neg");};
+  setV("pa1hDir",fmt(s.dir1hRate),s.dir1hRate>=0.55,s.dir1hRate!=null&&s.dir1hRate<0.45);
+  const p1dm=$("pa1hDirMeta");if(p1dm)p1dm.textContent="n="+s.n1h+" scored";
+  setV("pa1hRng",fmt(s.rng1hRate),s.rng1hRate>=0.60&&s.rng1hRate<=0.82,s.rng1hRate!=null&&(s.rng1hRate<0.45||s.rng1hRate>0.88));
+  setV("pa4hDir",fmt(s.dir4hRate),s.dir4hRate>=0.55,s.dir4hRate!=null&&s.dir4hRate<0.45);
+  const p4dm=$("pa4hDirMeta");if(p4dm)p4dm.textContent="n="+s.n4h+" scored";
+  setV("pa4hRng",fmt(s.rng4hRate),s.rng4hRate>=0.60&&s.rng4hRate<=0.82,s.rng4hRate!=null&&(s.rng4hRate<0.45||s.rng4hRate>0.88));
+  setV("paCalibMult",cm.toFixed(3)+"x",Math.abs(cm-1)<0.05,false);
+  const pcm=$("paCalibMeta");if(pcm)pcm.textContent=cm>1.05?"Widening cone":cm<0.95?"Tightening cone":"Well-calibrated";
+  const ptn=$("paTotalN"),ptm=$("paTotalMeta");if(ptn)ptn.textContent=String(s.total);if(ptm)ptm.textContent=(s.total-s.pending)+" resolved, "+s.pending+" pending";
+  const ready=Math.min(s.n1h,s.n4h)>=10;
+  const ps=$("paStatus"),pca=$("paConeAdj"),pba=$("paBiasAdj");
+  if(ps)ps.textContent=ready?"Active ("+Math.min(s.n1h,s.n4h)+"+ scored)":"Collecting data (need 10, have "+Math.min(s.n1h,s.n4h)+")";
+  if(pca)pca.textContent=cm>1.05?"Widening (+"+Math.round((cm-1)*100)+"%)":cm<0.95?"Tightening (-"+Math.round((1-cm)*100)+"%)":"Neutral";
+  if(pba)pba.textContent=ba<0.95?"Reducing weight (-"+Math.round((1-ba)*100)+"%)":ba>1.05?"Increasing weight (+"+Math.round((ba-1)*100)+"%)":"Neutral";
+  // Mini chips in projection header
+  const cmc=$("calibMult"),c1d=$("calib1hDir"),c1r=$("calib1hRng"),c4d=$("calib4hDir"),c4r=$("calib4hRng"),cn=$("calibN");
+  if(cmc)cmc.textContent=cm.toFixed(2);if(c1d)c1d.textContent=fmt(s.dir1hRate);if(c1r)c1r.textContent=fmt(s.rng1hRate);if(c4d)c4d.textContent=fmt(s.dir4hRate);if(c4r)c4r.textContent=fmt(s.rng4hRate);if(cn)cn.textContent=s.total;
+  // Log table
+  const plb=$("paLogBody");if(!plb)return;
+  const log=ProjTracker.getLog();
+  if(!log.length){plb.innerHTML="<tr><td colspan='8' class='pending'>No projections logged yet. First entry scores after 1 hour.</td></tr>";return;}
+  plb.innerHTML=log.map(p=>{
+    const d1=p.outcome1h,d4=p.outcome4h;
+    const cls=v=>v===null?"pending":v?"hit":"miss";
+    const dtxt=o=>o===null?"...":o.dirHit?"Y("+o.movePips.toFixed(1)+"p)":"N("+o.movePips.toFixed(1)+"p)";
+    const rtxt=o=>o===null?"...":o.rngHit?"IN":"OUT";
+    return"<tr><td>"+fmtTS(p.ts)+"</td>"
+      +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
+      +"<td style='font-family:var(--mono)'>\xb1"+p.r1+"p</td>"
+      +"<td style='font-family:var(--mono)'>\xb1"+p.r4+"p</td>"
+      +"<td class='"+cls(d1?.dirHit??null)+"'>"+dtxt(d1)+"</td>"
+      +"<td class='"+cls(d1?.rngHit??null)+"'>"+rtxt(d1)+"</td>"
+      +"<td class='"+cls(d4?.dirHit??null)+"'>"+dtxt(d4)+"</td>"
+      +"<td class='"+cls(d4?.rngHit??null)+"'>"+rtxt(d4)+"</td>"
+      +"</tr>";
   }).join("");
 }
-function renderHeadlines(){
-  const h=HeadlinesFeed.get();
-  if(!h.length){$("headlinesBody").innerHTML="<tr><td colspan='3' style='color:rgba(255,255,255,.5)'>Fetching live headlines from ForexLive and FXStreet...</td></tr>";return;}
-  $("headlinesBody").innerHTML=h.map(hl=>"<tr><td style='white-space:nowrap;font-size:10.5px'>"+escH(hl.time||"")+"</td><td style='font-size:10.5px;white-space:nowrap'>"+escH(hl.source||"")+"</td><td><a class='link' href='"+escA(hl.url||"#")+"' target='_blank' rel='noopener noreferrer'>"+escH(hl.title||"")+"</a></td></tr>").join("");
-}
 
-// ── TRANSMISSION & PROJECTION ──────────────────────────────────────────────
-const normAbsPct=(x,cap=1.5)=>!Number.isFinite(x)?0:clamp(Math.abs(x)/cap,0,1);
-function computeEventRisk(){
-  const now=Date.now(),w={HIGH:1.0,MED:0.6,LOW:.25};
-  const events=EventsFeed.get();
-  const up=events.map(e=>({...e,t:new Date(e.when).getTime()})).filter(e=>Number.isFinite(e.t)&&e.t>=now);
-  let best=0;
-  for(const e of up){const wt=w[(e.impact||"LOW").toUpperCase()]??.25,mins=(e.t-now)/60000;const prox=mins<=60?1:mins<=360?(1-(mins-60)/300)*.85:mins<=1440?(1-(mins-360)/1080)*.35:0;best=Math.max(best,wt*prox);}
-  return clamp(best,0,1);
-}
-function computeTx(){
-  const oil=MacroFeed.get("OIL"),gold=MacroFeed.get("GOLD"),silv=MacroFeed.get("SILV"),usd=MacroFeed.get("USD"),eRisk=computeEventRisk();
-  const oilInt=normAbsPct(oil?.changePct,3.0),usdInt=normAbsPct(usd?.changePct,0.8),fearInt=normAbsPct(gold?.changePct,1.5),silvInt=normAbsPct(silv?.changePct,2.5);
-  const oilDir=(oil?.changePct??0)>=0?-oilInt:+oilInt*.4;
-  const usdDir=(usd?.changePct??0)>=0?-usdInt:+usdInt*.5; // DXY up = USD strong = EUR/USD down
-  const fearDir=(gold?.changePct??0)>=0?-fearInt:+fearInt*.2;
-  const silvDir=(silv?.changePct??0)>=0?+silvInt*.25:-silvInt*.15;
-  const score=clamp(.36*oilDir+.44*usdDir+.26*fearDir+.10*silvDir+.22*(-eRisk),-1,1);
-  const intensity=clamp(.30*oilInt+.30*usdInt+.20*fearInt+.10*silvInt+.25*eRisk,0,1);
-  const bias=score<=-.18?"USD+RISK OFF":score>=.18?"USD WEAK/RISK ON":"NEUTRAL";
-  return{score,intensity,bias,components:{oilInt,usdInt,fearInt,silvInt,eventInt:eRisk}};
-}
-function leverPaint(barEl,pctEl,val,dir){const pct=Math.round(val*100);pctEl.textContent=pct+"%";barEl.style.width=clamp(pct,0,100)+"%";barEl.style.background=dir==="bad"?"rgba(255,77,77,.82)":dir==="good"?"rgba(24,209,138,.82)":"rgba(100,160,255,.78)";}
-function computeProj(step,tx){const base1h={1:6,2:10,3:7,4:12,5:18,6:16,7:14,8:26};const pol=step?.policy||1,volx=step?.features?.volx??1,momBp=bp(step?.features?.mom??0),conf=step?.conf??.25;const volMult=clamp(.75+.18*volx,.65,1.85),txMult=clamp(1.0+.55*tx.intensity,1.0,1.6),eRisk=tx.components.eventInt;const r1=Math.round((base1h[pol]??8)*volMult*txMult*clamp(1.0+.65*eRisk,1,1.7));const r4=Math.round(r1*2.6*clamp(1.0+.35*eRisk,1,1.35));const momDir=Math.tanh(momBp/18),score=clamp(.55*momDir+.75*tx.score,-1,1);const bias=score>=.20?"LONG":score<=-.20?"SHORT":"NEUTRAL";const agree=1-Math.abs(momDir-tx.score)/2,dec=clamp(.35*conf+.45*agree+.20*(1-eRisk*.6),0,1);return{bias,r1:clamp(r1,3,80),r4:clamp(r4,6,160),decPct:Math.round(dec*100),volMult,txMult,eRisk};}
+// ── MISC UI ───────────────────────────────────────────────────────────────
+function setRisk(pol,cf){const MAP={1:["NORMAL","Range logic. Fade extremes."],2:["ELEVATED","Thin liquidity. Reduce size."],3:["NORMAL","Drift regime. Small edges."],4:["HIGH","Trend regime. Bias with trend."],5:["HIGH","Stop cascade. De-risk."],6:["HIGH","News shock. Consider standing down."],7:["ELEVATED","Unwind risk. Protect capital."],8:["CRITICAL","Risk off. Protect capital first."]};let[level,rule]=MAP[pol]||["--","State-aware sizing"];if(cf!=null){if(cf<.35&&level==="NORMAL")level="ELEVATED";if(cf<.25&&level==="ELEVATED")level="HIGH";}const rb=$("riskBig"),rr=$("riskRule");if(rb){rb.textContent=level;rb.classList.remove("pos","neg");if(level==="NORMAL")rb.classList.add("pos");if(["CRITICAL","HIGH"].includes(level))rb.classList.add("neg");}if(rr)rr.textContent=rule;}
+function setFxStatus(st){const fs=$("fxSpotStatus"),fd=$("fxStatusDot");if(fs)fs.textContent=st;if(fd){fd.classList.remove("live","err");if(st==="LIVE")fd.classList.add("live");else if(st==="ERROR"||st==="STALE")fd.classList.add("err");}}
+function updateSessionUI(){const{openSessions,primary,isOverlap,dayInfo,minsLeft}=SessionEngine.compute();SessionEngine.SESS.forEach(s=>{const box=$("sb_"+s.id),st=$("ss_"+s.id);if(!box||!st)return;const isOpen=openSessions.includes(s.id),isOL=isOverlap&&(s.id==="LONDON"||s.id==="NEW_YORK");box.style.borderColor=isOpen?s.color.replace(/[\d.]+\)$/,"0.40)"):"rgba(180,220,255,.10)";box.style.background=isOpen?s.color.replace(/[\d.]+\)$/,"0.07)"):"rgba(8,20,52,.22)";st.textContent=isOL?"Overlap":isOpen?"Open":"Closed";st.className="sStat "+(isOL?"overlap":isOpen?"open":"closed");});const cdn=$("currentDayName"),csl=$("currentSessionLabel"),den=$("dayEffectNote"),sob=$("sessionOverlapBadge"),sml=$("sessionMinsLeft");if(cdn)cdn.textContent=dayInfo.name;if(csl)csl.textContent=primary?"Session: "+primary.label:"Session: Closed";if(den)den.textContent=dayInfo.effect;if(sob){sob.textContent=isOverlap?"LDN/NY OVERLAP - Highest Vol":openSessions.length?openSessions.join("+")+" Open":"All sessions closed";sob.style.color=isOverlap?"rgba(100,180,255,.92)":"rgba(255,255,255,.58)";}if(sml)sml.textContent=minsLeft!=null?"~"+minsLeft+"m left":"";}
+function updateWarmupBadge(tickN,warmed){if(FirebaseSync.configured)return;const sb=$("syncBadge");if(!sb)return;if(!warmed){sb.className="syncBadge warming";sb.innerHTML='<span class="dot amber"></span><span>Warming '+tickN+"/"+Engine.WARMUP+"</span>";}else{sb.className="syncBadge synced";sb.innerHTML='<span class="dot"></span><span>SYNCED (det)</span>';}}
+function updateSharpeUI(stats){const sv=$("sharpeVal"),sm=$("sharpeMeta");if(sv&&sm){if(stats.sharpe!=null&&Number.isFinite(stats.sharpe)){sv.textContent=stats.sharpe.toFixed(2);sv.classList.remove("pos","neg");if(stats.sharpe>=2.5)sv.classList.add("pos");else if(stats.sharpe<0)sv.classList.add("neg");sm.textContent=stats.sharpe>=2.5?"Target met":"Below target 2.5";}else{sv.textContent="--";sm.textContent="Need >=20 signals ("+stats.totalSignals+")";}}const wr=$("winRateVal"),wrm=$("winRateMeta");if(wr&&wrm){if(stats.winRate!=null){wr.textContent=Math.round(stats.winRate*100)+"%";wr.classList.remove("pos","neg");if(stats.winRate>=.55)wr.classList.add("pos");else if(stats.winRate<.40)wr.classList.add("neg");wrm.textContent=stats.totalSignals+" closed signals";}else{wr.textContent="--";wrm.textContent="No closed signals";}}const pl=$("openPLVal"),plm=$("openPLMeta");if(pl&&plm){if(stats.openPL!=null){pl.textContent=(stats.openPL>=0?"+":"")+stats.openPL.toFixed(1)+" p";pl.classList.remove("pos","neg");if(stats.openPL>0)pl.classList.add("pos");else if(stats.openPL<0)pl.classList.add("neg");plm.textContent=stats.openBias?"Open "+stats.openBias:"--";}else{pl.textContent="--";plm.textContent="No open signal";}}const cp=$("cumPipsVal");if(cp){cp.textContent=(stats.totalPips>=0?"+":"")+stats.totalPips.toFixed(1)+" p";cp.classList.remove("pos","neg");if(stats.totalPips>0)cp.classList.add("pos");else if(stats.totalPips<0)cp.classList.add("neg");}const fs=$("footSharpe");if(fs)fs.textContent=stats.sharpe!=null?stats.sharpe.toFixed(2):"--";drawEquity(stats.equity.length>=2?stats.equity:[0,0]);}
+function updateCorrUI(corrs){const assets=[{key:"OIL",label:"Brent (BZ=F)",dir:"Negative"},{key:"GOLD",label:"Gold COMEX (GC=F)",dir:"Positive"},{key:"SILV",label:"Silver COMEX (SI=F)",dir:"Positive"},{key:"USD",label:"DXY (DX-Y.NYB)",dir:"Negative"}];const cb=$("corrBody");if(!cb)return;cb.innerHTML=assets.map(a=>{const c=corrs[a.key]||{r:0,tStat:0,n:0,sig:"ns"};const rStr=c.n>=5?c.r.toFixed(3):"--",tStr=c.n>=5?c.tStat.toFixed(2):"--";const sigClass=c.sig==="**"?"sig2":c.sig==="*"?"sig1":"sigNS";const rClass=c.r>.05?"corrPos":c.r<-.05?"corrNeg":"";return"<tr><td>"+a.label+"</td><td class='"+rClass+"'>"+rStr+"</td><td>"+tStr+"</td><td class='"+sigClass+"'>"+c.sig+"</td><td>"+c.n+"</td><td style='color:rgba(255,255,255,.45);font-size:10px'>"+a.dir+"</td></tr>";}).join("");}
 
-// ── UI UPDATE FUNCTIONS ─────────────────────────────────────────────────────
-function setRisk(pol,cf){const MAP={1:["NORMAL","Range logic. Fade extremes."],2:["ELEVATED","Thin liquidity. Reduce size."],3:["NORMAL","Drift regime. Small edges."],4:["HIGH","Trend regime. Bias with trend."],5:["HIGH","Stop cascade. De-risk."],6:["HIGH","News shock. Consider standing down."],7:["ELEVATED","Unwind risk. Protect capital."],8:["CRITICAL","Risk off. Protect capital first."]};let[level,rule]=MAP[pol]||["--","State-aware sizing"];if(cf!=null){if(cf<.35&&level==="NORMAL")level="ELEVATED";if(cf<.25&&level==="ELEVATED")level="HIGH";}$("riskBig").textContent=level;$("riskRule").textContent=rule;$("riskBig").classList.remove("pos","neg");if(level==="NORMAL")$("riskBig").classList.add("pos");if(["CRITICAL","HIGH"].includes(level))$("riskBig").classList.add("neg");}
-function setFxStatus(st){$("fxSpotStatus").textContent=st;$("fxStatusDot").classList.remove("live","err");if(st==="LIVE")$("fxStatusDot").classList.add("live");else if(st==="ERROR"||st==="STALE")$("fxStatusDot").classList.add("err");}
-function updateSessionUI(){const{openSessions,primary,isOverlap,dayInfo,minsLeft}=SessionEngine.compute();SessionEngine.SESS.forEach(s=>{const box=$("sb_"+s.id),st=$("ss_"+s.id);if(!box||!st)return;const isOpen=openSessions.includes(s.id),isOL=isOverlap&&(s.id==="LONDON"||s.id==="NEW_YORK");box.style.borderColor=isOpen?s.color.replace(/[\d.]+\)$/,"0.40)"):"rgba(180,220,255,.10)";box.style.background=isOpen?s.color.replace(/[\d.]+\)$/,"0.07)"):"rgba(8,20,52,.22)";st.textContent=isOL?"Overlap":isOpen?"Open":"Closed";st.className="sStat "+(isOL?"overlap":isOpen?"open":"closed");});$("currentDayName").textContent=dayInfo.name;$("currentSessionLabel").textContent=primary?"Session: "+primary.label:"Session: Closed";$("dayEffectNote").textContent=dayInfo.effect;$("sessionOverlapBadge").textContent=isOverlap?"LDN/NY OVERLAP - Highest Vol":openSessions.length?openSessions.join("+")+" Open":"All sessions closed";$("sessionOverlapBadge").style.color=isOverlap?"rgba(100,180,255,.92)":"rgba(255,255,255,.58)";$("sessionMinsLeft").textContent=minsLeft!=null?"~"+minsLeft+"m left":"";}
-function updatePB3UI(pb3){const pcts={PANIC:pb3.panic,BUBBLE:pb3.bubble,BOOM:pb3.boom,BUST:pb3.bust},labels={PANIC:"pb3Panic",BUBBLE:"pb3Bubble",BOOM:"pb3Boom",BUST:"pb3Bust"};for(const[k,v]of Object.entries(pcts)){const pct=Math.round(v*100);$(labels[k]+"Pct").textContent=pct+"%";$(labels[k]+"Bar").style.width=clamp(pct,0,100)+"%";}const colors={PANIC:"rgba(255,77,77,.18),rgba(255,77,77,.08)",BUBBLE:"rgba(255,176,32,.18),rgba(255,176,32,.08)",BOOM:"rgba(24,209,138,.18),rgba(24,209,138,.08)",BUST:"rgba(255,138,64,.18),rgba(255,138,64,.08)",NORMAL:"rgba(8,20,52,.28),rgba(8,20,52,.28)"};const borders={PANIC:"rgba(255,77,77,.35)",BUBBLE:"rgba(255,176,32,.35)",BOOM:"rgba(24,209,138,.35)",BUST:"rgba(255,138,64,.35)",NORMAL:"rgba(180,220,255,.10)"};const txtColors={PANIC:"rgba(255,100,100,.95)",BUBBLE:"rgba(255,176,32,.95)",BOOM:"rgba(24,209,138,.95)",BUST:"rgba(255,138,64,.95)",NORMAL:"rgba(232,239,255,.65)"};const d=pb3.dominant,row=$("pb3Dom"),[bg1,bg2]=(colors[d]||colors.NORMAL).split(",");row.style.background="linear-gradient(135deg,"+bg1.trim()+","+bg2.trim()+")";row.style.borderColor=borders[d]||borders.NORMAL;$("pb3DomState").textContent=d;$("pb3DomState").style.color=txtColors[d]||txtColors.NORMAL;$("pb3DomNote").textContent=pb3.note;}
-function updateArchUI(arch){const arcBg={"COMBINED SHOCK":"rgba(255,58,165,.15)","SUPPLY SHOCK":"rgba(255,77,77,.15)","RISK-OFF PANIC":"rgba(255,176,32,.15)","LOCALIZED EVENT":"rgba(120,170,255,.12)","RATE / DOLLAR PLAY":"rgba(43,108,255,.15)","QUIET TAPE":"rgba(8,20,52,.28)","MIXED SIGNALS":"rgba(100,80,200,.12)","--":"rgba(8,20,52,.28)"};const arcBorder={"COMBINED SHOCK":"rgba(255,58,165,.35)","SUPPLY SHOCK":"rgba(255,77,77,.30)","RISK-OFF PANIC":"rgba(255,176,32,.30)","LOCALIZED EVENT":"rgba(120,170,255,.25)","RATE / DOLLAR PLAY":"rgba(43,108,255,.30)","QUIET TAPE":"rgba(180,220,255,.10)","MIXED SIGNALS":"rgba(140,100,220,.25)","--":"rgba(180,220,255,.10)"};const el=$("archMain");el.style.background=arcBg[arch.archetype]||arcBg["--"];el.style.border="1px solid "+(arcBorder[arch.archetype]||arcBorder["--"]);$("archType").textContent=arch.archetype;$("archConf").textContent="Confidence: "+Math.round(arch.confidence*100)+"%";$("archBias").innerHTML="EUR/USD Bias: <b class='"+(arch.eurusdBias==="BEARISH"?"neg":arch.eurusdBias==="BULLISH"?"pos":"")+"'>"+arch.eurusdBias+"</b>";$("archNote").textContent=arch.note;$("archAnalog").textContent=arch.analog;}
-function updateCorrUI(corrs){const assets=[{key:"OIL",label:"Brent Crude (BZ=F)",dir:"Negative"},{key:"GOLD",label:"Gold COMEX (GC=F)",dir:"Positive"},{key:"SILV",label:"Silver COMEX (SI=F)",dir:"Positive"},{key:"USD",label:"DXY (DX-Y.NYB)",dir:"Negative"}];$("corrBody").innerHTML=assets.map(a=>{const c=corrs[a.key]||{r:0,tStat:0,n:0,sig:"ns"};const rStr=c.n>=5?c.r.toFixed(3):"--",tStr=c.n>=5?c.tStat.toFixed(2):"--";const sigClass=c.sig==="**"?"sig2":c.sig==="*"?"sig1":"sigNS";const rClass=c.r>.05?"corrPos":c.r<-.05?"corrNeg":"";return"<tr><td>"+a.label+"</td><td class='"+rClass+"'>"+rStr+"</td><td>"+tStr+"</td><td class='"+sigClass+"'>"+c.sig+"</td><td>"+c.n+"</td><td style='color:rgba(255,255,255,.45);font-size:10.5px'>"+a.dir+"</td></tr>";}).join("");}
-function updateSharpeUI(stats){const sv=$("sharpeVal"),sm=$("sharpeMeta");if(stats.sharpe!=null&&Number.isFinite(stats.sharpe)){sv.textContent=stats.sharpe.toFixed(2);sv.classList.remove("pos","neg");if(stats.sharpe>=2.5)sv.classList.add("pos");else if(stats.sharpe<0)sv.classList.add("neg");sm.textContent=stats.sharpe>=2.5?"Target met (>=2.5)":stats.sharpe>=1.0?"Below target 2.5":"Below 1.0 - review";}else{sv.textContent="--";sm.textContent="Need >=20 signals ("+stats.totalSignals+")";}const wr=$("winRateVal"),wrm=$("winRateMeta");if(stats.winRate!=null){wr.textContent=Math.round(stats.winRate*100)+"%";wr.classList.remove("pos","neg");if(stats.winRate>=.55)wr.classList.add("pos");else if(stats.winRate<.40)wr.classList.add("neg");wrm.textContent=stats.totalSignals+" closed signals";}else{wr.textContent="--";wrm.textContent="No closed signals";}const pl=$("openPLVal"),plm=$("openPLMeta");if(stats.openPL!=null){pl.textContent=(stats.openPL>=0?"+":"")+stats.openPL.toFixed(1)+" p";pl.classList.remove("pos","neg");if(stats.openPL>0)pl.classList.add("pos");else if(stats.openPL<0)pl.classList.add("neg");plm.textContent=stats.openBias?"Open "+stats.openBias:"--";}else{pl.textContent="--";plm.textContent="No open signal";}const cp=$("cumPipsVal");cp.textContent=(stats.totalPips>=0?"+":"")+stats.totalPips.toFixed(1)+" p";cp.classList.remove("pos","neg");if(stats.totalPips>0)cp.classList.add("pos");else if(stats.totalPips<0)cp.classList.add("neg");$("footSharpe").textContent=stats.sharpe!=null?stats.sharpe.toFixed(2):"--";drawEquity(stats.equity.length>=2?stats.equity:[0,0]);}
-function updateWarmupBadge(step){const sb=$("syncBadge"),fbConfigured=!!(settings.fbUrl);if(fbConfigured)return;if(!step){sb.className="syncBadge warming";sb.innerHTML='<span class="dot amber"></span><span>Warming 0/'+Engine.WARMUP+'</span>';return;}const n=step.tickN,W=Engine.WARMUP;if(n<W){sb.className="syncBadge warming";sb.innerHTML='<span class="dot amber"></span><span>Warming '+n+"/"+W+'</span>';}else{sb.className="syncBadge synced";sb.innerHTML='<span class="dot live"></span><span>SYNCED (det)</span>';}}
-
-// ── ALERTS ────────────────────────────────────────────────────────────────
 let lastAlertAt=0;
-function checkAlerts(proj){const thresh=Number(settings.alertThreshPips)||0;if(thresh>0&&proj&&proj.r1>=thresh){if(Date.now()-lastAlertAt<300000)return;lastAlertAt=Date.now();$("alertBadge").classList.add("show");$("alertBadgeText").textContent="1h range "+proj.r1+"p >= "+thresh+"p";setTimeout(()=>$("alertBadge").classList.remove("show"),30000);$("rng1hBox").classList.add("breach");setTimeout(()=>$("rng1hBox").classList.remove("breach"),4000);if("Notification"in window&&Notification.permission==="granted"){try{new Notification("QuadraX Alert",{body:"1h range "+proj.r1+"p. Bias: "+proj.bias,tag:"qx-alert"});}catch{}}}}
-
+function checkAlerts(r1,bias){const thresh=Number(settings.alertThreshPips)||0;if(thresh>0&&r1>=thresh){if(Date.now()-lastAlertAt<300000)return;lastAlertAt=Date.now();const ab=$("alertBadge"),at=$("alertBadgeText");if(ab)ab.classList.add("show");if(at)at.textContent="1h range "+r1+"p >= "+thresh+"p";setTimeout(()=>{const ab2=$("alertBadge");if(ab2)ab2.classList.remove("show");},30000);if("Notification"in window&&Notification.permission==="granted"){try{new Notification("QuadraX Alert",{body:"1h range "+r1+"p. Bias: "+bias,tag:"qx-alert"});}catch{}}}}
 let nightMode=false;
-function toggleNight(){nightMode=!nightMode;document.body.classList.toggle("night",nightMode);$("nightBtn").classList.toggle("night-active",nightMode);$("nightBtn").textContent=nightMode?"Day":"Night";}
+function toggleNight(){nightMode=!nightMode;document.body.classList.toggle("night",nightMode);const nb=$("nightBtn");if(nb){nb.classList.toggle("night-active",nightMode);nb.textContent=nightMode?"Day":"Night";}}
+function exportSnapshot(){const url=URL.createObjectURL(new Blob([JSON.stringify({timestamp:new Date().toISOString(),version:"v5",state:lastFullState,projAccuracy:ProjTracker.getStats(),calibMult:ProjTracker.getCalibMult()},null,2)],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download="quadrax-v5-snap-"+Date.now()+".json";a.click();URL.revokeObjectURL(url);}
 
-function exportSnapshot(){const snap={timestamp:new Date().toISOString(),version:"v4",spot:SpotFeed.getLast(),regime:lastStep?{policy:lastStep.policy,detector:lastStep.detector,conf:lastStep.conf,regimeAge:lastStep.regimeAge,momScore:lastStep.momScore,warmed:lastStep.warmed}:null,macro:{oil:MacroFeed.get("OIL"),gold:MacroFeed.get("GOLD"),silv:MacroFeed.get("SILV"),usd:MacroFeed.get("USD")},transmission:lastTx,projection:lastProj,pb3:lastPB3,archetype:lastArch};const url=URL.createObjectURL(new Blob([JSON.stringify(snap,null,2)],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download="quadrax-v4-snap-"+Date.now()+".json";a.click();URL.revokeObjectURL(url);}
+let lastSpot=null,lastFullState=null,paused=false,syncing=false;
 
-let lastSpot=null,lastStep=null,lastTx=null,lastProj=null,lastPB3=null,lastArch=null;
-let paused=false,syncing=false;
-
-// ── CORE UPDATE ────────────────────────────────────────────────────────────
-function updateAll(){
-  const tx=computeTx();lastTx=tx;
-  $("macroBiasChip").textContent=tx.bias;$("txScoreChip").textContent=tx.score.toFixed(2);
-  const eRisk=tx.components.eventInt;$("eventRiskChip").textContent=eRisk>=.70?"HIGH":eRisk>=.35?"MED":"LOW";
-  const txLbl=tx.score<=-.18?"BEAR EURUSD":tx.score>=.18?"BULL EURUSD":"NEUTRAL";$("txBig").textContent=txLbl;
-  $("txMeta").textContent="Score "+tx.score.toFixed(2)+" | "+tx.bias+" | Intensity "+Math.round(tx.intensity*100)+"%";
-  const oil=MacroFeed.get("OIL"),gold=MacroFeed.get("GOLD"),usd=MacroFeed.get("USD");
-  leverPaint($("oilLeverBar"),$("oilLeverPct"),tx.components.oilInt,(oil?.changePct??0)>=0?"bad":"good");
-  leverPaint($("usdLeverBar"),$("usdLeverPct"),tx.components.usdInt,(usd?.changePct??0)>=0?"bad":"good");
-  leverPaint($("fearLeverBar"),$("fearLeverPct"),tx.components.fearInt,(gold?.changePct??0)>=0?"bad":"good");
-  leverPaint($("eventLeverBar"),$("eventLeverPct"),tx.components.eventInt,tx.components.eventInt>=.35?"bad":"neutral");
-  const arch=Classifier.classify(tx);lastArch=arch;updateArchUI(arch);
-  CorrEngine.onMacroUpdate();updateCorrUI(CorrEngine.getCorrelations());
-  drawTM(Engine.getTM());updateSessionUI();
-  if(lastStep&&lastSpot&&Number.isFinite(lastSpot.price)){
-    const proj=computeProj(lastStep,tx);lastProj=proj;checkAlerts(proj);
-    if(!paused)SignalTracker.update(lastSpot.price,proj.bias);
-    const stats=SignalTracker.getStats(lastSpot.price);updateSharpeUI(stats);
-    const pb3=PB3.compute(lastStep,tx);lastPB3=pb3;updatePB3UI(pb3);
-    $("tradeBias").textContent=proj.bias;$("tradeBias").classList.remove("pos","neg");
-    if(proj.bias==="LONG")$("tradeBias").classList.add("pos");
-    if(proj.bias==="SHORT")$("tradeBias").classList.add("neg");
-    $("tradeBiasMeta").textContent=txLbl+" | Event "+Math.round(proj.eRisk*100)+"%";
-    $("rng1h").textContent="\xb1"+proj.r1+" pips";$("rng1hMeta").textContent="Vol x"+proj.volMult.toFixed(2)+" Macro x"+proj.txMult.toFixed(2);
-    $("rng4h").textContent="\xb1"+proj.r4+" pips";$("rng4hMeta").textContent="4h scaled | Tx "+tx.score.toFixed(2);
-    $("decConf").textContent=proj.decPct+"%";$("decConf").classList.remove("pos","neg");
-    if(proj.decPct>=55)$("decConf").classList.add("pos");if(proj.decPct<=30)$("decConf").classList.add("neg");
-    $("decConfMeta").textContent=proj.decPct>=55?"Higher agreement":proj.decPct>=40?"Mixed signals":"Low agreement, caution";
-    drawCone({spot:lastSpot.price,r1:proj.r1,r4:proj.r4,bias:proj.bias});
-    // Firebase sync write
-    if(settings.fbUrl&&(FirebaseSync.role==="MASTER"||(FirebaseSync.role==="AUTO"&&FirebaseSync.isMaster))){
-      FirebaseSync.writeState({spot:lastSpot.price,policy:lastStep.policy,conf:lastStep.conf,bias:proj.bias,r1:proj.r1,r4:proj.r4,arch:arch.archetype,pb3:pb3.dominant});
-    }
-  }else{
-    ["tradeBias","rng1h","rng4h","decConf"].forEach(id=>$(id).textContent="--");
-    updateSharpeUI({sharpe:null,winRate:null,openPL:null,totalSignals:0,totalPips:0,openBias:null,equity:[0]});
-    updatePB3UI(PB3.compute(null,tx));
-  }
-}
-
+// ── MASTER COMPUTE TICK ───────────────────────────────────────────────────
 async function onSpotUpdate(s){
-  const now=Date.now();$("lastUpdate").textContent=fmtTime(now);
-  if(!s.ok){setFxStatus("ERROR");$("fxSpotDelta").textContent="0.00000";$("modeTag").textContent="Mode: ERROR";return;}
-  lastSpot=s;$("fxSpotPrice").textContent=s.price.toFixed(5);$("quoteProvider").textContent="Provider: "+(s.provider||s.source||"--");$("fxSpotMeta").textContent="Source: "+s.source;$("fxSpotDelta").textContent=s.lastDelta.toFixed(5);$("fxLatencyTag").textContent=(s.latencyMs??"--")+"ms";$("fxLastTag").textContent="Last: "+fmtTime(s.ts);$("modeTag").textContent=settings.twelvedataKey?"Mode: LIVE":"Mode: FREE";
-  const dw=clamp(Math.abs(s.lastDelta)/.0012,0,1)*100;$("miniBar").style.width=Math.max(10,dw)+"%";$("miniBar").style.background=s.lastDelta>=0?"rgba(24,209,138,.85)":"rgba(255,77,77,.85)";
+  const now=Date.now();const lu=$("lastUpdate");if(lu)lu.textContent=fmtTime(now);
+  if(!s.ok){setFxStatus("ERROR");return;}
+  lastSpot=s;
+  const fl=$("fxLatencyTag");if(fl)fl.textContent=(s.latencyMs??"--")+"ms";
+  const qp=$("quoteProvider");if(qp)qp.textContent="Provider: "+(s.provider||s.source||"--");
+  const mt=$("modeTag");if(mt)mt.textContent=settings.twelvedataKey?"Mode: LIVE":"Mode: FREE";
   setFxStatus(s.status);
   CorrEngine.pushEur(s.lastDelta);
-
-  // READER mode: pull state from Firebase instead of computing
-  if(settings.fbUrl&&FirebaseSync.role==="READER"){
-    const fbState=await FirebaseSync.readState();
-    if(fbState&&fbState.ts&&(Date.now()-fbState.ts)<60000){
-      $("policyStateTitle").textContent="Policy State: S"+(fbState.policy||"?")+" "+(STATES[(fbState.policy||1)-1]?.name||"");
-      $("policyStateDesc").textContent="[Firebase READER] Conf "+Math.round((fbState.conf||0)*100)+"% | Bias "+fbState.bias+" | Arch "+fbState.arch;
-      $("tradeBias").textContent=fbState.bias||"--";
-      $("rng1h").textContent=fbState.r1?("\xb1"+fbState.r1+" pips"):"--";
-      $("rng4h").textContent=fbState.r4?("\xb1"+fbState.r4+" pips"):"--";
-      $("pb3DomState").textContent=fbState.pb3||"--";
-      return;
-    }
-  }
-
   if(paused)return;
-  const step=Engine.step(s.price);if(!step)return;lastStep=step;
-  pushState(step.policy);drawTimeline($("timelineCanvas"),recentStates);$("timelineDepth").textContent=recentStates.length;
-  $("tickChip").textContent=step.tickN+"/"+Engine.WARMUP;
-  $("ageChip").textContent=String(step.regimeAge);$("momChip").textContent=Math.round(step.momScore*100)+"%";
-  $("nextStateChip").textContent="S"+step.predictedNext.state+" ("+Math.round(step.predictedNext.prob*100)+"%)";
-  $("policyStateTitle").textContent="Policy State: S"+step.policy+" "+STATES[step.policy-1]?.name;$("policyStateDesc").textContent=STATES[step.policy-1]?.desc||"";
-  $("detectorChip").textContent="S"+step.detector;$("policyChip").textContent="S"+step.policy;$("confChip").textContent=(step.conf*100).toFixed(1)+"%";$("hystChip").textContent=step.detector===step.policy?"stable":"holding";
-  setRisk(step.policy,step.conf);
-  step.probs.forEach((p,i)=>{probEls[i].bar.style.width=clamp(p*100,0,100)+"%";probEls[i].bar.style.background=STATES[i].color;probEls[i].val.textContent=(p*100).toFixed(1)+"%";});
-  $("footPolicy").textContent="S"+step.policy;$("footDetector").textContent="S"+step.detector;$("footAge").textContent=String(step.regimeAge);
-  updateWarmupBadge(step);
-  updateAll();
+  const step=Engine.step(s.price);if(!step)return;
+  pushState(step.policy);
+  ProjTracker.scoreOutcomes(s.price);
+  const tx=computeTx();
+  const cm=ProjTracker.getCalibMult(),ba=ProjTracker.getBiasConfAdj();
+  const proj=computeProj(step,tx,cm,ba);
+  const pb3=PB3.compute(step,tx);
+  const arch=Classifier.classify(tx);
+  ProjTracker.logProjection({spot:s.price,bias:proj.bias,r1:proj.r1,r4:proj.r4,policy:step.policy});
+  const fullState=buildFullState(step,tx,proj,pb3,arch,s,recentStates,cm,ba);
+  lastFullState=fullState;
+  applyFullStateToUI(fullState);
+  if(!paused){SignalTracker.update(s.price,proj.bias);}
+  updateSharpeUI(SignalTracker.getStats(s.price));
+  CorrEngine.onMacroUpdate();updateCorrUI(CorrEngine.getCorrelations());
+  updateSessionUI();updateProjAccuracyUI();checkAlerts(proj.r1,proj.bias);
+  MacroFeed.hydrate();
+  if(FirebaseSync.configured&&FirebaseSync.role==="MASTER")FirebaseSync.writeFullState(fullState);
+}
+
+// ── READER POLL ───────────────────────────────────────────────────────────
+async function readerPoll(){
+  if(FirebaseSync.role!=="READER"||!FirebaseSync.configured)return;
+  const st=await FirebaseSync.pullState();
+  if(!st){const pst=$("policyStateDesc");if(pst)pst.textContent="Waiting for MASTER...";return;}
+  lastFullState=st;
+  applyFullStateToUI(st);
+  updateSessionUI();updateProjAccuracyUI();
+  const lu=$("lastUpdate");if(lu)lu.textContent=fmtTime(st.ts||Date.now());
+  setFxStatus("LIVE");
 }
 
 // ── SETTINGS ──────────────────────────────────────────────────────────────
 async function validateTDKey(key){if(!key)return null;try{const r=await fetch("https://api.twelvedata.com/price?symbol=EUR/USD&apikey="+encodeURIComponent(key),{cache:"no-store"});if(!r.ok)return false;const j=await r.json();return Number.isFinite(Number(j?.price))&&Number(j.price)>0;}catch{return false;}}
-function openSettings(){$("tdKeyInput").value=settings.twelvedataKey||"";$("pollInput").value=String(settings.pollMs||12000);$("alertThreshInput").value=String(settings.alertThreshPips||"");$("histDepthInput").value=String(settings.histDepth||60);$("fbUrlInput").value=settings.fbUrl||"";$("fbRoleInput").value=settings.fbRole||"AUTO";$("tdKeyValidTag").textContent="";$("settingsBack").style.display="flex";}
-function closeSettings(){$("settingsBack").style.display="none";}
-$("settingsBtn").addEventListener("click",openSettings);$("closeSettingsBtn").addEventListener("click",closeSettings);
-$("settingsBack").addEventListener("click",e=>{if(e.target===$("settingsBack"))closeSettings();});
-$("resetSettingsBtn").addEventListener("click",()=>{settings={twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbUrl:"",fbRole:"AUTO"};save(KEY.s,settings);openSettings();});
-$("saveSettingsBtn").addEventListener("click",async()=>{
-  const key=String($("tdKeyInput").value||"").trim(),
-        poll=Number($("pollInput").value||12000),
-        thresh=Number($("alertThreshInput").value||0),
-        depth=Number($("histDepthInput").value||60),
-        fbUrl=String($("fbUrlInput").value||"").trim(),
-        fbRole=$("fbRoleInput").value||"AUTO";
-  if(key){$("tdKeyValidTag").textContent=" Checking...";$("tdKeyValidTag").className="vTag";const valid=await validateTDKey(key);$("tdKeyValidTag").textContent=valid?" Valid":" Invalid";$("tdKeyValidTag").className="vTag "+(valid?"ok":"fail");if(valid===false&&!confirm("API key appears invalid. Save anyway?"))return;}
-  settings.twelvedataKey=key;
-  settings.pollMs=Number.isFinite(poll)&&poll>=6000?Math.round(poll):12000;
-  settings.alertThreshPips=Number.isFinite(thresh)&&thresh>0?Math.round(thresh):0;
-  settings.histDepth=clamp(Number.isFinite(depth)?Math.round(depth):60,10,120);
-  settings.fbUrl=fbUrl;settings.fbRole=fbRole;
-  save(KEY.s,settings);
-  FirebaseSync.init(fbUrl,fbRole);
+function openSettings(){const ti=$("tdKeyInput"),pi=$("pollInput"),ai=$("alertThreshInput"),hi=$("histDepthInput"),fi=$("fbUrlInput"),fri=$("fbRoleInput");if(ti)ti.value=settings.twelvedataKey||"";if(pi)pi.value=String(settings.pollMs||12000);if(ai)ai.value=String(settings.alertThreshPips||"");if(hi)hi.value=String(settings.histDepth||60);if(fi)fi.value=settings.fbUrl||"";if(fri)fri.value=settings.fbRole||"MASTER";const tv=$("tdKeyValidTag");if(tv)tv.textContent="";const sb=$("settingsBack");if(sb)sb.style.display="flex";}
+function closeSettings(){const sb=$("settingsBack");if(sb)sb.style.display="none";}
+const sBtn=$("settingsBtn"),cBtn=$("closeSettingsBtn"),sBack=$("settingsBack"),rBtn=$("resetSettingsBtn"),rpBtn=$("resetProjBtn"),saveBtn=$("saveSettingsBtn");
+if(sBtn)sBtn.addEventListener("click",openSettings);
+if(cBtn)cBtn.addEventListener("click",closeSettings);
+if(sBack)sBack.addEventListener("click",e=>{if(e.target===sBack)closeSettings();});
+if(rBtn)rBtn.addEventListener("click",()=>{settings={twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbUrl:"",fbRole:"MASTER",calibMult:1.0,biasConfAdj:1.0};save(KEY.s,settings);openSettings();});
+if(rpBtn)rpBtn.addEventListener("click",()=>{if(confirm("Reset all projection logs and calibration multiplier to 1.00?"))ProjTracker.reset();});
+if(saveBtn)saveBtn.addEventListener("click",async()=>{
+  const key=String($("tdKeyInput")?.value||"").trim(),poll=Number($("pollInput")?.value||12000),thresh=Number($("alertThreshInput")?.value||0),depth=Number($("histDepthInput")?.value||60),fbUrl=String($("fbUrlInput")?.value||"").trim(),fbRole=$("fbRoleInput")?.value||"MASTER";
+  if(key){const tv=$("tdKeyValidTag");if(tv){tv.textContent=" Checking...";tv.className="vTag";}const valid=await validateTDKey(key);if(tv){tv.textContent=valid?" Valid":" Invalid";tv.className="vTag "+(valid?"ok":"fail");}if(valid===false&&!confirm("API key appears invalid. Save anyway?"))return;}
+  settings.twelvedataKey=key;settings.pollMs=Number.isFinite(poll)&&poll>=6000?Math.round(poll):12000;settings.alertThreshPips=Number.isFinite(thresh)&&thresh>0?Math.round(thresh):0;settings.histDepth=clamp(Number.isFinite(depth)?Math.round(depth):60,10,120);settings.fbUrl=fbUrl;settings.fbRole=fbRole;
+  save(KEY.s,settings);FirebaseSync.init(fbUrl,fbRole);
   if(settings.alertThreshPips>0&&"Notification"in window&&Notification.permission==="default")Notification.requestPermission();
-  closeSettings();
-  alert("Saved. Reload to apply polling cadence changes.");
+  closeSettings();alert("Saved. MASTER/READER role applied immediately.");
 });
-
-$("pauseBtn").addEventListener("click",()=>{paused=!paused;$("pauseBtn").textContent=paused?"Resume":"Pause";$("sysStatus").textContent=paused?"PAUSED":"LIVE";$("liveDot").classList.toggle("amber",paused);});
-$("nightBtn").addEventListener("click",toggleNight);$("exportBtn").addEventListener("click",exportSnapshot);
-$("syncBtn").addEventListener("click",async()=>{if(syncing)return;syncing=true;$("syncBtn").textContent="Syncing...";$("syncBtn").classList.add("syncing");try{await Promise.allSettled([SpotFeed.tick(onSpotUpdate),MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()]);updateAll();}finally{syncing=false;$("syncBtn").textContent="Sync";$("syncBtn").classList.remove("syncing");}});
-window.addEventListener("keydown",e=>{if(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")return;const k=e.key.toLowerCase();if(k==="p")$("pauseBtn").click();else if(k==="s")$("syncBtn").click();else if(k==="n")toggleNight();else if(k==="x")exportSnapshot();else if(k==="?")$("kbHint").classList.toggle("show");});
-let tvLoaded=false;$("tvFrame").addEventListener("load",()=>{tvLoaded=true;});
-setTimeout(()=>{if(!tvLoaded)$("tvFallback").classList.add("show");},9000);
+const pBtn=$("pauseBtn"),nBtn=$("nightBtn"),eBtn=$("exportBtn"),syncBtn=$("syncBtn");
+if(pBtn)pBtn.addEventListener("click",()=>{paused=!paused;pBtn.textContent=paused?"Resume":"Pause";const ss=$("sysStatus");if(ss)ss.textContent=paused?"PAUSED":"LIVE";const ld=$("liveDot");if(ld)ld.classList.toggle("amber",paused);});
+if(nBtn)nBtn.addEventListener("click",toggleNight);
+if(eBtn)eBtn.addEventListener("click",exportSnapshot);
+if(syncBtn)syncBtn.addEventListener("click",async()=>{if(syncing)return;syncing=true;syncBtn.textContent="Syncing...";syncBtn.classList.add("syncing");try{await Promise.allSettled([SpotFeed.tick(onSpotUpdate),MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()]);}finally{syncing=false;syncBtn.textContent="Sync";syncBtn.classList.remove("syncing");}});
+window.addEventListener("keydown",e=>{if(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")return;const k=e.key.toLowerCase();if(k==="p"&&pBtn)pBtn.click();else if(k==="s"&&syncBtn)syncBtn.click();else if(k==="n")toggleNight();else if(k==="x")exportSnapshot();else if(k==="?"){const kh=$("kbHint");if(kh)kh.classList.toggle("show");}});
+const tvf=$("tvFrame");if(tvf){let tvLoaded=false;tvf.addEventListener("load",()=>{tvLoaded=true;});setTimeout(()=>{if(!tvLoaded){const fb=$("tvFallback");if(fb)fb.classList.add("show");}},9000);}
 
 // ── START ─────────────────────────────────────────────────────────────────
 async function start(){
-  initProbUI();MacroFeed.hydrate();
-  drawTimeline($("timelineCanvas"),recentStates);drawTM(Engine.getTM());
-  updateSessionUI();updatePB3UI(PB3.compute(null,null));updateArchUI(Classifier.classify(null));
+  initProbUI();
+  MacroFeed.hydrate();
+  drawTimeline($("timelineCanvas"),recentStates);
+  drawTM(Engine.getTM());
+  updateSessionUI();
+  updateProjAccuracyUI();
   updateCorrUI(CorrEngine.getCorrelations());
   updateSharpeUI({sharpe:null,winRate:null,openPL:null,totalSignals:0,totalPips:0,openBias:null,equity:[0]});
-  updateWarmupBadge(null);
   FirebaseSync.init(settings.fbUrl,settings.fbRole);
-
-  // Parallel initial fetch
-  await Promise.allSettled([
-    SpotFeed.tick(onSpotUpdate),
-    MacroFeed.tick(),
-    EventsFeed.tick(),
-    HeadlinesFeed.tick(),
-    FirebaseSync.tick(),
-  ]);
-  updateAll();renderEvents();renderHeadlines();
-
-  // Polling intervals
+  await Promise.allSettled([SpotFeed.tick(onSpotUpdate),MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()]);
+  renderEvents();renderHeadlines();
   const poll=Math.max(Number(settings.pollMs)||12000,6000);
-  setInterval(()=>SpotFeed.tick(onSpotUpdate),poll);
-  setInterval(async()=>{await MacroFeed.tick();updateAll();},90000);           // macro every 90s
-  setInterval(async()=>{await EventsFeed.tick();renderEvents();},5*60*1000);   // cal every 5min
-  setInterval(async()=>{await HeadlinesFeed.tick();renderHeadlines();},5*60*1000); // news every 5min
-  setInterval(()=>{updateSessionUI();updateAll();},30000);                      // session clock every 30s
-  setInterval(()=>FirebaseSync.tick(),15000);                                   // firebase heartbeat 15s
+  if(FirebaseSync.configured&&FirebaseSync.role==="READER"){
+    // READER mode: pull complete state from Firebase every 5s, no local computation
+    readerPoll();
+    setInterval(readerPoll,5000);
+    setInterval(async()=>{await MacroFeed.tick();MacroFeed.hydrate();},90000);
+    setInterval(async()=>{await EventsFeed.tick();renderEvents();},5*60*1000);
+    setInterval(async()=>{await HeadlinesFeed.tick();renderHeadlines();},5*60*1000);
+    setInterval(updateSessionUI,30000);
+    setInterval(updateProjAccuracyUI,60000);
+  }else{
+    // MASTER mode: full compute loop
+    setInterval(()=>SpotFeed.tick(onSpotUpdate),poll);
+    setInterval(async()=>{await MacroFeed.tick();MacroFeed.hydrate();},90000);
+    setInterval(async()=>{await EventsFeed.tick();renderEvents();},5*60*1000);
+    setInterval(async()=>{await HeadlinesFeed.tick();renderHeadlines();},5*60*1000);
+    setInterval(()=>{updateSessionUI();updateProjAccuracyUI();},30000);
+  }
 }
 start();
 })();
 </script>
 </body>
 </html>
-
