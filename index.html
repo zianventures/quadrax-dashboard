@@ -178,6 +178,38 @@ tbody tr:hover{background:rgba(255,255,255,.03)}
 .tvWrap iframe{width:100%;height:330px;border:0;display:block}
 .tvFb{display:none;position:absolute;inset:0;align-items:center;justify-content:center;background:rgba(8,20,52,.88);font-size:12px;color:rgba(255,255,255,.60);text-align:center;gap:8px;flex-direction:column}
 .tvFb.show{display:flex}
+
+.tickChart{width:100%;height:72px;display:block;margin:10px 0 4px;border-radius:8px}
+.pricePulse{animation:pPulse .4s ease}
+@keyframes pPulse{0%{opacity:.6;transform:scaleX(.99)}100%{opacity:1;transform:scaleX(1)}}
+.qeGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:900px){.qeGrid{grid-template-columns:1fr 1fr}}
+.qeBox{border-radius:14px;background:rgba(8,20,52,.24);border:1px solid rgba(180,220,255,.09);padding:12px 14px}
+.qeBox .qk{font-size:9.5px;color:rgba(255,255,255,.46);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px}
+.qeBox .qv{font-size:22px;font-weight:700;font-family:var(--mono);line-height:1.1}
+.qeBox .qm{font-size:10px;color:rgba(255,255,255,.42);margin-top:3px;line-height:1.4}
+.hurstBar{height:6px;border-radius:4px;background:rgba(180,220,255,.10);margin:7px 0 4px;position:relative;overflow:hidden}
+.hurstFill{height:100%;border-radius:4px;transition:width .6s ease,background .6s ease}
+.hurstTick{position:absolute;top:-2px;width:2px;height:10px;background:rgba(255,255,255,.35);left:50%;transform:translateX(-50%)}
+.sigStack{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0 4px}
+.sigPill{border-radius:20px;padding:4px 10px;font-size:10px;font-weight:600;display:flex;align-items:center;gap:5px;border:1px solid;cursor:default}
+.sigPill.on{background:rgba(24,209,138,.14);border-color:rgba(24,209,138,.35);color:rgba(24,209,138,.92)}
+.sigPill.off{background:rgba(180,220,255,.05);border-color:rgba(180,220,255,.10);color:rgba(255,255,255,.32)}
+.sigPill.against{background:rgba(255,77,77,.12);border-color:rgba(255,77,77,.30);color:rgba(255,100,100,.80)}
+.sigPill .sdot{width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block}
+.kellyBar{height:6px;border-radius:4px;background:rgba(180,220,255,.08);overflow:hidden;margin-top:7px}
+.kellyFill{height:100%;border-radius:4px;transition:width .5s ease,background .5s ease}
+.histWrap{height:52px;display:flex;align-items:flex-end;gap:1.5px;margin-top:8px;overflow:hidden}
+.histBar{flex:1;border-radius:2px 2px 0 0;min-height:2px;transition:height .3s ease}
+.convicRow{border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:16px;margin-bottom:12px;transition:border-color .6s ease}
+.convicText .ck{font-size:9.5px;color:rgba(255,255,255,.46);text-transform:uppercase;letter-spacing:.7px}
+.convicText .cv{font-size:26px;font-weight:700;font-family:var(--mono);line-height:1.1;transition:color .5s ease}
+.convicText .cm{font-size:10.5px;color:rgba(255,255,255,.48);margin-top:2px}
+.stkBar{height:7px;border-radius:5px;background:rgba(180,220,255,.08);overflow:hidden;margin-top:8px}
+.stkFill{height:100%;border-radius:5px;transition:width .6s ease,background .6s ease}
+.volRingWrap{width:58px;height:58px;position:relative;flex-shrink:0}
+.volRingWrap svg{transform:rotate(-90deg)}
+.volRingVal{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;font-family:var(--mono)}
 .paGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:11px}
 @media(max-width:900px){.paGrid{grid-template-columns:1fr 1fr}}
 .paBox{border-radius:14px;background:rgba(8,20,52,.22);border:1px solid rgba(180,220,255,.10);padding:12px;display:grid;gap:4px}
@@ -264,9 +296,134 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
         <div class="quotePx" id="fxSpotPrice">--</div>
         <div class="quoteMetaRow"><div>&#916;</div><div id="fxSpotDelta">0.00000</div></div>
         <div class="sparkBar"><i id="miniBar"></i></div>
+        <canvas class="tickChart" id="tickChart"></canvas>
         <div class="quoteBadges"><span class="tagOk" id="fxLatencyTag">--</span><span class="tagOk" id="fxLastTag">Last: --</span></div>
         <div class="smallNote" id="fxSpotMeta" style="margin-top:3px">Source: --</div>
       </div>
+    </div>
+  </div></div>
+
+  <div class="card"><div class="inner">
+    <div class="card-title"><h2>Quantitative Edge &middot; Renaissance Signal Engine</h2><div class="hint">Jim Simons / Medallion Fund principles applied live: Hurst exponent determines regime type, autocorrelation reveals serial structure in returns, Kelly criterion gives optimal position sizing, vol regime gates risk. 7 independent signals stacked = conviction score.</div></div>
+
+    <div class="convicRow" id="convicRow" style="background:rgba(8,20,52,.28);border:1px solid rgba(180,220,255,.10)">
+      <svg width="72" height="72" viewBox="0 0 72 72" id="convicSvg">
+        <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(180,220,255,.08)" stroke-width="7"/>
+        <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(24,209,138,.80)" stroke-width="7"
+          stroke-dasharray="176" stroke-dashoffset="176" id="convicArc" stroke-linecap="round"
+          style="transform:rotate(-90deg);transform-origin:36px 36px;transition:stroke-dashoffset .8s ease,stroke .8s ease"/>
+        <text x="36" y="40" text-anchor="middle" font-size="13" font-weight="700"
+          font-family="ui-monospace,monospace" fill="rgba(232,239,255,.90)" id="convicPct">0%</text>
+      </svg>
+      <div class="convicText" style="flex:1">
+        <div class="ck">Signal Conviction</div>
+        <div class="cv" id="convicLabel">NEUTRAL</div>
+        <div class="cm" id="convicDesc">Awaiting data...</div>
+        <div class="stkBar"><i id="stkFill" style="display:block;height:100%;width:0%;background:rgba(24,209,138,.82);border-radius:5px;transition:width .6s ease,background .6s ease"></i></div>
+      </div>
+    </div>
+
+    <div class="qeGrid">
+
+      <div class="qeBox" style="grid-column:1/span 2">
+        <div class="qk">Hurst Exponent H &mdash; Rescaled Range (R/S)</div>
+        <div style="display:flex;align-items:baseline;gap:10px">
+          <div class="qv" id="hurstVal">--</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.55);transition:color .4s" id="hurstLabel">Loading...</div>
+        </div>
+        <div class="hurstBar"><div class="hurstFill" id="hurstFill" style="width:50%"></div><div class="hurstTick"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:8.5px;color:rgba(255,255,255,.28)">
+          <span>MEAN-REVERT</span><span>RANDOM (0.5)</span><span>TRENDING</span>
+        </div>
+        <div class="qm" id="hurstMeta">H&gt;0.55: trend-follow &mdash; H&lt;0.45: fade extremes &mdash; H=0.5: no edge</div>
+      </div>
+
+      <div class="qeBox">
+        <div class="qk">Vol Regime</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+          <div class="volRingWrap">
+            <svg width="58" height="58" viewBox="0 0 58 58">
+              <circle cx="29" cy="29" r="22" fill="none" stroke="rgba(180,220,255,.08)" stroke-width="6"/>
+              <circle cx="29" cy="29" r="22" fill="none" stroke="rgba(24,209,138,.80)" stroke-width="6"
+                stroke-dasharray="138" stroke-dashoffset="100" id="volArc" stroke-linecap="round"
+                style="transform:rotate(-90deg);transform-origin:29px 29px;transition:stroke-dashoffset .6s ease,stroke .6s ease"/>
+            </svg>
+            <div class="volRingVal" id="volRatioLbl">--</div>
+          </div>
+          <div>
+            <div class="qv" style="font-size:15px" id="volRegimeLbl">--</div>
+            <div class="qm" id="volMeta">Short/long vol ratio</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="qeBox" style="grid-column:1/span 2">
+        <div class="qk">Return Autocorrelation AC1&ndash;AC5 &mdash; Serial Structure in Returns</div>
+        <div style="display:flex;gap:12px;align-items:flex-start;margin-top:6px">
+          <div style="flex:1">
+            <div style="height:54px;display:flex;gap:5px;align-items:flex-end;position:relative">
+              <div style="position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(180,220,255,.15)"></div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column-reverse">
+                <div id="ac1b" style="border-radius:3px;min-height:3px;height:50%;background:rgba(100,160,255,.6);transition:height .4s ease,background .4s ease"></div>
+              </div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column-reverse">
+                <div id="ac2b" style="border-radius:3px;min-height:3px;height:50%;background:rgba(100,160,255,.6);transition:height .4s ease,background .4s ease"></div>
+              </div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column-reverse">
+                <div id="ac3b" style="border-radius:3px;min-height:3px;height:50%;background:rgba(100,160,255,.6);transition:height .4s ease,background .4s ease"></div>
+              </div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column-reverse">
+                <div id="ac4b" style="border-radius:3px;min-height:3px;height:50%;background:rgba(100,160,255,.6);transition:height .4s ease,background .4s ease"></div>
+              </div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column-reverse">
+                <div id="ac5b" style="border-radius:3px;min-height:3px;height:50%;background:rgba(100,160,255,.6);transition:height .4s ease,background .4s ease"></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:5px;margin-top:3px">
+              <div style="flex:1;font-size:8.5px;color:rgba(255,255,255,.35);text-align:center">AC1</div>
+              <div style="flex:1;font-size:8.5px;color:rgba(255,255,255,.35);text-align:center">AC2</div>
+              <div style="flex:1;font-size:8.5px;color:rgba(255,255,255,.35);text-align:center">AC3</div>
+              <div style="flex:1;font-size:8.5px;color:rgba(255,255,255,.35);text-align:center">AC4</div>
+              <div style="flex:1;font-size:8.5px;color:rgba(255,255,255,.35);text-align:center">AC5</div>
+            </div>
+          </div>
+          <div style="min-width:130px">
+            <div class="qk">AC1 Signal</div>
+            <div class="qv" style="font-size:18px" id="ac1Val">--</div>
+            <div class="qm" id="acMeta">+ve = momentum; -ve = reversion</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="qeBox">
+        <div class="qk">Kelly Criterion f*</div>
+        <div class="qv" id="kellyVal">--</div>
+        <div class="kellyBar"><div class="kellyFill" id="kellyFill" style="width:0%;background:rgba(24,209,138,.82)"></div></div>
+        <div class="qm" id="kellyMeta">Optimal fraction of capital</div>
+      </div>
+
+      <div class="qeBox">
+        <div class="qk">Signal Half-Life</div>
+        <div class="qv" id="halfLifeVal">--</div>
+        <div class="qm" id="halfLifeMeta">Ticks before edge decays</div>
+      </div>
+
+      <div class="qeBox" style="grid-column:1/span 3">
+        <div class="qk">Return Distribution &mdash; Last 40 Ticks (pips) &mdash; Fat Tails = Dislocation Risk</div>
+        <div class="histWrap" id="retHistWrap">
+          <div class="histBar" style="background:rgba(100,160,255,.35);height:10%"></div>
+        </div>
+        <div class="qm" id="retHistMeta">Simons: "The tail risk is real. Size for survival."</div>
+      </div>
+
+    </div>
+
+    <div class="qk" style="margin-bottom:8px">Independent Signal Alignment &mdash; Medallion Stack</div>
+    <div class="sigStack" id="sigStack">
+      <div class="sigPill off"><span class="sdot"></span>HMM Regime</div>
+    </div>
+    <div class="smallNote" style="margin-top:10px;line-height:1.6">
+      "We are right 50.75% of the time, but we are right 50.75% of the time on a lot of money. It adds up." &mdash; Jim Simons. Signal stacking edges: each aligned signal independently validates the call.
     </div>
   </div></div>
 
@@ -696,6 +853,93 @@ const ProjTracker=(()=>{
   return{logProjection,scoreOutcomes,getStats:_stats,getCalibMult:()=>calibMult,getBiasConfAdj:()=>biasConfAdj,getLog:()=>log.slice(-20).reverse(),reset};
 })();
 
+
+// == QUANT ENGINE (Renaissance / Medallion inspired) ========================
+const QuantEngine=(()=>{
+  let PH=[],RH=[];
+  function push(price){
+    const p=Number(price);if(!Number.isFinite(p)||p<=0)return;
+    const prev=PH.at(-1);
+    PH.push(p);if(PH.length>120)PH.shift();
+    if(prev!=null)RH.push((p-prev)*10000);
+    if(RH.length>120)RH.shift();
+  }
+  function hurstRS(){
+    const arr=PH.slice(-Math.min(60,PH.length));const n=arr.length;if(n<20)return null;
+    const r=[];for(let i=1;i<n;i++)r.push(arr[i]-arr[i-1]);
+    const rm=r.reduce((a,b)=>a+b,0)/r.length;
+    const X=[];let cum=0;for(const v of r){cum+=v-rm;X.push(cum);}
+    const R=Math.max(...X)-Math.min(...X);
+    const S=Math.sqrt(r.reduce((a,v)=>a+(v-rm)**2,0)/r.length)||1e-10;
+    return clamp(Math.log(R/S)/Math.log(n),0.01,0.99);
+  }
+  function ac(k){
+    const r=RH;const n=r.length;if(n<k+10)return 0;
+    const mean=r.reduce((a,b)=>a+b,0)/n;
+    let num=0,den=0;
+    for(let i=k;i<n;i++)num+=(r[i]-mean)*(r[i-k]-mean);
+    for(let i=0;i<n;i++)den+=(r[i]-mean)**2;
+    return den>0?clamp(num/den,-1,1):0;
+  }
+  function kelly(){
+    const r=RH.slice(-30);if(r.length<10)return{f:0,pct:0};
+    const mu=r.reduce((a,b)=>a+b,0)/r.length;
+    const v=r.reduce((a,b)=>a+(b-mu)**2,0)/r.length;
+    const f=v>0?clamp(mu/v,-1,1):0;
+    return{f,pct:Math.round(Math.abs(f)*100)};
+  }
+  function volR(){
+    const r=RH;if(r.length<10)return{ratio:1,regime:"NORMAL",short:0,long:0};
+    const sv=Math.sqrt(r.slice(-5).reduce((a,b)=>a+b*b,0)/5);
+    const lz=Math.min(20,r.length);
+    const lv=Math.sqrt(r.slice(-lz).reduce((a,b)=>a+b*b,0)/lz)||1e-9;
+    const ratio=sv/lv;
+    const regime=ratio>2?"VOL SPIKE":ratio>1.4?"ELEVATED":ratio<0.5?"VOL CRUSH":"NORMAL";
+    return{ratio:clamp(ratio,0,4),regime,short:sv,long:lv};
+  }
+  function retHist(){
+    const r=RH.slice(-40);if(r.length<5)return{bins:[],min:0,max:0};
+    const mn=Math.min(...r),mx=Math.max(...r),range=mx-mn||0.001;
+    const bins=new Array(16).fill(0);
+    r.forEach(v=>{const i=clamp(Math.floor((v-mn)/range*15.99),0,15);bins[i]++;});
+    const peak=Math.max(...bins)||1;
+    return{bins:bins.map(b=>b/peak),min:mn,max:mx};
+  }
+  function halfLife(){
+    const a1=ac(1);if(a1>=0||Math.abs(a1)>=1)return null;
+    const hl=Math.round(-1/Math.log(Math.abs(a1)));
+    return hl>200?null:hl;
+  }
+  function compute(step,tx,pb3){
+    const H=hurstRS();
+    const ac1=ac(1),ac2=ac(2),ac3=ac(3),ac4=ac(4),ac5=ac(5);
+    const kl=kelly(),vr=volR(),hist=retHist(),hl=halfLife();
+    // Determine overall directional bias from strongest signal
+    const txDir=(tx?.score??0)>=0.15?"LONG":(tx?.score??0)<=-0.15?"SHORT":null;
+    const fxDir=(tx?.fxConf??0)>=0.15?"LONG":(tx?.fxConf??0)<=-0.15?"SHORT":null;
+    const hmmBias=step?.policy?([4].includes(step.policy)?"LONG":[5,6,7,8].includes(step.policy)?"SHORT":null):null;
+    const overallDir=txDir||fxDir||hmmBias||null;
+    function sig(dir){if(!overallDir||!dir)return"off";return dir===overallDir?"on":"against";}
+    const hurstDir=H!=null&&H>0.55?"TREND":null;
+    const acDir=ac1>0.10?"MOM":ac1<-0.10?"FADE":null;
+    const pb3Dom=pb3?.dominant||"NORMAL";
+    const signals=[
+      {label:"HMM Regime",state:sig(hmmBias)},
+      {label:"Macro Tx",state:sig(txDir)},
+      {label:"FX Confluence",state:sig(fxDir)},
+      {label:"Hurst Edge",state:H!=null&&H>0.55?"on":H!=null&&H<0.45?"off":"off"},
+      {label:"AC Momentum",state:acDir==="MOM"?"on":acDir==="FADE"?"against":"off"},
+      {label:"Vol Gate",state:vr.regime==="NORMAL"||vr.regime==="VOL CRUSH"?"on":"against"},
+      {label:"PB3 Pattern",state:(pb3Dom==="BOOM"||pb3Dom==="BUST")?"on":"off"},
+    ];
+    const on=signals.filter(s=>s.state==="on").length;
+    const against=signals.filter(s=>s.state==="against").length;
+    const conviction=clamp((on-against*0.6)/7,0,1);
+    return{H,ac1,ac2,ac3,ac4,ac5,kelly:kl,volRegime:vr,hist,halfLife:hl,signals,conviction,onCount:on,againstCount:against};
+  }
+  return{push,compute,getPrices:()=>PH,getReturns:()=>RH};
+})();
+
 // ── FIREBASE: writes/reads the COMPLETE state so READERs are pixel-identical ──
 const FirebaseSync=(()=>{
   let dbUrl=null,role="MASTER",instanceId=Math.random().toString(36).slice(2,11);
@@ -725,8 +969,40 @@ function drawTimeline(canvas,states){if(!canvas||!states.length)return;const{ctx
 function drawCone(spot,r1,r4,bias,calibMult){const canvas=$("coneCanvas");if(!canvas)return;const{ctx,w,h}=setupCanvas(canvas);ctx.clearRect(0,0,w,h);ctx.strokeStyle="rgba(232,239,255,.06)";ctx.lineWidth=1;for(let i=0;i<=14;i++){const x=i*(w/14);ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}for(let j=0;j<=8;j++){const y=j*(h/8);ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}const cm=calibMult||1,cr1=r1*cm,cr4=r4*cm;const cx=Math.round(w*.44),cy=Math.round(h*.52),x1=Math.round(w*.60),x4=Math.round(w*.88);const maxP=Math.max(10,cr4*1.15),ppp=(h*.33)/maxP,y1=cr1*ppp,y4=cr4*ppp;const bu=bias==="LONG",bd=bias==="SHORT",base=bu?[24,209,138]:bd?[255,77,77]:[100,160,255];const rad=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.sqrt((x4-cx)**2+y4**2));rad.addColorStop(0,"rgba("+base.join(",")+",0.42)");rad.addColorStop(.5,"rgba("+base.join(",")+",0.18)");rad.addColorStop(1,"rgba("+base.join(",")+",0.00)");ctx.fillStyle=rad;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x1,cy-y1);ctx.lineTo(x4,cy-y4);ctx.lineTo(x4,cy+y4);ctx.lineTo(x1,cy+y1);ctx.closePath();ctx.fill();ctx.strokeStyle="rgba(232,239,255,.28)";ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x4,cy-y4);ctx.stroke();ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x4,cy+y4);ctx.stroke();ctx.setLineDash([3,4]);ctx.strokeStyle="rgba(232,239,255,.18)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x1,cy-y1);ctx.lineTo(x1,cy+y1);ctx.stroke();ctx.setLineDash([]);ctx.strokeStyle="rgba(232,239,255,.25)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();ctx.fillStyle="rgba(232,239,255,.90)";ctx.beginPath();ctx.arc(cx,cy,3.5,0,Math.PI*2);ctx.fill();ctx.font="12px ui-monospace,monospace";ctx.fillStyle="rgba(232,239,255,.60)";ctx.fillText("Spot "+spot.toFixed(5),cx+10,cy-6);ctx.fillText("1h \xb1"+Math.round(cr1)+"p",x1-50,18);ctx.fillText("4h \xb1"+Math.round(cr4)+"p",x4-50,18);ctx.font="bold 14px ui-sans-serif,sans-serif";ctx.fillStyle=bu?"rgba(24,209,138,.95)":bd?"rgba(255,77,77,.95)":"rgba(232,239,255,.75)";ctx.fillText(bias,18,24);if(Math.abs(cm-1)>0.01){ctx.font="11px ui-monospace,monospace";ctx.fillStyle="rgba(255,176,32,.80)";ctx.fillText("calib x"+cm.toFixed(2),18,42);}}
 function drawEquity(arr){const canvas=$("equityCanvas");if(!canvas||arr.length<2)return;const{ctx,w,h}=setupCanvas(canvas);const mn=Math.min(...arr),mx=Math.max(...arr),range=mx-mn||.0001;const isPos=arr.at(-1)>=0;ctx.clearRect(0,0,w,h);ctx.beginPath();arr.forEach((v,i)=>{const x=(i/(arr.length-1))*w,y=h-((v-mn)/range)*(h-4)-2;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.strokeStyle=isPos?"rgba(24,209,138,.85)":"rgba(255,77,77,.75)";ctx.lineWidth=2;ctx.stroke();ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fillStyle=isPos?"rgba(24,209,138,.10)":"rgba(255,77,77,.08)";ctx.fill();if(mn<0&&mx>0){const zy=h-((0-mn)/range)*(h-4)-2;ctx.strokeStyle="rgba(232,239,255,.22)";ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(0,zy);ctx.lineTo(w,zy);ctx.stroke();ctx.setLineDash([]);}}
 function drawTM(matrix){const body=$("tmBody");if(!body)return;const rows=[];for(let i=0;i<8;i++){const row=matrix[i],total=row.reduce((a,b)=>a+b,0),norm=total>0?row.map(v=>v/total):new Array(8).fill(0);const cells=norm.map((v,j)=>{const alpha=clamp(v*4,0,.85);const col=v>.3?STATES[j].color.replace(/[\d.]+\)$/,alpha+")"):"rgba(255,255,255,"+(alpha*.5)+")";const txt=v>.01?Math.round(v*100)+"%":"";return"<td style='background:"+col+";color:rgba(255,255,255,"+Math.max(v*3,.6)+");font-size:9px'>"+txt+"</td>";}).join("");rows.push("<tr><td class='rl'>S"+(i+1)+"</td>"+cells+"</tr>");}body.innerHTML=rows.join("");}
+
+function drawTickChart(prices){
+  const canvas=$("tickChart");if(!canvas||prices.length<2)return;
+  const{ctx,w,h}=setupCanvas(canvas);
+  const n=prices.length,mn=Math.min(...prices),mx=Math.max(...prices),range=mx-mn||0.0001;
+  ctx.clearRect(0,0,w,h);
+  const isUp=prices.at(-1)>=prices[0];
+  const col=isUp?"24,209,138":"255,77,77";
+  // Grid
+  ctx.strokeStyle="rgba(180,220,255,.05)";ctx.lineWidth=1;
+  for(let i=1;i<4;i++){const y=h*i/4;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  // Area fill
+  ctx.beginPath();
+  prices.forEach((p,i)=>{const x=(i/(n-1))*w,y=h-((p-mn)/range)*(h-10)-5;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();
+  const grad=ctx.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0,"rgba("+col+",.12)");grad.addColorStop(1,"rgba("+col+",.01)");
+  ctx.fillStyle=grad;ctx.fill();
+  // Line
+  ctx.beginPath();
+  prices.forEach((p,i)=>{const x=(i/(n-1))*w,y=h-((p-mn)/range)*(h-10)-5;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.shadowBlur=5;ctx.shadowColor="rgba("+col+",.5)";
+  ctx.strokeStyle="rgba("+col+",.88)";ctx.lineWidth=1.5;ctx.stroke();ctx.shadowBlur=0;
+  // Current dot
+  const ly=h-((prices.at(-1)-mn)/range)*(h-10)-5;
+  ctx.beginPath();ctx.arc(w-3,ly,3.5,0,Math.PI*2);
+  ctx.fillStyle="rgba("+col+",.95)";ctx.fill();
+  // Labels
+  ctx.font="10px ui-monospace,monospace";ctx.fillStyle="rgba(232,239,255,.50)";
+  ctx.fillText(prices.at(-1).toFixed(5),5,13);
+  ctx.fillText(n+"t",w-22,13);
+}
 let resizeTimer;
-window.addEventListener("resize",()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(lastFullState)applyFullStateToUI(lastFullState);},200);});
+window.addEventListener("resize",()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(lastFullState)applyFullStateToUI(lastFullState);drawTickChart(QuantEngine.getPrices());},200);});
 
 // ── RENDER HELPERS ────────────────────────────────────────────────────────
 const impactPill=i=>{const v=(i||"").toUpperCase();if(v==="HIGH")return'<span class="impact"><span class="folder"></span>HIGH</span>';if(v==="MED")return'<span class="impact"><span class="folder med"></span>MED</span>';return'<span class="impact"><span class="folder low"></span>LOW</span>';};
@@ -776,6 +1052,15 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba){
     oilChg:MacroFeed.get("OIL")?.changePct,goldChg:MacroFeed.get("GOLD")?.changePct,usdChg:MacroFeed.get("USD")?.changePct,
     gbpChg:tx.gbpChg,audChg:tx.audChg,nzdChg:tx.nzdChg,fxConf:tx.fxConf,fxInt:tx.fxInt,
     ts:Date.now(),
+    qH:typeof _q!=='undefined'?_q?.H:null,
+    qAC1:typeof _q!=='undefined'?_q?.ac1:null,
+    qVR:typeof _q!=='undefined'?_q?.volRegime?.regime:null,
+    qVRratio:typeof _q!=='undefined'?_q?.volRegime?.ratio:null,
+    qKelly:typeof _q!=='undefined'?_q?.kelly?.f:null,
+    qConviction:typeof _q!=='undefined'?_q?.conviction:null,
+    qOnCount:typeof _q!=='undefined'?_q?.onCount:null,
+    qAgainstCount:typeof _q!=='undefined'?_q?.againstCount:null,
+    qSignals:typeof _q!=='undefined'?_q?.signals:null,
   };
 }
 // Inject signal stats into state for READER rendering
@@ -866,6 +1151,8 @@ function applyFullStateToUI(st){
   const fp=$("footPolicy"),fd=$("footDetector"),fa=$("footAge");
   if(fp)fp.textContent="S"+st.policy;if(fd)fd.textContent="S"+st.detector;if(fa)fa.textContent=String(st.regimeAge);
   updateWarmupBadge(st.tickN,st.warmed);
+  // Quant Engine for READER: render from state fields
+  if(st.qH!=null){updateQuantUI({H:st.qH,ac1:st.qAC1||0,ac2:0,ac3:0,ac4:0,ac5:0,kelly:{f:st.qKelly||0,pct:Math.round(Math.abs(st.qKelly||0)*100)},volRegime:{ratio:st.qVRratio||1,regime:st.qVR||'NORMAL'},hist:{bins:[],min:0,max:0},halfLife:null,signals:st.qSignals||[],conviction:st.qConviction||0,onCount:st.qOnCount||0,againstCount:st.qAgainstCount||0});}
   // Signal Performance: if state has signal stats (from MASTER), render them
   // This gives READER identical signal display to MASTER
   if(st.sigEquity!=null){
@@ -883,6 +1170,71 @@ function applyFullStateToUI(st){
 }
 
 // ── PROJECTION ACCURACY UI ────────────────────────────────────────────────
+
+function updateQuantUI(q){
+  if(!q)return;
+  // Hurst
+  {const hv=$("hurstVal"),hl=$("hurstLabel"),hf=$("hurstFill"),hm=$("hurstMeta");
+   if(q.H!=null){
+     if(hv)hv.textContent=q.H.toFixed(3);
+     const lbl=q.H>0.62?"STRONG TREND":q.H>0.55?"Mild Trend":q.H<0.38?"MEAN-REVERT":q.H<0.45?"Mild Revert":"RANDOM";
+     const clr=q.H>0.55?"rgba(24,209,138,.90)":q.H<0.45?"rgba(255,138,64,.90)":"rgba(180,220,255,.60)";
+     if(hl){hl.textContent=lbl;hl.style.color=clr;}
+     if(hf){hf.style.width=(q.H*100)+"%";hf.style.background=clr;}
+     if(hm)hm.textContent=q.H>0.55?"Momentum persists. Trend-follow confirmed.":q.H<0.45?"Mean-revert active. Fade spikes, buy dips.":"No persistent edge. Size down.";
+   }}
+  // ACs
+  [1,2,3,4,5].forEach(i=>{
+    const b=$("ac"+i+"b");if(!b)return;
+    const v=q["ac"+i]||0,abs=Math.abs(v);
+    const isPos=v>=0;
+    b.style.height=Math.max(4,abs*200)+"%";
+    b.style.background=isPos?"rgba(24,209,138,"+clamp(abs*2.5,.25,.95)+")":"rgba(255,77,77,"+clamp(abs*2.5,.25,.95)+")";
+  });
+  const a1v=$("ac1Val"),am=$("acMeta");
+  if(a1v)a1v.textContent=(q.ac1>=0?"+":"")+q.ac1.toFixed(3);
+  if(am)am.textContent=q.ac1>0.10?"Positive: momentum persists -> follow":q.ac1<-0.10?"Negative: reversals likely -> fade":"No strong serial structure";
+  // Vol ring
+  {const vr=q.volRegime,ve=$("volRegimeLbl"),vm=$("volMeta"),va=$("volArc"),vrl=$("volRatioLbl");
+   const clr=vr.regime==="VOL SPIKE"?"rgba(255,77,77,.90)":vr.regime==="ELEVATED"?"rgba(255,138,64,.85)":vr.regime==="VOL CRUSH"?"rgba(43,108,255,.80)":"rgba(24,209,138,.80)";
+   if(ve){ve.textContent=vr.regime;ve.style.color=clr;}
+   if(vm)vm.textContent="Ratio "+vr.ratio.toFixed(2)+"x"+(vr.regime==="VOL SPIKE"?" -- size DOWN now!":vr.regime==="ELEVATED"?" -- reduce size":"");
+   if(vrl)vrl.textContent=vr.ratio.toFixed(1)+"x";
+   if(va){const pct=clamp(vr.ratio/3,0,1);va.style.strokeDashoffset=(138*(1-pct));va.style.stroke=clr;}}
+  // Kelly
+  {const kv=$("kellyVal"),kf=$("kellyFill"),km=$("kellyMeta");
+   if(kv){kv.textContent=(q.kelly.f>=0?"+":"")+q.kelly.f.toFixed(3);kv.classList.remove("pos","neg");if(q.kelly.f>0.05)kv.classList.add("pos");if(q.kelly.f<-0.05)kv.classList.add("neg");}
+   if(kf){kf.style.width=q.kelly.pct+"%";kf.style.background=q.kelly.f>=0?"rgba(24,209,138,.82)":"rgba(255,77,77,.82)";}
+   if(km)km.textContent=q.kelly.pct+"%"+( q.kelly.pct>50?" -- high conviction":q.kelly.pct>20?" -- moderate edge":" -- thin edge: size minimum");}
+  // Histogram
+  {const hw=$("retHistWrap"),hm=$("retHistMeta");
+   if(hw&&q.hist?.bins?.length){
+     hw.innerHTML=q.hist.bins.map((b,i)=>{
+       const mid=q.hist.min+(q.hist.max-q.hist.min)*(i+.5)/16;
+       const isPos=mid>=0,ht=Math.max(4,Math.round(b*50));
+       return "<div class='histBar' style='height:"+ht+"px;background:"+(isPos?"rgba(24,209,138,"+clamp(b*.55+.18,.18,.78)+")":"rgba(255,77,77,"+clamp(b*.55+.18,.18,.78)+")")+"' title='"+(mid>=0?"+":"")+mid.toFixed(1)+"p'></div>";
+     }).join("");
+     if(hm)hm.textContent="Range "+q.hist.min.toFixed(1)+"p to +"+q.hist.max.toFixed(1)+"p | Fat tails indicate dislocation risk";
+   }}
+  // Half-life
+  {const hlv=$("halfLifeVal"),hlm=$("halfLifeMeta");
+   if(hlv)hlv.textContent=q.halfLife!=null?q.halfLife+" ticks":"--";
+   if(hlm)hlm.textContent=q.halfLife!=null?"Edge decays ~"+q.halfLife+" ticks (mean-revert)":"N/A in trending/random regime";}
+  // Signal stack
+  {const ss=$("sigStack");
+   if(ss)ss.innerHTML=q.signals.map(s=>"<div class='sigPill "+s.state+"'><span class='sdot'></span>"+s.label+"</div>").join("");}
+  // Conviction arc
+  {const ca=$("convicArc"),cp=$("convicPct"),cl=$("convicLabel"),cd=$("convicDesc"),sf=$("stkFill"),cr=$("convicRow");
+   const pct=Math.round(q.conviction*100),circ=176;
+   const clr=q.conviction>=0.60?"rgba(24,209,138,.90)":q.conviction>=0.35?"rgba(255,176,32,.90)":"rgba(180,220,255,.60)";
+   if(ca){ca.style.strokeDashoffset=(circ*(1-q.conviction));ca.style.stroke=clr;}
+   if(cp)cp.textContent=pct+"%";
+   if(cl){cl.textContent=q.conviction>=0.65?"HIGH CONVICTION":q.conviction>=0.45?"MODERATE":q.conviction>=0.25?"BUILDING":"NEUTRAL";cl.style.color=clr;}
+   if(cd)cd.textContent=q.onCount+" of 7 signals aligned, "+q.againstCount+" against";
+   if(sf){sf.style.width=pct+"%";sf.style.background=clr;}
+   if(cr)cr.style.borderColor=q.conviction>=0.6?"rgba(24,209,138,.25)":q.conviction>=0.35?"rgba(255,176,32,.20)":"rgba(180,220,255,.10)";}
+}
+
 function updateProjAccuracyUI(){
   const s=ProjTracker.getStats(),cm=ProjTracker.getCalibMult(),ba=ProjTracker.getBiasConfAdj();
   const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
@@ -970,6 +1322,7 @@ async function onSpotUpdate(s){
   const mt=$("modeTag");if(mt)mt.textContent=settings.twelvedataKey?"Mode: LIVE":"Mode: FREE";
   setFxStatus(s.status);
   CorrEngine.pushEur(s.lastDelta);
+  QuantEngine.push(s.price);
   if(paused)return;
   const step=Engine.step(s.price);if(!step)return;
   pushState(step.policy);
@@ -980,6 +1333,10 @@ async function onSpotUpdate(s){
   const pb3=PB3.compute(step,tx);
   const arch=Classifier.classify(tx);
   ProjTracker.logProjection({spot:s.price,bias:proj.bias,r1:proj.r1,r4:proj.r4,policy:step.policy});
+  const _q=QuantEngine.compute(step,tx,pb3);
+  updateQuantUI(_q);
+  drawTickChart(QuantEngine.getPrices());
+  {const fp=$('fxSpotPrice');if(fp){fp.classList.remove('pricePulse');void fp.offsetWidth;fp.classList.add('pricePulse');}}
   const fullState=buildFullState(step,tx,proj,pb3,arch,s,recentStates,cm,ba);
   lastFullState=fullState;
   applyFullStateToUI(fullState);
@@ -1102,4 +1459,3 @@ start();
 </script>
 </body>
 </html>
-
