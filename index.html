@@ -220,7 +220,7 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
 <div class="topbar">
   <div class="brand">
     <div class="qxlogo">QX</div>
-    <div><h1>QuadraX Dashboard</h1><div class="sub">HMM &middot; PB3 &middot; Session &middot; Archetype &middot; Corr &middot; Adaptive Projection Learning &mdash; Full Team Sync</div></div>
+    <div><h1>QuadraX v5</h1><div class="sub">HMM &middot; PB3 &middot; Session &middot; Archetype &middot; Corr &middot; Adaptive Projection Learning &mdash; Full Team Sync</div></div>
   </div>
   <div class="top-actions">
     <div class="alertBadge" id="alertBadge">&#9889;<span id="alertBadgeText">Alert</span></div>
@@ -516,7 +516,7 @@ const SpotFeed=(()=>{
   async function ft(url,ms=7000){const t0=performance.now();if(ctrl)ctrl.abort();ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),ms);try{const res=await fetch(url,{method:"GET",cache:"no-store",signal:ctrl.signal});clearTimeout(timer);if(res.status===429)throw Object.assign(new Error("429"),{is429:true});if(!res.ok)throw new Error();return{ok:true,json:await res.json(),latencyMs:Math.round(performance.now()-t0)};}catch(e){clearTimeout(timer);return{ok:false,is429:e?.is429};}}
   async function fetchTD(){const key=(settings.twelvedataKey||"").trim();if(!key)return{ok:false};const r=await ft(`https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${encodeURIComponent(key)}&_=${Date.now()}`);if(!r.ok)return{ok:false};const px=Number(r.json?.price);if(!Number.isFinite(px)||px<=0)return{ok:false};return{ok:true,price:px,source:"TwelveData",provider:"TwelveData",latencyMs:r.latencyMs};}
   async function fetchFree(){const now=Date.now();const av=free.filter(s=>!bo[s.name]||bo[s.name]<now);if(!av.length)return{ok:false};try{return await Promise.any(av.map(s=>ft(s.url(),7000).then(r=>{if(!r.ok){if(r.is429)bo[s.name]=now+300000;throw new Error();}const px=Number(s.parse(r.json));if(!Number.isFinite(px)||px<=0)throw new Error();return{ok:true,price:px,source:s.name,provider:s.name,latencyMs:r.latencyMs};})));}catch{return{ok:false};}}
-  async function tick(cb){const now=Date.now();let r=await fetchTD();if(!r.ok)r=await fetchFree();if(!r.ok){last.staleCount++;cb?.({ok:false,...last,...status(now)});return;}const prev=last.price,moved=prev==null||Math.abs(r.price-prev)>MIN;last={...last,price:r.price,ts:now,source:r.source,provider:r.provider,latencyMs:r.latencyMs,staleCount:0,lastDelta:prev==null?0:r.price-prev};if(moved)last.lastChangeTs=now;if(!last.lastChangeTs)last.lastChangeTs=now;cb?.({ok:true,...last,...status(now)});}
+  async function tick(cb){const now=Date.now();let r=await fetchTD();if(!r.ok)r=await fetchFree();if(!r.ok){last.staleCount++;const el=$("fxSpotStatus");if(el&&last.staleCount>2)el.title="Feed failing "+last.staleCount+"x. Add TwelveData key in Settings for reliable data.";cb?.({ok:false,...last,...status(now)});return;}const prev=last.price,moved=prev==null||Math.abs(r.price-prev)>MIN;last={...last,price:r.price,ts:now,source:r.source,provider:r.provider,latencyMs:r.latencyMs,staleCount:0,lastDelta:prev==null?0:r.price-prev};if(moved)last.lastChangeTs=now;if(!last.lastChangeTs)last.lastChangeTs=now;cb?.({ok:true,...last,...status(now)});}
   return{tick,getLast:()=>({...last})};
 })();
 
@@ -524,33 +524,51 @@ const MacroFeed=(()=>{
   const series=[{key:"OIL",sym:"BZ=F",label:"Brent",pxEl:"oilPx",metaEl:"oilMeta",tagEl:"oilTag",sparkEl:"oilSpark"},{key:"GOLD",sym:"GC=F",label:"Gold",pxEl:"goldPx",metaEl:"goldMeta",tagEl:"goldTag",sparkEl:"goldSpark"},{key:"SILV",sym:"SI=F",label:"Silver",pxEl:"silverPx",metaEl:"silverMeta",tagEl:"silverTag",sparkEl:"silverSpark"},{key:"USD",sym:"DX-Y.NYB",label:"DXY",pxEl:"usdPx",metaEl:"usdMeta",tagEl:"usdTag",sparkEl:"usdSpark"},
     {key:"GBP",sym:"GBPUSD=X",label:"GBP/USD",pxEl:"gbpPx",metaEl:"gbpMeta",tagEl:"gbpTag",sparkEl:"gbpSpark"},
     {key:"AUD",sym:"AUDUSD=X",label:"AUD/USD",pxEl:"audPx",metaEl:"audMeta",tagEl:"audTag",sparkEl:"audSpark"},
-    {key:"NZD",sym:"NZDUSD=X",label:"NZD/USD",pxEl:"nzdPx",metaEl:"nzdMeta",tagEl:"nzdTag",sparkEl:"nzdSpark"}];
+    {key:"NZD",sym:"NZD=X",label:"NZD/USD",pxEl:"nzdPx",metaEl:"nzdMeta",tagEl:"nzdTag",sparkEl:"nzdSpark"}];
   let cache={};const bo={};
-  async function fetchYahoo(sym){const t0=performance.now();const prox="https://api.allorigins.win/raw?url="+encodeURIComponent("https://query1.finance.yahoo.com/v8/finance/chart/"+encodeURIComponent(sym)+"?interval=1d&range=2mo");const c=new AbortController();const timer=setTimeout(()=>c.abort(),12000);try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(timer);if(res.status===429)throw Object.assign(new Error("429"),{is429:true});if(!res.ok)throw new Error();const json=await res.json();const result=json?.chart?.result?.[0];if(!result)throw new Error();const meta=result.meta;const rawCloses=(result.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null&&Number.isFinite(v));if(rawCloses.length<2)throw new Error();const close=meta.regularMarketPrice||rawCloses.at(-1);const prevClose=meta.previousClose||meta.chartPreviousClose||rawCloses.at(-2);return{ok:true,close,prevClose,changePct:prevClose?(close/prevClose-1)*100:0,closes:rawCloses.slice(-20),latencyMs:Math.round(performance.now()-t0)};}catch(e){clearTimeout(timer);return{ok:false,is429:e?.is429};}}
+  async function fetchYahoo(sym){const t0=performance.now();const prox="https://api.allorigins.win/raw?url="+encodeURIComponent("https://query1.finance.yahoo.com/v8/finance/chart/"+encodeURIComponent(sym)+"?interval=1d&range=2mo");const c=new AbortController();const timer=setTimeout(()=>c.abort(),12000);try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(timer);if(res.status===429)throw Object.assign(new Error("429"),{is429:true});if(!res.ok)throw new Error();const json=await res.json();const result=json?.chart?.result?.[0];if(!result)throw new Error();const meta=result.meta;const rawCloses=(result.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null&&Number.isFinite(v));if(rawCloses.length<2)throw new Error();
+    // Use closes array directly - meta.previousClose is stale for futures (contract roll gives false 15-25% swings)
+    const close=rawCloses.at(-1);
+    const prevClose=rawCloses.at(-2);
+    const rawChg=prevClose?(close/prevClose-1)*100:0;
+    // Sanity cap: >8% daily move on a macro instrument = almost certainly a data artefact
+    const changePct=Math.abs(rawChg)>8?0:rawChg;
+    return{ok:true,close,prevClose,changePct,closes:rawCloses.slice(-20),latencyMs:Math.round(performance.now()-t0)};}catch(e){clearTimeout(timer);return{ok:false,is429:e?.is429};}}
   const fmtPx=x=>!Number.isFinite(x)?"--":x<10?x.toFixed(4):x.toFixed(2);
   const fmtPct=x=>!Number.isFinite(x)?"--":(x>=0?"+":"")+x.toFixed(2)+"%";
   function paintOne(item){const rec=cache[item.key],pEl=$(item.pxEl),mEl=$(item.metaEl),tEl=$(item.tagEl),sEl=$(item.sparkEl);if(!rec){if(pEl)pEl.textContent="--";if(mEl)mEl.textContent="No data";if(tEl){tEl.textContent=item.label;tEl.className="liveBadge error";}return;}if(pEl)pEl.textContent=fmtPx(rec.close);const ma=minsAgo(rec.ts);if(mEl)mEl.textContent=fmtPct(rec.changePct)+" Prev "+fmtPx(rec.prevClose)+(ma!=null?" "+ma+"m ago":"");if(tEl){tEl.textContent=item.label;tEl.className="liveBadge "+(ma!=null&&ma<120?"live":"stale");}if(pEl){pEl.classList.remove("pos","neg");if(rec.changePct>0.05)pEl.classList.add("pos");if(rec.changePct<-0.05)pEl.classList.add("neg");}if(sEl&&rec.closes?.length>1)drawSparkline(sEl,rec.closes,rec.changePct);}
-  async function tick(){const now=Date.now();await Promise.allSettled(series.filter(i=>!bo[i.key]||bo[i.key]<now).map(item=>fetchYahoo(item.sym).then(r=>{if(!r.ok){if(r.is429)bo[item.key]=now+600000;return;}cache[item.key]={...r,ts:now};})));series.forEach(paintOne);}
+  const FALLBACKS={GBP:["GBPUSD=X","GBP=X"],AUD:["AUDUSD=X","AUD=X"],NZD:["NZD=X","NZDUSD=X","NZD%3DX"],OIL:["BZ=F","CL=F"],GOLD:["GC=F","XAUUSD=X"],SILV:["SI=F"],USD:["DX-Y.NYB"]};
+  async function fetchWithFallback(item){const syms=FALLBACKS[item.key]||[item.sym];for(const sym of syms){const r=await fetchYahoo(sym);if(r.ok)return r;}return{ok:false};}
+  async function tick(){const now=Date.now();await Promise.allSettled(series.filter(i=>!bo[i.key]||bo[i.key]<now).map(item=>fetchWithFallback(item).then(r=>{if(!r.ok){if(r.is429)bo[item.key]=now+600000;return;}cache[item.key]={...r,ts:now};})));series.forEach(paintOne);}
   return{tick,get:k=>cache[k]||null,hydrate:()=>series.forEach(paintOne)};
 })();
 
 const EventsFeed=(()=>{
   let cache=[],lastFetch=0;const TTL=5*60*1000;
-  async function tick(){const now=Date.now();if(now-lastFetch<TTL&&cache.length>0)return;const prox="https://api.allorigins.win/raw?url="+encodeURIComponent("https://nfs.faireconomy.media/ff_calendar_thisweek.json");const c=new AbortController();const timer=setTimeout(()=>c.abort(),12000);try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(timer);if(!res.ok)throw new Error();const json=await res.json();if(!Array.isArray(json))throw new Error();cache=json.filter(e=>(e.impact==="High"||e.impact==="Medium")&&(e.country==="USD"||e.country==="EUR")).map(e=>({when:e.date,event:e.title+" ("+e.country+")",impact:e.impact==="High"?"HIGH":"MED",forecast:e.forecast||"",previous:e.previous||""}));lastFetch=now;const cb=$("calBadge");if(cb){cb.className="liveBadge live";cb.textContent="LIVE";}const cl=$("calLastFetch");if(cl)cl.textContent="Updated "+fmtTime(now);}catch{clearTimeout(timer);const cb=$("calBadge");if(cb){cb.className="liveBadge stale";cb.textContent="RETRY";}const cl=$("calLastFetch");if(cl)cl.textContent="Fetch failed - retrying";}renderEvents();}
+  const FF_URL="https://nfs.faireconomy.media/ff_calendar_thisweek.json";
+  const mkProxies=u=>["https://api.allorigins.win/raw?url="+encodeURIComponent(u),"https://corsproxy.io/?"+encodeURIComponent(u),"https://api.codetabs.com/v1/proxy?quest="+encodeURIComponent(u)];
+  async function tryFetch(url,ms=10000){for(const prox of mkProxies(url)){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(t);if(!res.ok)continue;const txt=await res.text();let parsed;try{parsed=JSON.parse(txt);}catch{const m=txt.match(/^\s*[\[{]/);if(!m)continue;}parsed=parsed||JSON.parse(txt);if(Array.isArray(parsed))return parsed;if(parsed?.data){try{const d=JSON.parse(parsed.data);if(Array.isArray(d))return d;}catch{}}continue;}catch{clearTimeout(t);}}return null;}
+  async function tick(){const now=Date.now();if(now-lastFetch<TTL&&cache.length>0)return;const cb=$("calBadge"),cl=$("calLastFetch");
+    try{const json=await tryFetch(FF_URL,12000);if(!json||!json.length)throw new Error("no data");
+      cache=json.filter(e=>(e.impact==="High"||e.impact==="Medium")&&(e.country==="USD"||e.country==="EUR")).map(e=>({when:e.date,event:e.title+" ("+e.country+")",impact:e.impact==="High"?"HIGH":"MED",forecast:e.forecast||"",previous:e.previous||""}));
+      lastFetch=now;if(cb){cb.className="liveBadge live";cb.textContent="LIVE";}if(cl)cl.textContent="Updated "+fmtTime(now)+" — "+cache.length+" events";}
+    catch{if(cb){cb.className="liveBadge error";cb.textContent="UNAVAIL";}if(cl)cl.textContent="Calendar unavailable. Will retry in 5 min.";}
+    renderEvents();}
   return{tick,get:()=>cache};
 })();
 
 const HeadlinesFeed=(()=>{
   const SOURCES=[{url:"https://www.forexlive.com/feed/news",name:"ForexLive"},{url:"https://www.fxstreet.com/rss/news",name:"FXStreet"}];
   let cache=[],lastFetch=0;const TTL=5*60*1000;
-  async function tick(){const now=Date.now();if(now-lastFetch<TTL&&cache.length>0)return;const results=await Promise.allSettled(SOURCES.map(async src=>{const prox="https://api.allorigins.win/raw?url="+encodeURIComponent(src.url);const c=new AbortController();const timer=setTimeout(()=>c.abort(),10000);try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(timer);if(!res.ok)throw new Error();const text=await res.text();const doc=new DOMParser().parseFromString(text,"application/xml");return[...doc.querySelectorAll("item")].slice(0,6).map(item=>{const rawPub=item.querySelector("pubDate")?.textContent||"";let ts="--";try{const d=new Date(rawPub);if(!isNaN(d))ts=fmtTS(d);}catch{}const title=(item.querySelector("title")?.textContent||"").replace(/<!\[CDATA\[|\]\]>/g,"").trim();const link=(item.querySelector("link")?.textContent||item.querySelector("guid")?.textContent||"#").trim();return{time:ts,source:src.name,title,url:link};}).filter(h=>h.title);}catch(e){clearTimeout(timer);return[];}}));const all=[];results.forEach(r=>{if(r.status==="fulfilled")all.push(...r.value);});if(all.length>0){cache=all.slice(0,12);lastFetch=now;const hb=$("headBadge");if(hb){hb.className="liveBadge live";hb.textContent="LIVE";}const hl=$("headLastFetch");if(hl)hl.textContent="Updated "+fmtTime(now);}else{const hb=$("headBadge");if(hb){hb.className="liveBadge stale";hb.textContent="RETRY";}const hl=$("headLastFetch");if(hl)hl.textContent="RSS fetch failed.";}renderHeadlines();}
+  async function tick(){const now=Date.now();if(now-lastFetch<TTL&&cache.length>0)return;const results=await Promise.allSettled(SOURCES.map(async src=>{const proxUrls=["https://api.allorigins.win/raw?url="+encodeURIComponent(src.url),"https://corsproxy.io/?"+encodeURIComponent(src.url)];let res=null,usedTimer=null;for(const prox of proxUrls){const c2=new AbortController();usedTimer=setTimeout(()=>c2.abort(),10000);try{const r=await fetch(prox,{method:"GET",cache:"no-store",signal:c2.signal});clearTimeout(usedTimer);if(r.ok){res=r;break;}}catch{clearTimeout(usedTimer);}}try{if(!res||!res.ok)throw new Error();const text=await res.text();const doc=new DOMParser().parseFromString(text,"application/xml");return[...doc.querySelectorAll("item")].slice(0,6).map(item=>{const rawPub=item.querySelector("pubDate")?.textContent||"";let ts="--";try{const d=new Date(rawPub);if(!isNaN(d))ts=fmtTS(d);}catch{}const title=(item.querySelector("title")?.textContent||"").replace(/<!\[CDATA\[|\]\]>/g,"").trim();const link=(item.querySelector("link")?.textContent||item.querySelector("guid")?.textContent||"#").trim();return{time:ts,source:src.name,title,url:link};}).filter(h=>h.title);}catch(e){clearTimeout(timer);return[];}}));const all=[];results.forEach(r=>{if(r.status==="fulfilled")all.push(...r.value);});if(all.length>0){cache=all.slice(0,12);lastFetch=now;const hb=$("headBadge");if(hb){hb.className="liveBadge live";hb.textContent="LIVE";}const hl=$("headLastFetch");if(hl)hl.textContent="Updated "+fmtTime(now);}else{const hb=$("headBadge");if(hb){hb.className="liveBadge stale";hb.textContent="RETRY";}const hl=$("headLastFetch");if(hl)hl.textContent="RSS fetch failed.";}renderHeadlines();}
   return{tick,get:()=>cache};
 })();
 
 const Engine=(()=>{
   const HN=80,MW=8,VW=18,HT=4,PT=1.35,MSW=10,WARMUP=20;
   let tickN=0,regAge=0,lastPol=null;let prices=[],returns=[];let polState=null,hold=0;
-  let TM=Array.from({length:8},()=>new Array(8).fill(0));let prevPol=null;
+  // Seed TM with weak priors so it renders on first tick (self-transitions most likely)
+  let TM=Array.from({length:8},(_,i)=>new Array(8).fill(0).map((_,j)=>i===j?2:0.1));let prevPol=null;
   const softmax=lg=>{const m=Math.max(...lg),e=lg.map(v=>Math.exp((v-m)/PT)),s=e.reduce((a,b)=>a+b,0)||1;return e.map(v=>v/s);};
   function feats(){if(prices.length<3)return null;const p=prices.at(-1),pp=prices.at(-2),r=pp?p-pp:0;const mb=prices[Math.max(0,prices.length-1-MW)],mom=mb?p-mb:0;const rr=returns.slice(-VW),avg=rr.length?rr.reduce((a,b)=>a+Math.abs(b),0)/rr.length:0;const volx=clamp(avg/0.00015,0,5),shock=Math.abs(r)>0.0007?1:0;const rrm=returns.slice(-MSW),md=Math.sign(mom);const momScore=rrm.length>0?rrm.filter(v=>Math.sign(v)===md).length/rrm.length:0.5;return{p,r,mom,volx,shock,momScore};}
   function scoreStates(f){const mb=Math.abs(bp(f.mom)),rb=Math.abs(bp(f.r)),v=f.volx;const sc=returns.slice(-10);const sig=sc.length<6?0:sc.reduce((c,_,i)=>i>0&&Math.sign(sc[i])!==Math.sign(sc[i-1])?c+1:c,0);return softmax([2.4-.7*v-.04*mb,1.1+.55*v-.03*mb,1.6-.25*v-.02*mb,.9+.25*v+.045*mb,-.2+.55*v+.02*mb+.04*rb,-.4+(f.shock?3:0)+.2*v,.3+.18*v+.35*clamp(sig/6,0,1)-.02*mb,-.8+.95*Math.max(0,v-2.2)+.04*rb+(f.shock?.6:0)]);}
@@ -613,7 +631,7 @@ const SignalTracker=(()=>{
 
 // ── PROJECTION ACCURACY TRACKER ──────────────────────────────────────────
 const ProjTracker=(()=>{
-  const MIN_N=10;
+  const MIN_N=5;
   let log=loadArr(KEY.proj,[]).slice(-200);
   let calibMult=Number(settings.calibMult)||1.0;
   let biasConfAdj=Number(settings.biasConfAdj)||1.0;
@@ -622,7 +640,7 @@ const ProjTracker=(()=>{
     if(!spot||bias==="NEUTRAL")return;
     // Don't log more often than every 10 minutes to avoid flooding
     const last=log.length?log.at(-1):null;
-    if(last&&(Date.now()-last.ts)<10*60*1000)return;
+    if(last&&(Date.now()-last.ts)<5*60*1000)return;
     log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,policy,outcome1h:null,outcome4h:null});
     if(log.length>200)log=log.slice(-200);
     _persist();
@@ -1053,6 +1071,8 @@ async function start(){
     ?[MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()]
     :[SpotFeed.tick(onSpotUpdate),MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()];
   await Promise.allSettled(initFeeds);
+  // Retry macro once after 3s if first fetch missed some pairs
+  setTimeout(async()=>{await MacroFeed.tick();MacroFeed.hydrate();},3000);
   renderEvents();renderHeadlines();
   const poll=Math.max(Number(settings.pollMs)||12000,6000);
   if(FirebaseSync.configured&&FirebaseSync.role==="READER"){
