@@ -137,6 +137,7 @@ canvas{display:block;width:100%}
 .macroBox{border-radius:14px;background:rgba(8,20,52,.22);border:1px solid rgba(180,220,255,.10);padding:11px;min-height:86px;display:grid;align-content:start;gap:4px}
 .macroBox .k{font-size:10.5px;color:rgba(255,255,255,.60);display:flex;align-items:center;justify-content:space-between;gap:6px}
 .macroBox .v{font-size:18px;font-weight:700;font-family:var(--mono);line-height:1.1}
+.macroBox .v.fx{font-size:13px;letter-spacing:.3px}
 .macroBox .meta{font-size:10px;color:rgba(255,255,255,.46);font-family:var(--mono);line-height:1.4}
 .sparkCanvas{width:100%;height:28px;display:block;border-radius:7px;margin-top:3px;background:rgba(255,255,255,.02)}
 .macroHint{font-size:11px;color:rgba(255,255,255,.44);line-height:1.4;text-align:right;max-width:300px}
@@ -390,7 +391,11 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
       <div class="macroBox"><div class="k">Gold COMEX ($/oz) <span class="liveBadge stale" id="goldTag">--</span></div><div class="v" id="goldPx">--</div><div class="meta" id="goldMeta">No data</div><canvas class="sparkCanvas" id="goldSpark"></canvas></div>
       <div class="macroBox"><div class="k">Silver COMEX ($/oz) <span class="liveBadge stale" id="silverTag">--</span></div><div class="v" id="silverPx">--</div><div class="meta" id="silverMeta">No data</div><canvas class="sparkCanvas" id="silverSpark"></canvas></div>
       <div class="macroBox"><div class="k">DXY Dollar Index <span class="liveBadge stale" id="usdTag">--</span></div><div class="v" id="usdPx">--</div><div class="meta" id="usdMeta">No data</div><canvas class="sparkCanvas" id="usdSpark"></canvas></div>
-      <div class="macroBox" style="grid-column:1/span 2"><div class="k">Transmission Score</div><div class="v" id="txBig">NEUTRAL</div><div class="meta" id="txMeta">Score 0.00 &middot; Neutral &middot; Intensity 0%</div></div>
+      <div class="macroBox"><div class="k">GBP/USD <span class="liveBadge stale" id="gbpTag">GBP</span></div><div class="v fx" id="gbpPx">--</div><div class="meta" id="gbpMeta">No data</div><canvas class="sparkCanvas" id="gbpSpark"></canvas></div>
+      <div class="macroBox"><div class="k">AUD/USD <span class="liveBadge stale" id="audTag">AUD</span></div><div class="v fx" id="audPx">--</div><div class="meta" id="audMeta">No data</div><canvas class="sparkCanvas" id="audSpark"></canvas></div>
+      <div class="macroBox"><div class="k">NZD/USD <span class="liveBadge stale" id="nzdTag">NZD</span></div><div class="v fx" id="nzdPx">--</div><div class="meta" id="nzdMeta">No data</div><canvas class="sparkCanvas" id="nzdSpark"></canvas></div>
+      <div class="macroBox"><div class="k">FX Confluence <span class="tagOk" id="fxConfChip">--</span></div><div style="font-size:13px;font-weight:700;font-family:var(--mono);margin-top:4px;line-height:1.3" id="fxConfBig">GBP+AUD+NZD</div><div class="meta" id="fxConfMeta">Correlated pair alignment</div></div>
+      <div class="macroBox" style="grid-column:1/span 2"><div class="k">Transmission Score <span class="tagOk" style="margin-left:6px">FX Conf <span id="fxIntChip">--%</span></span></div><div class="v" id="txBig">NEUTRAL</div><div class="meta" id="txMeta">Score 0.00 &middot; Neutral &middot; Intensity 0%</div></div>
     </div>
   </div></div>
 
@@ -401,6 +406,7 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
       <div class="tmBox"><div class="tmTop"><div class="k">Dollar Lever (DXY)</div><div class="pct" id="usdLeverPct">0%</div></div><div class="tmBar"><i id="usdLeverBar"></i></div><div class="tmMeta" id="usdLeverMeta">Dollar index proxy</div></div>
       <div class="tmBox"><div class="tmTop"><div class="k">Fear Lever (Gold)</div><div class="pct" id="fearLeverPct">0%</div></div><div class="tmBar"><i id="fearLeverBar"></i></div><div class="tmMeta" id="fearLeverMeta">Gold bid risk-off proxy</div></div>
       <div class="tmBox"><div class="tmTop"><div class="k">Event Risk</div><div class="pct" id="eventLeverPct">0%</div></div><div class="tmBar"><i id="eventLeverBar"></i></div><div class="tmMeta" id="eventLeverMeta">Calendar proximity</div></div>
+      <div class="tmBox" style="grid-column:1/span 2"><div class="tmTop"><div class="k">FX Pair Confluence (GBP+AUD+NZD)</div><div class="pct" id="fxLeverPct">0%</div></div><div class="tmBar"><i id="fxLeverBar" style="background:rgba(160,100,255,.82)"></i></div><div class="tmMeta" id="fxLeverMeta">Correlated pair alignment</div></div>
     </div>
   </div></div>
 
@@ -515,7 +521,10 @@ const SpotFeed=(()=>{
 })();
 
 const MacroFeed=(()=>{
-  const series=[{key:"OIL",sym:"BZ=F",label:"Brent",pxEl:"oilPx",metaEl:"oilMeta",tagEl:"oilTag",sparkEl:"oilSpark"},{key:"GOLD",sym:"GC=F",label:"Gold",pxEl:"goldPx",metaEl:"goldMeta",tagEl:"goldTag",sparkEl:"goldSpark"},{key:"SILV",sym:"SI=F",label:"Silver",pxEl:"silverPx",metaEl:"silverMeta",tagEl:"silverTag",sparkEl:"silverSpark"},{key:"USD",sym:"DX-Y.NYB",label:"DXY",pxEl:"usdPx",metaEl:"usdMeta",tagEl:"usdTag",sparkEl:"usdSpark"}];
+  const series=[{key:"OIL",sym:"BZ=F",label:"Brent",pxEl:"oilPx",metaEl:"oilMeta",tagEl:"oilTag",sparkEl:"oilSpark"},{key:"GOLD",sym:"GC=F",label:"Gold",pxEl:"goldPx",metaEl:"goldMeta",tagEl:"goldTag",sparkEl:"goldSpark"},{key:"SILV",sym:"SI=F",label:"Silver",pxEl:"silverPx",metaEl:"silverMeta",tagEl:"silverTag",sparkEl:"silverSpark"},{key:"USD",sym:"DX-Y.NYB",label:"DXY",pxEl:"usdPx",metaEl:"usdMeta",tagEl:"usdTag",sparkEl:"usdSpark"},
+    {key:"GBP",sym:"GBPUSD=X",label:"GBP/USD",pxEl:"gbpPx",metaEl:"gbpMeta",tagEl:"gbpTag",sparkEl:"gbpSpark"},
+    {key:"AUD",sym:"AUDUSD=X",label:"AUD/USD",pxEl:"audPx",metaEl:"audMeta",tagEl:"audTag",sparkEl:"audSpark"},
+    {key:"NZD",sym:"NZDUSD=X",label:"NZD/USD",pxEl:"nzdPx",metaEl:"nzdMeta",tagEl:"nzdTag",sparkEl:"nzdSpark"}];
   let cache={};const bo={};
   async function fetchYahoo(sym){const t0=performance.now();const prox="https://api.allorigins.win/raw?url="+encodeURIComponent("https://query1.finance.yahoo.com/v8/finance/chart/"+encodeURIComponent(sym)+"?interval=1d&range=2mo");const c=new AbortController();const timer=setTimeout(()=>c.abort(),12000);try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(timer);if(res.status===429)throw Object.assign(new Error("429"),{is429:true});if(!res.ok)throw new Error();const json=await res.json();const result=json?.chart?.result?.[0];if(!result)throw new Error();const meta=result.meta;const rawCloses=(result.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null&&Number.isFinite(v));if(rawCloses.length<2)throw new Error();const close=meta.regularMarketPrice||rawCloses.at(-1);const prevClose=meta.previousClose||meta.chartPreviousClose||rawCloses.at(-2);return{ok:true,close,prevClose,changePct:prevClose?(close/prevClose-1)*100:0,closes:rawCloses.slice(-20),latencyMs:Math.round(performance.now()-t0)};}catch(e){clearTimeout(timer);return{ok:false,is429:e?.is429};}}
   const fmtPx=x=>!Number.isFinite(x)?"--":x<10?x.toFixed(4):x.toFixed(2);
@@ -575,10 +584,19 @@ const Classifier=(()=>{
 })();
 
 const CorrEngine=(()=>{
-  const MAX=60;let eurRet=[],mc={OIL:[],GOLD:[],SILV:[],USD:[]},cumEur=0;
+  const MAX=60;let eurRet=[],mc={OIL:[],GOLD:[],SILV:[],USD:[],GBP:[],AUD:[],NZD:[]},cumEur=0;
   const pushEur=r=>{cumEur+=r;};
-  function onMacroUpdate(){["OIL","GOLD","SILV","USD"].forEach(k=>{const d=MacroFeed.get(k);if(d){mc[k].push(d.changePct);if(mc[k].length>MAX)mc[k].shift();}});eurRet.push(cumEur*10000);if(eurRet.length>MAX)eurRet.shift();cumEur=0;}
+  function onMacroUpdate(){["OIL","GOLD","SILV","USD","GBP","AUD","NZD"].forEach(k=>{const d=MacroFeed.get(k);if(d){mc[k].push(d.changePct);if(mc[k].length>MAX)mc[k].shift();}});eurRet.push(cumEur*10000);if(eurRet.length>MAX)eurRet.shift();cumEur=0;}
   function getCorrelations(){const out={};for(const[k,arr]of Object.entries(mc)){const n=Math.min(arr.length,eurRet.length);if(n<5){out[k]={r:0,tStat:0,n,sig:"ns"};continue;}out[k]=pearsonR(eurRet.slice(-n),arr.slice(-n));}return out;}
+  // Pair confluence: how strongly do correlated pairs confirm EUR/USD direction?
+  function getPairConfluence(){
+    const fxKeys=["GBP","AUD","NZD"];
+    const dirScores=fxKeys.map(k=>{const arr=mc[k];if(!arr||arr.length<3)return 0;const last=arr.at(-1);return last>0?1:last<0?-1:0;});
+    const n=dirScores.filter(v=>v!==0).length;
+    if(n===0)return{score:0,count:0,description:"No FX data"};
+    const sum=dirScores.reduce((a,b)=>a+b,0);
+    return{score:sum/fxKeys.length,count:n,description:fxKeys.filter((_,i)=>dirScores[i]!==0).join("+")+" aligned"};
+  }
   return{pushEur,onMacroUpdate,getCorrelations};
 })();
 
@@ -701,7 +719,23 @@ function renderHeadlines(){const h=HeadlinesFeed.get();const tb=$("headlinesBody
 // ── TRANSMISSION & PROJECTION ─────────────────────────────────────────────
 const normAbsPct=(x,cap)=>!Number.isFinite(x)?0:clamp(Math.abs(x)/cap,0,1);
 function computeEventRisk(){const now=Date.now(),wt={HIGH:1.0,MED:0.6,LOW:.25};const up=EventsFeed.get().map(e=>({...e,t:new Date(e.when).getTime()})).filter(e=>Number.isFinite(e.t)&&e.t>=now);let best=0;for(const e of up){const w=wt[(e.impact||"LOW").toUpperCase()]??.25,mins=(e.t-now)/60000;const prox=mins<=60?1:mins<=360?(1-(mins-60)/300)*.85:mins<=1440?(1-(mins-360)/1080)*.35:0;best=Math.max(best,w*prox);}return clamp(best,0,1);}
-function computeTx(){const oil=MacroFeed.get("OIL"),gold=MacroFeed.get("GOLD"),silv=MacroFeed.get("SILV"),usd=MacroFeed.get("USD"),eRisk=computeEventRisk();const oilInt=normAbsPct(oil?.changePct,3.0),usdInt=normAbsPct(usd?.changePct,0.8),fearInt=normAbsPct(gold?.changePct,1.5),silvInt=normAbsPct(silv?.changePct,2.5);const oilDir=(oil?.changePct??0)>=0?-oilInt:oilInt*.4,usdDir=(usd?.changePct??0)>=0?-usdInt:usdInt*.5,fearDir=(gold?.changePct??0)>=0?-fearInt:fearInt*.2,silvDir=(silv?.changePct??0)>=0?silvInt*.25:-silvInt*.15;const score=clamp(.36*oilDir+.44*usdDir+.26*fearDir+.10*silvDir+.22*(-eRisk),-1,1);const intensity=clamp(.30*oilInt+.30*usdInt+.20*fearInt+.10*silvInt+.25*eRisk,0,1);const bias=score<=-.18?"USD+RISK OFF":score>=.18?"USD WEAK/RISK ON":"NEUTRAL";return{score,intensity,bias,components:{oilInt,usdInt,fearInt,silvInt,eventInt:eRisk}};}
+function computeTx(){
+  const oil=MacroFeed.get("OIL"),gold=MacroFeed.get("GOLD"),silv=MacroFeed.get("SILV"),usd=MacroFeed.get("USD"),eRisk=computeEventRisk();
+  const gbp=MacroFeed.get("GBP"),aud=MacroFeed.get("AUD"),nzd=MacroFeed.get("NZD");
+  const oilInt=normAbsPct(oil?.changePct,3.0),usdInt=normAbsPct(usd?.changePct,0.8),fearInt=normAbsPct(gold?.changePct,1.5),silvInt=normAbsPct(silv?.changePct,2.5);
+  const oilDir=(oil?.changePct??0)>=0?-oilInt:oilInt*.4,usdDir=(usd?.changePct??0)>=0?-usdInt:usdInt*.5,fearDir=(gold?.changePct??0)>=0?-fearInt:fearInt*.2,silvDir=(silv?.changePct??0)>=0?silvInt*.25:-silvInt*.15;
+  // Correlated pair confluence: GBP+AUD+NZD all moving same direction = strong confirmation
+  const fxPairs=[gbp,aud,nzd];const fxDirs=fxPairs.map(p=>p?.changePct!=null?(p.changePct>0.02?1:p.changePct<-0.02?-1:0):null).filter(v=>v!==null);
+  const fxConf=fxDirs.length>0?fxDirs.reduce((a,b)=>a+b,0)/fxDirs.length:0; // -1 to +1
+  const fxInt=Math.abs(fxConf)*clamp(fxDirs.length/3,0,1); // strength 0-1
+  // fxConf>0 = risk currencies up = EUR/USD bullish confirmation; <0 = bearish
+  const fxScore=fxConf*fxInt*.30; // max 0.30 contribution
+  const baseScore=clamp(.36*oilDir+.44*usdDir+.26*fearDir+.10*silvDir+.22*(-eRisk),-1,1);
+  const score=clamp(baseScore+fxScore,-1,1);
+  const intensity=clamp(.28*oilInt+.28*usdInt+.18*fearInt+.08*silvInt+.22*eRisk+.12*fxInt,0,1);
+  const bias=score<=-.18?"USD+RISK OFF":score>=.18?"USD WEAK/RISK ON":"NEUTRAL";
+  const gbpChg=gbp?.changePct??null,audChg=aud?.changePct??null,nzdChg=nzd?.changePct??null;
+  return{score,intensity,bias,fxConf,fxInt,gbpChg,audChg,nzdChg,components:{oilInt,usdInt,fearInt,silvInt,eventInt:eRisk,fxInt}};}
 function leverPaint(barEl,pctEl,val,dir){const pct=Math.round(val*100);if(pctEl)pctEl.textContent=pct+"%";if(barEl){barEl.style.width=clamp(pct,0,100)+"%";barEl.style.background=dir==="bad"?"rgba(255,77,77,.82)":dir==="good"?"rgba(24,209,138,.82)":"rgba(100,160,255,.78)";}}
 function computeProj(step,tx,cm,ba){const base1h={1:6,2:10,3:7,4:12,5:18,6:16,7:14,8:26};const pol=step?.policy||1,volx=step?.features?.volx??1,momBp=bp(step?.features?.mom??0),conf=(step?.conf??.25)*(ba||1);const volMult=clamp(.75+.18*volx,.65,1.85),txMult=clamp(1.0+.55*tx.intensity,1.0,1.6),eRisk=tx.components.eventInt;const r1Raw=Math.round((base1h[pol]??8)*volMult*txMult*clamp(1.0+.65*eRisk,1,1.7));const r4Raw=Math.round(r1Raw*2.6*clamp(1.0+.35*eRisk,1,1.35));const momDir=Math.tanh(momBp/18),score=clamp(.55*momDir+.75*tx.score,-1,1);const bias=score>=.20?"LONG":score<=-.20?"SHORT":"NEUTRAL";const agree=1-Math.abs(momDir-tx.score)/2,dec=clamp(.35*conf+.45*agree+.20*(1-eRisk*.6),0,1);return{bias,r1:clamp(r1Raw,3,80),r4:clamp(r4Raw,6,160),decPct:Math.round(dec*100),volMult,txMult,eRisk};}
 
@@ -722,8 +756,17 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba){
     txScore:tx.score,txIntensity:tx.intensity,txBias:tx.bias,
     oilInt:tx.components.oilInt,usdInt:tx.components.usdInt,fearInt:tx.components.fearInt,eventInt:tx.components.eventInt,
     oilChg:MacroFeed.get("OIL")?.changePct,goldChg:MacroFeed.get("GOLD")?.changePct,usdChg:MacroFeed.get("USD")?.changePct,
+    gbpChg:tx.gbpChg,audChg:tx.audChg,nzdChg:tx.nzdChg,fxConf:tx.fxConf,fxInt:tx.fxInt,
     ts:Date.now(),
   };
+}
+// Inject signal stats into state for READER rendering
+function injectSignalStats(state,sigStats){
+  state.sigSharpe=sigStats.sharpe;state.sigWinRate=sigStats.winRate;state.sigOpenPL=sigStats.openPL;
+  state.sigTotalPips=sigStats.totalPips;state.sigOpenBias=sigStats.openBias;state.sigTotalSignals=sigStats.totalSignals;
+  // Only send last 60 equity points to keep payload small
+  state.sigEquity=sigStats.equity.slice(-60);
+  return state;
 }
 
 // ── APPLY FULL STATE TO UI: works for MASTER (local) and READER (from Firebase) ──
@@ -793,10 +836,32 @@ function applyFullStateToUI(st){
   leverPaint($("usdLeverBar"),$("usdLeverPct"),st.usdInt,(st.usdChg??0)>=0?"bad":"good");
   leverPaint($("fearLeverBar"),$("fearLeverPct"),st.fearInt,(st.goldChg??0)>=0?"bad":"good");
   leverPaint($("eventLeverBar"),$("eventLeverPct"),st.eventInt,st.eventInt>=.35?"bad":"neutral");
+  {const fxc=st.fxConf||0,fxi=st.fxInt||0,fxlv=Math.abs(fxc)*clamp(fxi*1.5,0,1);
+   leverPaint($("fxLeverBar"),$("fxLeverPct"),fxlv,fxc>0.15?"good":fxc<-0.15?"bad":"neutral");
+   const fxlm=$("fxLeverMeta");if(fxlm)fxlm.textContent=fxc>0.15?"Bullish confluence — "+Math.round(fxlv*100)+"% confirm":fxc<-0.15?"Bearish confluence — "+Math.round(fxlv*100)+"% confirm":"Mixed/neutral";
+   const fxcEl=$("fxConfChip"),fxiEl=$("fxIntChip"),fxbEl=$("fxConfBig"),fxmEl=$("fxConfMeta");
+   if(fxcEl)fxcEl.textContent=fxc>0.15?"▲ BULL CONFIRM":fxc<-0.15?"▼ BEAR CONFIRM":"MIXED";
+   if(fxiEl)fxiEl.textContent=Math.round(fxi*100)+"%";
+   if(fxbEl)fxbEl.textContent="GBP+AUD+NZD confluence";
+   if(fxmEl)fxmEl.textContent="From MASTER state";}
   // Footer
   const fp=$("footPolicy"),fd=$("footDetector"),fa=$("footAge");
   if(fp)fp.textContent="S"+st.policy;if(fd)fd.textContent="S"+st.detector;if(fa)fa.textContent=String(st.regimeAge);
   updateWarmupBadge(st.tickN,st.warmed);
+  // Signal Performance: if state has signal stats (from MASTER), render them
+  // This gives READER identical signal display to MASTER
+  if(st.sigEquity!=null){
+    updateSharpeUI({sharpe:st.sigSharpe,winRate:st.sigWinRate,openPL:st.sigOpenPL,
+      totalPips:st.sigTotalPips||0,openBias:st.sigOpenBias,totalSignals:st.sigTotalSignals||0,equity:st.sigEquity||[0]});
+  }
+  // FX pair confluence chips in transmission
+  const fxcEl=$("fxConfChip"),fxiEl=$("fxIntChip");
+  if(fxcEl)fxcEl.textContent=st.fxConf!=null?(st.fxConf>0.15?"BULL CONFIRM":st.fxConf<-0.15?"BEAR CONFIRM":"MIXED"):"--";
+  if(fxiEl)fxiEl.textContent=st.fxInt!=null?Math.round(st.fxInt*100)+"%":"--";
+  // FX pair macro display
+  paintFxPair("GBP","gbpPx","gbpMeta","gbpTag","gbpSpark",st.gbpChg);
+  paintFxPair("AUD","audPx","audMeta","audTag","audSpark",st.audChg);
+  paintFxPair("NZD","nzdPx","nzdMeta","nzdTag","nzdSpark",st.nzdChg);
 }
 
 // ── PROJECTION ACCURACY UI ────────────────────────────────────────────────
@@ -842,13 +907,30 @@ function updateProjAccuracyUI(){
   }).join("");
 }
 
+// ── FX PAIR DISPLAY HELPER ───────────────────────────────────────────────
+function paintFxPair(key,pxId,metaId,tagId,sparkId,changePct){
+  const rec=MacroFeed.get(key);
+  const pEl=$(pxId),mEl=$(metaId),tEl=$(tagId),sEl=$(sparkId);
+  // If we have live data from MacroFeed use it, else use changePct from state
+  const src=rec||null;
+  if(!src&&changePct==null){if(pEl)pEl.textContent="--";if(tEl){tEl.textContent=key;tEl.className="liveBadge error";}return;}
+  const chg=src?.changePct??changePct??0;
+  const close=src?.close;
+  const fmtPx=x=>!Number.isFinite(x)?"--":x.toFixed(5);
+  const fmtPct=x=>(x>=0?"+":"")+x.toFixed(3)+"%";
+  if(pEl){pEl.textContent=close?fmtPx(close):"--";pEl.classList.remove("pos","neg");if(chg>0.02)pEl.classList.add("pos");if(chg<-0.02)pEl.classList.add("neg");}
+  if(mEl)mEl.textContent=fmtPct(chg)+(src?" Prev "+fmtPx(src.prevClose):"");
+  if(tEl){tEl.textContent=key;const ma=src?minsAgo(src.ts):null;tEl.className="liveBadge "+(ma!=null&&ma<120?"live":"stale");}
+  if(sEl&&src?.closes?.length>1)drawSparkline(sEl,src.closes,chg);
+}
+
 // ── MISC UI ───────────────────────────────────────────────────────────────
 function setRisk(pol,cf){const MAP={1:["NORMAL","Range logic. Fade extremes."],2:["ELEVATED","Thin liquidity. Reduce size."],3:["NORMAL","Drift regime. Small edges."],4:["HIGH","Trend regime. Bias with trend."],5:["HIGH","Stop cascade. De-risk."],6:["HIGH","News shock. Consider standing down."],7:["ELEVATED","Unwind risk. Protect capital."],8:["CRITICAL","Risk off. Protect capital first."]};let[level,rule]=MAP[pol]||["--","State-aware sizing"];if(cf!=null){if(cf<.35&&level==="NORMAL")level="ELEVATED";if(cf<.25&&level==="ELEVATED")level="HIGH";}const rb=$("riskBig"),rr=$("riskRule");if(rb){rb.textContent=level;rb.classList.remove("pos","neg");if(level==="NORMAL")rb.classList.add("pos");if(["CRITICAL","HIGH"].includes(level))rb.classList.add("neg");}if(rr)rr.textContent=rule;}
 function setFxStatus(st){const fs=$("fxSpotStatus"),fd=$("fxStatusDot");if(fs)fs.textContent=st;if(fd){fd.classList.remove("live","err");if(st==="LIVE")fd.classList.add("live");else if(st==="ERROR"||st==="STALE")fd.classList.add("err");}}
 function updateSessionUI(){const{openSessions,primary,isOverlap,dayInfo,minsLeft}=SessionEngine.compute();SessionEngine.SESS.forEach(s=>{const box=$("sb_"+s.id),st=$("ss_"+s.id);if(!box||!st)return;const isOpen=openSessions.includes(s.id),isOL=isOverlap&&(s.id==="LONDON"||s.id==="NEW_YORK");box.style.borderColor=isOpen?s.color.replace(/[\d.]+\)$/,"0.40)"):"rgba(180,220,255,.10)";box.style.background=isOpen?s.color.replace(/[\d.]+\)$/,"0.07)"):"rgba(8,20,52,.22)";st.textContent=isOL?"Overlap":isOpen?"Open":"Closed";st.className="sStat "+(isOL?"overlap":isOpen?"open":"closed");});const cdn=$("currentDayName"),csl=$("currentSessionLabel"),den=$("dayEffectNote"),sob=$("sessionOverlapBadge"),sml=$("sessionMinsLeft");if(cdn)cdn.textContent=dayInfo.name;if(csl)csl.textContent=primary?"Session: "+primary.label:"Session: Closed";if(den)den.textContent=dayInfo.effect;if(sob){sob.textContent=isOverlap?"LDN/NY OVERLAP - Highest Vol":openSessions.length?openSessions.join("+")+" Open":"All sessions closed";sob.style.color=isOverlap?"rgba(100,180,255,.92)":"rgba(255,255,255,.58)";}if(sml)sml.textContent=minsLeft!=null?"~"+minsLeft+"m left":"";}
 function updateWarmupBadge(tickN,warmed){if(FirebaseSync.configured)return;const sb=$("syncBadge");if(!sb)return;if(!warmed){sb.className="syncBadge warming";sb.innerHTML='<span class="dot amber"></span><span>Warming '+tickN+"/"+Engine.WARMUP+"</span>";}else{sb.className="syncBadge synced";sb.innerHTML='<span class="dot"></span><span>SYNCED (det)</span>';}}
 function updateSharpeUI(stats){const sv=$("sharpeVal"),sm=$("sharpeMeta");if(sv&&sm){if(stats.sharpe!=null&&Number.isFinite(stats.sharpe)){sv.textContent=stats.sharpe.toFixed(2);sv.classList.remove("pos","neg");if(stats.sharpe>=2.5)sv.classList.add("pos");else if(stats.sharpe<0)sv.classList.add("neg");sm.textContent=stats.sharpe>=2.5?"Target met":"Below target 2.5";}else{sv.textContent="--";sm.textContent="Need >=20 signals ("+stats.totalSignals+")";}}const wr=$("winRateVal"),wrm=$("winRateMeta");if(wr&&wrm){if(stats.winRate!=null){wr.textContent=Math.round(stats.winRate*100)+"%";wr.classList.remove("pos","neg");if(stats.winRate>=.55)wr.classList.add("pos");else if(stats.winRate<.40)wr.classList.add("neg");wrm.textContent=stats.totalSignals+" closed signals";}else{wr.textContent="--";wrm.textContent="No closed signals";}}const pl=$("openPLVal"),plm=$("openPLMeta");if(pl&&plm){if(stats.openPL!=null){pl.textContent=(stats.openPL>=0?"+":"")+stats.openPL.toFixed(1)+" p";pl.classList.remove("pos","neg");if(stats.openPL>0)pl.classList.add("pos");else if(stats.openPL<0)pl.classList.add("neg");plm.textContent=stats.openBias?"Open "+stats.openBias:"--";}else{pl.textContent="--";plm.textContent="No open signal";}}const cp=$("cumPipsVal");if(cp){cp.textContent=(stats.totalPips>=0?"+":"")+stats.totalPips.toFixed(1)+" p";cp.classList.remove("pos","neg");if(stats.totalPips>0)cp.classList.add("pos");else if(stats.totalPips<0)cp.classList.add("neg");}const fs=$("footSharpe");if(fs)fs.textContent=stats.sharpe!=null?stats.sharpe.toFixed(2):"--";drawEquity(stats.equity.length>=2?stats.equity:[0,0]);}
-function updateCorrUI(corrs){const assets=[{key:"OIL",label:"Brent (BZ=F)",dir:"Negative"},{key:"GOLD",label:"Gold COMEX (GC=F)",dir:"Positive"},{key:"SILV",label:"Silver COMEX (SI=F)",dir:"Positive"},{key:"USD",label:"DXY (DX-Y.NYB)",dir:"Negative"}];const cb=$("corrBody");if(!cb)return;cb.innerHTML=assets.map(a=>{const c=corrs[a.key]||{r:0,tStat:0,n:0,sig:"ns"};const rStr=c.n>=5?c.r.toFixed(3):"--",tStr=c.n>=5?c.tStat.toFixed(2):"--";const sigClass=c.sig==="**"?"sig2":c.sig==="*"?"sig1":"sigNS";const rClass=c.r>.05?"corrPos":c.r<-.05?"corrNeg":"";return"<tr><td>"+a.label+"</td><td class='"+rClass+"'>"+rStr+"</td><td>"+tStr+"</td><td class='"+sigClass+"'>"+c.sig+"</td><td>"+c.n+"</td><td style='color:rgba(255,255,255,.45);font-size:10px'>"+a.dir+"</td></tr>";}).join("");}
+function updateCorrUI(corrs){const assets=[{key:"OIL",label:"Brent (BZ=F)",dir:"Negative"},{key:"GOLD",label:"Gold COMEX (GC=F)",dir:"Positive"},{key:"SILV",label:"Silver COMEX (SI=F)",dir:"Positive"},{key:"USD",label:"DXY (DX-Y.NYB)",dir:"Negative"},{key:"GBP",label:"GBP/USD",dir:"Positive (r≈80-95%)"},{key:"AUD",label:"AUD/USD",dir:"Positive (r≈70-90%)"},{key:"NZD",label:"NZD/USD",dir:"Positive (r≈65-85%)"}];const cb=$("corrBody");if(!cb)return;cb.innerHTML=assets.map(a=>{const c=corrs[a.key]||{r:0,tStat:0,n:0,sig:"ns"};const rStr=c.n>=5?c.r.toFixed(3):"--",tStr=c.n>=5?c.tStat.toFixed(2):"--";const sigClass=c.sig==="**"?"sig2":c.sig==="*"?"sig1":"sigNS";const rClass=c.r>.05?"corrPos":c.r<-.05?"corrNeg":"";return"<tr><td>"+a.label+"</td><td class='"+rClass+"'>"+rStr+"</td><td>"+tStr+"</td><td class='"+sigClass+"'>"+c.sig+"</td><td>"+c.n+"</td><td style='color:rgba(255,255,255,.45);font-size:10px'>"+a.dir+"</td></tr>";}).join("");}
 
 let lastAlertAt=0;
 function checkAlerts(r1,bias){const thresh=Number(settings.alertThreshPips)||0;if(thresh>0&&r1>=thresh){if(Date.now()-lastAlertAt<300000)return;lastAlertAt=Date.now();const ab=$("alertBadge"),at=$("alertBadgeText");if(ab)ab.classList.add("show");if(at)at.textContent="1h range "+r1+"p >= "+thresh+"p";setTimeout(()=>{const ab2=$("alertBadge");if(ab2)ab2.classList.remove("show");},30000);if("Notification"in window&&Notification.permission==="granted"){try{new Notification("QuadraX Alert",{body:"1h range "+r1+"p. Bias: "+bias,tag:"qx-alert"});}catch{}}}}
@@ -888,6 +970,24 @@ async function onSpotUpdate(s){
   CorrEngine.onMacroUpdate();updateCorrUI(CorrEngine.getCorrelations());
   updateSessionUI();updateProjAccuracyUI();checkAlerts(proj.r1,proj.bias);
   MacroFeed.hydrate();
+  paintFxPair("GBP","gbpPx","gbpMeta","gbpTag","gbpSpark",tx.gbpChg);
+  paintFxPair("AUD","audPx","audMeta","audTag","audSpark",tx.audChg);
+  paintFxPair("NZD","nzdPx","nzdMeta","nzdTag","nzdSpark",tx.nzdChg);
+  {const fxc=tx.fxConf||0,fxi=tx.fxInt||0;
+   const fxcEl=$("fxConfChip"),fxbEl=$("fxConfBig"),fxmEl=$("fxConfMeta"),fxiEl=$("fxIntChip");
+   if(fxcEl)fxcEl.textContent=fxc>0.15?"▲ BULL CONFIRM":fxc<-0.15?"▼ BEAR CONFIRM":"MIXED";
+   if(fxiEl)fxiEl.textContent=Math.round(fxi*100)+"%";
+   const pairs=[{k:"GBP",d:tx.gbpChg},{k:"AUD",d:tx.audChg},{k:"NZD",d:tx.nzdChg}];
+   const labels=pairs.filter(p=>p.d!=null&&Math.abs(p.d)>0.02).map(p=>p.d>0?p.k+"↑":p.k+"↓").join(" ");
+   if(fxbEl)fxbEl.textContent=labels||"Waiting for data";
+   const n=pairs.filter(p=>p.d!=null).length;
+   if(fxmEl)fxmEl.textContent=n+"/3 pairs active"+(fxc>0.15?" — BULLISH":fxc<-0.15?" — BEARISH":" — mixed");
+   const fxlv=Math.abs(fxc)*clamp(fxi*1.5,0,1);
+   leverPaint($("fxLeverBar"),$("fxLeverPct"),fxlv,fxc>0.15?"good":fxc<-0.15?"bad":"neutral");
+   const fxlm=$("fxLeverMeta");if(fxlm)fxlm.textContent=fxc>0.15?"Bullish confluence — "+Math.round(fxlv*100)+"% confirm":fxc<-0.15?"Bearish confluence — "+Math.round(fxlv*100)+"% confirm":"Mixed/neutral — no clear alignment";}
+  // Inject signal stats so READER can render Signal Performance identically
+  const sigStats=SignalTracker.getStats(s.price);
+  injectSignalStats(fullState,sigStats);
   if(FirebaseSync.configured&&FirebaseSync.role==="MASTER")FirebaseSync.writeFullState(fullState);
 }
 
