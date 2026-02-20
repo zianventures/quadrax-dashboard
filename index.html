@@ -1,2124 +1,976 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>QuadraX Risk Dashboard v2</title>
-  <style>
-    /* ===== BASE RESET ===== */
-    *, *::before, *::after { box-sizing: border-box; }
-
-    :root {
-      --bg0: #050a1a;
-      --bg1: #07122f;
-      --card: rgba(10, 25, 60, 0.55);
-      --card2: rgba(12, 34, 84, 0.42);
-      --stroke: rgba(120, 170, 255, 0.22);
-      --stroke2: rgba(120, 170, 255, 0.12);
-      --text: #e9f0ff;
-      --muted: rgba(233,240,255,0.7);
-      --muted2: rgba(233,240,255,0.55);
-      --blue: #2b6cff;
-      --green: #18d18a;
-      --amber: #ffb020;
-      --red: #ff4d4d;
-      --pink: #ff3aa5;
-      --shadow: 0 18px 55px rgba(0,0,0,0.55);
-      --shadow2: 0 10px 30px rgba(0,0,0,0.45);
-      --radius: 22px;
-      --radius2: 16px;
-      --pad: 18px;
-      --pad2: 14px;
-      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --night-filter: none;
-    }
-
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      font-family: var(--font);
-      color: var(--text);
-      background:
-        radial-gradient(1200px 700px at 20% 20%, rgba(80,140,255,0.22), transparent 55%),
-        radial-gradient(900px 600px at 70% 35%, rgba(22,210,170,0.16), transparent 55%),
-        radial-gradient(900px 700px at 35% 85%, rgba(255,80,180,0.12), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      overflow-x: hidden;
-      filter: var(--night-filter);
-      transition: filter 0.5s ease;
-    }
-    body.night { --night-filter: brightness(0.58) sepia(0.09); }
-
-    /* ===== LAYOUT ===== */
-    .wrap { max-width: 1440px; margin: 22px auto 40px; padding: 0 16px; }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 18px;
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(50,115,255,0.55), rgba(35,85,200,0.42));
-      border: 1px solid rgba(210,230,255,0.18);
-      box-shadow: var(--shadow);
-      position: sticky;
-      top: 12px;
-      z-index: 10;
-      backdrop-filter: blur(10px);
-    }
-
-    .brand { display: flex; align-items: center; gap: 14px; min-width: 320px; }
-    .qxlogo {
-      width: 38px; height: 38px; border-radius: 12px;
-      display: grid; place-items: center;
-      font-weight: 900; letter-spacing: 0.5px;
-      background: rgba(10,25,60,0.45);
-      border: 1px solid rgba(210,230,255,0.18);
-      box-shadow: var(--shadow2); user-select: none;
-    }
-    .brand h1 { margin: 0; font-size: 18px; line-height: 1.1; }
-    .brand .sub { margin-top: 2px; font-size: 12px; color: rgba(255,255,255,0.78); }
-
-    .top-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
-
-    .pill {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 12px; border-radius: 999px;
-      background: rgba(10,25,60,0.35);
-      border: 1px solid rgba(210,230,255,0.16);
-      color: rgba(255,255,255,0.9); font-size: 12px;
-      box-shadow: 0 8px 22px rgba(0,0,0,0.25); white-space: nowrap;
-    }
-    .dot {
-      width: 10px; height: 10px; border-radius: 999px;
-      background: var(--green); box-shadow: 0 0 0 4px rgba(24,209,138,0.18);
-    }
-
-    .btn {
-      cursor: pointer;
-      border: 1px solid rgba(210,230,255,0.18);
-      background: rgba(10,25,60,0.35);
-      color: rgba(255,255,255,0.92);
-      border-radius: 999px; padding: 9px 14px;
-      font-weight: 800; font-size: 12px; letter-spacing: 0.2px;
-      box-shadow: 0 8px 22px rgba(0,0,0,0.25); user-select: none;
-    }
-    .btn:hover { filter: brightness(1.08); }
-    .btn:active { transform: translateY(1px); }
-    .btn.primary { background: rgba(35,120,255,0.35); border-color: rgba(120,170,255,0.26); }
-    .btn.night-active { background: rgba(255,176,32,0.22); border-color: rgba(255,176,32,0.30); }
-    .btn.syncing { opacity: 0.6; cursor: not-allowed; }
-
-    .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-top: 16px; }
-    @media (max-width: 1100px) { .grid { grid-template-columns: 1fr; } .brand { min-width: unset; } }
-    .stack { display: grid; gap: 16px; }
-
-    .card {
-      background: linear-gradient(180deg, rgba(10,25,60,0.55), rgba(7,12,30,0.35));
-      border: 1px solid rgba(210,230,255,0.16);
-      border-radius: var(--radius); box-shadow: var(--shadow2);
-      overflow: hidden; position: relative;
-    }
-    .card .inner { padding: var(--pad); }
-
-    .card-title {
-      display: flex; align-items: flex-end; justify-content: space-between;
-      gap: 12px; margin-bottom: 12px;
-    }
-    .card-title h2 {
-      margin: 0; font-size: 13px; color: rgba(255,255,255,0.82);
-      letter-spacing: 0.9px; text-transform: uppercase;
-    }
-    .card-title .hint { font-size: 12px; color: rgba(255,255,255,0.55); text-align: right; max-width: 520px; }
-
-    /* ===== CURRENT MARKET STATE ===== */
-    .cmsGrid { display: grid; grid-template-columns: 1.4fr 0.9fr; gap: 14px; align-items: stretch; }
-    @media (max-width: 900px) { .cmsGrid { grid-template-columns: 1fr; } }
-
-    .hero {
-      border-radius: 22px;
-      background:
-        radial-gradient(900px 500px at 20% 10%, rgba(120,170,255,0.15), transparent 55%),
-        radial-gradient(700px 420px at 80% 20%, rgba(24,209,138,0.12), transparent 55%),
-        rgba(10,25,60,0.18);
-      border: 1px solid rgba(210,230,255,0.10);
-      padding: 18px; position: relative; overflow: hidden;
-    }
-    .hero::after {
-      content: ""; position: absolute; inset: -2px;
-      background: linear-gradient(120deg, rgba(120,170,255,0.10), transparent 35%, rgba(255,58,165,0.08));
-      pointer-events: none; opacity: 0.7;
-    }
-
-    .stateBig {
-      font-size: 44px; font-weight: 900; letter-spacing: 0.2px;
-      margin: 4px 0 2px; position: relative; z-index: 1;
-    }
-    .muted { color: var(--muted); font-size: 13px; position: relative; z-index: 1; }
-
-    .chipRow {
-      display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px;
-      align-items: center; position: relative; z-index: 1;
-    }
-    .chip {
-      display: flex; align-items: center; gap: 8px;
-      padding: 7px 10px; border-radius: 999px; font-size: 12px;
-      color: rgba(255,255,255,0.88);
-      background: rgba(10,25,60,0.30); border: 1px solid rgba(210,230,255,0.14); white-space: nowrap;
-    }
-    .chip b { font-weight: 900; }
-    .pillTag {
-      font-family: var(--mono); font-size: 11px; padding: 6px 10px;
-      border-radius: 999px; border: 1px solid rgba(210,230,255,0.14);
-      background: rgba(10,25,60,0.22); color: rgba(255,255,255,0.86);
-    }
-
-    /* ===== REGIME TIMELINE ===== */
-    .timelineWrap { margin-top: 14px; position: relative; z-index: 1; }
-    .timelineCanvas {
-      width: 100%; height: 10px; display: block;
-      border-radius: 999px; overflow: hidden;
-      background: rgba(255,255,255,0.06);
-    }
-
-    /* ===== QUOTE PANEL ===== */
-    .quoteCard {
-      border-radius: 22px; background: rgba(10,25,60,0.20);
-      border: 1px solid rgba(210,230,255,0.12); padding: 16px;
-      display: grid; gap: 10px; position: relative; overflow: hidden;
-    }
-    .quoteTop { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .quoteSym .sym { font-weight: 900; letter-spacing: 0.6px; font-size: 12px; text-transform: uppercase; color: rgba(255,255,255,0.85); }
-    .quoteSym .prov { font-size: 11px; color: rgba(255,255,255,0.58); }
-    .qStatus {
-      display: inline-flex; align-items: center; gap: 8px; padding: 7px 10px;
-      border-radius: 999px; border: 1px solid rgba(210,230,255,0.14);
-      background: rgba(10,25,60,0.26); font-size: 12px; font-weight: 900;
-      color: rgba(255,255,255,0.88); white-space: nowrap;
-    }
-    .sdot { width: 10px; height: 10px; border-radius: 999px; background: var(--amber); box-shadow: 0 0 0 4px rgba(255,176,32,0.18); }
-    .sdot.live { background: var(--green); box-shadow: 0 0 0 4px rgba(24,209,138,0.18); }
-    .sdot.err { background: var(--red); box-shadow: 0 0 0 4px rgba(255,77,77,0.18); }
-
-    .quotePx { font-size: 42px; font-weight: 900; letter-spacing: 0.4px; font-variant-numeric: tabular-nums; line-height: 1.0; }
-    .quoteMetaRow { display: flex; align-items: center; justify-content: space-between; color: rgba(255,255,255,0.62); font-size: 12px; font-variant-numeric: tabular-nums; }
-    .sparkBar { height: 7px; border-radius: 999px; background: rgba(255,255,255,0.10); overflow: hidden; }
-    .sparkBar > i { display: block; height: 100%; width: 15%; border-radius: 999px; background: rgba(24,209,138,0.85); transition: width 0.4s ease; }
-    .quoteBadges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 2px; }
-
-    /* ===== PROBABILITIES ===== */
-    .probBlock {
-      margin-top: 14px; padding-top: 14px;
-      border-top: 1px solid rgba(210,230,255,0.10);
-      position: relative; z-index: 1;
-    }
-    .probRow {
-      display: grid; grid-template-columns: 200px 1fr 56px;
-      gap: 12px; align-items: center; padding: 8px 0;
-      border-top: 1px solid rgba(210,230,255,0.06);
-    }
-    .probRow:first-child { border-top: none; }
-    .probName { font-size: 12px; color: rgba(255,255,255,0.88); display: flex; align-items: center; gap: 10px; }
-    .pdot { width: 14px; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.18); }
-    .pbar { height: 8px; border-radius: 999px; background: rgba(255,255,255,0.10); overflow: hidden; }
-    .pbar > i { display: block; height: 100%; width: 0%; border-radius: 999px; background: rgba(120,170,255,0.8); transition: width 0.5s ease; }
-    .probVal { font-size: 12px; color: rgba(255,255,255,0.78); text-align: right; font-variant-numeric: tabular-nums; }
-
-    /* ===== RIGHT COLUMN ===== */
-    .riskLevel { text-align: center; padding: 22px 16px 14px; }
-    .riskLevel .label { font-size: 12px; letter-spacing: 0.9px; text-transform: uppercase; color: rgba(255,255,255,0.72); }
-    .riskLevel .big { font-size: 44px; font-weight: 900; margin: 6px 0 2px; }
-    .riskLevel .rule { font-size: 12px; color: rgba(255,255,255,0.68); max-width: 360px; margin: 0 auto; line-height: 1.35; }
-    .macroHint { font-size: 12px; color: rgba(255,255,255,0.62); line-height: 1.35; max-width: 420px; text-align: right; }
-
-    /* ===== MACRO GRID ===== */
-    .macroGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: stretch; }
-    .macroBox {
-      border-radius: 18px; background: rgba(10,25,60,0.25);
-      border: 1px solid rgba(210,230,255,0.12); padding: 14px;
-      min-height: 92px; display: grid; align-content: start; gap: 6px;
-    }
-    .macroBox .k { font-size: 12px; color: rgba(255,255,255,0.72); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .macroBox .v { font-size: 22px; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.1; }
-    .macroBox .meta { font-size: 12px; color: rgba(255,255,255,0.58); font-variant-numeric: tabular-nums; line-height: 1.35; }
-
-    /* Sparkline canvas inside macro box */
-    .sparkCanvas {
-      width: 100%; height: 34px; display: block;
-      border-radius: 8px; margin-top: 4px;
-      background: rgba(255,255,255,0.03);
-    }
-    /* Freshness tag */
-    .freshTag {
-      font-size: 10px; color: rgba(255,255,255,0.45);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .tagOk {
-      font-family: var(--mono); font-size: 10.5px; padding: 4px 8px;
-      border-radius: 999px; border: 1px solid rgba(210,230,255,0.14);
-      background: rgba(10,25,60,0.22); color: rgba(255,255,255,0.82); white-space: nowrap;
-    }
-
-    .impact {
-      display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px;
-      border-radius: 999px; border: 1px solid rgba(210,230,255,0.14);
-      background: rgba(10,25,60,0.22); font-weight: 950;
-      color: rgba(255,255,255,0.88); white-space: nowrap;
-    }
-    .folder { width: 10px; height: 10px; border-radius: 3px; background: var(--pink); box-shadow: 0 0 0 4px rgba(255,58,165,0.14); }
-    .folder.med { background: var(--amber); box-shadow: 0 0 0 4px rgba(255,176,32,0.14); }
-    .folder.low { background: rgba(255,255,255,0.30); box-shadow: none; }
-
-    /* ===== TABLES ===== */
-    .tableWrap { border-radius: 18px; background: rgba(10,25,60,0.20); border: 1px solid rgba(210,230,255,0.12); overflow: hidden; }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    thead th {
-      text-align: left; padding: 12px;
-      color: rgba(255,255,255,0.78); border-bottom: 1px solid rgba(210,230,255,0.10);
-      background: rgba(10,25,60,0.22); font-weight: 900; letter-spacing: 0.6px;
-      text-transform: uppercase; font-size: 11px;
-    }
-    tbody td {
-      padding: 10px 12px; border-bottom: 1px solid rgba(210,230,255,0.06);
-      color: rgba(255,255,255,0.82); vertical-align: top; font-variant-numeric: tabular-nums;
-    }
-    tbody tr:hover { background: rgba(255,255,255,0.04); }
-    .scroll { overflow: auto; }
-    .link { color: rgba(120,170,255,0.95); text-decoration: none; font-weight: 800; }
-    .link:hover { text-decoration: underline; }
-
-    /* ===== FORWARD PROJECTION ===== */
-    .fpGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-    @media (max-width: 1100px) { .fpGrid { grid-template-columns: repeat(2, 1fr); } }
-    .fpBox {
-      border-radius: 18px; background: rgba(10,25,60,0.22);
-      border: 1px solid rgba(210,230,255,0.12); padding: 14px;
-      min-height: 92px; display: grid; gap: 6px; align-content: start;
-    }
-    .fpBox .k { font-size: 12px; color: rgba(255,255,255,0.62); }
-    .fpBox .v { font-size: 26px; font-weight: 900; }
-    .fpBox .meta { font-size: 12px; color: rgba(255,255,255,0.62); line-height: 1.35; }
-
-    /* Alert flash */
-    .fpBox.alert-breach .v { animation: alertPulse 1.2s ease-in-out 3; }
-    @keyframes alertPulse { 0%,100%{ opacity:1; } 50%{ opacity:0.3; color: var(--amber); } }
-
-    .coneWrap { border-radius: 22px; background: rgba(10,25,60,0.18); border: 1px solid rgba(210,230,255,0.10); overflow: hidden; margin-top: 12px; }
-    canvas { display: block; width: 100%; }
-    #coneCanvas { height: 260px; }
-
-    /* ===== TRANSMISSION ===== */
-    .tmGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .tmBox {
-      border-radius: 18px; background: rgba(10,25,60,0.22);
-      border: 1px solid rgba(210,230,255,0.12); padding: 14px;
-      display: grid; gap: 8px; align-content: start; min-height: 110px;
-    }
-    .tmTop { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .tmTop .k { font-size: 12px; color: rgba(255,255,255,0.78); line-height: 1.2; }
-    .tmTop .pct { font-size: 26px; font-weight: 900; font-variant-numeric: tabular-nums; }
-    .tmBar { height: 8px; border-radius: 999px; background: rgba(255,255,255,0.10); overflow: hidden; }
-    .tmBar > i { display: block; height: 100%; width: 0%; border-radius: 999px; background: rgba(120,170,255,0.8); transition: width 0.5s ease; }
-    .tmMeta { font-size: 12px; color: rgba(255,255,255,0.60); line-height: 1.35; }
-
-    /* ===== TRADINGVIEW ===== */
-    .tvWrap { border-radius: 18px; overflow: hidden; border: 1px solid rgba(210,230,255,0.12); background: rgba(10,25,60,0.20); position: relative; }
-    .tvWrap iframe { width: 100%; height: 380px; border: 0; display: block; }
-    .tvFallback {
-      display: none; position: absolute; inset: 0;
-      align-items: center; justify-content: center;
-      background: rgba(10,25,60,0.85); font-size: 13px;
-      color: rgba(255,255,255,0.7); text-align: center; gap: 8px;
-      flex-direction: column;
-    }
-    .tvFallback.show { display: flex; }
-
-    /* ===== FOOTER ===== */
-    .foot {
-      margin-top: 14px; display: flex; justify-content: space-between;
-      color: rgba(255,255,255,0.5); font-size: 12px; padding: 0 6px;
-      gap: 12px; flex-wrap: wrap;
-    }
-
-    /* ===== MODALS ===== */
-    .modalBack {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
-      display: none; align-items: center; justify-content: center;
-      z-index: 999; padding: 18px;
-    }
-    .modal {
-      width: min(920px, 100%); border-radius: 22px;
-      background: linear-gradient(180deg, rgba(12,34,84,0.92), rgba(6,10,24,0.88));
-      border: 1px solid rgba(210,230,255,0.18); box-shadow: var(--shadow); overflow: hidden;
-      max-height: 90vh; overflow-y: auto;
-    }
-    .modalHead {
-      padding: 14px 18px; display: flex; align-items: center;
-      justify-content: space-between; border-bottom: 1px solid rgba(210,230,255,0.12);
-      position: sticky; top: 0; background: rgba(12,34,84,0.95); z-index: 1;
-    }
-    .modalHead h3 { margin: 0; font-size: 14px; letter-spacing: 0.6px; text-transform: uppercase; color: rgba(255,255,255,0.86); }
-    .modalBody { padding: 16px 18px 18px; display: grid; gap: 14px; }
-
-    textarea {
-      width: 100%; min-height: 170px; resize: vertical;
-      border-radius: 16px; border: 1px solid rgba(210,230,255,0.18);
-      background: rgba(10,25,60,0.35); color: rgba(255,255,255,0.9);
-      padding: 12px; font-family: var(--mono); font-size: 12px; line-height: 1.35; outline: none;
-    }
-    .fieldRow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
-    @media (max-width: 900px) { .fieldRow { grid-template-columns: 1fr; } }
-    .field { border-radius: 16px; border: 1px solid rgba(210,230,255,0.14); background: rgba(10,25,60,0.22); padding: 12px; }
-    .field label { display: block; font-size: 12px; color: rgba(255,255,255,0.70); margin-bottom: 6px; font-weight: 900; letter-spacing: 0.3px; }
-    .field input {
-      width: 100%; padding: 10px 12px; border-radius: 12px;
-      border: 1px solid rgba(210,230,255,0.16); background: rgba(6,10,24,0.40);
-      color: rgba(255,255,255,0.92); outline: none; font-family: var(--mono); font-size: 12px;
-    }
-    .modalActions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
-
-    .smallNote { color: rgba(255,255,255,0.62); font-size: 12px; line-height: 1.35; }
-    .validTag { font-size: 11px; margin-left: 8px; }
-    .validTag.ok { color: var(--green); }
-    .validTag.fail { color: var(--red); }
-
-    /* ===== UTILS ===== */
-    .pos { color: rgba(24,209,138,0.95); }
-    .neg { color: rgba(255,77,77,0.95); }
-
-    /* Keyboard shortcut hint tooltip */
-    .kbhint {
-      display: none; position: fixed; bottom: 18px; right: 18px;
-      background: rgba(12,34,84,0.92); border: 1px solid rgba(210,230,255,0.18);
-      border-radius: 14px; padding: 12px 16px; font-size: 12px;
-      color: rgba(255,255,255,0.80); z-index: 998; line-height: 1.7;
-      box-shadow: var(--shadow2); min-width: 200px;
-    }
-    .kbhint.show { display: block; }
-    .kbhint b { color: rgba(255,255,255,0.95); font-family: var(--mono); }
-
-    /* Alert badge */
-    .alertBadge {
-      display: none; align-items: center; gap: 8px;
-      padding: 8px 12px; border-radius: 999px;
-      background: rgba(255,176,32,0.18); border: 1px solid rgba(255,176,32,0.35);
-      color: rgba(255,255,255,0.9); font-size: 12px; white-space: nowrap;
-    }
-    .alertBadge.show { display: flex; }
-  </style>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>QuadraX 4xStrategy Dashboard v4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{--bg0:#030810;--bg1:#060f28;--green:#18d18a;--amber:#ffb020;--red:#ff4d4d;--pink:#ff3aa5;--blue:#2b6cff;--purple:#a066ff;--text:#e8efff;--muted:rgba(232,239,255,.68);--sh:0 20px 60px rgba(0,0,0,.65);--sh2:0 10px 32px rgba(0,0,0,.50);--r:22px;--font:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;--mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;--night:none}
+html,body{height:100%}
+body{margin:0;font-family:var(--font);color:var(--text);background:radial-gradient(1400px 800px at 15% 10%,rgba(60,120,255,.18),transparent 55%),radial-gradient(900px 700px at 75% 30%,rgba(20,200,160,.14),transparent 55%),radial-gradient(1000px 800px at 30% 90%,rgba(200,60,160,.10),transparent 60%),linear-gradient(175deg,var(--bg0),var(--bg1));overflow-x:hidden;filter:var(--night);transition:filter .6s}
+body.night{--night:brightness(.52) sepia(.12) hue-rotate(-5deg)}
+.wrap{max-width:1500px;margin:20px auto 50px;padding:0 14px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-radius:var(--r);background:linear-gradient(180deg,rgba(43,108,255,.50),rgba(25,70,180,.38));border:1px solid rgba(180,220,255,.16);box-shadow:var(--sh);position:sticky;top:10px;z-index:10;backdrop-filter:blur(14px)}
+.brand{display:flex;align-items:center;gap:14px;min-width:250px}
+.qxlogo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-family:var(--mono);font-size:12px;background:rgba(8,20,52,.55);border:1px solid rgba(180,220,255,.18);box-shadow:0 0 20px rgba(43,108,255,.25);user-select:none}
+.brand h1{margin:0;font-size:16px;font-weight:700;line-height:1.15}
+.brand .sub{font-size:10px;color:rgba(255,255,255,.60);margin-top:2px}
+.top-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.pill{display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;background:rgba(8,20,52,.38);border:1px solid rgba(180,220,255,.14);color:rgba(255,255,255,.88);font-size:11px;white-space:nowrap;font-family:var(--mono)}
+.dot{width:9px;height:9px;border-radius:999px;background:var(--green);box-shadow:0 0 0 4px rgba(24,209,138,.20)}
+.dot.amber{background:var(--amber);box-shadow:0 0 0 4px rgba(255,176,32,.20)}
+.dot.red{background:var(--red);box-shadow:0 0 0 4px rgba(255,77,77,.20)}
+.btn{cursor:pointer;border:1px solid rgba(180,220,255,.16);background:rgba(8,20,52,.38);color:rgba(255,255,255,.90);border-radius:999px;padding:7px 13px;font-weight:600;font-size:11px;font-family:var(--font);box-shadow:0 6px 18px rgba(0,0,0,.28);user-select:none;transition:filter .15s}
+.btn:hover{filter:brightness(1.12)}.btn:active{transform:translateY(1px)}
+.btn.primary{background:rgba(43,108,255,.32);border-color:rgba(100,160,255,.28)}
+.btn.night-active{background:rgba(255,176,32,.22);border-color:rgba(255,176,32,.32)}
+.btn.syncing{opacity:.6;cursor:not-allowed}
+.syncBadge{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;font-size:11px;font-family:var(--mono);white-space:nowrap;border:1px solid;transition:all .4s}
+.syncBadge.warming{background:rgba(255,176,32,.15);border-color:rgba(255,176,32,.35);color:rgba(255,200,80,.90)}
+.syncBadge.synced{background:rgba(24,209,138,.12);border-color:rgba(24,209,138,.30);color:rgba(24,209,138,.90)}
+.syncBadge.firebase{background:rgba(43,108,255,.15);border-color:rgba(43,108,255,.35);color:rgba(100,180,255,.90);animation:fbPulse 3s ease infinite}
+@keyframes fbPulse{0%,100%{box-shadow:0 0 0 0 rgba(43,108,255,.20)}50%{box-shadow:0 0 0 5px rgba(43,108,255,0)}}
+.alertBadge{display:none;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;background:rgba(255,176,32,.22);border:1px solid rgba(255,176,32,.40);color:#fff;font-size:11px;animation:bpulse 2s ease infinite}
+.alertBadge.show{display:flex}
+@keyframes bpulse{0%,100%{box-shadow:0 0 0 0 rgba(255,176,32,.25)}50%{box-shadow:0 0 0 6px rgba(255,176,32,0)}}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:1100px){.grid{grid-template-columns:1fr}.brand{min-width:unset}}
+.stack{display:grid;gap:14px}
+.card{background:linear-gradient(160deg,rgba(8,20,52,.55),rgba(5,10,24,.38));border:1px solid rgba(180,220,255,.14);border-radius:var(--r);box-shadow:var(--sh2);overflow:hidden}
+.card .inner{padding:17px}
+.card-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:13px}
+.card-title h2{margin:0;font-size:11.5px;color:rgba(255,255,255,.78);letter-spacing:1px;text-transform:uppercase;font-weight:700}
+.card-title .hint{font-size:11px;color:rgba(255,255,255,.44);text-align:right;max-width:400px;line-height:1.4}
+.liveBadge{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:999px;font-size:9.5px;font-weight:700;letter-spacing:.5px;font-family:var(--mono);white-space:nowrap}
+.liveBadge.live{background:rgba(24,209,138,.12);border:1px solid rgba(24,209,138,.25);color:rgba(24,209,138,.90)}
+.liveBadge.stale{background:rgba(255,176,32,.12);border:1px solid rgba(255,176,32,.25);color:rgba(255,176,32,.90)}
+.liveBadge.error{background:rgba(255,77,77,.10);border:1px solid rgba(255,77,77,.22);color:rgba(255,77,77,.85)}
+.muted{color:var(--muted);font-size:12px}.smallNote{color:rgba(255,255,255,.54);font-size:11px;line-height:1.45}
+.pos{color:rgba(24,209,138,.95)}.neg{color:rgba(255,77,77,.95)}
+.chipRow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:9px;position:relative;z-index:1}
+.chip{display:flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:11px;color:rgba(255,255,255,.84);background:rgba(8,20,52,.32);border:1px solid rgba(180,220,255,.12);white-space:nowrap}
+.chip b{font-weight:700;font-family:var(--mono)}
+.pillTag{font-family:var(--mono);font-size:10.5px;padding:5px 9px;border-radius:999px;border:1px solid rgba(180,220,255,.12);background:rgba(8,20,52,.22);color:rgba(255,255,255,.78)}
+.tagOk{font-family:var(--mono);font-size:10px;padding:3px 7px;border-radius:999px;border:1px solid rgba(180,220,255,.10);background:rgba(8,20,52,.22);color:rgba(255,255,255,.70);white-space:nowrap}
+.sdot{width:9px;height:9px;border-radius:999px;background:var(--amber);box-shadow:0 0 0 3px rgba(255,176,32,.18)}
+.sdot.live{background:var(--green);box-shadow:0 0 0 3px rgba(24,209,138,.18)}
+.sdot.err{background:var(--red);box-shadow:0 0 0 3px rgba(255,77,77,.18)}
+.cmsGrid{display:grid;grid-template-columns:1.35fr .95fr;gap:11px}
+@media(max-width:900px){.cmsGrid{grid-template-columns:1fr}}
+.hero{border-radius:20px;background:radial-gradient(800px 400px at 10% 10%,rgba(100,160,255,.11),transparent 55%),rgba(8,20,52,.20);border:1px solid rgba(180,220,255,.09);padding:15px;position:relative;overflow:hidden}
+.stateBig{font-size:32px;font-weight:700;margin:4px 0 2px;position:relative;z-index:1;line-height:1.1}
+.tlWrap{margin-top:10px;position:relative;z-index:1}
+.tlLabel{font-size:10px;color:rgba(255,255,255,.40);margin-bottom:4px;font-family:var(--mono)}
+.tlCanvas{width:100%;height:9px;display:block;border-radius:999px;background:rgba(255,255,255,.05)}
+.probBlock{margin-top:12px;padding-top:10px;border-top:1px solid rgba(180,220,255,.07);position:relative;z-index:1}
+.probRow{display:grid;grid-template-columns:182px 1fr 48px;gap:9px;align-items:center;padding:6px 0;border-top:1px solid rgba(180,220,255,.05)}
+.probRow:first-child{border-top:none}
+.probName{font-size:11px;color:rgba(255,255,255,.78);display:flex;align-items:center;gap:8px}
+.pdot{width:11px;height:5px;border-radius:999px;flex-shrink:0}
+.pbar{height:6px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.pbar>i{display:block;height:100%;width:0%;border-radius:999px;transition:width .55s ease}
+.probVal{font-size:11px;color:rgba(255,255,255,.68);text-align:right;font-family:var(--mono)}
+.quoteCard{border-radius:20px;background:rgba(8,20,52,.22);border:1px solid rgba(180,220,255,.10);padding:14px;display:grid;gap:8px}
+.quoteTop{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.quoteSym .sym{font-weight:700;font-size:11.5px;letter-spacing:.8px;text-transform:uppercase}
+.quoteSym .prov{font-size:10px;color:rgba(255,255,255,.48);font-family:var(--mono)}
+.qStatus{display:inline-flex;align-items:center;gap:7px;padding:5px 9px;border-radius:999px;border:1px solid rgba(180,220,255,.12);background:rgba(8,20,52,.28);font-size:11px;font-weight:700;font-family:var(--mono);white-space:nowrap}
+.quotePx{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.0;font-family:var(--mono)}
+.quoteMetaRow{display:flex;align-items:center;justify-content:space-between;color:rgba(255,255,255,.50);font-size:11px;font-family:var(--mono)}
+.sparkBar{height:6px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.sparkBar>i{display:block;height:100%;width:15%;border-radius:999px;transition:width .4s}
+.quoteBadges{display:flex;gap:7px;flex-wrap:wrap}
+.fpGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+@media(max-width:1100px){.fpGrid{grid-template-columns:repeat(2,1fr)}}
+.fpBox{border-radius:15px;background:rgba(8,20,52,.22);border:1px solid rgba(180,220,255,.10);padding:12px;min-height:84px;display:grid;gap:4px;align-content:start}
+.fpBox .k{font-size:10.5px;color:rgba(255,255,255,.50);text-transform:uppercase;letter-spacing:.6px}
+.fpBox .v{font-size:22px;font-weight:700;font-family:var(--mono)}
+.fpBox .meta{font-size:10.5px;color:rgba(255,255,255,.50);line-height:1.4}
+.fpBox.breach .v{animation:apulse 1.2s ease 3}
+@keyframes apulse{0%,100%{opacity:1}50%{opacity:.25;color:var(--amber)}}
+.coneWrap{border-radius:16px;background:rgba(8,20,52,.18);border:1px solid rgba(180,220,255,.08);overflow:hidden;margin-top:9px}
+canvas{display:block;width:100%}
+#coneCanvas{height:220px}
+.sessionGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:10px}
+@media(max-width:900px){.sessionGrid{grid-template-columns:1fr 1fr}}
+.sessBox{border-radius:14px;background:rgba(8,20,52,.22);border:1px solid rgba(180,220,255,.10);padding:11px;display:grid;gap:3px;align-content:start;transition:border-color .4s,background .4s}
+.sName{font-size:10.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;font-family:var(--mono)}
+.sTime{font-size:10px;color:rgba(255,255,255,.44);font-family:var(--mono)}
+.sVol{font-size:10px;color:rgba(255,255,255,.52);margin-top:2px}
+.sStat{font-size:9.5px;border-radius:999px;padding:2px 7px;display:inline-block;width:fit-content;margin-top:4px}
+.sStat.open{background:rgba(24,209,138,.14);color:var(--green);border:1px solid rgba(24,209,138,.22)}
+.sStat.closed{background:rgba(255,255,255,.05);color:rgba(255,255,255,.36);border:1px solid rgba(255,255,255,.07)}
+.sStat.overlap{background:rgba(43,108,255,.14);color:rgba(100,180,255,.90);border:1px solid rgba(100,180,255,.22)}
+.dayRow{border-radius:14px;background:rgba(8,20,52,.22);border:1px solid rgba(180,220,255,.10);padding:11px;display:flex;align-items:center;justify-content:space-between;gap:11px;flex-wrap:wrap}
+.dayBadge{font-family:var(--mono);font-size:10.5px;padding:4px 9px;border-radius:999px;border:1px solid rgba(180,220,255,.14);background:rgba(8,20,52,.22);color:rgba(255,255,255,.76)}
+.pb3Dom{border-radius:16px;padding:13px 14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pb3Dom .dl{font-size:10px;color:rgba(255,255,255,.52);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.pb3Dom .ds{font-size:25px;font-weight:700}
+.pb3Dom .dn{font-size:11px;color:rgba(255,255,255,.58);max-width:215px;text-align:right;line-height:1.4}
+.pb3Grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.pb3Box{border-radius:14px;background:rgba(8,20,52,.22);border:1px solid rgba(180,220,255,.10);padding:11px;display:grid;gap:6px}
+.pb3Top{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.pb3Top .k{font-size:10.5px;color:rgba(255,255,255,.66);font-weight:700}
+.pb3Top .pct{font-size:20px;font-weight:700;font-family:var(--mono)}
+.pb3Bar{height:6px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.pb3Bar>i{display:block;height:100%;width:0%;border-radius:999px;transition:width .55s ease}
+.pb3Note{font-size:10.5px;color:rgba(255,255,255,.48);line-height:1.4}
+.archMain{border-radius:16px;padding:14px;margin-bottom:10px}
+.archMain .al{font-size:10.5px;color:rgba(255,255,255,.50);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.archMain .aType{font-size:21px;font-weight:700;margin-bottom:3px}
+.archMain .aConf{font-size:11px;color:rgba(255,255,255,.56)}
+.archMain .aBias{font-size:11px;margin-top:6px}
+.archMain .aNote{font-size:11px;color:rgba(255,255,255,.58);margin-top:5px;line-height:1.4}
+.archMain .aAnalog{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.40);margin-top:6px;padding-top:6px;border-top:1px solid rgba(180,220,255,.07)}
+.sharpeGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:10px}
+@media(max-width:900px){.sharpeGrid{grid-template-columns:repeat(2,1fr)}}
+.sharpeBox{border-radius:14px;background:rgba(8,20,52,.22);border:1px solid rgba(180,220,255,.10);padding:11px;display:grid;gap:3px}
+.sharpeBox .k{font-size:10.5px;color:rgba(255,255,255,.48);text-transform:uppercase;letter-spacing:.6px}
+.sharpeBox .v{font-size:20px;font-weight:700;font-family:var(--mono)}
+.sharpeBox .meta{font-size:10px;color:rgba(255,255,255,.44)}
+.eqWrap{border-radius:14px;background:rgba(8,20,52,.22);border:1px solid rgba(180,220,255,.10);overflow:hidden}
+.eqLabel{padding:8px 12px 3px;font-size:10px;color:rgba(255,255,255,.44);text-transform:uppercase;letter-spacing:.6px}
+#equityCanvas{height:62px}
+.macroGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.macroBox{border-radius:14px;background:rgba(8,20,52,.22);border:1px solid rgba(180,220,255,.10);padding:11px;min-height:86px;display:grid;align-content:start;gap:4px}
+.macroBox .k{font-size:10.5px;color:rgba(255,255,255,.60);display:flex;align-items:center;justify-content:space-between;gap:6px}
+.macroBox .v{font-size:18px;font-weight:700;font-family:var(--mono);line-height:1.1}
+.macroBox .meta{font-size:10px;color:rgba(255,255,255,.46);font-family:var(--mono);line-height:1.4}
+.sparkCanvas{width:100%;height:28px;display:block;border-radius:7px;margin-top:3px;background:rgba(255,255,255,.02)}
+.macroHint{font-size:11px;color:rgba(255,255,255,.44);line-height:1.4;text-align:right;max-width:300px}
+.tmGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.tmBox{border-radius:14px;background:rgba(8,20,52,.22);border:1px solid rgba(180,220,255,.10);padding:11px;display:grid;gap:6px}
+.tmTop{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.tmTop .k{font-size:10.5px;color:rgba(255,255,255,.68);line-height:1.2}
+.tmTop .pct{font-size:20px;font-weight:700;font-family:var(--mono)}
+.tmBar{height:6px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.tmBar>i{display:block;height:100%;width:0%;border-radius:999px;transition:width .55s ease}
+.tmMeta{font-size:10.5px;color:rgba(255,255,255,.48);line-height:1.35}
+.riskLevel{text-align:center;padding:20px 14px 16px}
+.rlabel{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.60)}
+.rbig{font-size:36px;font-weight:700;margin:5px 0 3px;font-family:var(--mono)}
+.rrule{font-size:11px;color:rgba(255,255,255,.56);max-width:300px;margin:0 auto;line-height:1.4}
+.corrTable{width:100%;border-collapse:collapse}
+.corrTable th{text-align:left;padding:8px 11px;font-size:9.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:rgba(255,255,255,.60);border-bottom:1px solid rgba(180,220,255,.08);background:rgba(8,20,52,.20)}
+.corrTable td{padding:8px 11px;border-bottom:1px solid rgba(180,220,255,.05);font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.76)}
+.corrTable tr:hover td{background:rgba(255,255,255,.03)}
+.sig2{color:var(--green);font-weight:700}.sig1{color:var(--amber)}.sigNS{color:rgba(255,255,255,.33)}
+.corrPos{color:var(--green)}.corrNeg{color:var(--red)}
+.txMx{width:100%;border-collapse:collapse}
+.txMx th{padding:4px;font-size:8.5px;color:rgba(255,255,255,.50);text-align:center;border-bottom:1px solid rgba(180,220,255,.07);background:rgba(8,20,52,.20);font-family:var(--mono)}
+.txMx td{padding:3px 4px;text-align:center;font-family:var(--mono);font-size:9px;border:1px solid rgba(180,220,255,.04)}
+.txMx .rl{text-align:left;color:rgba(255,255,255,.55);font-size:8.5px;padding:3px 6px}
+.tableWrap{border-radius:14px;background:rgba(8,20,52,.20);border:1px solid rgba(180,220,255,.10);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead th{text-align:left;padding:9px 11px;color:rgba(255,255,255,.68);border-bottom:1px solid rgba(180,220,255,.08);background:rgba(8,20,52,.22);font-weight:700;letter-spacing:.7px;text-transform:uppercase;font-size:9.5px}
+tbody td{padding:8px 11px;border-bottom:1px solid rgba(180,220,255,.05);color:rgba(255,255,255,.76);vertical-align:top;font-variant-numeric:tabular-nums}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+.scroll{overflow:auto}
+.link{color:rgba(100,170,255,.88);text-decoration:none;font-weight:600}.link:hover{text-decoration:underline}
+.impact{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border-radius:999px;border:1px solid rgba(180,220,255,.12);background:rgba(8,20,52,.22);font-weight:700;font-size:10px;color:rgba(255,255,255,.82);white-space:nowrap}
+.folder{width:8px;height:8px;border-radius:3px;background:var(--pink);box-shadow:0 0 0 3px rgba(255,58,165,.14)}
+.folder.med{background:var(--amber);box-shadow:0 0 0 3px rgba(255,176,32,.14)}
+.folder.low{background:rgba(255,255,255,.25);box-shadow:none}
+.tvWrap{border-radius:14px;overflow:hidden;border:1px solid rgba(180,220,255,.10);background:rgba(8,20,52,.20);position:relative}
+.tvWrap iframe{width:100%;height:330px;border:0;display:block}
+.tvFb{display:none;position:absolute;inset:0;align-items:center;justify-content:center;background:rgba(8,20,52,.88);font-size:12px;color:rgba(255,255,255,.60);text-align:center;gap:8px;flex-direction:column}
+.tvFb.show{display:flex}
+.foot{margin-top:10px;display:flex;justify-content:space-between;color:rgba(255,255,255,.40);font-size:10.5px;padding:0 4px;gap:8px;flex-wrap:wrap;font-family:var(--mono)}
+.mBack{position:fixed;inset:0;background:rgba(0,0,0,.60);display:none;align-items:center;justify-content:center;z-index:999;padding:16px}
+.modal{width:min(960px,100%);border-radius:var(--r);background:linear-gradient(160deg,rgba(10,28,76,.94),rgba(5,8,20,.90));border:1px solid rgba(180,220,255,.16);box-shadow:var(--sh);max-height:90vh;overflow-y:auto}
+.mHead{padding:12px 17px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(180,220,255,.10);position:sticky;top:0;background:rgba(10,28,76,.95);z-index:1}
+.mHead h3{margin:0;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.80)}
+.mBody{padding:14px 17px 18px;display:grid;gap:12px}
+textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1px solid rgba(180,220,255,.14);background:rgba(8,20,52,.38);color:rgba(255,255,255,.88);padding:10px;font-family:var(--mono);font-size:11px;line-height:1.4;outline:none}
+.fieldRow{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+@media(max-width:900px){.fieldRow{grid-template-columns:1fr}}
+.field{border-radius:12px;border:1px solid rgba(180,220,255,.12);background:rgba(8,20,52,.22);padding:11px}
+.field label{display:block;font-size:11px;color:rgba(255,255,255,.60);margin-bottom:5px;font-weight:700}
+.field input,.field select{width:100%;padding:8px 10px;border-radius:10px;border:1px solid rgba(180,220,255,.14);background:rgba(5,8,20,.42);color:rgba(255,255,255,.90);outline:none;font-family:var(--mono);font-size:11px}
+.field select option{background:#060f28}
+.syncPanel{border-radius:14px;background:rgba(43,108,255,.08);border:1px solid rgba(43,108,255,.18);padding:12px;display:grid;gap:7px}
+.syncPanel .sh{font-size:10.5px;font-weight:700;color:rgba(100,180,255,.90);text-transform:uppercase;letter-spacing:.6px}
+.syncPanel .sd{font-size:10.5px;color:rgba(255,255,255,.55);line-height:1.45}
+.mActions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+.vTag{font-size:10.5px;margin-left:5px}.vTag.ok{color:var(--green)}.vTag.fail{color:var(--red)}
+.kbhint{display:none;position:fixed;bottom:16px;right:16px;background:rgba(10,28,76,.94);border:1px solid rgba(180,220,255,.16);border-radius:12px;padding:11px 14px;font-size:11px;color:rgba(255,255,255,.70);z-index:998;line-height:1.75;box-shadow:var(--sh2);min-width:183px;font-family:var(--mono)}
+.kbhint.show{display:block}.kbhint b{color:rgba(255,255,255,.90)}
+</style>
 </head>
-
 <body>
 <div class="wrap">
-
-  <!-- ===== TOP BAR ===== -->
-  <div class="topbar">
-    <div class="brand">
-      <div class="qxlogo">QX</div>
-      <div>
-        <h1>QuadraX Risk Dashboard</h1>
-        <div class="sub">Executive View: 8-State Monitoring and Control System (EUR/USD + Macro Transmission)</div>
-      </div>
-    </div>
-
-    <div class="top-actions">
-      <div class="alertBadge" id="alertBadge"><span>⚡</span><span id="alertBadgeText">Alert</span></div>
-      <div class="pill"><span class="dot" id="liveDot"></span><span id="liveText">LIVE</span></div>
-      <div class="pill">Updated <b id="lastUpdate">--:--:--</b></div>
-      <button class="btn" id="pauseBtn" title="Pause/Resume (P)">Pause</button>
-      <button class="btn primary" id="syncBtn" title="Force sync (S)">Sync</button>
-      <button class="btn" id="nightBtn" title="Toggle night mode (N)">🌙 Night</button>
-      <button class="btn primary" id="exportBtn" title="Export snapshot (X)">Export</button>
-      <button class="btn" id="settingsBtn" title="Settings">Settings</button>
-      <button class="btn" id="editBtn" title="Edit events (E)">Edit Events</button>
-    </div>
+<div class="topbar">
+  <div class="brand">
+    <div class="qxlogo">4X</div>
+    <div><h1>QuadraX 4xStrategy v4</h1><div class="sub">HMM Regime &middot; PB3 &middot; Session Intel &middot; Sharpe &middot; Archetype &middot; Corr Matrix &mdash; Team Sync</div></div>
   </div>
-
-  <div class="grid">
-
-    <!-- ===== LEFT COLUMN ===== -->
-    <div class="stack">
-
-      <!-- Current Market State -->
-      <div class="card">
-        <div class="inner">
-          <div class="card-title">
-            <h2>Current Market State</h2>
-            <div class="hint">This demo never fabricates price. For live FX, set a TwelveData key in Settings.</div>
-          </div>
-
-          <div class="cmsGrid">
-            <div class="hero">
-              <div class="stateBig" id="policyStateTitle">Policy State: --</div>
-              <div class="muted" id="policyStateDesc">Waiting for live quote sample.</div>
-
-              <div class="chipRow">
-                <div class="chip">Detector <b id="detectorChip">--</b></div>
-                <div class="chip">Policy <b id="policyChip">--</b></div>
-                <div class="chip">Confidence <b id="confChip">--</b></div>
-                <div class="chip">Hysteresis <b id="hystChip">--</b></div>
-                <div class="chip">Age <b id="ageChip">0</b></div>
-                <div class="chip">Tick <b id="tickChip">0</b></div>
-                <div class="chip">Stale <b id="staleChip">0</b></div>
-                <span class="pillTag" id="modeTag">Mode: --</span>
-              </div>
-
-              <div class="chipRow" style="margin-top:10px;">
-                <div class="chip">Macro Bias <b id="macroBiasChip">--</b></div>
-                <div class="chip">Event Risk <b id="eventRiskChip">--</b></div>
-                <div class="chip">Transmission <b id="txScoreChip">--</b></div>
-                <div class="chip">MomScore <b id="momChip">--</b></div>
-              </div>
-
-              <!-- Regime Timeline -->
-              <div class="timelineWrap">
-                <div class="muted" style="font-size:11px;margin-bottom:5px;">Regime history · last 60 ticks</div>
-                <canvas id="timelineCanvas" class="timelineCanvas"></canvas>
-              </div>
-
-              <div class="probBlock">
-                <div class="muted" style="margin-bottom:8px;">
-                  Conditional regime likelihoods P(state | features). Visualization layer, not the final alpha model.
-                </div>
-                <div id="probList"></div>
-                <div class="muted" style="margin-top:10px;">
-                  Probabilities flatten when feeds are stale or features are ambiguous. Humans still insist that means "certainty".
-                </div>
-              </div>
-            </div>
-
-            <!-- Quote Panel -->
-            <div class="quoteCard" aria-label="EURUSD quote">
-              <div class="quoteTop">
-                <div class="quoteSym">
-                  <div class="sym">EURUSD</div>
-                  <div class="prov" id="quoteProvider">Provider: --</div>
-                </div>
-                <div class="qStatus"><span class="sdot" id="fxStatusDot"></span><span id="fxSpotStatus">CHECKING</span></div>
-              </div>
-
-              <div class="quotePx" id="fxSpotPrice">--</div>
-
-              <div class="quoteMetaRow">
-                <div>Δ</div>
-                <div id="fxSpotDelta">0.00000</div>
-              </div>
-
-              <div class="sparkBar"><i id="miniBar"></i></div>
-
-              <div class="quoteBadges">
-                <span class="tagOk" id="fxLatencyTag">--</span>
-                <span class="tagOk" id="fxLastTag">Last: --</span>
-              </div>
-
-              <div class="smallNote" style="margin-top:4px;" id="fxSpotMeta">Source: --</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Forward Projection -->
-      <div class="card">
-        <div class="inner">
-          <div class="card-title">
-            <h2>Forward Projection</h2>
-            <div class="hint">Projection cone based on regime volatility + macro transmission + event proximity. It's a range, not a prophecy.</div>
-          </div>
-
-          <div class="fpGrid">
-            <div class="fpBox" id="tradeBiasBox">
-              <div class="k">Trade Bias</div>
-              <div class="v" id="tradeBias">--</div>
-              <div class="meta" id="tradeBiasMeta">Macro -- · Mom -- · Event --</div>
-            </div>
-            <div class="fpBox" id="rng1hBox">
-              <div class="k">Move Range (1h)</div>
-              <div class="v" id="rng1h">--</div>
-              <div class="meta" id="rng1hMeta">Vol x-- · Macro x--</div>
-            </div>
-            <div class="fpBox">
-              <div class="k">Move Range (4h)</div>
-              <div class="v" id="rng4h">--</div>
-              <div class="meta" id="rng4hMeta">Event x-- · Tx x--</div>
-            </div>
-            <div class="fpBox">
-              <div class="k">Decision Confidence</div>
-              <div class="v" id="decConf">--</div>
-              <div class="meta" id="decConfMeta">Low agreement, caution</div>
-            </div>
-          </div>
-
-          <div class="coneWrap">
-            <canvas id="coneCanvas"></canvas>
-          </div>
-
-          <div class="smallNote" style="margin-top:10px;">
-            Cone reflects a probabilistic range with gradient opacity. Denser near center = higher probability. If anyone confuses this for certainty, remove their trading permissions.
-          </div>
-        </div>
-      </div>
-
-      <!-- TradingView -->
-      <div class="card">
-        <div class="inner">
-          <div class="card-title">
-            <h2>Daily EUR/USD Trend</h2>
-            <div class="hint">Embedded TradingView chart. Falls back to a direct link if the embed is blocked.</div>
-          </div>
-          <div class="tvWrap" id="tvWrap">
-            <iframe
-              id="tvFrame"
-              title="TradingView EURUSD"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              src="https://s.tradingview.com/widgetembed/?frameElementId=tvchart&symbol=FX%3AEURUSD&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0b1028&studies=%5B%5D&hideideas=1&theme=dark&style=1&locale=en&withdateranges=1&hidevolume=0&allow_symbol_change=0&details=0&hotlist=0&calendar=0"
-            ></iframe>
-            <div class="tvFallback" id="tvFallback">
-              <div>Chart embed unavailable (CSP or network restriction).</div>
-              <a class="link" href="https://www.tradingview.com/chart/?symbol=FX%3AEURUSD" target="_blank" rel="noopener noreferrer">Open EUR/USD on TradingView →</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="foot">
-        <div>Status: <b id="sysStatus">LIVE</b></div>
-        <div>Policy: <b id="footPolicy">--</b></div>
-        <div>Detector: <b id="footDetector">--</b></div>
-        <div>Regime Age: <b id="footAge">0</b> ticks</div>
-        <div>Hold: <b id="footHold">0</b></div>
-        <div style="opacity:0.5;font-size:11px;">P=Pause · S=Sync · E=Events · N=Night · X=Export · ?=Keys</div>
-      </div>
-    </div>
-
-    <!-- ===== RIGHT COLUMN ===== -->
-    <div class="stack">
-
-      <!-- Risk Level -->
-      <div class="card">
-        <div class="inner riskLevel">
-          <div class="label">Risk Level</div>
-          <div class="big" id="riskBig">--</div>
-          <div class="rule" id="riskRule">Policy: state-aware sizing and entry gating</div>
-        </div>
-      </div>
-
-      <!-- Macro Drivers -->
-      <div class="card">
-        <div class="inner">
-          <div class="card-title">
-            <h2>Macro Drivers</h2>
-            <div class="macroHint">ETF proxies via Stooq CSV + AllOrigins CORS. Sparklines show last 20 sessions.</div>
-          </div>
-
-          <div class="macroGrid">
-            <div class="macroBox">
-              <div class="k">Oil (USO) <span class="tagOk" id="oilTag">--</span></div>
-              <div class="v" id="oilPx">--</div>
-              <div class="meta" id="oilMeta">No data</div>
-              <canvas class="sparkCanvas" id="oilSpark"></canvas>
-            </div>
-            <div class="macroBox">
-              <div class="k">Gold (GLD) <span class="tagOk" id="goldTag">--</span></div>
-              <div class="v" id="goldPx">--</div>
-              <div class="meta" id="goldMeta">No data</div>
-              <canvas class="sparkCanvas" id="goldSpark"></canvas>
-            </div>
-            <div class="macroBox">
-              <div class="k">Silver (SLV) <span class="tagOk" id="silverTag">--</span></div>
-              <div class="v" id="silverPx">--</div>
-              <div class="meta" id="silverMeta">No data</div>
-              <canvas class="sparkCanvas" id="silverSpark"></canvas>
-            </div>
-            <div class="macroBox">
-              <div class="k">USD (UUP) <span class="tagOk" id="usdTag">--</span></div>
-              <div class="v" id="usdPx">--</div>
-              <div class="meta" id="usdMeta">No data</div>
-              <canvas class="sparkCanvas" id="usdSpark"></canvas>
-            </div>
-            <div class="macroBox" style="grid-column: 1 / span 2;">
-              <div class="k">Transmission Score</div>
-              <div class="v" id="txBig">NEUTRAL</div>
-              <div class="meta" id="txMeta">Score 0.00 · Neutral · Intensity 0%</div>
-            </div>
-          </div>
-
-          <div class="smallNote" style="margin-top:10px;">
-            In production: replace proxies with institutional feeds. The demo just needs to behave like a real system.
-          </div>
-        </div>
-      </div>
-
-      <!-- Transmission Mechanism -->
-      <div class="card">
-        <div class="inner">
-          <div class="card-title">
-            <h2>Transmission Mechanism</h2>
-            <div class="hint">Three macro levers + event proximity that drive EUR/USD around shocks.</div>
-          </div>
-
-          <div class="tmGrid">
-            <div class="tmBox">
-              <div class="tmTop">
-                <div class="k">Oil Lever (EU terms of trade)</div>
-                <div class="pct" id="oilLeverPct">0%</div>
-              </div>
-              <div class="tmBar"><i id="oilLeverBar"></i></div>
-              <div class="tmMeta" id="oilLeverMeta">EU energy drag proxy</div>
-            </div>
-            <div class="tmBox">
-              <div class="tmTop">
-                <div class="k">Dollar Lever (USD pressure)</div>
-                <div class="pct" id="usdLeverPct">0%</div>
-              </div>
-              <div class="tmBar"><i id="usdLeverBar"></i></div>
-              <div class="tmMeta" id="usdLeverMeta">USD strength pressure proxy</div>
-            </div>
-            <div class="tmBox">
-              <div class="tmTop">
-                <div class="k">Fear Lever (risk-off tone)</div>
-                <div class="pct" id="fearLeverPct">0%</div>
-              </div>
-              <div class="tmBar"><i id="fearLeverBar"></i></div>
-              <div class="tmMeta" id="fearLeverMeta">Gold bid proxy</div>
-            </div>
-            <div class="tmBox">
-              <div class="tmTop">
-                <div class="k">Event Risk (proximity)</div>
-                <div class="pct" id="eventLeverPct">0%</div>
-              </div>
-              <div class="tmBar"><i id="eventLeverBar"></i></div>
-              <div class="tmMeta" id="eventLeverMeta">High impact proximity</div>
-            </div>
-          </div>
-
-          <div class="smallNote" style="margin-top:10px;">
-            Demo mapping. Production learns pip distributions by regime × event archetype, then runs scenario cones.
-          </div>
-        </div>
-      </div>
-
-      <!-- World Events Calendar -->
-      <div class="card">
-        <div class="inner">
-          <div class="card-title">
-            <h2>World Events Calendar</h2>
-            <div class="hint">Curated list saved locally. Countdown auto-refreshes.</div>
-          </div>
-          <div class="tableWrap">
-            <div class="scroll" style="max-height:260px;">
-              <table>
-                <thead><tr><th>When</th><th>Event</th><th>Impact</th><th>Countdown</th></tr></thead>
-                <tbody id="eventsBody"></tbody>
-              </table>
-            </div>
-          </div>
-          <div class="muted" style="margin-top:10px;">
-            High impact events are <span class="impact"><span class="folder"></span>HIGH</span>.
-          </div>
-        </div>
-      </div>
-
-      <!-- Headlines -->
-      <div class="card">
-        <div class="inner">
-          <div class="card-title">
-            <h2>Headlines</h2>
-            <div class="hint">Curated list saved locally. Swap to a live feed when budget allows.</div>
-          </div>
-          <div class="tableWrap">
-            <div class="scroll" style="max-height:240px;">
-              <table>
-                <thead><tr><th>Time</th><th>Source</th><th>Headline</th></tr></thead>
-                <tbody id="headlinesBody"></tbody>
-              </table>
-            </div>
-          </div>
-          <div class="muted" style="margin-top:10px;">Click opens source in a new tab.</div>
-        </div>
-      </div>
-    </div>
+  <div class="top-actions">
+    <div class="alertBadge" id="alertBadge">&#9889;<span id="alertBadgeText">Alert</span></div>
+    <div class="syncBadge warming" id="syncBadge"><span class="dot amber" id="syncDot"></span><span id="syncText">Warming 0/20</span></div>
+    <div class="pill"><span class="dot" id="liveDot"></span><span>LIVE</span></div>
+    <div class="pill">&#9201; <b id="lastUpdate">--:--:--</b></div>
+    <button class="btn" id="pauseBtn">Pause</button>
+    <button class="btn primary" id="syncBtn">Sync</button>
+    <button class="btn" id="nightBtn">Night</button>
+    <button class="btn primary" id="exportBtn">Export</button>
+    <button class="btn" id="settingsBtn">Settings</button>
   </div>
 </div>
+<div class="grid">
+<div class="stack">
+  <div class="card"><div class="inner">
+    <div class="card-title"><h2>Current Market State &middot; HMM Regime Engine</h2><div class="hint">8-state HMM. Deterministic from same price source = all instances converge to same state after warmup. Firebase sync optional.</div></div>
+    <div class="cmsGrid">
+      <div class="hero">
+        <div class="stateBig" id="policyStateTitle">Policy State: --</div>
+        <div class="muted" id="policyStateDesc" style="position:relative;z-index:1">Warming up engine...</div>
+        <div class="chipRow">
+          <div class="chip">Det <b id="detectorChip">--</b></div><div class="chip">Policy <b id="policyChip">--</b></div>
+          <div class="chip">Conf <b id="confChip">--</b></div><div class="chip">Hyst <b id="hystChip">--</b></div>
+          <div class="chip">Age <b id="ageChip">0</b></div><div class="chip">Tick <b id="tickChip">0/20</b></div>
+          <span class="pillTag" id="modeTag">Mode: --</span>
+        </div>
+        <div class="chipRow" style="margin-top:7px">
+          <div class="chip">Bias <b id="macroBiasChip">--</b></div><div class="chip">EvRisk <b id="eventRiskChip">--</b></div>
+          <div class="chip">Tx <b id="txScoreChip">--</b></div><div class="chip">Mom <b id="momChip">--</b></div>
+          <div class="chip">Next <b id="nextStateChip">--</b></div>
+        </div>
+        <div class="tlWrap"><div class="tlLabel">Regime history &middot; <span id="timelineDepth">0</span> ticks</div><canvas id="timelineCanvas" class="tlCanvas"></canvas></div>
+        <div class="probBlock"><div class="muted" style="margin-bottom:7px;font-size:11px">P(state|features) &mdash; HMM emission probs. Softmax T=1.35.</div><div id="probList"></div></div>
+      </div>
+      <div class="quoteCard">
+        <div class="quoteTop">
+          <div class="quoteSym"><div class="sym">EUR/USD</div><div class="prov" id="quoteProvider">Provider: --</div></div>
+          <div class="qStatus"><span class="sdot" id="fxStatusDot"></span><span id="fxSpotStatus">CHECKING</span></div>
+        </div>
+        <div class="quotePx" id="fxSpotPrice">--</div>
+        <div class="quoteMetaRow"><div>&#916;</div><div id="fxSpotDelta">0.00000</div></div>
+        <div class="sparkBar"><i id="miniBar"></i></div>
+        <div class="quoteBadges"><span class="tagOk" id="fxLatencyTag">--</span><span class="tagOk" id="fxLastTag">Last: --</span></div>
+        <div class="smallNote" id="fxSpotMeta" style="margin-top:3px">Source: --</div>
+      </div>
+    </div>
+  </div></div>
 
-<!-- Keyboard shortcut hint -->
-<div class="kbhint" id="kbHint">
-  <div><b>P</b> — Pause / Resume</div>
-  <div><b>S</b> — Force sync</div>
-  <div><b>E</b> — Edit events</div>
-  <div><b>N</b> — Night mode</div>
-  <div><b>X</b> — Export snapshot</div>
-  <div><b>?</b> — Hide this</div>
+  <div class="card"><div class="inner">
+    <div class="card-title"><h2>Forward Projection &middot; Regime-Conditioned Cone</h2><div class="hint">Width = regime vol x macro tx x event proximity. Radial gradient = probability density. Not a price target.</div></div>
+    <div class="fpGrid">
+      <div class="fpBox"><div class="k">Trade Bias</div><div class="v" id="tradeBias">--</div><div class="meta" id="tradeBiasMeta">--</div></div>
+      <div class="fpBox" id="rng1hBox"><div class="k">Move Range 1h</div><div class="v" id="rng1h">--</div><div class="meta" id="rng1hMeta">--</div></div>
+      <div class="fpBox"><div class="k">Move Range 4h</div><div class="v" id="rng4h">--</div><div class="meta" id="rng4hMeta">--</div></div>
+      <div class="fpBox"><div class="k">Decision Conf</div><div class="v" id="decConf">--</div><div class="meta" id="decConfMeta">Low agreement</div></div>
+    </div>
+    <div class="coneWrap"><canvas id="coneCanvas"></canvas></div>
+    <div class="smallNote" style="margin-top:9px">Cone is a probabilistic range. Not a target price.</div>
+  </div></div>
+
+  <div class="card"><div class="inner">
+    <div class="card-title"><h2>Session Intelligence &middot; 24h Effect</h2><div class="hint">LDN/NY overlap (12:00&ndash;16:00 UTC) = peak volume. Day-of-week effects empirically documented in EUR/USD.</div></div>
+    <div class="sessionGrid">
+      <div class="sessBox" id="sb_SYDNEY"><div class="sName" style="color:rgba(255,176,32,.88)">Sydney</div><div class="sTime">21:00&ndash;06:00 UTC</div><div class="sVol">Vol: LOW</div><div class="sStat closed" id="ss_SYDNEY">Closed</div></div>
+      <div class="sessBox" id="sb_TOKYO"><div class="sName" style="color:rgba(160,120,255,.88)">Tokyo</div><div class="sTime">00:00&ndash;09:00 UTC</div><div class="sVol">Vol: LOW-MED</div><div class="sStat closed" id="ss_TOKYO">Closed</div></div>
+      <div class="sessBox" id="sb_LONDON"><div class="sName" style="color:rgba(24,209,138,.88)">London</div><div class="sTime">07:00&ndash;16:00 UTC</div><div class="sVol">Vol: HIGH</div><div class="sStat closed" id="ss_LONDON">Closed</div></div>
+      <div class="sessBox" id="sb_NEW_YORK"><div class="sName" style="color:rgba(43,108,255,.90)">New York</div><div class="sTime">12:00&ndash;21:00 UTC</div><div class="sVol">Vol: HIGH</div><div class="sStat closed" id="ss_NEW_YORK">Closed</div></div>
+    </div>
+    <div class="dayRow">
+      <div><div style="font-size:10.5px;color:rgba(255,255,255,.46);margin-bottom:3px">TODAY</div><div style="font-size:20px;font-weight:700;font-family:var(--mono)" id="currentDayName">--</div><div style="font-size:10.5px;color:rgba(255,255,255,.50);margin-top:3px" id="currentSessionLabel">Session: --</div></div>
+      <div style="flex:1;max-width:330px"><div style="font-size:10.5px;color:rgba(255,255,255,.46);margin-bottom:3px">24H EFFECT</div><div class="smallNote" id="dayEffectNote">--</div></div>
+      <div><div class="dayBadge" id="sessionOverlapBadge">--</div><div style="font-size:10px;color:rgba(255,255,255,.42);margin-top:5px" id="sessionMinsLeft">--</div></div>
+    </div>
+  </div></div>
+
+  <div class="card"><div class="inner">
+    <div class="card-title"><h2>Signal Performance &middot; Rolling Sharpe</h2><div class="hint">Hypothetical P&amp;L on live bias signals. Sharpe annualized. Target 2.5. Needs 20+ closed signals.</div></div>
+    <div class="sharpeGrid">
+      <div class="sharpeBox"><div class="k">Rolling Sharpe</div><div class="v" id="sharpeVal">--</div><div class="meta" id="sharpeMeta">Target: 2.5</div></div>
+      <div class="sharpeBox"><div class="k">Win Rate</div><div class="v" id="winRateVal">--</div><div class="meta" id="winRateMeta">0 signals</div></div>
+      <div class="sharpeBox"><div class="k">Open P&amp;L</div><div class="v" id="openPLVal">--</div><div class="meta" id="openPLMeta">--</div></div>
+      <div class="sharpeBox"><div class="k">Cum Pips</div><div class="v" id="cumPipsVal">--</div><div class="meta" id="cumPipsMeta">Closed only</div></div>
+    </div>
+    <div class="eqWrap"><div class="eqLabel">Equity curve &middot; hypothetical live signals only</div><canvas id="equityCanvas"></canvas></div>
+    <div class="smallNote" style="margin-top:9px">Production: full backtest, in-sample/OOS split, slippage model, per-regime validation.</div>
+  </div></div>
+
+  <div class="card"><div class="inner">
+    <div class="card-title"><h2>Daily EUR/USD Trend</h2><div class="hint">TradingView embed. Falls back to direct link if blocked by CSP.</div></div>
+    <div class="tvWrap">
+      <iframe id="tvFrame" title="TradingView EURUSD" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://s.tradingview.com/widgetembed/?frameElementId=tvchart&symbol=FX%3AEURUSD&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=060f28&studies=%5B%5D&hideideas=1&theme=dark&style=1&locale=en&withdateranges=1&hidevolume=0&allow_symbol_change=0&details=0&hotlist=0&calendar=0"></iframe>
+      <div class="tvFb" id="tvFallback"><div>Chart embed unavailable.</div><a class="link" href="https://www.tradingview.com/chart/?symbol=FX%3AEURUSD" target="_blank" rel="noopener noreferrer">Open EUR/USD on TradingView &#8594;</a></div>
+    </div>
+  </div></div>
+
+  <div class="foot">
+    <div>Status: <b id="sysStatus">LIVE</b></div><div>Policy: <b id="footPolicy">--</b></div>
+    <div>Detector: <b id="footDetector">--</b></div><div>Age: <b id="footAge">0</b></div>
+    <div>Sharpe: <b id="footSharpe">--</b></div>
+    <div style="opacity:.40;font-size:10px">P=Pause S=Sync N=Night X=Export ?=Keys</div>
+  </div>
 </div>
+<div class="stack">
+  <div class="card"><div class="inner riskLevel"><div class="rlabel">Risk Level</div><div class="rbig" id="riskBig">--</div><div class="rrule" id="riskRule">Policy: state-aware sizing and entry gating</div></div></div>
 
-<!-- Modal: Edit Events + Headlines -->
-<div class="modalBack" id="modalBack">
+  <div class="card"><div class="inner">
+    <div class="card-title"><h2>PB3 Behavioral Model</h2><div class="hint">Panic &middot; Bubble &middot; Boom &middot; Bust. Humans most predictable under stress.</div></div>
+    <div class="pb3Dom" id="pb3Dom" style="background:rgba(8,20,52,.28);border:1px solid rgba(180,220,255,.10)">
+      <div><div class="dl">DOMINANT STATE</div><div class="ds" id="pb3DomState">--</div></div>
+      <div class="dn" id="pb3DomNote">Waiting for data.</div>
+    </div>
+    <div class="pb3Grid">
+      <div class="pb3Box"><div class="pb3Top"><div class="k" style="color:rgba(255,77,77,.90)">&#9889; PANIC</div><div class="pct" id="pb3PanicPct">0%</div></div><div class="pb3Bar"><i id="pb3PanicBar" style="background:rgba(255,77,77,.80)"></i></div><div class="pb3Note">High vol &middot; fear dominant &middot; capital flight &middot; Short EUR</div></div>
+      <div class="pb3Box"><div class="pb3Top"><div class="k" style="color:rgba(255,176,32,.90)">&#128155; BUBBLE</div><div class="pct" id="pb3BubblePct">0%</div></div><div class="pb3Bar"><i id="pb3BubbleBar" style="background:rgba(255,176,32,.80)"></i></div><div class="pb3Note">Euphoric momentum &middot; low vol &middot; extended regime &middot; reversal risk</div></div>
+      <div class="pb3Box"><div class="pb3Top"><div class="k" style="color:rgba(24,209,138,.90)">&#128200; BOOM</div><div class="pct" id="pb3BoomPct">0%</div></div><div class="pb3Bar"><i id="pb3BoomBar" style="background:rgba(24,209,138,.80)"></i></div><div class="pb3Note">Directional momentum &middot; MomScore high &middot; trend continuation</div></div>
+      <div class="pb3Box"><div class="pb3Top"><div class="k" style="color:rgba(255,138,64,.90)">&#128165; BUST</div><div class="pct" id="pb3BustPct">0%</div></div><div class="pb3Bar"><i id="pb3BustBar" style="background:rgba(255,138,64,.80)"></i></div><div class="pb3Note">Post-boom collapse &middot; vol rising &middot; momentum reversal</div></div>
+    </div>
+    <div class="smallNote" style="margin-top:9px">Production: add options skew, COT positioning, NLP sentiment feeds.</div>
+  </div></div>
+
+  <div class="card"><div class="inner">
+    <div class="card-title"><h2>Event Archetype Classifier</h2><div class="hint">Supply Shock vs Risk-Off vs Localized vs Rate Play. Archetype determines which levers dominate EUR/USD.</div></div>
+    <div class="archMain" id="archMain" style="background:rgba(8,20,52,.28);border:1px solid rgba(180,220,255,.10)">
+      <div class="al">CURRENT ARCHETYPE</div><div class="aType" id="archType">--</div>
+      <div class="aConf" id="archConf">Confidence: --</div><div class="aBias" id="archBias">EUR/USD Bias: --</div>
+      <div class="aNote" id="archNote">--</div><div class="aAnalog" id="archAnalog">--</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div style="border-radius:12px;background:rgba(255,77,77,.06);border:1px solid rgba(255,77,77,.12);padding:9px"><div style="font-size:9.5px;color:rgba(255,77,77,.78);font-weight:700;margin-bottom:3px">SUPPLY SHOCK</div><div style="font-size:10.5px;color:rgba(255,255,255,.58);line-height:1.4">Oil lever dominant. EU imports worsen trade balance. Petrodollar demand rises. Short EUR/USD.</div></div>
+      <div style="border-radius:12px;background:rgba(255,176,32,.06);border:1px solid rgba(255,176,32,.12);padding:9px"><div style="font-size:9.5px;color:rgba(255,176,32,.78);font-weight:700;margin-bottom:3px">RISK-OFF PANIC</div><div style="font-size:10.5px;color:rgba(255,255,255,.58);line-height:1.4">Fear+USD dominant. Capital flight from Europe. Gold spikes, EUR/USD crashes.</div></div>
+    </div>
+  </div></div>
+
+  <div class="card"><div class="inner">
+    <div class="card-title"><h2>Macro Drivers</h2><div class="hint hint" id="macroHint">Yahoo Finance: Brent crude BZ=F &middot; Gold COMEX GC=F &middot; Silver COMEX SI=F &middot; Dollar Index DX-Y.NYB. Via AllOrigins proxy.</div></div>
+    <div class="macroGrid">
+      <div class="macroBox"><div class="k">Brent Crude ($/bbl) <span class="liveBadge stale" id="oilTag">--</span></div><div class="v" id="oilPx">--</div><div class="meta" id="oilMeta">No data</div><canvas class="sparkCanvas" id="oilSpark"></canvas></div>
+      <div class="macroBox"><div class="k">Gold COMEX ($/oz) <span class="liveBadge stale" id="goldTag">--</span></div><div class="v" id="goldPx">--</div><div class="meta" id="goldMeta">No data</div><canvas class="sparkCanvas" id="goldSpark"></canvas></div>
+      <div class="macroBox"><div class="k">Silver COMEX ($/oz) <span class="liveBadge stale" id="silverTag">--</span></div><div class="v" id="silverPx">--</div><div class="meta" id="silverMeta">No data</div><canvas class="sparkCanvas" id="silverSpark"></canvas></div>
+      <div class="macroBox"><div class="k">DXY Dollar Index <span class="liveBadge stale" id="usdTag">--</span></div><div class="v" id="usdPx">--</div><div class="meta" id="usdMeta">No data</div><canvas class="sparkCanvas" id="usdSpark"></canvas></div>
+      <div class="macroBox" style="grid-column:1/span 2"><div class="k">Transmission Score</div><div class="v" id="txBig">NEUTRAL</div><div class="meta" id="txMeta">Score 0.00 &middot; Neutral &middot; Intensity 0%</div></div>
+    </div>
+  </div></div>
+
+  <div class="card"><div class="inner">
+    <div class="card-title"><h2>Transmission Mechanism</h2><div class="hint">Oil (terms of trade) &middot; USD (safe haven) &middot; Fear (gold bid) &middot; Event proximity. Four levers drive EUR/USD around macro shocks.</div></div>
+    <div class="tmGrid">
+      <div class="tmBox"><div class="tmTop"><div class="k">Oil Lever (Brent)</div><div class="pct" id="oilLeverPct">0%</div></div><div class="tmBar"><i id="oilLeverBar"></i></div><div class="tmMeta" id="oilLeverMeta">EU energy drag proxy</div></div>
+      <div class="tmBox"><div class="tmTop"><div class="k">Dollar Lever (DXY)</div><div class="pct" id="usdLeverPct">0%</div></div><div class="tmBar"><i id="usdLeverBar"></i></div><div class="tmMeta" id="usdLeverMeta">Dollar index proxy</div></div>
+      <div class="tmBox"><div class="tmTop"><div class="k">Fear Lever (Gold)</div><div class="pct" id="fearLeverPct">0%</div></div><div class="tmBar"><i id="fearLeverBar"></i></div><div class="tmMeta" id="fearLeverMeta">Gold bid risk-off proxy</div></div>
+      <div class="tmBox"><div class="tmTop"><div class="k">Event Risk</div><div class="pct" id="eventLeverPct">0%</div></div><div class="tmBar"><i id="eventLeverBar"></i></div><div class="tmMeta" id="eventLeverMeta">Calendar proximity</div></div>
+    </div>
+  </div></div>
+
+  <div class="card"><div class="inner">
+    <div class="card-title"><h2>Correlation Significance Matrix</h2><div class="hint">Rolling Pearson r vs EUR/USD returns. ** p&lt;0.01 &middot; * p&lt;0.05. Only add p&lt;0.01 signals to model.</div></div>
+    <div class="tableWrap"><table class="corrTable"><thead><tr><th>Asset</th><th>r</th><th>t-stat</th><th>Sig</th><th>n</th><th>Expected Dir</th></tr></thead><tbody id="corrBody"></tbody></table></div>
+    <div class="smallNote" style="margin-top:9px">Needs 30+ observations. Production: test by regime, rolling windows, Bonferroni correction.</div>
+  </div></div>
+
+  <div class="card"><div class="inner">
+    <div class="card-title"><h2>HMM Transition Matrix</h2><div class="hint">Online learned P(next|current). Row=from Col=to. Darker=higher probability. Resets on page load (stateless for team sync).</div></div>
+    <div style="overflow-x:auto"><table class="txMx"><thead><tr><th>From\To</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>S5</th><th>S6</th><th>S7</th><th>S8</th></tr></thead><tbody id="tmBody"></tbody></table></div>
+    <div class="smallNote" style="margin-top:9px">First-order Markov online learning. Stateless per session = deterministic convergence across team instances.</div>
+  </div></div>
+
+  <div class="card"><div class="inner">
+    <div class="card-title">
+      <h2>World Events Calendar</h2>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+        <span class="liveBadge live" id="calBadge">&#8635; LIVE</span>
+        <div class="hint" style="margin:0;max-width:260px">Forex Factory HIGH/MED impact USD+EUR events. Auto-refresh every 30 min.</div>
+      </div>
+    </div>
+    <div class="tableWrap"><div class="scroll" style="max-height:230px"><table><thead><tr><th>When (UTC)</th><th>Event</th><th>Impact</th><th>Forecast</th><th>Previous</th><th>Countdown</th></tr></thead><tbody id="eventsBody"></tbody></table></div></div>
+    <div class="muted" style="margin-top:9px;display:flex;align-items:center;gap:8px">High impact: <span class="impact"><span class="folder"></span>HIGH</span> <span class="smallNote" id="calLastFetch" style="margin-left:4px">Fetching...</span></div>
+  </div></div>
+
+  <div class="card"><div class="inner">
+    <div class="card-title">
+      <h2>Live Headlines</h2>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+        <span class="liveBadge live" id="headBadge">&#8635; LIVE</span>
+        <div class="hint" style="margin:0;max-width:260px">ForexLive + FXStreet RSS feeds via AllOrigins. Auto-refresh every 5 min.</div>
+      </div>
+    </div>
+    <div class="tableWrap"><div class="scroll" style="max-height:240px"><table><thead><tr><th>Time</th><th>Source</th><th>Headline</th></tr></thead><tbody id="headlinesBody"></tbody></table></div></div>
+    <div class="smallNote" style="margin-top:7px" id="headLastFetch">Fetching live headlines...</div>
+  </div></div>
+</div></div></div>
+
+<div class="kbhint" id="kbHint"><div><b>P</b> &mdash; Pause/Resume</div><div><b>S</b> &mdash; Force sync</div><div><b>N</b> &mdash; Night mode</div><div><b>X</b> &mdash; Export snapshot</div><div><b>?</b> &mdash; Hide this</div></div>
+
+<div class="mBack" id="settingsBack">
   <div class="modal">
-    <div class="modalHead">
-      <h3>Edit World Events + Headlines</h3>
-      <button class="btn" id="closeModalBtn">Close</button>
-    </div>
-    <div class="modalBody">
-      <div class="smallNote">
-        Save curated items locally. Production: plug a proper calendar + headline feed then enrich with event archetypes.
+    <div class="mHead"><h3>Settings &mdash; QuadraX v4</h3><button class="btn" id="closeSettingsBtn">Close</button></div>
+    <div class="mBody">
+      <div class="fieldRow">
+        <div class="field"><label>TwelveData API Key (optional) <span class="vTag" id="tdKeyValidTag"></span></label><input id="tdKeyInput" placeholder="Paste key (validated on save)"><div class="smallNote" style="margin-top:5px">Enables intraday EUR/USD data for faster regime warmup.</div></div>
+        <div class="field"><label>Polling cadence (ms, min 6000)</label><input id="pollInput" placeholder="12000"></div>
       </div>
       <div class="fieldRow">
-        <div>
-          <div class="smallNote" style="margin-bottom:8px;"><b>Events JSON</b> (array: when, event, impact: HIGH|MED|LOW)</div>
-          <textarea id="eventsEditor"></textarea>
-        </div>
-        <div>
-          <div class="smallNote" style="margin-bottom:8px;"><b>Headlines JSON</b> (array: time, source, title, url)</div>
-          <textarea id="headlinesEditor"></textarea>
-        </div>
+        <div class="field"><label>Alert: 1h range threshold (pips, 0=off)</label><input id="alertThreshInput" placeholder="e.g. 20"></div>
+        <div class="field"><label>Regime history depth (10-120)</label><input id="histDepthInput" placeholder="60"></div>
       </div>
-      <div class="modalActions">
-        <button class="btn" id="resetCuratedBtn">Reset to defaults</button>
-        <button class="btn primary" id="saveCuratedBtn">Save</button>
+      <div class="syncPanel">
+        <div class="sh">&#128257; Team Sync via Firebase</div>
+        <div class="sd">All instances using the same Firebase database will share the same computed regime state in real-time. The engine is also deterministic (all instances computing from the same EUR/USD source converge to the same state after ~20 ticks without Firebase).</div>
+        <div class="sd"><b>Setup:</b> 1) Go to firebase.google.com &rarr; Create project &rarr; Realtime Database &rarr; Start in test mode. 2) Copy your database URL (e.g. https://my-project-default-rtdb.firebaseio.com). 3) Paste below. 4) All team members use the same URL. The MASTER instance writes state; READER instances display it.</div>
+        <div class="fieldRow" style="margin-top:6px">
+          <div class="field"><label>Firebase Database URL (optional)</label><input id="fbUrlInput" placeholder="https://your-project.firebaseio.com"></div>
+          <div class="field"><label>Sync Role</label>
+            <select id="fbRoleInput"><option value="AUTO">AUTO (first writer = master)</option><option value="MASTER">MASTER (always compute + write)</option><option value="READER">READER (always read, skip compute)</option></select>
+          </div>
+        </div>
+        <div class="smallNote" id="fbStatus" style="margin-top:4px">Firebase: not configured</div>
       </div>
+      <div class="mActions"><button class="btn" id="resetSettingsBtn">Reset defaults</button><button class="btn primary" id="saveSettingsBtn">Save</button></div>
     </div>
   </div>
 </div>
-
-<!-- Modal: Settings -->
-<div class="modalBack" id="settingsBack">
-  <div class="modal">
-    <div class="modalHead">
-      <h3>Settings</h3>
-      <button class="btn" id="closeSettingsBtn">Close</button>
-    </div>
-    <div class="modalBody">
-      <div class="smallNote">
-        Paste a TwelveData key for intraday FX. Without it, free endpoints are used as fallback.
-        Macro drivers use ETF proxies through Stooq + AllOrigins (CORS bypass for GitHub Pages).
-      </div>
-
-      <div class="fieldRow">
-        <div class="field">
-          <label>TwelveData API Key (optional) <span class="validTag" id="tdKeyValidTag"></span></label>
-          <input id="tdKeyInput" placeholder="Paste key here (optional)" />
-          <div class="smallNote" style="margin-top:8px;">Validated on save. Stored in your browser only.</div>
-        </div>
-        <div class="field">
-          <label>Polling cadence (ms)</label>
-          <input id="pollInput" placeholder="12000" />
-          <div class="smallNote" style="margin-top:8px;">Min 6000ms. Too fast = throttled. Too slow = pointless.</div>
-        </div>
-      </div>
-
-      <div class="fieldRow">
-        <div class="field">
-          <label>Alert: 1h range threshold (pips)</label>
-          <input id="alertThreshInput" placeholder="e.g. 20 (0 or blank = off)" />
-          <div class="smallNote" style="margin-top:8px;">Browser notification fires when projected 1h range exceeds this.</div>
-        </div>
-        <div class="field">
-          <label>Regime history depth (ticks)</label>
-          <input id="histDepthInput" placeholder="60" />
-          <div class="smallNote" style="margin-top:8px;">How many ticks to show on the timeline bar. Max 120.</div>
-        </div>
-      </div>
-
-      <div class="modalActions">
-        <button class="btn" id="resetSettingsBtn">Reset settings</button>
-        <button class="btn primary" id="saveSettingsBtn">Save</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
-/* =============================================================================
-   QuadraX Risk Dashboard v2 — Fully enhanced single-file demo
-   Fixes: parallel fetches, DPR canvas, box-sizing, font-weight, AbortController
-          reuse, 429 rate-limit backoff, persistent price history, sync debounce
-   New:   sparklines, regime timeline, gradient cone, regime age tracking,
-          momentum sign consistency, keyboard shortcuts, alert thresholds +
-          browser notifications, JSON export, night mode, API key validation,
-          iframe fallback, per-panel data freshness, structured error states
-============================================================================= */
-(function () {
-  "use strict";
+(function(){"use strict";
 
-  /* ───────── Utilities ───────── */
-  const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
-  const fmtTime = ms => new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-  const bp = x => x * 10000;
-  const minsAgo = ts => ts ? Math.round((Date.now() - ts) / 60000) : null;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const fmtTime=ms=>new Date(ms).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+const bp=x=>x*10000;
+const minsAgo=ts=>ts?Math.round((Date.now()-ts)/60000):null;
+const $=id=>document.getElementById(id);
+const escH=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const escA=s=>String(s).replace(/"/g,'&quot;');
 
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m]));
-  }
-  function escapeAttr(s) { return String(s).replace(/"/g, "&quot;"); }
+function pearsonR(xs,ys){const n=Math.min(xs.length,ys.length);if(n<5)return{r:0,tStat:0,n,sig:"ns"};const mx=xs.slice(0,n).reduce((a,b)=>a+b,0)/n,my=ys.slice(0,n).reduce((a,b)=>a+b,0)/n;let num=0,dx2=0,dy2=0;for(let i=0;i<n;i++){const dx=xs[i]-mx,dy=ys[i]-my;num+=dx*dy;dx2+=dx*dx;dy2+=dy*dy;}const r=(dx2*dy2===0)?0:num/Math.sqrt(dx2*dy2);const rc=clamp(r,-.9999,.9999),t=rc*Math.sqrt(n-2)/Math.sqrt(1-rc*rc),at=Math.abs(t);return{r:rc,tStat:t,n,sig:at>2.576?"**":at>1.960?"*":"ns"};}
 
-  /* ───────── DOM refs ───────── */
-  const $ = id => document.getElementById(id);
-  const els = {
-    liveDot: $("liveDot"), liveText: $("liveText"), lastUpdate: $("lastUpdate"),
-    pauseBtn: $("pauseBtn"), syncBtn: $("syncBtn"), editBtn: $("editBtn"),
-    settingsBtn: $("settingsBtn"), nightBtn: $("nightBtn"), exportBtn: $("exportBtn"),
-    alertBadge: $("alertBadge"), alertBadgeText: $("alertBadgeText"),
+const KEY={s:"qx_s_v4b",sg:"qx_sg_v1",rh:"qx_rh_v3"};
+function loadObj(k,fb){try{const r=localStorage.getItem(k);if(!r)return fb;const p=JSON.parse(r);return(p&&typeof p==="object")?p:fb;}catch{return fb;}}
+function loadArr(k,fb){try{const r=localStorage.getItem(k);if(!r)return fb;const p=JSON.parse(r);return Array.isArray(p)?p:fb;}catch{return fb;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+let settings=loadObj(KEY.s,{twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbUrl:"",fbRole:"AUTO"});
 
-    policyStateTitle: $("policyStateTitle"), policyStateDesc: $("policyStateDesc"),
-    detectorChip: $("detectorChip"), policyChip: $("policyChip"),
-    confChip: $("confChip"), hystChip: $("hystChip"),
-    ageChip: $("ageChip"), tickChip: $("tickChip"), staleChip: $("staleChip"),
-    modeTag: $("modeTag"), macroBiasChip: $("macroBiasChip"),
-    eventRiskChip: $("eventRiskChip"), txScoreChip: $("txScoreChip"), momChip: $("momChip"),
-    probList: $("probList"), timelineCanvas: $("timelineCanvas"),
+const STATES=[
+  {id:1,name:"Mean-Reverting",  desc:"Range-bound. Fade extremes, keep size disciplined.",       color:"rgba(24,209,138,.85)"},
+  {id:2,name:"Liquidity Vacuum",desc:"Thin market. Reduce size, wait for confirmation.",          color:"rgba(255,176,32,.85)"},
+  {id:3,name:"Slow Drift",      desc:"Steady grind. Small edges, avoid forcing entries.",         color:"rgba(120,170,255,.85)"},
+  {id:4,name:"Strong Trend",    desc:"Directional. Trend-follow, avoid countertrend heroics.",    color:"rgba(43,108,255,.90)"},
+  {id:5,name:"Stop Cascade",    desc:"Fast continuation on stops. De-risk, widen filters.",       color:"rgba(255,138,64,.90)"},
+  {id:6,name:"News Shock",      desc:"Event-driven volatility. Consider standing down.",          color:"rgba(255,77,77,.90)"},
+  {id:7,name:"Dealer Unwind",   desc:"Choppy reversal risk. Protect, demand confirmation.",       color:"rgba(160,120,255,.90)"},
+  {id:8,name:"Panic/Forced",    desc:"Dislocation. Risk off. Protect capital first.",             color:"rgba(255,58,165,.90)"},
+];
+const probEls=[];
+function initProbUI(){$("probList").innerHTML="";probEls.length=0;STATES.forEach(s=>{const row=document.createElement("div");row.className="probRow";row.innerHTML=`<div class="probName"><span class="pdot" style="background:${s.color}"></span>S${s.id}: ${s.name}</div><div class="pbar"><i></i></div><div class="probVal">--%</div>`;$("probList").appendChild(row);probEls.push({bar:row.querySelector(".pbar>i"),val:row.querySelector(".probVal")});});}
 
-    quoteProvider: $("quoteProvider"), fxSpotPrice: $("fxSpotPrice"),
-    fxSpotStatus: $("fxSpotStatus"), fxStatusDot: $("fxStatusDot"),
-    fxSpotDelta: $("fxSpotDelta"), fxLatencyTag: $("fxLatencyTag"),
-    fxLastTag: $("fxLastTag"), fxSpotMeta: $("fxSpotMeta"), miniBar: $("miniBar"),
+let recentStates=loadArr(KEY.rh,[]);
+function pushState(s){recentStates.push(s);const d=clamp(settings.histDepth||60,10,120);if(recentStates.length>d)recentStates=recentStates.slice(-d);save(KEY.rh,recentStates);}
 
-    riskBig: $("riskBig"), riskRule: $("riskRule"),
-
-    oilPx: $("oilPx"), oilMeta: $("oilMeta"), oilTag: $("oilTag"), oilSpark: $("oilSpark"),
-    goldPx: $("goldPx"), goldMeta: $("goldMeta"), goldTag: $("goldTag"), goldSpark: $("goldSpark"),
-    silverPx: $("silverPx"), silverMeta: $("silverMeta"), silverTag: $("silverTag"), silverSpark: $("silverSpark"),
-    usdPx: $("usdPx"), usdMeta: $("usdMeta"), usdTag: $("usdTag"), usdSpark: $("usdSpark"),
-    txBig: $("txBig"), txMeta: $("txMeta"),
-
-    oilLeverPct: $("oilLeverPct"), oilLeverBar: $("oilLeverBar"), oilLeverMeta: $("oilLeverMeta"),
-    usdLeverPct: $("usdLeverPct"), usdLeverBar: $("usdLeverBar"), usdLeverMeta: $("usdLeverMeta"),
-    fearLeverPct: $("fearLeverPct"), fearLeverBar: $("fearLeverBar"), fearLeverMeta: $("fearLeverMeta"),
-    eventLeverPct: $("eventLeverPct"), eventLeverBar: $("eventLeverBar"), eventLeverMeta: $("eventLeverMeta"),
-
-    tradeBias: $("tradeBias"), tradeBiasMeta: $("tradeBiasMeta"),
-    rng1h: $("rng1h"), rng1hMeta: $("rng1hMeta"),
-    rng4h: $("rng4h"), rng4hMeta: $("rng4hMeta"),
-    decConf: $("decConf"), decConfMeta: $("decConfMeta"),
-    coneCanvas: $("coneCanvas"), rng1hBox: $("rng1hBox"),
-
-    eventsBody: $("eventsBody"), headlinesBody: $("headlinesBody"),
-    sysStatus: $("sysStatus"), footPolicy: $("footPolicy"),
-    footDetector: $("footDetector"), footAge: $("footAge"), footHold: $("footHold"),
-
-    modalBack: $("modalBack"), closeModalBtn: $("closeModalBtn"),
-    saveCuratedBtn: $("saveCuratedBtn"), resetCuratedBtn: $("resetCuratedBtn"),
-    eventsEditor: $("eventsEditor"), headlinesEditor: $("headlinesEditor"),
-
-    settingsBack: $("settingsBack"), closeSettingsBtn: $("closeSettingsBtn"),
-    tdKeyInput: $("tdKeyInput"), pollInput: $("pollInput"),
-    alertThreshInput: $("alertThreshInput"), histDepthInput: $("histDepthInput"),
-    resetSettingsBtn: $("resetSettingsBtn"), saveSettingsBtn: $("saveSettingsBtn"),
-    tdKeyValidTag: $("tdKeyValidTag"),
-
-    tvFrame: $("tvFrame"), tvFallback: $("tvFallback"),
-    kbHint: $("kbHint"),
-  };
-
-  /* ───────── Persistence keys ───────── */
-  const KEY = {
-    settings: "qx_settings_v3",
-    events: "qx_events_v1",
-    headlines: "qx_headlines_v1",
-    macro: "qx_macro_v3",
-    priceHistory: "qx_price_hist_v1",
-    regimeHistory: "qx_regime_hist_v1",
-  };
-
-  function loadObj(key, fallback) {
-    try {
-      const raw = localStorage.getItem(key);
-      if (!raw) return fallback;
-      const p = JSON.parse(raw);
-      return (p && typeof p === "object") ? p : fallback;
-    } catch { return fallback; }
-  }
-  function loadArr(key, fallback) {
-    try {
-      const raw = localStorage.getItem(key);
-      if (!raw) return fallback;
-      const p = JSON.parse(raw);
-      return Array.isArray(p) ? p : fallback;
-    } catch { return fallback; }
-  }
-  function saveKey(key, val) {
-    try { localStorage.setItem(key, JSON.stringify(val)); } catch { }
-  }
-
-  /* ───────── Settings ───────── */
-  let settings = loadObj(KEY.settings, {
-    twelvedataKey: "",
-    pollMs: 12000,
-    alertThreshPips: 0,
-    histDepth: 60,
-  });
-
-  /* ───────── Curated defaults ───────── */
-  const curatedEventsDefault = [
-    { when: "2026-02-17T21:18:47Z", event: "Eurozone CPI (flash)", impact: "HIGH" },
-    { when: "2026-02-18T17:18:47Z", event: "US Initial Jobless Claims", impact: "MED" },
-    { when: "2026-02-19T21:18:47Z", event: "US GDP (advance)", impact: "HIGH" },
-    { when: "2026-02-22T15:18:47Z", event: "US Non-Farm Payrolls", impact: "HIGH" },
+// ── SPOT FEED ────────────────────────────────────────────────────────────
+const SpotFeed=(()=>{
+  const free=[
+    {name:"exchangerate.host",url:()=>`https://api.exchangerate.host/latest?base=EUR&symbols=USD&_=${Date.now()}`,parse:j=>j?.rates?.USD},
+    {name:"frankfurter.app",url:()=>`https://api.frankfurter.app/latest?from=EUR&to=USD&_=${Date.now()}`,parse:j=>j?.rates?.USD},
+    {name:"open.er-api.com",url:()=>`https://open.er-api.com/v6/latest/EUR?_=${Date.now()}`,parse:j=>j?.rates?.USD},
   ];
-  const curatedHeadlinesDefault = [
-    { time: "03:00 PM", source: "FinancialJuice", title: "Dollar firming ahead of major data window", url: "https://financialjuice.com/" },
-    { time: "02:26 PM", source: "FinancialJuice", title: "Rates repricing drives short-term USD bid", url: "https://financialjuice.com/" },
-    { time: "01:06 PM", source: "Market", title: "Risk tone mixed as equities stabilize", url: "https://www.investing.com/" },
+  let last={price:null,ts:0,source:null,provider:null,latencyMs:null,staleCount:0,lastChangeTs:0,lastDelta:0};
+  const STALE=60000,MIN=0.000001;let ctrl=null;const bo={};
+  const status=(now=Date.now())=>!last.price?{status:"CHECKING",stale:false}:{status:(now-last.ts)>STALE?"STALE":"LIVE",stale:(now-last.ts)>STALE};
+  async function ft(url,ms=7000){const t0=performance.now();if(ctrl)ctrl.abort();ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),ms);try{const res=await fetch(url,{method:"GET",cache:"no-store",signal:ctrl.signal});clearTimeout(timer);if(res.status===429)throw Object.assign(new Error("429"),{is429:true});if(!res.ok)throw new Error("HTTP "+res.status);return{ok:true,json:await res.json(),latencyMs:Math.round(performance.now()-t0)};}catch(e){clearTimeout(timer);return{ok:false,err:e,is429:e?.is429};}}
+  async function fetchTD(){const key=(settings.twelvedataKey||"").trim();if(!key)return{ok:false};const r=await ft(`https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${encodeURIComponent(key)}&_=${Date.now()}`);if(!r.ok)return{ok:false};const px=Number(r.json?.price);if(!Number.isFinite(px)||px<=0)return{ok:false};return{ok:true,price:px,source:"TwelveData",provider:"TwelveData",latencyMs:r.latencyMs};}
+  async function fetchFree(){const now=Date.now();const av=free.filter(s=>!bo[s.name]||bo[s.name]<now);if(!av.length)return{ok:false};try{return await Promise.any(av.map(s=>ft(s.url(),7000).then(r=>{if(!r.ok){if(r.is429)bo[s.name]=now+300000;throw new Error();}const px=Number(s.parse(r.json));if(!Number.isFinite(px)||px<=0)throw new Error();return{ok:true,price:px,source:s.name,provider:s.name,latencyMs:r.latencyMs};})));}catch{return{ok:false};}}
+  async function tick(cb){const now=Date.now();let r=await fetchTD();if(!r.ok)r=await fetchFree();if(!r.ok){last.staleCount++;cb?.({ok:false,...last,...status(now)});return;}const prev=last.price,moved=prev==null||Math.abs(r.price-prev)>MIN;last={...last,price:r.price,ts:now,source:r.source,provider:r.provider,latencyMs:r.latencyMs,staleCount:0,lastDelta:prev==null?0:r.price-prev};if(moved)last.lastChangeTs=now;if(!last.lastChangeTs)last.lastChangeTs=now;cb?.({ok:true,...last,...status(now)});}
+  return{tick,getLast:()=>({...last})};
+})();
+
+// ── MACRO FEED: Yahoo Finance via AllOrigins ──────────────────────────────
+// Symbols: BZ=F (Brent), GC=F (Gold COMEX), SI=F (Silver COMEX), DX-Y.NYB (DXY)
+const MacroFeed=(()=>{
+  const series=[
+    {key:"OIL", sym:"BZ=F",   label:"Brent Crude", unit:"$/bbl", pxEl:"oilPx",    metaEl:"oilMeta",    tagEl:"oilTag",    sparkEl:"oilSpark",   txCap:3.0},
+    {key:"GOLD",sym:"GC=F",   label:"Gold COMEX",  unit:"$/oz",  pxEl:"goldPx",   metaEl:"goldMeta",   tagEl:"goldTag",   sparkEl:"goldSpark",  txCap:1.5},
+    {key:"SILV",sym:"SI=F",   label:"Silver COMEX",unit:"$/oz",  pxEl:"silverPx", metaEl:"silverMeta", tagEl:"silverTag", sparkEl:"silverSpark",txCap:2.5},
+    {key:"USD", sym:"DX-Y.NYB",label:"DXY",        unit:"index", pxEl:"usdPx",    metaEl:"usdMeta",    tagEl:"usdTag",    sparkEl:"usdSpark",   txCap:0.8},
   ];
-  let curatedEvents = loadArr(KEY.events, curatedEventsDefault);
-  let curatedHeadlines = loadArr(KEY.headlines, curatedHeadlinesDefault);
-
-  /* ───────── Regime history ───────── */
-  let recentPolicyStates = loadArr(KEY.regimeHistory, []);
-
-  function pushRegimeState(s) {
-    recentPolicyStates.push(s);
-    const depth = clamp(settings.histDepth || 60, 10, 120);
-    if (recentPolicyStates.length > depth) {
-      recentPolicyStates = recentPolicyStates.slice(-depth);
-    }
-    saveKey(KEY.regimeHistory, recentPolicyStates);
+  let cache={};
+  const bo={};
+  async function fetchYahoo(sym){
+    const t0=performance.now();
+    const yUrl=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=2mo`;
+    const prox=`https://api.allorigins.win/raw?url=${encodeURIComponent(yUrl)}`;
+    const c=new AbortController();const timer=setTimeout(()=>c.abort(),12000);
+    try{
+      const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});
+      clearTimeout(timer);
+      if(res.status===429)throw Object.assign(new Error("429"),{is429:true});
+      if(!res.ok)throw new Error("HTTP "+res.status);
+      const json=await res.json();
+      const result=json?.chart?.result?.[0];
+      if(!result)throw new Error("No chart result");
+      const meta=result.meta;
+      const rawCloses=(result.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null&&Number.isFinite(v));
+      if(rawCloses.length<2)throw new Error("No closes");
+      const close=meta.regularMarketPrice||rawCloses.at(-1);
+      const prevClose=meta.previousClose||meta.chartPreviousClose||rawCloses.at(-2);
+      return{ok:true,close,prevClose,changePct:prevClose?(close/prevClose-1)*100:0,closes:rawCloses.slice(-20),latencyMs:Math.round(performance.now()-t0),source:"Yahoo/"+sym};
+    }catch(e){clearTimeout(timer);return{ok:false,err:e,is429:e?.is429};}
   }
-
-  /* ───────── Render helpers ───────── */
-  function impactPill(impact) {
-    const i = (impact || "").toUpperCase();
-    if (i === "HIGH") return `<span class="impact"><span class="folder"></span>HIGH</span>`;
-    if (i === "MED") return `<span class="impact"><span class="folder med"></span>MED</span>`;
-    return `<span class="impact"><span class="folder low"></span>LOW</span>`;
+  const fmtPx=(x,sym)=>!Number.isFinite(x)?"--":sym==="SI=F"?x.toFixed(2):x<10?x.toFixed(4):x<100?x.toFixed(2):x.toFixed(2);
+  const fmtPct=x=>!Number.isFinite(x)?"--":(x>=0?"+":"")+x.toFixed(2)+"%";
+  function paintOne(item){
+    const rec=cache[item.key];
+    const pEl=$(item.pxEl),mEl=$(item.metaEl),tEl=$(item.tagEl),sEl=$(item.sparkEl);
+    if(!rec){pEl.textContent="--";mEl.textContent="No data";tEl.textContent="--";tEl.className="liveBadge error";return;}
+    pEl.textContent=fmtPx(rec.close,item.sym);
+    const ma=minsAgo(rec.ts);
+    mEl.textContent=fmtPct(rec.changePct)+" Prev "+fmtPx(rec.prevClose,item.sym)+(ma!=null?" "+ma+"m ago":"");
+    tEl.textContent=item.label;tEl.className="liveBadge "+(ma!=null&&ma<120?"live":"stale");
+    pEl.classList.remove("pos","neg");
+    if(rec.changePct>0.05)pEl.classList.add("pos");
+    if(rec.changePct<-0.05)pEl.classList.add("neg");
+    if(sEl&&rec.closes?.length>1)drawSparkline(sEl,rec.closes,rec.changePct);
   }
-
-  function countdownText(iso) {
-    const t = new Date(iso).getTime();
-    if (!Number.isFinite(t)) return "--";
-    const d = t - Date.now();
-    if (d <= 0) return "Past";
-    const mins = Math.floor(d / 60000);
-    const days = Math.floor(mins / (60 * 24));
-    const hrs = Math.floor((mins - days * 60 * 24) / 60);
-    const rem = mins - days * 60 * 24 - hrs * 60;
-    if (days > 0) return `${days}d ${hrs}h`;
-    if (hrs > 0) return `${hrs}h ${rem}m`;
-    return `${rem}m`;
+  async function tick(){
+    const now=Date.now();
+    await Promise.allSettled(series.filter(i=>!bo[i.key]||bo[i.key]<now).map(item=>
+      fetchYahoo(item.sym).then(r=>{
+        if(!r.ok){if(r.is429)bo[item.key]=now+600000;return;}
+        cache[item.key]={...r,ts:now};
+      })
+    ));
+    series.forEach(paintOne);
   }
+  const get=k=>cache[k]||null;
+  const hydrate=()=>series.forEach(paintOne);
+  return{tick,get,hydrate,series};
+})();
 
-  function renderEvents() {
-    const now = Date.now();
-    const sorted = curatedEvents
-      .map(e => ({ ...e, t: new Date(e.when).getTime() }))
-      .filter(e => Number.isFinite(e.t) && e.t >= now - 3600_000)
-      .sort((a, b) => a.t - b.t);
-
-    if (!sorted.length) {
-      els.eventsBody.innerHTML = `<tr><td colspan="4" style="color:rgba(255,255,255,0.6)">No upcoming events.</td></tr>`;
-      return;
-    }
-    els.eventsBody.innerHTML = sorted.map(e => {
-      const when = new Date(e.when);
-      const whenStr = isNaN(when) ? String(e.when) :
-        `${when.toLocaleDateString()} ${when.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
-      return `<tr>
-        <td>${whenStr}</td>
-        <td><a class="link" href="https://www.forexfactory.com/" target="_blank" rel="noopener noreferrer">${escapeHtml(e.event || "")}</a></td>
-        <td>${impactPill(e.impact)}</td>
-        <td>${countdownText(e.when)}</td>
-      </tr>`;
-    }).join("");
+// ── LIVE EVENTS FEED (Forex Factory) ────────────────────────────────────
+const EventsFeed=(()=>{
+  let cache=[],lastFetch=0;
+  const TTL=30*60*1000;
+  const FF_URL="https://nfs.faireconomy.media/ff_calendar_thisweek.json";
+  async function fetch_ff(){
+    const prox=`https://api.allorigins.win/raw?url=${encodeURIComponent(FF_URL)}`;
+    const c=new AbortController();const timer=setTimeout(()=>c.abort(),12000);
+    try{
+      const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});
+      clearTimeout(timer);
+      if(!res.ok)throw new Error("HTTP "+res.status);
+      const json=await res.json();
+      if(!Array.isArray(json))throw new Error("Not array");
+      // Filter HIGH/MED impact for USD and EUR
+      return json.filter(e=>
+        (e.impact==="High"||e.impact==="Medium")&&
+        (e.country==="USD"||e.country==="EUR")
+      ).map(e=>({
+        when:e.date,
+        event:e.title+" ("+e.country+")",
+        impact:e.impact==="High"?"HIGH":"MED",
+        forecast:e.forecast||"",
+        previous:e.previous||"",
+      }));
+    }catch(err){clearTimeout(timer);return null;}
   }
-
-  function renderHeadlines() {
-    if (!curatedHeadlines.length) {
-      els.headlinesBody.innerHTML = `<tr><td colspan="3" style="color:rgba(255,255,255,0.6)">No headlines set.</td></tr>`;
-      return;
-    }
-    els.headlinesBody.innerHTML = curatedHeadlines.map(h => {
-      const url = h.url || "#";
-      return `<tr>
-        <td>${escapeHtml(h.time || "")}</td>
-        <td>${escapeHtml(h.source || "")}</td>
-        <td><a class="link" href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(h.title || "")}</a></td>
-      </tr>`;
-    }).join("");
-  }
-
-  /* ───────── Event risk ───────── */
-  function computeEventRisk01() {
-    const now = Date.now();
-    const upcoming = curatedEvents
-      .map(e => ({ ...e, t: new Date(e.when).getTime() }))
-      .filter(e => Number.isFinite(e.t) && e.t >= now);
-
-    if (!upcoming.length) return 0;
-    const weights = { HIGH: 1.0, MED: 0.6, LOW: 0.25 };
-    let best = 0;
-
-    for (const e of upcoming) {
-      const w = weights[(e.impact || "LOW").toUpperCase()] ?? 0.25;
-      const mins = (e.t - now) / 60000;
-      const prox = mins <= 60 ? 1
-        : mins <= 360 ? (1 - (mins - 60) / 300) * 0.85
-          : mins <= 1440 ? (1 - (mins - 360) / 1080) * 0.35
-            : 0;
-      best = Math.max(best, w * prox);
-    }
-    return clamp(best, 0, 1);
-  }
-
-  function labelEventRisk(r) {
-    if (r >= 0.70) return "HIGH";
-    if (r >= 0.35) return "MED";
-    return "LOW";
-  }
-
-  /* ───────── States ───────── */
-  const STATES = [
-    { id: 1, name: "Mean-Reverting",    desc: "Range-bound. Fade extremes, keep size disciplined.", color: "rgba(24,209,138,0.85)" },
-    { id: 2, name: "Liquidity Vacuum",  desc: "Thin market. Tighten risk, wait for confirmation.", color: "rgba(255,176,32,0.85)" },
-    { id: 3, name: "Slow Drift",        desc: "Steady grind. Small edges, avoid forcing entries.", color: "rgba(120,170,255,0.85)" },
-    { id: 4, name: "Strong Trend",      desc: "Directional. Trend-follow bias, avoid countertrend.", color: "rgba(60,145,255,0.9)" },
-    { id: 5, name: "Stop Cascade",      desc: "Fast continuation on stops. De-risk, widen filters.", color: "rgba(255,138,64,0.9)" },
-    { id: 6, name: "News Shock",        desc: "Event-driven. Consider standing down around releases.", color: "rgba(255,77,77,0.9)" },
-    { id: 7, name: "Dealer Unwind",     desc: "Choppy reversal risk. Protect, demand confirmation.", color: "rgba(160,120,255,0.9)" },
-    { id: 8, name: "Panic/Forced",      desc: "Dislocation. Risk off. Protect capital first.", color: "rgba(255,58,165,0.9)" },
-  ];
-
-  /* ───────── Prob UI ───────── */
-  const probEls = [];
-  function initProbUI() {
-    els.probList.innerHTML = "";
-    probEls.length = 0;
-    STATES.forEach(s => {
-      const row = document.createElement("div");
-      row.className = "probRow";
-      row.innerHTML = `
-        <div class="probName"><span class="pdot" style="background:${s.color}"></span>S${s.id}: ${s.name}</div>
-        <div class="pbar"><i></i></div>
-        <div class="probVal">--%</div>
-      `;
-      els.probList.appendChild(row);
-      probEls.push({ bar: row.querySelector(".pbar > i"), val: row.querySelector(".probVal") });
-    });
-  }
-
-  /* ───────── Risk mapping ───────── */
-  function setRisk(pol, conf) {
-    const MAP = {
-      1: ["NORMAL",   "Rule: Range logic. Avoid forcing breakouts."],
-      2: ["ELEVATED", "Rule: Thin liquidity. Reduce size, wait for confirmation."],
-      3: ["NORMAL",   "Rule: Drift regime. Small edges, avoid impulsive entries."],
-      4: ["HIGH",     "Rule: Trend regime. Bias with trend. Avoid countertrend."],
-      5: ["HIGH",     "Rule: Stop cascade risk. De-risk and widen filters."],
-      6: ["HIGH",     "Rule: News shock. Consider standing down around releases."],
-      7: ["ELEVATED", "Rule: Unwind risk. Protect and demand confirmation."],
-      8: ["CRITICAL", "Rule: Risk off. Protect capital first."],
-    };
-    let [level, rule] = MAP[pol] || ["--", "Policy: state-aware sizing and entry gating"];
-    if (conf != null) {
-      if (conf < 0.35 && level === "NORMAL") level = "ELEVATED";
-      if (conf < 0.25 && level === "ELEVATED") level = "HIGH";
-    }
-    els.riskBig.textContent = level;
-    els.riskRule.textContent = rule;
-    els.riskBig.classList.remove("pos", "neg");
-    if (level === "NORMAL") els.riskBig.classList.add("pos");
-    if (level === "CRITICAL" || level === "HIGH") els.riskBig.classList.add("neg");
-  }
-
-  /* ───────── FX status ───────── */
-  function setFxStatus(status) {
-    els.fxSpotStatus.textContent = status;
-    els.fxStatusDot.classList.remove("live", "err");
-    if (status === "LIVE") els.fxStatusDot.classList.add("live");
-    else if (status === "ERROR") els.fxStatusDot.classList.add("err");
-  }
-
-  /* ───────────────────────────────────────────────────────
-     SPOT FEED — TwelveData first, then parallel free fallback
-     ─────────────────────────────────────────────────────── */
-  const SpotFeed = (() => {
-    const freeSources = [
-      { name: "exchangerate.host", url: () => `https://api.exchangerate.host/latest?base=EUR&symbols=USD&_=${Date.now()}`, parse: j => j?.rates?.USD },
-      { name: "frankfurter.app",  url: () => `https://api.frankfurter.app/latest?from=EUR&to=USD&_=${Date.now()}`,       parse: j => j?.rates?.USD },
-      { name: "open.er-api.com",  url: () => `https://open.er-api.com/v6/latest/EUR?_=${Date.now()}`,                    parse: j => j?.rates?.USD },
-    ];
-
-    let last = { price: null, ts: 0, source: null, provider: null, latencyMs: null, staleCount: 0, lastChangeTs: 0, lastDelta: 0 };
-    const STALE_MS = 60_000;
-    const MIN_MOVE = 0.000001;
-    let activeCtrl = null;
-    const backedOff = {}; // source name -> backoff-until ts
-
-    function status(now = Date.now()) {
-      if (!last.price) return { status: "CHECKING", stale: false };
-      const stale = (now - last.ts) > STALE_MS;
-      return { status: stale ? "STALE" : "LIVE", stale };
-    }
-
-    async function fetchWithTimeout(url, timeoutMs = 7000) {
-      const t0 = performance.now();
-      if (activeCtrl) activeCtrl.abort();
-      activeCtrl = new AbortController();
-      const timer = setTimeout(() => activeCtrl.abort(), timeoutMs);
-      try {
-        const res = await fetch(url, { method: "GET", cache: "no-store", signal: activeCtrl.signal });
-        clearTimeout(timer);
-        if (res.status === 429) throw Object.assign(new Error("429"), { is429: true });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-        return { ok: true, json, latencyMs: Math.round(performance.now() - t0) };
-      } catch (e) {
-        clearTimeout(timer);
-        return { ok: false, err: e, is429: e?.is429 };
-      }
-    }
-
-    async function fetchTwelveData() {
-      const key = (settings.twelvedataKey || "").trim();
-      if (!key) return { ok: false };
-      const url = `https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${encodeURIComponent(key)}&_=${Date.now()}`;
-      const r = await fetchWithTimeout(url, 7000);
-      if (!r.ok) return { ok: false };
-      const px = Number(r.json?.price);
-      if (!Number.isFinite(px) || px <= 0) return { ok: false };
-      return { ok: true, price: px, source: "TwelveData", provider: "TwelveData", latencyMs: r.latencyMs };
-    }
-
-    // Fire all free sources in parallel — take first winner
-    async function fetchFreeParallel() {
-      const now = Date.now();
-      const available = freeSources.filter(s => !backedOff[s.name] || backedOff[s.name] < now);
-      if (!available.length) return { ok: false };
-
-      const race = available.map(s =>
-        fetchWithTimeout(s.url(), 7000).then(r => {
-          if (!r.ok) {
-            if (r.is429) backedOff[s.name] = now + 5 * 60_000; // back off 5 min on 429
-            throw new Error("fail");
-          }
-          const px = Number(s.parse(r.json));
-          if (!Number.isFinite(px) || px <= 0) throw new Error("bad px");
-          return { ok: true, price: px, source: s.name, provider: s.name, latencyMs: r.latencyMs };
-        })
-      );
-
-      try {
-        return await Promise.any(race);
-      } catch {
-        return { ok: false };
-      }
-    }
-
-    async function tick(updateCb) {
-      const now = Date.now();
-      let r = await fetchTwelveData();
-      if (!r.ok) r = await fetchFreeParallel();
-
-      if (!r.ok) {
-        last.staleCount += 1;
-        updateCb?.({ ok: false, ...last, ...status(now) });
-        return;
-      }
-
-      const prev = last.price;
-      const moved = prev == null || Math.abs(r.price - prev) > MIN_MOVE;
-      const delta = prev == null ? 0 : r.price - prev;
-
-      last = { ...last, price: r.price, ts: now, source: r.source, provider: r.provider, latencyMs: r.latencyMs, staleCount: 0, lastDelta: delta };
-      if (moved) last.lastChangeTs = now;
-      if (!last.lastChangeTs) last.lastChangeTs = now;
-
-      updateCb?.({ ok: true, ...last, ...status(now) });
-    }
-
-    return { tick, getLast: () => ({ ...last }) };
-  })();
-
-  /* ───────────────────────────────────────────────────────
-     MACRO FEED — Parallel Stooq CSV fetches with sparklines
-     ─────────────────────────────────────────────────────── */
-  const MacroFeed = (() => {
-    const series = [
-      { key: "OIL",  stooq: "uso.us", pxEl: "oilPx",    metaEl: "oilMeta",    tagEl: "oilTag",    sparkEl: "oilSpark"    },
-      { key: "GOLD", stooq: "gld.us", pxEl: "goldPx",   metaEl: "goldMeta",   tagEl: "goldTag",   sparkEl: "goldSpark"   },
-      { key: "SILV", stooq: "slv.us", pxEl: "silverPx", metaEl: "silverMeta", tagEl: "silverTag", sparkEl: "silverSpark" },
-      { key: "USD",  stooq: "uup.us", pxEl: "usdPx",    metaEl: "usdMeta",    tagEl: "usdTag",    sparkEl: "usdSpark"    },
-    ];
-
-    const state = loadObj(KEY.macro, { last: {} });
-    const backoff429 = {}; // key -> until-ts
-
-    function persist() { saveKey(KEY.macro, state); }
-
-    function stooqUrl(sym) {
-      return `https://stooq.com/q/d/l/?s=${encodeURIComponent(sym)}&i=d`;
-    }
-
-    async function fetchCsv(url, timeoutMs = 9000) {
-      const t0 = performance.now();
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), timeoutMs);
-      try {
-        const prox = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-        const res = await fetch(prox, { method: "GET", cache: "no-store", signal: ctrl.signal });
-        clearTimeout(timer);
-        if (res.status === 429) throw Object.assign(new Error("429"), { is429: true });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const text = await res.text();
-        return { ok: true, text, latencyMs: Math.round(performance.now() - t0) };
-      } catch (e) {
-        clearTimeout(timer);
-        return { ok: false, err: e, is429: e?.is429 };
-      }
-    }
-
-    function parseCsv(text) {
-      const lines = String(text).trim().split(/\r?\n/).filter(l => l && !l.startsWith("No data"));
-      if (lines.length < 3) return null;
-      const hdr = lines[0].split(",");
-      const ci = hdr.findIndex(h => h.toLowerCase() === "close");
-      if (ci < 0) return null;
-
-      const dataLines = lines.slice(1);
-      const closes = dataLines.map(l => Number(l.split(",")[ci])).filter(n => Number.isFinite(n) && n > 0);
-      if (closes.length < 2) return null;
-
-      const close = closes.at(-1);
-      const prevClose = closes.at(-2);
-      const date = dataLines.at(-1).split(",")[0] || "";
-      const changePct = (close / prevClose - 1) * 100;
-      return { close, prevClose, changePct, date, closes: closes.slice(-20) };
-    }
-
-    function fmtPx(x) { return Number.isFinite(x) ? x.toFixed(2) : "--"; }
-    function fmtPct(x) { if (!Number.isFinite(x)) return "--"; return (x >= 0 ? "+" : "") + x.toFixed(2) + "%"; }
-
-    function paintOne(item) {
-      const rec = state.last[item.key];
-      const pxEl = $(item.pxEl), metaEl = $(item.metaEl), tagEl = $(item.tagEl), sparkEl = $(item.sparkEl);
-      if (!rec) {
-        pxEl.textContent = "--"; metaEl.textContent = "No data"; tagEl.textContent = "—";
-        return;
-      }
-      pxEl.textContent = fmtPx(rec.close);
-      const pctStr = fmtPct(rec.changePct);
-      const ma = minsAgo(rec.ts);
-      metaEl.innerHTML = `Δ ${pctStr} · Prev ${fmtPx(rec.prevClose)} · ${escapeHtml(rec.date || "")}${ma != null ? ` · ${ma}m ago` : ""}`;
-      tagEl.textContent = `${rec.latencyMs ?? "--"}ms`;
-      pxEl.classList.remove("pos", "neg");
-      if (rec.changePct > 0.05) pxEl.classList.add("pos");
-      if (rec.changePct < -0.05) pxEl.classList.add("neg");
-
-      if (sparkEl && rec.closes?.length > 1) drawSparkline(sparkEl, rec.closes, rec.changePct);
-    }
-
-    // Fetch ALL 4 series in parallel — no more sequential 32-second worst-case
-    async function tick() {
-      const now = Date.now();
-      const tasks = series
-        .filter(item => !backoff429[item.key] || backoff429[item.key] < now)
-        .map(item =>
-          fetchCsv(stooqUrl(item.stooq)).then(r => {
-            if (!r.ok) {
-              if (r.is429) backoff429[item.key] = now + 10 * 60_000;
-              return;
-            }
-            const parsed = parseCsv(r.text);
-            if (!parsed) return;
-            state.last[item.key] = { ...parsed, ts: now, latencyMs: r.latencyMs };
-          })
-        );
-
-      await Promise.allSettled(tasks);
-      persist();
-      series.forEach(paintOne);
-    }
-
-    function get(key) { return state.last[key] || null; }
-    function hydrate() { series.forEach(paintOne); }
-
-    return { tick, get, hydrate };
-  })();
-
-  /* ───────────────────────────────────────────────────────
-     ENGINE — Regime detection with persistent history,
-     regime age tracking, momentum sign consistency
-     ─────────────────────────────────────────────────────── */
-  const Engine = (() => {
-    const HISTORY_N  = 80;
-    const MOM_WINDOW = 8;
-    const VOL_WINDOW = 18;
-    const HOLD_TICKS = 4;
-    const PROB_TEMP  = 1.35;
-    const MOM_SIGN_WINDOW = 10; // for consistency score
-
-    let tickN = 0;
-    let regimeAge = 0;
-    let lastPolicyState = null;
-
-    // Rehydrate price history from localStorage
-    const savedHist = loadObj(KEY.priceHistory, { prices: [], returns: [] });
-    let prices  = Array.isArray(savedHist.prices)  ? savedHist.prices.slice(-HISTORY_N)  : [];
-    let returns = Array.isArray(savedHist.returns) ? savedHist.returns.slice(-HISTORY_N) : [];
-
-    let detectorState = null, policyState = null, hold = 0;
-
-    function persistPriceHistory() {
-      saveKey(KEY.priceHistory, { prices: prices.slice(-HISTORY_N), returns: returns.slice(-HISTORY_N) });
-    }
-
-    function softmax(logits) {
-      const m = Math.max(...logits);
-      const exps = logits.map(v => Math.exp((v - m) / PROB_TEMP));
-      const s = exps.reduce((a, b) => a + b, 0) || 1;
-      return exps.map(v => v / s);
-    }
-
-    function computeFeatures() {
-      if (prices.length < 3) return null;
-      const p = prices.at(-1);
-      const pPrev = prices.at(-2);
-      const r = pPrev ? p - pPrev : 0;
-      const momBase = prices[Math.max(0, prices.length - 1 - MOM_WINDOW)];
-      const mom = momBase ? p - momBase : 0;
-      const recentR = returns.slice(-VOL_WINDOW);
-      const absAvg = recentR.length ? recentR.reduce((a, b) => a + Math.abs(b), 0) / recentR.length : 0;
-      const volx = clamp(absAvg / 0.00015, 0, 5);
-      const shock = Math.abs(r) > 0.0007 ? 1 : 0;
-
-      // Momentum sign consistency: what fraction of last N returns agree with momentum direction?
-      const rr = returns.slice(-MOM_SIGN_WINDOW);
-      const momDir = Math.sign(mom);
-      const agreeing = rr.filter(v => Math.sign(v) === momDir).length;
-      const momScore = rr.length > 0 ? agreeing / rr.length : 0.5;
-
-      return { p, r, mom, volx, shock, momScore };
-    }
-
-    function scoreStates(f) {
-      const momBp = Math.abs(bp(f.mom));
-      const rBp = Math.abs(bp(f.r));
-      const vol = f.volx;
-
-      const signChanges = (() => {
-        const rr = returns.slice(-10);
-        if (rr.length < 6) return 0;
-        let changes = 0;
-        for (let i = 1; i < rr.length; i++) if (Math.sign(rr[i]) !== Math.sign(rr[i - 1])) changes++;
-        return changes;
-      })();
-
-      const L = [
-        2.4 - 0.7*vol - 0.04*momBp,
-        1.1 + 0.55*vol - 0.03*momBp,
-        1.6 - 0.25*vol - 0.02*momBp,
-        0.9 + 0.25*vol + 0.045*momBp,
-        -0.2 + 0.55*vol + 0.02*momBp + 0.04*rBp,
-        -0.4 + (f.shock ? 3.0 : 0) + 0.2*vol,
-        0.3 + 0.18*vol + 0.35*clamp(signChanges/6,0,1) - 0.02*momBp,
-        -0.8 + 0.95*Math.max(0, vol-2.2) + 0.04*rBp + (f.shock ? 0.6 : 0),
-      ];
-      return softmax(L);
-    }
-
-    function pickState(probs) {
-      let best = 0;
-      for (let i = 1; i < probs.length; i++) if (probs[i] > probs[best]) best = i;
-      return best + 1;
-    }
-
-    function confidence(probs, state) {
-      const sorted = [...probs].sort((a, b) => b - a);
-      return clamp(probs[state-1]*0.7 + (sorted[0] - (sorted[1]||0))*0.3, 0, 1);
-    }
-
-    function updatePolicy(det) {
-      if (policyState == null) { policyState = det; hold = 0; return { policy: policyState, hold, changed: true }; }
-      if (det === policyState) { hold = 0; return { policy: policyState, hold, changed: false }; }
-      hold += 1;
-      if (hold >= HOLD_TICKS) { policyState = det; hold = 0; return { policy: policyState, hold, changed: true }; }
-      return { policy: policyState, hold, changed: false };
-    }
-
-    function step(price) {
-      tickN += 1;
-      const p = Number(price);
-      if (!Number.isFinite(p) || p <= 0) return null;
-
-      const prev = prices.length ? prices.at(-1) : null;
-      prices.push(p);
-      if (prices.length > HISTORY_N) prices.shift();
-
-      if (prev != null) {
-        returns.push(p - prev);
-        if (returns.length > HISTORY_N) returns.shift();
-      }
-
-      // Persist every 10 ticks (avoids thrashing localStorage)
-      if (tickN % 10 === 0) persistPriceHistory();
-
-      const f = computeFeatures();
-      if (!f) return null;
-
-      const probs = scoreStates(f);
-      const det = pickState(probs);
-      detectorState = det;
-
-      const polRes = updatePolicy(det);
-
-      // Track regime age
-      if (lastPolicyState === polRes.policy) {
-        regimeAge += 1;
-      } else {
-        regimeAge = 0;
-        lastPolicyState = polRes.policy;
-      }
-
-      return {
-        tickN,
-        features: f,
-        probs,
-        detector: det,
-        policy: polRes.policy,
-        hold: polRes.hold,
-        conf: confidence(probs, polRes.policy),
-        regimeAge,
-        momScore: f.momScore,
-      };
-    }
-
-    return { step };
-  })();
-
-  /* ───────── Transmission computation ───────── */
-  function normAbsPct(x, cap = 1.5) {
-    if (!Number.isFinite(x)) return 0;
-    return clamp(Math.abs(x) / cap, 0, 1);
-  }
-
-  function computeTransmission() {
-    const oil  = MacroFeed.get("OIL");
-    const gold = MacroFeed.get("GOLD");
-    const silv = MacroFeed.get("SILV");
-    const usd  = MacroFeed.get("USD");
-    const eRisk = computeEventRisk01();
-
-    const oilInt  = normAbsPct(oil?.changePct,  2.0);
-    const usdInt  = normAbsPct(usd?.changePct,  1.0);
-    const fearInt = normAbsPct(gold?.changePct, 1.5);
-    const silvInt = normAbsPct(silv?.changePct, 2.0);
-
-    const oilDir  = (oil?.changePct  ?? 0) >= 0 ? -oilInt       : +oilInt * 0.4;
-    const usdDir  = (usd?.changePct  ?? 0) >= 0 ? -usdInt       : +usdInt * 0.5;
-    const fearDir = (gold?.changePct ?? 0) >= 0 ? -fearInt      : +fearInt * 0.2;
-    const silvDir = (silv?.changePct ?? 0) >= 0 ? +silvInt*0.25 : -silvInt * 0.15;
-
-    const score = clamp(
-      0.36*oilDir + 0.44*usdDir + 0.26*fearDir + 0.10*silvDir + 0.22*(-eRisk),
-      -1, 1
-    );
-    const intensity = clamp(
-      0.30*oilInt + 0.30*usdInt + 0.20*fearInt + 0.10*silvInt + 0.25*eRisk,
-      0, 1
-    );
-    const bias = score <= -0.18 ? "USD+RISK OFF" : score >= 0.18 ? "USD WEAK/RISK ON" : "NEUTRAL";
-
-    return { score, intensity, bias, components: { oilInt, usdInt, fearInt, eventInt: eRisk } };
-  }
-
-  /* ───────── Lever painting ───────── */
-  function leverPaint(barEl, pctEl, val01, dirHint) {
-    const pct = Math.round(val01 * 100);
-    pctEl.textContent = pct + "%";
-    barEl.style.width = clamp(pct, 0, 100) + "%";
-    barEl.style.background =
-      dirHint === "bad"  ? "rgba(255,77,77,0.85)" :
-      dirHint === "good" ? "rgba(24,209,138,0.85)" :
-                           "rgba(120,170,255,0.80)";
-  }
-
-  /* ───────────────────────────────────────────────────────
-     CANVAS DRAWING UTILITIES
-     ─────────────────────────────────────────────────────── */
-
-  // Helper: set canvas to physical pixels correctly
-  function setupCanvas(canvas) {
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    const w = Math.max(rect.width, 1);
-    const h = Math.max(rect.height, 1);
-    canvas.width  = Math.round(w * dpr);
-    canvas.height = Math.round(h * dpr);
-    const ctx = canvas.getContext("2d");
-    ctx.scale(dpr, dpr);
-    return { ctx, w, h };
-  }
-
-  // Sparkline for macro asset
-  function drawSparkline(canvas, closes, changePct) {
-    if (!canvas || !closes || closes.length < 2) return;
-    const { ctx, w, h } = setupCanvas(canvas);
-    const min = Math.min(...closes);
-    const max = Math.max(...closes);
-    const range = max - min || 0.0001;
-    const isPos = changePct >= 0;
-    const colStroke = isPos ? "rgba(24,209,138,0.85)" : "rgba(255,77,77,0.75)";
-    const colFill   = isPos ? "rgba(24,209,138,0.12)" : "rgba(255,77,77,0.10)";
-
-    ctx.clearRect(0, 0, w, h);
-    ctx.beginPath();
-    closes.forEach((c, i) => {
-      const x = (i / (closes.length - 1)) * w;
-      const y = h - ((c - min) / range) * (h - 4) - 2;
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-    });
-    ctx.strokeStyle = colStroke;
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    // Fill area under line
-    ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath();
-    ctx.fillStyle = colFill;
-    ctx.fill();
-  }
-
-  // Regime timeline bar
-  function drawTimeline(canvas, states) {
-    if (!canvas || !states.length) return;
-    const { ctx, w, h } = setupCanvas(canvas);
-    const n = states.length;
-    const segW = w / n;
-
-    ctx.clearRect(0, 0, w, h);
-    states.forEach((s, i) => {
-      const state = STATES[s - 1];
-      ctx.fillStyle = state ? state.color : "rgba(255,255,255,0.18)";
-      ctx.fillRect(Math.floor(i * segW), 0, Math.ceil(segW) + 1, h);
-    });
-  }
-
-  // Projection cone with gradient opacity
-  function drawCone({ spot, rng1hPips, rng4hPips, bias }) {
-    const canvas = els.coneCanvas;
-    const { ctx, w, h } = setupCanvas(canvas);
-
-    ctx.clearRect(0, 0, w, h);
-
-    // Grid
-    ctx.strokeStyle = "rgba(233,240,255,0.07)";
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= 14; i++) { const x = i*(w/14); ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
-    for (let j = 0; j <= 8; j++)  { const y = j*(h/8);  ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
-
-    const cx = Math.round(w * 0.46);
-    const cy = Math.round(h * 0.52);
-    const x1 = Math.round(w * 0.62);
-    const x4 = Math.round(w * 0.90);
-
-    const maxPips = Math.max(10, rng4hPips * 1.15);
-    const pxPerPip = (h * 0.35) / maxPips;
-    const y1 = rng1hPips * pxPerPip;
-    const y4 = rng4hPips * pxPerPip;
-
-    const biasUp = bias === "LONG";
-    const biasDn = bias === "SHORT";
-
-    // Gradient fill for cone (denser near center = higher probability)
-    const baseColor = biasUp ? [24,209,138] : biasDn ? [255,77,77] : [120,170,255];
-    const rad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.sqrt(Math.pow(x4-cx,2) + Math.pow(y4,2)));
-    rad.addColorStop(0,   `rgba(${baseColor.join(",")},0.38)`);
-    rad.addColorStop(0.5, `rgba(${baseColor.join(",")},0.18)`);
-    rad.addColorStop(1,   `rgba(${baseColor.join(",")},0.00)`);
-
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = rad;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(x1, cy - y1);
-    ctx.lineTo(x4, cy - y4);
-    ctx.lineTo(x4, cy + y4);
-    ctx.lineTo(x1, cy + y1);
-    ctx.closePath();
-    ctx.fill();
-
-    // Outline edges
-    ctx.strokeStyle = "rgba(233,240,255,0.30)";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x4, cy - y4); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x4, cy + y4); ctx.stroke();
-
-    // 1h markers (dashed)
-    ctx.setLineDash([3, 4]);
-    ctx.strokeStyle = "rgba(233,240,255,0.20)";
-    ctx.beginPath(); ctx.moveTo(x1, cy - y1); ctx.lineTo(x1, cy + y1); ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Center line
-    ctx.strokeStyle = "rgba(233,240,255,0.28)";
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke();
-
-    // Spot dot
-    ctx.fillStyle = "rgba(233,240,255,0.95)";
-    ctx.beginPath(); ctx.arc(cx, cy, 3.5, 0, Math.PI*2); ctx.fill();
-
-    // Labels
-    const mono = `12px ${getComputedStyle(document.documentElement).getPropertyValue("--mono").trim() || "monospace"}`;
-    ctx.font = mono;
-    ctx.fillStyle = "rgba(233,240,255,0.72)";
-    ctx.fillText(`Spot ${spot.toFixed(5)}`, cx + 10, cy + 4);
-    ctx.fillText(`1h ±${rng1hPips}p`, x1 - 62, 18);
-    ctx.fillText(`4h ±${rng4hPips}p`, x4 - 62, 18);
-
-    ctx.font = `bold 13px ${getComputedStyle(document.documentElement).getPropertyValue("--font").trim() || "sans-serif"}`;
-    ctx.fillStyle = biasUp ? "rgba(24,209,138,0.95)" : biasDn ? "rgba(255,77,77,0.95)" : "rgba(233,240,255,0.78)";
-    ctx.fillText(bias, 20, 24);
-  }
-
-  /* ───────── Canvas resize handling ───────── */
-  let resizeTimer;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      if (lastStep && lastSpot) updateTransmissionAndProjection(lastStep);
-      drawTimeline(els.timelineCanvas, recentPolicyStates);
-    }, 150);
-  });
-
-  /* ───────── Projection calc ───────── */
-  function computeProjection(step, tx) {
-    const basePips1h = { 1:6, 2:10, 3:7, 4:12, 5:18, 6:16, 7:14, 8:26 };
-    const pol  = step?.policy || 1;
-    const volx = step?.features?.volx ?? 1;
-    const momBp = bp(step?.features?.mom ?? 0);
-    const conf = step?.conf ?? 0.25;
-
-    const base1h = basePips1h[pol] ?? 8;
-    const volMult = clamp(0.75 + 0.18*volx, 0.65, 1.85);
-    const txMult  = clamp(1.0 + 0.55*tx.intensity, 1.0, 1.6);
-    const eRisk   = tx.components.eventInt;
-    const evMult1h = clamp(1.0 + 0.65*eRisk, 1.0, 1.7);
-    const evMult4h = clamp(1.0 + 0.35*eRisk, 1.0, 1.35);
-
-    const rng1h = Math.round(base1h * volMult * txMult * evMult1h);
-    const rng4h = Math.round(rng1h * 2.6 * evMult4h);
-
-    const momDir = Math.tanh(momBp / 18);
-    const score  = clamp(0.55*momDir + 0.75*tx.score, -1, 1);
-    const bias   = score >= 0.20 ? "LONG" : score <= -0.20 ? "SHORT" : "NEUTRAL";
-
-    const agree  = 1 - Math.abs(momDir - tx.score) / 2;
-    const dec    = clamp(0.35*conf + 0.45*agree + 0.20*(1 - eRisk*0.6), 0, 1);
-
-    return {
-      bias, score,
-      rng1hPips: clamp(rng1h, 3, 80),
-      rng4hPips: clamp(rng4h, 6, 160),
-      decPct: Math.round(dec * 100),
-      volMult, txMult, eRisk,
-    };
-  }
-
-  /* ───────── Alert / notification ───────── */
-  let lastAlertFiredAt = 0;
-  const ALERT_COOLDOWN_MS = 5 * 60_000;
-
-  function fireAlert(msg) {
-    const now = Date.now();
-    if (now - lastAlertFiredAt < ALERT_COOLDOWN_MS) return;
-    lastAlertFiredAt = now;
-
-    // Badge in topbar
-    els.alertBadge.classList.add("show");
-    els.alertBadgeText.textContent = msg;
-    setTimeout(() => els.alertBadge.classList.remove("show"), 30_000);
-
-    // Flash the 1h range box
-    els.rng1hBox.classList.add("alert-breach");
-    setTimeout(() => els.rng1hBox.classList.remove("alert-breach"), 4000);
-
-    // Browser notification if permitted
-    if ("Notification" in window && Notification.permission === "granted") {
-      try { new Notification("QuadraX Alert", { body: msg, tag: "qx-alert" }); } catch { }
-    }
-  }
-
-  function checkAlertThreshold(proj) {
-    const thresh = Number(settings.alertThreshPips) || 0;
-    if (thresh <= 0 || !proj) return;
-    if (proj.rng1hPips >= thresh) {
-      fireAlert(`1h range ${proj.rng1hPips}p ≥ threshold ${thresh}p · Bias: ${proj.bias}`);
-    }
-  }
-
-  function requestNotificationPermission() {
-    if ("Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
-  }
-
-  /* ───────── Export snapshot ───────── */
-  function exportSnapshot() {
-    const snap = {
-      timestamp: new Date().toISOString(),
-      spot: SpotFeed.getLast(),
-      regime: {
-        policy: lastStep?.policy,
-        detector: lastStep?.detector,
-        conf: lastStep?.conf,
-        regimeAge: lastStep?.regimeAge,
-        momScore: lastStep?.momScore,
-        probs: lastStep?.probs,
-      },
-      macro: {
-        oil:  MacroFeed.get("OIL"),
-        gold: MacroFeed.get("GOLD"),
-        silv: MacroFeed.get("SILV"),
-        usd:  MacroFeed.get("USD"),
-      },
-      transmission: lastTx,
-      projection: lastProjection,
-      settings: { pollMs: settings.pollMs, alertThreshPips: settings.alertThreshPips },
-    };
-
-    const blob = new Blob([JSON.stringify(snap, null, 2)], { type: "application/json" });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement("a");
-    a.href     = url;
-    a.download = `quadrax-snapshot-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  /* ───────── Night mode ───────── */
-  let nightMode = false;
-  function toggleNight() {
-    nightMode = !nightMode;
-    document.body.classList.toggle("night", nightMode);
-    els.nightBtn.classList.toggle("night-active", nightMode);
-    els.nightBtn.textContent = nightMode ? "☀️ Day" : "🌙 Night";
-  }
-
-  /* ───────── Keyboard shortcuts ───────── */
-  window.addEventListener("keydown", e => {
-    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
-    switch (e.key.toLowerCase()) {
-      case "p": els.pauseBtn.click(); break;
-      case "s": els.syncBtn.click(); break;
-      case "e": els.editBtn.click(); break;
-      case "n": toggleNight(); break;
-      case "x": exportSnapshot(); break;
-      case "?": els.kbHint.classList.toggle("show"); break;
-    }
-  });
-
-  /* ───────── Iframe fallback ───────── */
-  function setupIframeFallback() {
-    const frame = els.tvFrame;
-    let loaded = false;
-    frame.addEventListener("load", () => { loaded = true; });
-    setTimeout(() => {
-      if (!loaded) els.tvFallback.classList.add("show");
-    }, 9000);
-  }
-
-  /* ───────── Modal wiring ───────── */
-  function openModal()  { els.eventsEditor.value = JSON.stringify(curatedEvents, null, 2); els.headlinesEditor.value = JSON.stringify(curatedHeadlines, null, 2); els.modalBack.style.display = "flex"; }
-  function closeModal() { els.modalBack.style.display = "none"; }
-  els.editBtn.addEventListener("click", openModal);
-  els.closeModalBtn.addEventListener("click", closeModal);
-  els.modalBack.addEventListener("click", e => { if (e.target === els.modalBack) closeModal(); });
-
-  els.resetCuratedBtn.addEventListener("click", () => {
-    curatedEvents    = structuredClone ? structuredClone(curatedEventsDefault)    : JSON.parse(JSON.stringify(curatedEventsDefault));
-    curatedHeadlines = structuredClone ? structuredClone(curatedHeadlinesDefault) : JSON.parse(JSON.stringify(curatedHeadlinesDefault));
-    els.eventsEditor.value    = JSON.stringify(curatedEvents, null, 2);
-    els.headlinesEditor.value = JSON.stringify(curatedHeadlines, null, 2);
-  });
-
-  els.saveCuratedBtn.addEventListener("click", () => {
-    try {
-      const ev = JSON.parse(els.eventsEditor.value);
-      const hd = JSON.parse(els.headlinesEditor.value);
-      if (!Array.isArray(ev) || !Array.isArray(hd)) throw new Error("Not arrays");
-      curatedEvents = ev; curatedHeadlines = hd;
-      saveKey(KEY.events, curatedEvents);
-      saveKey(KEY.headlines, curatedHeadlines);
-      renderEvents(); renderHeadlines(); closeModal();
-    } catch { alert("Invalid JSON. Fix the formatting before saving."); }
-  });
-
-  /* ───────── Settings modal ───────── */
-  async function validateTwelveDataKey(key) {
-    if (!key) return null;
-    try {
-      const res = await fetch(`https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${encodeURIComponent(key)}`, { cache: "no-store" });
-      if (!res.ok) return false;
-      const j = await res.json();
-      return Number.isFinite(Number(j?.price)) && Number(j.price) > 0;
-    } catch { return false; }
-  }
-
-  function openSettings() {
-    els.tdKeyInput.value       = settings.twelvedataKey || "";
-    els.pollInput.value        = String(settings.pollMs || 12000);
-    els.alertThreshInput.value = String(settings.alertThreshPips || "");
-    els.histDepthInput.value   = String(settings.histDepth || 60);
-    els.tdKeyValidTag.textContent = "";
-    els.tdKeyValidTag.className = "validTag";
-    els.settingsBack.style.display = "flex";
-  }
-  function closeSettings() { els.settingsBack.style.display = "none"; }
-
-  els.settingsBtn.addEventListener("click", openSettings);
-  els.closeSettingsBtn.addEventListener("click", closeSettings);
-  els.settingsBack.addEventListener("click", e => { if (e.target === els.settingsBack) closeSettings(); });
-
-  els.resetSettingsBtn.addEventListener("click", () => {
-    settings = { twelvedataKey: "", pollMs: 12000, alertThreshPips: 0, histDepth: 60 };
-    saveKey(KEY.settings, settings);
-    openSettings();
-  });
-
-  els.saveSettingsBtn.addEventListener("click", async () => {
-    const key   = String(els.tdKeyInput.value || "").trim();
-    const poll  = Number(els.pollInput.value  || 12000);
-    const thresh = Number(els.alertThreshInput.value || 0);
-    const depth = Number(els.histDepthInput.value || 60);
-
-    // Validate API key if provided
-    if (key) {
-      els.tdKeyValidTag.textContent = " Checking...";
-      els.tdKeyValidTag.className = "validTag";
-      const valid = await validateTwelveDataKey(key);
-      els.tdKeyValidTag.textContent = valid ? " ✓ Valid" : " ✗ Invalid";
-      els.tdKeyValidTag.className = "validTag " + (valid ? "ok" : "fail");
-      if (valid === false) {
-        // Still allow saving but warn
-        const proceed = confirm("API key appears invalid. Save anyway?");
-        if (!proceed) return;
-      }
-    }
-
-    settings.twelvedataKey    = key;
-    settings.pollMs           = Number.isFinite(poll) && poll >= 6000 ? Math.round(poll) : 12000;
-    settings.alertThreshPips  = Number.isFinite(thresh) && thresh > 0 ? Math.round(thresh) : 0;
-    settings.histDepth        = clamp(Number.isFinite(depth) ? Math.round(depth) : 60, 10, 120);
-    saveKey(KEY.settings, settings);
-
-    if (settings.alertThreshPips > 0) requestNotificationPermission();
-
-    closeSettings();
-    alert("Saved. Reload the page for polling cadence changes to take effect.");
-  });
-
-  /* ───────── Pause + Sync ───────── */
-  let paused   = false;
-  let stalePolls = 0;
-  let syncing  = false;
-
-  els.pauseBtn.addEventListener("click", () => {
-    paused = !paused;
-    els.pauseBtn.textContent = paused ? "Resume" : "Pause";
-    els.sysStatus.textContent = paused ? "PAUSED" : "LIVE";
-    els.modeTag.textContent = paused ? "Mode: PAUSED" : "Mode: FREE";
-    const pauseColor = paused ? "rgba(255,176,32,1)" : "rgba(24,209,138,1)";
-    const pauseGlow  = paused ? "0 0 0 4px rgba(255,176,32,0.18)" : "0 0 0 4px rgba(24,209,138,0.18)";
-    els.liveDot.style.background  = pauseColor;
-    els.liveDot.style.boxShadow   = pauseGlow;
-  });
-
-  els.nightBtn.addEventListener("click", toggleNight);
-  els.exportBtn.addEventListener("click", exportSnapshot);
-
-  els.syncBtn.addEventListener("click", async () => {
-    if (syncing) return;
-    syncing = true;
-    els.syncBtn.textContent = "Syncing…";
-    els.syncBtn.classList.add("syncing");
-    try {
-      await SpotFeed.tick(onSpotUpdate);
-      await MacroFeed.tick();
-      updateTransmissionAndProjection(lastStep);
-    } finally {
-      syncing = false;
-      els.syncBtn.textContent = "Sync";
-      els.syncBtn.classList.remove("syncing");
-    }
-  });
-
-  /* ───────── State tracking ───────── */
-  let lastSpot = null;
-  let lastStep = null;
-  let lastTx   = null;
-  let lastProjection = null;
-
-  /* ───────── Transmission + projection update ───────── */
-  function updateTransmissionAndProjection(step) {
-    const tx = computeTransmission();
-    lastTx = tx;
-
-    els.macroBiasChip.textContent = tx.bias;
-    els.eventRiskChip.textContent = labelEventRisk(tx.components.eventInt);
-    els.txScoreChip.textContent   = tx.score.toFixed(2);
-
-    const txScoreStr   = tx.score.toFixed(2);
-    const intensityPct = Math.round(tx.intensity * 100);
-    let txLabel = "NEUTRAL";
-    if (tx.score <= -0.18) txLabel = "BEAR EURUSD";
-    if (tx.score >=  0.18) txLabel = "BULL EURUSD";
-
-    els.txBig.textContent  = txLabel;
-    els.txMeta.textContent = `Score ${txScoreStr} · ${tx.bias} · Intensity ${intensityPct}%`;
-
-    leverPaint(els.oilLeverBar,   els.oilLeverPct,   tx.components.oilInt,   (MacroFeed.get("OIL")?.changePct  ?? 0) >= 0 ? "bad" : "good");
-    leverPaint(els.usdLeverBar,   els.usdLeverPct,   tx.components.usdInt,   (MacroFeed.get("USD")?.changePct  ?? 0) >= 0 ? "bad" : "good");
-    leverPaint(els.fearLeverBar,  els.fearLeverPct,  tx.components.fearInt,  (MacroFeed.get("GOLD")?.changePct ?? 0) >= 0 ? "bad" : "good");
-    leverPaint(els.eventLeverBar, els.eventLeverPct, tx.components.eventInt, tx.components.eventInt >= 0.35 ? "bad" : "neutral");
-    els.oilLeverMeta.textContent   = "EU energy drag proxy (USO daily Δ)";
-    els.usdLeverMeta.textContent   = "USD pressure proxy (UUP daily Δ)";
-    els.fearLeverMeta.textContent  = "Risk-off tone proxy (GLD daily Δ)";
-    els.eventLeverMeta.textContent = "High-impact event proximity";
-
-    if (step && lastSpot && Number.isFinite(lastSpot.price)) {
-      const proj = computeProjection(step, tx);
-      lastProjection = proj;
-
-      checkAlertThreshold(proj);
-
-      els.tradeBias.textContent = proj.bias;
-      els.tradeBias.classList.remove("pos", "neg");
-      if (proj.bias === "LONG")  els.tradeBias.classList.add("pos");
-      if (proj.bias === "SHORT") els.tradeBias.classList.add("neg");
-
-      const momBpStr = bp(step.features.mom).toFixed(1);
-      els.tradeBiasMeta.textContent = `Macro ${txLabel} · Mom ${momBpStr}bp · Event ${Math.round(proj.eRisk*100)}%`;
-
-      els.rng1h.textContent = `±${proj.rng1hPips} pips`;
-      els.rng1hMeta.textContent = `Vol ×${proj.volMult.toFixed(2)} · Macro ×${proj.txMult.toFixed(2)}`;
-
-      els.rng4h.textContent = `±${proj.rng4hPips} pips`;
-      els.rng4hMeta.textContent = `Event ×${(1.0 + 0.35*proj.eRisk).toFixed(2)} · Tx ${txScoreStr}`;
-
-      els.decConf.textContent = `${proj.decPct}%`;
-      els.decConf.classList.remove("pos", "neg");
-      if (proj.decPct >= 55) els.decConf.classList.add("pos");
-      if (proj.decPct <= 30) els.decConf.classList.add("neg");
-      els.decConfMeta.textContent =
-        proj.decPct >= 55 ? "Higher agreement" :
-        proj.decPct >= 40 ? "Mixed signals" : "Low agreement, caution";
-
-      drawCone({ spot: lastSpot.price, rng1hPips: proj.rng1hPips, rng4hPips: proj.rng4hPips, bias: proj.bias });
-    } else {
-      ["tradeBias","rng1h","rng4h","decConf"].forEach(id => { $(id).textContent = "--"; });
-    }
-  }
-
-  /* ───────── Spot update handler ───────── */
-  function onSpotUpdate(s) {
-    const now = Date.now();
-    els.lastUpdate.textContent = fmtTime(now);
-
-    if (!s.ok) {
-      setFxStatus("ERROR");
-      els.quoteProvider.textContent = "Provider: --";
-      els.fxSpotMeta.textContent    = "Source: --";
-      els.fxLatencyTag.textContent  = "--";
-      els.fxLastTag.textContent     = "Last: --";
-      els.fxSpotDelta.textContent   = "0.00000";
-      els.modeTag.textContent       = "Mode: ERROR";
-      stalePolls += 1;
-      els.staleChip.textContent = String(stalePolls);
-      return;
-    }
-
-    lastSpot = s;
-
-    els.fxSpotPrice.textContent   = s.price.toFixed(5);
-    els.quoteProvider.textContent = `Provider: ${s.provider || s.source || "--"}`;
-    els.fxSpotMeta.textContent    = `Source: ${s.source} · Demo safe`;
-    els.fxSpotDelta.textContent   = s.lastDelta.toFixed(5);
-    els.fxLatencyTag.textContent  = `${s.latencyMs ?? "--"}ms`;
-    els.fxLastTag.textContent     = `Last: ${fmtTime(s.ts)}`;
-    els.modeTag.textContent       = settings.twelvedataKey ? "Mode: LIVE" : "Mode: FREE";
-
-    // Delta spark
-    const w = clamp(Math.abs(s.lastDelta) / 0.0012, 0, 1) * 100;
-    els.miniBar.style.width      = `${Math.max(10, w)}%`;
-    els.miniBar.style.background = s.lastDelta >= 0 ? "rgba(24,209,138,0.85)" : "rgba(255,77,77,0.85)";
-
-    setFxStatus(s.status);
-    stalePolls = s.status === "STALE" ? stalePolls + 1 : 0;
-    els.staleChip.textContent = String(stalePolls);
-
-    if (paused) return;
-
-    const step = Engine.step(s.price);
-    if (!step) return;
-
-    lastStep = step;
-
-    // Push to regime timeline
-    pushRegimeState(step.policy);
-    drawTimeline(els.timelineCanvas, recentPolicyStates);
-
-    // Chip updates
-    els.tickChip.textContent   = String(step.tickN);
-    els.ageChip.textContent    = String(step.regimeAge);
-    els.momChip.textContent    = `${Math.round(step.momScore * 100)}%`;
-    els.footAge.textContent    = String(step.regimeAge);
-
-    const pol = step.policy;
-    const det = step.detector;
-    const polName = STATES[pol-1]?.name || "--";
-    const polDesc = STATES[pol-1]?.desc || "Waiting for signal.";
-
-    els.policyStateTitle.textContent = `Policy State: S${pol} ${polName}`;
-    els.policyStateDesc.textContent  = polDesc;
-    els.detectorChip.textContent     = `S${det}`;
-    els.policyChip.textContent       = `S${pol}`;
-    els.confChip.textContent         = `${(step.conf*100).toFixed(1)}%`;
-    els.hystChip.textContent         = det === pol ? "stable" : "holding";
-
-    setRisk(pol, step.conf);
-
-    step.probs.forEach((p, i) => {
-      const pct = p * 100;
-      probEls[i].bar.style.width      = `${clamp(pct, 0, 100)}%`;
-      probEls[i].bar.style.background = STATES[i].color;
-      probEls[i].val.textContent      = `${pct.toFixed(1)}%`;
-    });
-
-    els.footPolicy.textContent   = `S${pol}`;
-    els.footDetector.textContent = `S${det}`;
-    els.footHold.textContent     = String(step.hold);
-
-    updateTransmissionAndProjection(step);
-  }
-
-  /* ───────── Start ───────── */
-  async function start() {
-    initProbUI();
+  async function tick(){
+    const now=Date.now();
+    if(now-lastFetch<TTL&&cache.length>0)return;
+    const data=await fetch_ff();
+    if(data){cache=data;lastFetch=now;$("calBadge").className="liveBadge live";$("calBadge").textContent="LIVE";$("calLastFetch").textContent="Updated "+fmtTime(now);}
+    else{$("calBadge").className="liveBadge stale";$("calBadge").textContent="RETRY";$("calLastFetch").textContent="Fetch failed - will retry";}
     renderEvents();
+  }
+  function get(){return cache;}
+  return{tick,get};
+})();
+
+// ── LIVE HEADLINES FEED (RSS) ────────────────────────────────────────────
+const HeadlinesFeed=(()=>{
+  const SOURCES=[
+    {url:"https://www.forexlive.com/feed/news",name:"ForexLive"},
+    {url:"https://www.fxstreet.com/rss/news",name:"FXStreet"},
+  ];
+  let cache=[];let lastFetch=0;const TTL=5*60*1000;
+  async function fetchRSS(src){
+    const prox=`https://api.allorigins.win/raw?url=${encodeURIComponent(src.url)}`;
+    const c=new AbortController();const timer=setTimeout(()=>c.abort(),10000);
+    try{
+      const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});
+      clearTimeout(timer);
+      if(!res.ok)throw new Error("HTTP "+res.status);
+      const text=await res.text();
+      const parser=new DOMParser();
+      const doc=parser.parseFromString(text,"application/xml");
+      const items=[...doc.querySelectorAll("item")].slice(0,6);
+      return items.map(item=>{
+        const rawPub=item.querySelector("pubDate")?.textContent||"";
+        let timeStr="--";
+        try{const d=new Date(rawPub);if(!isNaN(d))timeStr=d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})+" "+d.toLocaleDateString([],{month:"short",day:"numeric"});}catch{}
+        const title=(item.querySelector("title")?.textContent||"").replace(/<!\[CDATA\[|\]\]>/g,"").trim();
+        const link=(item.querySelector("link")?.textContent||item.querySelector("guid")?.textContent||"#").trim();
+        return{time:timeStr,source:src.name,title,url:link};
+      }).filter(h=>h.title);
+    }catch(e){clearTimeout(timer);return[];}
+  }
+  async function tick(){
+    const now=Date.now();
+    if(now-lastFetch<TTL&&cache.length>0)return;
+    const results=await Promise.allSettled(SOURCES.map(s=>fetchRSS(s)));
+    const all=[];
+    results.forEach(r=>{if(r.status==="fulfilled")all.push(...r.value);});
+    if(all.length>0){
+      cache=all.sort((a,b)=>{
+        try{return new Date(b.time).getTime()-new Date(a.time).getTime();}catch{return 0;}
+      }).slice(0,12);
+      lastFetch=now;
+      $("headBadge").className="liveBadge live";$("headBadge").textContent="LIVE";
+      $("headLastFetch").textContent="Updated "+fmtTime(now)+" | "+all.length+" headlines from "+SOURCES.length+" sources";
+    }else{
+      $("headBadge").className="liveBadge stale";$("headBadge").textContent="RETRY";
+      $("headLastFetch").textContent="RSS fetch failed. Retrying...";
+    }
     renderHeadlines();
-    MacroFeed.hydrate();
-    setupIframeFallback();
+  }
+  function get(){return cache;}
+  return{tick,get};
+})();
 
-    // Redraw timeline from history
-    drawTimeline(els.timelineCanvas, recentPolicyStates);
+// ── ENGINE (stateless per session - deterministic convergence) ───────────
+const Engine=(()=>{
+  const HN=80,MW=8,VW=18,HT=4,PT=1.35,MSW=10;
+  const WARMUP=20;
+  let tickN=0,regAge=0,lastPol=null;
+  let prices=[],returns=[];
+  let polState=null,hold=0;
+  let TM=Array.from({length:8},()=>new Array(8).fill(0));
+  let prevPol=null;
+  const softmax=lg=>{const m=Math.max(...lg),e=lg.map(v=>Math.exp((v-m)/PT)),s=e.reduce((a,b)=>a+b,0)||1;return e.map(v=>v/s);};
+  function feats(){if(prices.length<3)return null;const p=prices.at(-1),pp=prices.at(-2),r=pp?p-pp:0;const mb=prices[Math.max(0,prices.length-1-MW)],mom=mb?p-mb:0;const rr=returns.slice(-VW),avg=rr.length?rr.reduce((a,b)=>a+Math.abs(b),0)/rr.length:0;const volx=clamp(avg/0.00015,0,5),shock=Math.abs(r)>0.0007?1:0;const rrm=returns.slice(-MSW),md=Math.sign(mom);const momScore=rrm.length>0?rrm.filter(v=>Math.sign(v)===md).length/rrm.length:0.5;return{p,r,mom,volx,shock,momScore};}
+  function scoreStates(f){const mb=Math.abs(bp(f.mom)),rb=Math.abs(bp(f.r)),v=f.volx;const sc=returns.slice(-10);const sig=sc.length<6?0:sc.reduce((c,_,i)=>i>0&&Math.sign(sc[i])!==Math.sign(sc[i-1])?c+1:c,0);return softmax([2.4-.7*v-.04*mb,1.1+.55*v-.03*mb,1.6-.25*v-.02*mb,.9+.25*v+.045*mb,-.2+.55*v+.02*mb+.04*rb,-.4+(f.shock?3:0)+.2*v,.3+.18*v+.35*clamp(sig/6,0,1)-.02*mb,-.8+.95*Math.max(0,v-2.2)+.04*rb+(f.shock?.6:0)]);}
+  const pick=probs=>{let b=0;for(let i=1;i<probs.length;i++)if(probs[i]>probs[b])b=i;return b+1;};
+  const conf=(probs,s)=>{const sorted=[...probs].sort((a,b)=>b-a);return clamp(probs[s-1]*.7+(sorted[0]-(sorted[1]||0))*.3,0,1);};
+  function updatePol(det){if(polState==null){polState=det;hold=0;return{policy:polState,hold};}if(det===polState){hold=0;return{policy:polState,hold};}hold++;if(hold>=HT){polState=det;hold=0;return{policy:polState,hold};}return{policy:polState,hold};}
+  const transRow=si=>{const row=TM[si],total=row.reduce((a,b)=>a+b,0);return total>0?row.map(v=>v/total):new Array(8).fill(.125);};
+  function predictNext(pol){const row=transRow(pol-1);let bi=0;for(let i=1;i<row.length;i++)if(row[i]>row[bi])bi=i;return{state:bi+1,prob:row[bi]};}
+  function step(price){
+    tickN++;const p=Number(price);if(!Number.isFinite(p)||p<=0)return null;
+    const prev=prices.length?prices.at(-1):null;
+    prices.push(p);if(prices.length>HN)prices.shift();
+    if(prev!=null){returns.push(p-prev);if(returns.length>HN)returns.shift();}
+    const f=feats();if(!f)return null;
+    const probs=scoreStates(f),det=pick(probs),pr=updatePol(det),pol=pr.policy;
+    if(prevPol!=null&&prevPol!==pol)TM[prevPol-1][pol-1]++;
+    if(prevPol!==pol)prevPol=pol;
+    regAge=(lastPol===pol)?regAge+1:0;lastPol=pol;
+    const warmed=tickN>=WARMUP;
+    return{tickN,features:f,probs,detector:det,policy:pol,hold:pr.hold,conf:conf(probs,pol),regimeAge:regAge,momScore:f.momScore,predictedNext:predictNext(pol),TM,warmed,warmupPct:Math.min(1,tickN/WARMUP)};
+  }
+  return{step,getTM:()=>TM,WARMUP};
+})();
 
-    // First spot + macro ticks (parallel)
-    await Promise.allSettled([
-      SpotFeed.tick(onSpotUpdate),
-      MacroFeed.tick(),
-    ]);
-    updateTransmissionAndProjection(lastStep);
+// ── SESSION ENGINE ────────────────────────────────────────────────────────
+const SessionEngine=(()=>{
+  const SESS=[{id:"SYDNEY",label:"Sydney",startH:21,endH:30,color:"rgba(255,176,32,.85)"},{id:"TOKYO",label:"Tokyo",startH:0,endH:9,color:"rgba(160,120,255,.85)"},{id:"LONDON",label:"London",startH:7,endH:16,color:"rgba(24,209,138,.85)"},{id:"NEW_YORK",label:"New York",startH:12,endH:21,color:"rgba(43,108,255,.90)"}];
+  const DAY={1:{name:"MONDAY",effect:"Follows Friday close. Weekend gaps common. Liquidity builds through morning."},2:{name:"TUESDAY",effect:"Can see reversions to Monday trend. Fade if Monday move was not sustained."},3:{name:"WEDNESDAY",effect:"Mid-week trend continuation. Fed speakers frequent. Watch NY afternoon."},4:{name:"THURSDAY",effect:"US Jobless Claims 12:30 UTC. Often most volatile day. Clear directional moves."},5:{name:"FRIDAY",effect:"Position closing before weekend. USD bid into NY close. Reversion risk at end-of-day."}};
+  const utcH=()=>{const d=new Date();return d.getUTCHours()+d.getUTCMinutes()/60;};
+  const isOpen=s=>{const h=utcH();return s.endH>24?(h>=s.startH||h<(s.endH-24)):(h>=s.startH&&h<s.endH);};
+  function minsToEnd(s){const d=new Date(),um=d.getUTCHours()*60+d.getUTCMinutes(),em=(s.endH%24)*60;let diff=em-um;if(diff<0)diff+=1440;return diff;}
+  function compute(){const open=SESS.filter(s=>isOpen(s));const dow=new Date().getDay();const dayInfo=DAY[dow]||{name:new Date().toLocaleDateString([],{weekday:"long"}).toUpperCase(),effect:"Weekend. Markets closed."};const isOL=open.some(s=>s.id==="LONDON")&&open.some(s=>s.id==="NEW_YORK");const primary=open.length?open.at(-1):null;return{openSessions:open.map(s=>s.id),primary,isOverlap:isOL,dayInfo,minsLeft:primary?minsToEnd(primary):null};}
+  return{compute,SESS};
+})();
 
-    // Polling intervals
-    const poll = Math.max(Number(settings.pollMs) || 12000, 6000);
-    setInterval(() => SpotFeed.tick(onSpotUpdate), poll);
-    setInterval(async () => { await MacroFeed.tick(); updateTransmissionAndProjection(lastStep); }, 90_000);
-    setInterval(() => { renderEvents(); updateTransmissionAndProjection(lastStep); }, 30_000);
+// ── PB3 MODEL ──────────────────────────────────────────────────────────────
+const PB3=(()=>{
+  function compute(step,tx){if(!step)return{panic:0,bubble:0,boom:0,bust:0,dominant:"NORMAL",note:"Insufficient data."};const{volx=1,momScore=.5,mom=0}=step.features||{};const{conf=.3,regimeAge=0,policy=1}=step;const fearInt=tx?.components?.fearInt??0,mb=Math.abs(bp(mom));const panic=clamp(.30*clamp(volx/4,0,1)+.30*fearInt+.25*([6,7,8].includes(policy)?1:0)+.15*(1-momScore),0,1);const bubble=clamp(.30*clamp(regimeAge/60,0,1)+.25*(1-clamp(volx/3,0,1))+.25*clamp(mb/30,0,1)+.20*conf,0,1);const boom=clamp(.35*momScore+.30*clamp(mb/25,0,1)+.20*(policy===4?1:0)+.15*clamp(volx/3,0,1),0,1);const bust=clamp(.35*clamp(volx/3.5,0,1)+.30*([5,7].includes(policy)?1:0)+.20*(1-momScore)+.15*clamp(regimeAge/30,0,1),0,1);const scores={PANIC:panic,BUBBLE:bubble,BOOM:boom,BUST:bust};let dom="NORMAL",ds=0;for(const[k,v]of Object.entries(scores))if(v>ds){ds=v;dom=k;}if(ds<.22)dom="NORMAL";const notes={PANIC:"Capital flight in progress. Sell EUR, buy USD+Gold. Short EUR/USD if confirmed.",BUBBLE:"Euphoric extension. Reversal risk high. Reduce size, tighten stops.",BOOM:"Clean directional momentum. MomScore supports trend. Bias with trend, trail stops.",BUST:"Post-move collapse risk. Vol rising into reversal. Mean-revert or stand aside.",NORMAL:"No dominant behavioral pattern. Standard regime-based rules apply."};return{panic,bubble,boom,bust,dominant:dom,dominantScore:ds,note:notes[dom]};}
+  return{compute};
+})();
+
+// ── EVENT CLASSIFIER ───────────────────────────────────────────────────────
+const Classifier=(()=>{
+  function classify(tx){if(!tx)return{archetype:"--",confidence:0,eurusdBias:"NEUTRAL",note:"Waiting for macro data.",analog:""};const{oilInt=0,usdInt=0,fearInt=0,eventInt=0}=tx.components||{};const total=oilInt+usdInt+fearInt+eventInt;if(total<.15)return{archetype:"QUIET TAPE",confidence:.60,eurusdBias:"NEUTRAL",note:"All macro levers below threshold. Price driven by micro-structure and order flow.",analog:"Watch session overlaps for direction clues."};const isSupply=oilInt>.35&&oilInt>fearInt*1.4&&oilInt>usdInt*1.2;const isRiskOff=fearInt>.35&&usdInt>.25&&fearInt>oilInt*1.2;const isCombined=oilInt>.30&&fearInt>.30&&usdInt>.30;const isLocalized=total<.40&&!isSupply&&!isRiskOff;const isRate=usdInt>.35&&fearInt<.25&&oilInt<.25;if(isCombined)return{archetype:"COMBINED SHOCK",confidence:clamp(total*.8,0,.95),eurusdBias:"BEARISH",note:"All three major levers elevated. Strait of Hormuz-type event. Maximum EUR/USD downside.",analog:"Analog: Gulf War 1990-91, Ukraine energy crisis 2022 (EUR/USD to 0.96)."};if(isSupply)return{archetype:"SUPPLY SHOCK",confidence:clamp(oilInt*1.2,0,.92),eurusdBias:"BEARISH",note:"Oil lever dominant. EU imports 90% of Brent. Energy costs worsen EU trade balance. Petrodollar demand rises.",analog:"Analog: Iran sanctions 2011-12 (EUR/USD 1.45 to 1.20). NOT 2003 Iraq (USD already weak)."};if(isRiskOff)return{archetype:"RISK-OFF PANIC",confidence:clamp((fearInt+usdInt)*.65,0,.90),eurusdBias:"BEARISH",note:"Fear+USD dominant. Classic decoupling: EUR/USD falls while Gold spikes. Capital flight from Europe.",analog:"Analog: 9/11 USD bid, Ukraine invasion Feb 2022 (EUR/USD -10% in weeks)."};if(isRate)return{archetype:"RATE / DOLLAR PLAY",confidence:clamp(usdInt*1.3,0,.88),eurusdBias:tx.score<-.1?"BEARISH":tx.score>.1?"BULLISH":"NEUTRAL",note:"DXY dominant without commodity shock. Fed/ECB rate differential repricing. Watch rate futures.",analog:"Analog: Fed pivot cycles, ECB-behind-curve 2022."};if(isLocalized)return{archetype:"LOCALIZED EVENT",confidence:.55,eurusdBias:"NEUTRAL",note:"Muted lever intensity. Supply impact too small or geographically isolated.",analog:"Analog: Venezuela Maduro 2026 - sanctions-isolated, muted EUR/USD."};return{archetype:"MIXED SIGNALS",confidence:.42,eurusdBias:tx.score<-.15?"BEARISH":tx.score>.15?"BULLISH":"NEUTRAL",note:"Multiple levers active without dominant narrative. Direction ambiguous. Reduce size.",analog:"Requires case-by-case analysis of which lever is driving the move."};}
+  return{classify};
+})();
+
+// ── CORRELATION ENGINE ─────────────────────────────────────────────────────
+const CorrEngine=(()=>{
+  const MAX=60;let eurRet=[],mc={OIL:[],GOLD:[],SILV:[],USD:[]},cumEur=0;
+  const pushEur=r=>{cumEur+=r;};
+  function onMacroUpdate(){["OIL","GOLD","SILV","USD"].forEach(k=>{const d=MacroFeed.get(k);if(d){mc[k].push(d.changePct);if(mc[k].length>MAX)mc[k].shift();}});eurRet.push(cumEur*10000);if(eurRet.length>MAX)eurRet.shift();cumEur=0;}
+  function getCorrelations(){const out={};for(const[k,arr]of Object.entries(mc)){const n=Math.min(arr.length,eurRet.length);if(n<5){out[k]={r:0,tStat:0,n,sig:"ns"};continue;}out[k]=pearsonR(eurRet.slice(-n),arr.slice(-n));}return out;}
+  return{pushEur,onMacroUpdate,getCorrelations};
+})();
+
+// ── SIGNAL TRACKER ─────────────────────────────────────────────────────────
+const SignalTracker=(()=>{
+  const ROLLING=30;
+  const saved=loadObj(KEY.sg,{returns:[],equity:[0],openBias:null,entryPrice:null,totalPips:0,wins:0,losses:0});
+  let ret=Array.isArray(saved.returns)?saved.returns.slice(-100):[];
+  let equity=Array.isArray(saved.equity)?saved.equity.slice(-100):[0];
+  let openBias=saved.openBias||null,entryPrice=saved.entryPrice||null,totalPips=saved.totalPips||0,wins=saved.wins||0,losses=saved.losses||0;
+  function persist(){if((ret.length+wins+losses)%5===0)save(KEY.sg,{returns:ret.slice(-100),equity:equity.slice(-100),openBias,entryPrice,totalPips,wins,losses});}
+  function rollingStats(arr){const n=arr.length;if(n<2)return{sharpe:null};const mean=arr.reduce((a,b)=>a+b,0)/n,v=arr.reduce((s,x)=>s+(x-mean)**2,0)/(n-1),std=Math.sqrt(v);return{sharpe:std>0?(mean/std)*Math.sqrt(252):null};}
+  function update(price,bias){const p=Number(price);if(!Number.isFinite(p))return;if(openBias&&bias!==openBias&&entryPrice!=null){const pr=(p-entryPrice)*10000*(openBias==="LONG"?1:-1);ret.push(pr);if(ret.length>100)ret.shift();equity.push((equity.at(-1)||0)+pr);if(equity.length>100)equity.shift();totalPips+=pr;if(pr>0)wins++;else if(pr<0)losses++;openBias=null;entryPrice=null;persist();}if((bias==="LONG"||bias==="SHORT")&&!openBias){openBias=bias;entryPrice=p;}}
+  function getStats(price){const{sharpe}=rollingStats(ret.slice(-ROLLING));const total=wins+losses,winRate=total>0?wins/total:null;const openPL=(openBias&&entryPrice&&price)?(Number(price)-entryPrice)*10000*(openBias==="LONG"?1:-1):null;return{sharpe,winRate,openPL,totalSignals:total,totalPips,openBias,equity};}
+  return{update,getStats};
+})();
+
+// ── FIREBASE SYNC ─────────────────────────────────────────────────────────
+const FirebaseSync=(()=>{
+  let dbUrl=null,role="AUTO",instanceId=Math.random().toString(36).slice(2,11);
+  let isMaster=false,lastMasterPing=0,masterTTL=45000;
+  function init(url,r){
+    dbUrl=url?(url.replace(/\/$/,"").replace(/\.json$/,"")):null;
+    role=r||"AUTO";
+    if(dbUrl)$("fbStatus").textContent="Firebase: "+dbUrl+" | Role: "+role+" | ID: "+instanceId;
+    else $("fbStatus").textContent="Firebase: not configured";
+  }
+  async function apiGet(path){if(!dbUrl)return null;try{const r=await fetch(dbUrl+"/qx/"+path+".json",{method:"GET",cache:"no-store"});if(!r.ok)return null;const j=await r.json();return j;}catch{return null;}}
+  async function apiPut(path,data){if(!dbUrl)return false;try{await fetch(dbUrl+"/qx/"+path+".json",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});return true;}catch{return false;}}
+  async function tryBecomeMaster(){
+    const m=await apiGet("master");
+    const now=Date.now();
+    if(!m||!m.ts||(now-m.ts)>masterTTL){await apiPut("master",{id:instanceId,ts:now});isMaster=true;return;}
+    isMaster=(m.id===instanceId);
+  }
+  async function writeState(state){
+    if(!dbUrl)return;
+    if(role==="READER")return;
+    if(role==="AUTO"&&!isMaster)return;
+    await apiPut("state",{...state,ts:Date.now(),id:instanceId});
+    await apiPut("master",{id:instanceId,ts:Date.now()});
+  }
+  async function readState(){if(!dbUrl)return null;if(role==="MASTER")return null;return apiGet("state");}
+  async function tick(){
+    if(!dbUrl)return;
+    if(role==="AUTO")await tryBecomeMaster();
+    updateSyncBadge();
+  }
+  function updateSyncBadge(){
+    const sb=$("syncBadge"),sd=$("syncDot");
+    if(!dbUrl)return;
+    if(role==="READER"){sb.className="syncBadge firebase";sd.className="dot";sb.querySelector("span")&&(sb.innerHTML='<span class="dot"></span><span>FB READER</span>');}
+    else if(isMaster||role==="MASTER"){sb.className="syncBadge firebase";sb.innerHTML='<span class="dot"></span><span>FB MASTER</span>';}
+    else{sb.className="syncBadge firebase";sb.innerHTML='<span class="dot amber"></span><span>FB SYNC</span>';}
+  }
+  return{init,writeState,readState,tick,get isMaster(){return isMaster;},get role(){return role;}};
+})();
+
+// ── CANVAS UTILITIES ──────────────────────────────────────────────────────
+function setupCanvas(canvas){const dpr=window.devicePixelRatio||1;const rect=canvas.getBoundingClientRect();const w=Math.max(rect.width,1),h=Math.max(rect.height,1);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);const ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);return{ctx,w,h};}
+function drawSparkline(canvas,closes,changePct){if(!canvas||!closes?.length)return;const{ctx,w,h}=setupCanvas(canvas);const mn=Math.min(...closes),mx=Math.max(...closes),range=mx-mn||.0001;const isPos=changePct>=0;ctx.clearRect(0,0,w,h);ctx.beginPath();closes.forEach((c,i)=>{const x=(i/(closes.length-1))*w,y=h-((c-mn)/range)*(h-4)-2;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.strokeStyle=isPos?"rgba(24,209,138,.82)":"rgba(255,77,77,.72)";ctx.lineWidth=1.5;ctx.stroke();ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fillStyle=isPos?"rgba(24,209,138,.10)":"rgba(255,77,77,.08)";ctx.fill();}
+function drawTimeline(canvas,states){if(!canvas||!states.length)return;const{ctx,w,h}=setupCanvas(canvas);const n=states.length,sw=w/n;ctx.clearRect(0,0,w,h);states.forEach((s,i)=>{const st=STATES[s-1];ctx.fillStyle=st?st.color:"rgba(255,255,255,.15)";ctx.fillRect(Math.floor(i*sw),0,Math.ceil(sw)+1,h);});}
+function drawCone({spot,r1,r4,bias}){const canvas=$("coneCanvas");const{ctx,w,h}=setupCanvas(canvas);ctx.clearRect(0,0,w,h);ctx.strokeStyle="rgba(232,239,255,.06)";ctx.lineWidth=1;for(let i=0;i<=14;i++){const x=i*(w/14);ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}for(let j=0;j<=8;j++){const y=j*(h/8);ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}const cx=Math.round(w*.44),cy=Math.round(h*.52),x1=Math.round(w*.60),x4=Math.round(w*.88);const maxP=Math.max(10,r4*1.15),ppp=(h*.33)/maxP,y1=r1*ppp,y4=r4*ppp;const bu=bias==="LONG",bd=bias==="SHORT",base=bu?[24,209,138]:bd?[255,77,77]:[100,160,255];const rad=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.sqrt((x4-cx)**2+y4**2));rad.addColorStop(0,"rgba("+base.join(",")+",0.42)");rad.addColorStop(.5,"rgba("+base.join(",")+",0.18)");rad.addColorStop(1,"rgba("+base.join(",")+",0.00)");ctx.fillStyle=rad;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x1,cy-y1);ctx.lineTo(x4,cy-y4);ctx.lineTo(x4,cy+y4);ctx.lineTo(x1,cy+y1);ctx.closePath();ctx.fill();ctx.strokeStyle="rgba(232,239,255,.28)";ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x4,cy-y4);ctx.stroke();ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x4,cy+y4);ctx.stroke();ctx.setLineDash([3,4]);ctx.strokeStyle="rgba(232,239,255,.18)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x1,cy-y1);ctx.lineTo(x1,cy+y1);ctx.stroke();ctx.setLineDash([]);ctx.strokeStyle="rgba(232,239,255,.25)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();ctx.fillStyle="rgba(232,239,255,.90)";ctx.beginPath();ctx.arc(cx,cy,3.5,0,Math.PI*2);ctx.fill();ctx.font="12px ui-monospace,monospace";ctx.fillStyle="rgba(232,239,255,.60)";ctx.fillText("Spot "+spot.toFixed(5),cx+10,cy-6);ctx.fillText("1h \xb1"+r1+"p",x1-50,18);ctx.fillText("4h \xb1"+r4+"p",x4-50,18);ctx.font="bold 14px ui-sans-serif,sans-serif";ctx.fillStyle=bu?"rgba(24,209,138,.95)":bd?"rgba(255,77,77,.95)":"rgba(232,239,255,.75)";ctx.fillText(bias,18,24);}
+function drawEquity(arr){const canvas=$("equityCanvas");if(!canvas||arr.length<2)return;const{ctx,w,h}=setupCanvas(canvas);const mn=Math.min(...arr),mx=Math.max(...arr),range=mx-mn||.0001;const isPos=arr.at(-1)>=0;ctx.clearRect(0,0,w,h);ctx.beginPath();arr.forEach((v,i)=>{const x=(i/(arr.length-1))*w,y=h-((v-mn)/range)*(h-4)-2;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.strokeStyle=isPos?"rgba(24,209,138,.85)":"rgba(255,77,77,.75)";ctx.lineWidth=2;ctx.stroke();ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fillStyle=isPos?"rgba(24,209,138,.10)":"rgba(255,77,77,.08)";ctx.fill();if(mn<0&&mx>0){const zy=h-((0-mn)/range)*(h-4)-2;ctx.strokeStyle="rgba(232,239,255,.22)";ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(0,zy);ctx.lineTo(w,zy);ctx.stroke();ctx.setLineDash([]);}}
+function drawTM(matrix){const body=$("tmBody");if(!body)return;const rows=[];for(let i=0;i<8;i++){const row=matrix[i],total=row.reduce((a,b)=>a+b,0),norm=total>0?row.map(v=>v/total):new Array(8).fill(0);const cells=norm.map((v,j)=>{const alpha=clamp(v*4,0,.85);const col=v>.3?STATES[j].color.replace(/[\d.]+\)$/,alpha+")"):"rgba(255,255,255,"+(alpha*.5)+")";const txt=v>.01?Math.round(v*100)+"%":"";return"<td style='background:"+col+";color:rgba(255,255,255,"+Math.max(v*3,.6)+");font-size:9px'>"+txt+"</td>";}).join("");rows.push("<tr><td class='rl'>S"+(i+1)+"</td>"+cells+"</tr>");}body.innerHTML=rows.join("");}
+
+let resizeTimer;
+window.addEventListener("resize",()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(lastStep&&lastSpot)updateAll();drawTimeline($("timelineCanvas"),recentStates);},150);});
+
+// ── RENDER HELPERS ─────────────────────────────────────────────────────────
+const impactPill=i=>{const v=(i||"").toUpperCase();if(v==="HIGH")return'<span class="impact"><span class="folder"></span>HIGH</span>';if(v==="MED")return'<span class="impact"><span class="folder med"></span>MED</span>';return'<span class="impact"><span class="folder low"></span>LOW</span>';};
+function countdownText(iso){const t=new Date(iso).getTime();if(!Number.isFinite(t))return"--";const d=t-Date.now();if(d<=0)return"Past";const mins=Math.floor(d/60000),days=Math.floor(mins/1440),hrs=Math.floor((mins-days*1440)/60),rem=mins-days*1440-hrs*60;if(days>0)return days+"d "+hrs+"h";if(hrs>0)return hrs+"h "+rem+"m";return rem+"m";}
+function renderEvents(){
+  const liveCal=EventsFeed.get();
+  let events=liveCal.length>0?liveCal:[];
+  const now=Date.now();
+  const sorted=events.map(e=>({...e,t:new Date(e.when).getTime()})).filter(e=>Number.isFinite(e.t)&&e.t>=now-3600000).sort((a,b)=>a.t-b.t).slice(0,10);
+  if(!sorted.length){$("eventsBody").innerHTML="<tr><td colspan='6' style='color:rgba(255,255,255,.5)'>No upcoming HIGH/MED impact USD/EUR events this week.</td></tr>";return;}
+  $("eventsBody").innerHTML=sorted.map(e=>{
+    const w=new Date(e.when);const ws=isNaN(w)?"--":w.toLocaleDateString()+" "+w.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+    return "<tr><td>"+ws+"</td><td><a class='link' href='https://www.forexfactory.com/calendar' target='_blank' rel='noopener noreferrer'>"+escH(e.event||"")+"</a></td><td>"+impactPill(e.impact)+"</td><td style='font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.6)'>"+escH(e.forecast||"--")+"</td><td style='font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.6)'>"+escH(e.previous||"--")+"</td><td>"+countdownText(e.when)+"</td></tr>";
+  }).join("");
+}
+function renderHeadlines(){
+  const h=HeadlinesFeed.get();
+  if(!h.length){$("headlinesBody").innerHTML="<tr><td colspan='3' style='color:rgba(255,255,255,.5)'>Fetching live headlines from ForexLive and FXStreet...</td></tr>";return;}
+  $("headlinesBody").innerHTML=h.map(hl=>"<tr><td style='white-space:nowrap;font-size:10.5px'>"+escH(hl.time||"")+"</td><td style='font-size:10.5px;white-space:nowrap'>"+escH(hl.source||"")+"</td><td><a class='link' href='"+escA(hl.url||"#")+"' target='_blank' rel='noopener noreferrer'>"+escH(hl.title||"")+"</a></td></tr>").join("");
+}
+
+// ── TRANSMISSION & PROJECTION ──────────────────────────────────────────────
+const normAbsPct=(x,cap=1.5)=>!Number.isFinite(x)?0:clamp(Math.abs(x)/cap,0,1);
+function computeEventRisk(){
+  const now=Date.now(),w={HIGH:1.0,MED:0.6,LOW:.25};
+  const events=EventsFeed.get();
+  const up=events.map(e=>({...e,t:new Date(e.when).getTime()})).filter(e=>Number.isFinite(e.t)&&e.t>=now);
+  let best=0;
+  for(const e of up){const wt=w[(e.impact||"LOW").toUpperCase()]??.25,mins=(e.t-now)/60000;const prox=mins<=60?1:mins<=360?(1-(mins-60)/300)*.85:mins<=1440?(1-(mins-360)/1080)*.35:0;best=Math.max(best,wt*prox);}
+  return clamp(best,0,1);
+}
+function computeTx(){
+  const oil=MacroFeed.get("OIL"),gold=MacroFeed.get("GOLD"),silv=MacroFeed.get("SILV"),usd=MacroFeed.get("USD"),eRisk=computeEventRisk();
+  const oilInt=normAbsPct(oil?.changePct,3.0),usdInt=normAbsPct(usd?.changePct,0.8),fearInt=normAbsPct(gold?.changePct,1.5),silvInt=normAbsPct(silv?.changePct,2.5);
+  const oilDir=(oil?.changePct??0)>=0?-oilInt:+oilInt*.4;
+  const usdDir=(usd?.changePct??0)>=0?-usdInt:+usdInt*.5; // DXY up = USD strong = EUR/USD down
+  const fearDir=(gold?.changePct??0)>=0?-fearInt:+fearInt*.2;
+  const silvDir=(silv?.changePct??0)>=0?+silvInt*.25:-silvInt*.15;
+  const score=clamp(.36*oilDir+.44*usdDir+.26*fearDir+.10*silvDir+.22*(-eRisk),-1,1);
+  const intensity=clamp(.30*oilInt+.30*usdInt+.20*fearInt+.10*silvInt+.25*eRisk,0,1);
+  const bias=score<=-.18?"USD+RISK OFF":score>=.18?"USD WEAK/RISK ON":"NEUTRAL";
+  return{score,intensity,bias,components:{oilInt,usdInt,fearInt,silvInt,eventInt:eRisk}};
+}
+function leverPaint(barEl,pctEl,val,dir){const pct=Math.round(val*100);pctEl.textContent=pct+"%";barEl.style.width=clamp(pct,0,100)+"%";barEl.style.background=dir==="bad"?"rgba(255,77,77,.82)":dir==="good"?"rgba(24,209,138,.82)":"rgba(100,160,255,.78)";}
+function computeProj(step,tx){const base1h={1:6,2:10,3:7,4:12,5:18,6:16,7:14,8:26};const pol=step?.policy||1,volx=step?.features?.volx??1,momBp=bp(step?.features?.mom??0),conf=step?.conf??.25;const volMult=clamp(.75+.18*volx,.65,1.85),txMult=clamp(1.0+.55*tx.intensity,1.0,1.6),eRisk=tx.components.eventInt;const r1=Math.round((base1h[pol]??8)*volMult*txMult*clamp(1.0+.65*eRisk,1,1.7));const r4=Math.round(r1*2.6*clamp(1.0+.35*eRisk,1,1.35));const momDir=Math.tanh(momBp/18),score=clamp(.55*momDir+.75*tx.score,-1,1);const bias=score>=.20?"LONG":score<=-.20?"SHORT":"NEUTRAL";const agree=1-Math.abs(momDir-tx.score)/2,dec=clamp(.35*conf+.45*agree+.20*(1-eRisk*.6),0,1);return{bias,r1:clamp(r1,3,80),r4:clamp(r4,6,160),decPct:Math.round(dec*100),volMult,txMult,eRisk};}
+
+// ── UI UPDATE FUNCTIONS ─────────────────────────────────────────────────────
+function setRisk(pol,cf){const MAP={1:["NORMAL","Range logic. Fade extremes."],2:["ELEVATED","Thin liquidity. Reduce size."],3:["NORMAL","Drift regime. Small edges."],4:["HIGH","Trend regime. Bias with trend."],5:["HIGH","Stop cascade. De-risk."],6:["HIGH","News shock. Consider standing down."],7:["ELEVATED","Unwind risk. Protect capital."],8:["CRITICAL","Risk off. Protect capital first."]};let[level,rule]=MAP[pol]||["--","State-aware sizing"];if(cf!=null){if(cf<.35&&level==="NORMAL")level="ELEVATED";if(cf<.25&&level==="ELEVATED")level="HIGH";}$("riskBig").textContent=level;$("riskRule").textContent=rule;$("riskBig").classList.remove("pos","neg");if(level==="NORMAL")$("riskBig").classList.add("pos");if(["CRITICAL","HIGH"].includes(level))$("riskBig").classList.add("neg");}
+function setFxStatus(st){$("fxSpotStatus").textContent=st;$("fxStatusDot").classList.remove("live","err");if(st==="LIVE")$("fxStatusDot").classList.add("live");else if(st==="ERROR"||st==="STALE")$("fxStatusDot").classList.add("err");}
+function updateSessionUI(){const{openSessions,primary,isOverlap,dayInfo,minsLeft}=SessionEngine.compute();SessionEngine.SESS.forEach(s=>{const box=$("sb_"+s.id),st=$("ss_"+s.id);if(!box||!st)return;const isOpen=openSessions.includes(s.id),isOL=isOverlap&&(s.id==="LONDON"||s.id==="NEW_YORK");box.style.borderColor=isOpen?s.color.replace(/[\d.]+\)$/,"0.40)"):"rgba(180,220,255,.10)";box.style.background=isOpen?s.color.replace(/[\d.]+\)$/,"0.07)"):"rgba(8,20,52,.22)";st.textContent=isOL?"Overlap":isOpen?"Open":"Closed";st.className="sStat "+(isOL?"overlap":isOpen?"open":"closed");});$("currentDayName").textContent=dayInfo.name;$("currentSessionLabel").textContent=primary?"Session: "+primary.label:"Session: Closed";$("dayEffectNote").textContent=dayInfo.effect;$("sessionOverlapBadge").textContent=isOverlap?"LDN/NY OVERLAP - Highest Vol":openSessions.length?openSessions.join("+")+" Open":"All sessions closed";$("sessionOverlapBadge").style.color=isOverlap?"rgba(100,180,255,.92)":"rgba(255,255,255,.58)";$("sessionMinsLeft").textContent=minsLeft!=null?"~"+minsLeft+"m left":"";}
+function updatePB3UI(pb3){const pcts={PANIC:pb3.panic,BUBBLE:pb3.bubble,BOOM:pb3.boom,BUST:pb3.bust},labels={PANIC:"pb3Panic",BUBBLE:"pb3Bubble",BOOM:"pb3Boom",BUST:"pb3Bust"};for(const[k,v]of Object.entries(pcts)){const pct=Math.round(v*100);$(labels[k]+"Pct").textContent=pct+"%";$(labels[k]+"Bar").style.width=clamp(pct,0,100)+"%";}const colors={PANIC:"rgba(255,77,77,.18),rgba(255,77,77,.08)",BUBBLE:"rgba(255,176,32,.18),rgba(255,176,32,.08)",BOOM:"rgba(24,209,138,.18),rgba(24,209,138,.08)",BUST:"rgba(255,138,64,.18),rgba(255,138,64,.08)",NORMAL:"rgba(8,20,52,.28),rgba(8,20,52,.28)"};const borders={PANIC:"rgba(255,77,77,.35)",BUBBLE:"rgba(255,176,32,.35)",BOOM:"rgba(24,209,138,.35)",BUST:"rgba(255,138,64,.35)",NORMAL:"rgba(180,220,255,.10)"};const txtColors={PANIC:"rgba(255,100,100,.95)",BUBBLE:"rgba(255,176,32,.95)",BOOM:"rgba(24,209,138,.95)",BUST:"rgba(255,138,64,.95)",NORMAL:"rgba(232,239,255,.65)"};const d=pb3.dominant,row=$("pb3Dom"),[bg1,bg2]=(colors[d]||colors.NORMAL).split(",");row.style.background="linear-gradient(135deg,"+bg1.trim()+","+bg2.trim()+")";row.style.borderColor=borders[d]||borders.NORMAL;$("pb3DomState").textContent=d;$("pb3DomState").style.color=txtColors[d]||txtColors.NORMAL;$("pb3DomNote").textContent=pb3.note;}
+function updateArchUI(arch){const arcBg={"COMBINED SHOCK":"rgba(255,58,165,.15)","SUPPLY SHOCK":"rgba(255,77,77,.15)","RISK-OFF PANIC":"rgba(255,176,32,.15)","LOCALIZED EVENT":"rgba(120,170,255,.12)","RATE / DOLLAR PLAY":"rgba(43,108,255,.15)","QUIET TAPE":"rgba(8,20,52,.28)","MIXED SIGNALS":"rgba(100,80,200,.12)","--":"rgba(8,20,52,.28)"};const arcBorder={"COMBINED SHOCK":"rgba(255,58,165,.35)","SUPPLY SHOCK":"rgba(255,77,77,.30)","RISK-OFF PANIC":"rgba(255,176,32,.30)","LOCALIZED EVENT":"rgba(120,170,255,.25)","RATE / DOLLAR PLAY":"rgba(43,108,255,.30)","QUIET TAPE":"rgba(180,220,255,.10)","MIXED SIGNALS":"rgba(140,100,220,.25)","--":"rgba(180,220,255,.10)"};const el=$("archMain");el.style.background=arcBg[arch.archetype]||arcBg["--"];el.style.border="1px solid "+(arcBorder[arch.archetype]||arcBorder["--"]);$("archType").textContent=arch.archetype;$("archConf").textContent="Confidence: "+Math.round(arch.confidence*100)+"%";$("archBias").innerHTML="EUR/USD Bias: <b class='"+(arch.eurusdBias==="BEARISH"?"neg":arch.eurusdBias==="BULLISH"?"pos":"")+"'>"+arch.eurusdBias+"</b>";$("archNote").textContent=arch.note;$("archAnalog").textContent=arch.analog;}
+function updateCorrUI(corrs){const assets=[{key:"OIL",label:"Brent Crude (BZ=F)",dir:"Negative"},{key:"GOLD",label:"Gold COMEX (GC=F)",dir:"Positive"},{key:"SILV",label:"Silver COMEX (SI=F)",dir:"Positive"},{key:"USD",label:"DXY (DX-Y.NYB)",dir:"Negative"}];$("corrBody").innerHTML=assets.map(a=>{const c=corrs[a.key]||{r:0,tStat:0,n:0,sig:"ns"};const rStr=c.n>=5?c.r.toFixed(3):"--",tStr=c.n>=5?c.tStat.toFixed(2):"--";const sigClass=c.sig==="**"?"sig2":c.sig==="*"?"sig1":"sigNS";const rClass=c.r>.05?"corrPos":c.r<-.05?"corrNeg":"";return"<tr><td>"+a.label+"</td><td class='"+rClass+"'>"+rStr+"</td><td>"+tStr+"</td><td class='"+sigClass+"'>"+c.sig+"</td><td>"+c.n+"</td><td style='color:rgba(255,255,255,.45);font-size:10.5px'>"+a.dir+"</td></tr>";}).join("");}
+function updateSharpeUI(stats){const sv=$("sharpeVal"),sm=$("sharpeMeta");if(stats.sharpe!=null&&Number.isFinite(stats.sharpe)){sv.textContent=stats.sharpe.toFixed(2);sv.classList.remove("pos","neg");if(stats.sharpe>=2.5)sv.classList.add("pos");else if(stats.sharpe<0)sv.classList.add("neg");sm.textContent=stats.sharpe>=2.5?"Target met (>=2.5)":stats.sharpe>=1.0?"Below target 2.5":"Below 1.0 - review";}else{sv.textContent="--";sm.textContent="Need >=20 signals ("+stats.totalSignals+")";}const wr=$("winRateVal"),wrm=$("winRateMeta");if(stats.winRate!=null){wr.textContent=Math.round(stats.winRate*100)+"%";wr.classList.remove("pos","neg");if(stats.winRate>=.55)wr.classList.add("pos");else if(stats.winRate<.40)wr.classList.add("neg");wrm.textContent=stats.totalSignals+" closed signals";}else{wr.textContent="--";wrm.textContent="No closed signals";}const pl=$("openPLVal"),plm=$("openPLMeta");if(stats.openPL!=null){pl.textContent=(stats.openPL>=0?"+":"")+stats.openPL.toFixed(1)+" p";pl.classList.remove("pos","neg");if(stats.openPL>0)pl.classList.add("pos");else if(stats.openPL<0)pl.classList.add("neg");plm.textContent=stats.openBias?"Open "+stats.openBias:"--";}else{pl.textContent="--";plm.textContent="No open signal";}const cp=$("cumPipsVal");cp.textContent=(stats.totalPips>=0?"+":"")+stats.totalPips.toFixed(1)+" p";cp.classList.remove("pos","neg");if(stats.totalPips>0)cp.classList.add("pos");else if(stats.totalPips<0)cp.classList.add("neg");$("footSharpe").textContent=stats.sharpe!=null?stats.sharpe.toFixed(2):"--";drawEquity(stats.equity.length>=2?stats.equity:[0,0]);}
+function updateWarmupBadge(step){const sb=$("syncBadge"),fbConfigured=!!(settings.fbUrl);if(fbConfigured)return;if(!step){sb.className="syncBadge warming";sb.innerHTML='<span class="dot amber"></span><span>Warming 0/'+Engine.WARMUP+'</span>';return;}const n=step.tickN,W=Engine.WARMUP;if(n<W){sb.className="syncBadge warming";sb.innerHTML='<span class="dot amber"></span><span>Warming '+n+"/"+W+'</span>';}else{sb.className="syncBadge synced";sb.innerHTML='<span class="dot live"></span><span>SYNCED (det)</span>';}}
+
+// ── ALERTS ────────────────────────────────────────────────────────────────
+let lastAlertAt=0;
+function checkAlerts(proj){const thresh=Number(settings.alertThreshPips)||0;if(thresh>0&&proj&&proj.r1>=thresh){if(Date.now()-lastAlertAt<300000)return;lastAlertAt=Date.now();$("alertBadge").classList.add("show");$("alertBadgeText").textContent="1h range "+proj.r1+"p >= "+thresh+"p";setTimeout(()=>$("alertBadge").classList.remove("show"),30000);$("rng1hBox").classList.add("breach");setTimeout(()=>$("rng1hBox").classList.remove("breach"),4000);if("Notification"in window&&Notification.permission==="granted"){try{new Notification("QuadraX Alert",{body:"1h range "+proj.r1+"p. Bias: "+proj.bias,tag:"qx-alert"});}catch{}}}}
+
+let nightMode=false;
+function toggleNight(){nightMode=!nightMode;document.body.classList.toggle("night",nightMode);$("nightBtn").classList.toggle("night-active",nightMode);$("nightBtn").textContent=nightMode?"Day":"Night";}
+
+function exportSnapshot(){const snap={timestamp:new Date().toISOString(),version:"v4",spot:SpotFeed.getLast(),regime:lastStep?{policy:lastStep.policy,detector:lastStep.detector,conf:lastStep.conf,regimeAge:lastStep.regimeAge,momScore:lastStep.momScore,warmed:lastStep.warmed}:null,macro:{oil:MacroFeed.get("OIL"),gold:MacroFeed.get("GOLD"),silv:MacroFeed.get("SILV"),usd:MacroFeed.get("USD")},transmission:lastTx,projection:lastProj,pb3:lastPB3,archetype:lastArch};const url=URL.createObjectURL(new Blob([JSON.stringify(snap,null,2)],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download="quadrax-v4-snap-"+Date.now()+".json";a.click();URL.revokeObjectURL(url);}
+
+let lastSpot=null,lastStep=null,lastTx=null,lastProj=null,lastPB3=null,lastArch=null;
+let paused=false,syncing=false;
+
+// ── CORE UPDATE ────────────────────────────────────────────────────────────
+function updateAll(){
+  const tx=computeTx();lastTx=tx;
+  $("macroBiasChip").textContent=tx.bias;$("txScoreChip").textContent=tx.score.toFixed(2);
+  const eRisk=tx.components.eventInt;$("eventRiskChip").textContent=eRisk>=.70?"HIGH":eRisk>=.35?"MED":"LOW";
+  const txLbl=tx.score<=-.18?"BEAR EURUSD":tx.score>=.18?"BULL EURUSD":"NEUTRAL";$("txBig").textContent=txLbl;
+  $("txMeta").textContent="Score "+tx.score.toFixed(2)+" | "+tx.bias+" | Intensity "+Math.round(tx.intensity*100)+"%";
+  const oil=MacroFeed.get("OIL"),gold=MacroFeed.get("GOLD"),usd=MacroFeed.get("USD");
+  leverPaint($("oilLeverBar"),$("oilLeverPct"),tx.components.oilInt,(oil?.changePct??0)>=0?"bad":"good");
+  leverPaint($("usdLeverBar"),$("usdLeverPct"),tx.components.usdInt,(usd?.changePct??0)>=0?"bad":"good");
+  leverPaint($("fearLeverBar"),$("fearLeverPct"),tx.components.fearInt,(gold?.changePct??0)>=0?"bad":"good");
+  leverPaint($("eventLeverBar"),$("eventLeverPct"),tx.components.eventInt,tx.components.eventInt>=.35?"bad":"neutral");
+  const arch=Classifier.classify(tx);lastArch=arch;updateArchUI(arch);
+  CorrEngine.onMacroUpdate();updateCorrUI(CorrEngine.getCorrelations());
+  drawTM(Engine.getTM());updateSessionUI();
+  if(lastStep&&lastSpot&&Number.isFinite(lastSpot.price)){
+    const proj=computeProj(lastStep,tx);lastProj=proj;checkAlerts(proj);
+    if(!paused)SignalTracker.update(lastSpot.price,proj.bias);
+    const stats=SignalTracker.getStats(lastSpot.price);updateSharpeUI(stats);
+    const pb3=PB3.compute(lastStep,tx);lastPB3=pb3;updatePB3UI(pb3);
+    $("tradeBias").textContent=proj.bias;$("tradeBias").classList.remove("pos","neg");
+    if(proj.bias==="LONG")$("tradeBias").classList.add("pos");
+    if(proj.bias==="SHORT")$("tradeBias").classList.add("neg");
+    $("tradeBiasMeta").textContent=txLbl+" | Event "+Math.round(proj.eRisk*100)+"%";
+    $("rng1h").textContent="\xb1"+proj.r1+" pips";$("rng1hMeta").textContent="Vol x"+proj.volMult.toFixed(2)+" Macro x"+proj.txMult.toFixed(2);
+    $("rng4h").textContent="\xb1"+proj.r4+" pips";$("rng4hMeta").textContent="4h scaled | Tx "+tx.score.toFixed(2);
+    $("decConf").textContent=proj.decPct+"%";$("decConf").classList.remove("pos","neg");
+    if(proj.decPct>=55)$("decConf").classList.add("pos");if(proj.decPct<=30)$("decConf").classList.add("neg");
+    $("decConfMeta").textContent=proj.decPct>=55?"Higher agreement":proj.decPct>=40?"Mixed signals":"Low agreement, caution";
+    drawCone({spot:lastSpot.price,r1:proj.r1,r4:proj.r4,bias:proj.bias});
+    // Firebase sync write
+    if(settings.fbUrl&&(FirebaseSync.role==="MASTER"||(FirebaseSync.role==="AUTO"&&FirebaseSync.isMaster))){
+      FirebaseSync.writeState({spot:lastSpot.price,policy:lastStep.policy,conf:lastStep.conf,bias:proj.bias,r1:proj.r1,r4:proj.r4,arch:arch.archetype,pb3:pb3.dominant});
+    }
+  }else{
+    ["tradeBias","rng1h","rng4h","decConf"].forEach(id=>$(id).textContent="--");
+    updateSharpeUI({sharpe:null,winRate:null,openPL:null,totalSignals:0,totalPips:0,openBias:null,equity:[0]});
+    updatePB3UI(PB3.compute(null,tx));
+  }
+}
+
+async function onSpotUpdate(s){
+  const now=Date.now();$("lastUpdate").textContent=fmtTime(now);
+  if(!s.ok){setFxStatus("ERROR");$("fxSpotDelta").textContent="0.00000";$("modeTag").textContent="Mode: ERROR";return;}
+  lastSpot=s;$("fxSpotPrice").textContent=s.price.toFixed(5);$("quoteProvider").textContent="Provider: "+(s.provider||s.source||"--");$("fxSpotMeta").textContent="Source: "+s.source;$("fxSpotDelta").textContent=s.lastDelta.toFixed(5);$("fxLatencyTag").textContent=(s.latencyMs??"--")+"ms";$("fxLastTag").textContent="Last: "+fmtTime(s.ts);$("modeTag").textContent=settings.twelvedataKey?"Mode: LIVE":"Mode: FREE";
+  const dw=clamp(Math.abs(s.lastDelta)/.0012,0,1)*100;$("miniBar").style.width=Math.max(10,dw)+"%";$("miniBar").style.background=s.lastDelta>=0?"rgba(24,209,138,.85)":"rgba(255,77,77,.85)";
+  setFxStatus(s.status);
+  CorrEngine.pushEur(s.lastDelta);
+
+  // READER mode: pull state from Firebase instead of computing
+  if(settings.fbUrl&&FirebaseSync.role==="READER"){
+    const fbState=await FirebaseSync.readState();
+    if(fbState&&fbState.ts&&(Date.now()-fbState.ts)<60000){
+      $("policyStateTitle").textContent="Policy State: S"+(fbState.policy||"?")+" "+(STATES[(fbState.policy||1)-1]?.name||"");
+      $("policyStateDesc").textContent="[Firebase READER] Conf "+Math.round((fbState.conf||0)*100)+"% | Bias "+fbState.bias+" | Arch "+fbState.arch;
+      $("tradeBias").textContent=fbState.bias||"--";
+      $("rng1h").textContent=fbState.r1?("\xb1"+fbState.r1+" pips"):"--";
+      $("rng4h").textContent=fbState.r4?("\xb1"+fbState.r4+" pips"):"--";
+      $("pb3DomState").textContent=fbState.pb3||"--";
+      return;
+    }
   }
 
-  start();
+  if(paused)return;
+  const step=Engine.step(s.price);if(!step)return;lastStep=step;
+  pushState(step.policy);drawTimeline($("timelineCanvas"),recentStates);$("timelineDepth").textContent=recentStates.length;
+  $("tickChip").textContent=step.tickN+"/"+Engine.WARMUP;
+  $("ageChip").textContent=String(step.regimeAge);$("momChip").textContent=Math.round(step.momScore*100)+"%";
+  $("nextStateChip").textContent="S"+step.predictedNext.state+" ("+Math.round(step.predictedNext.prob*100)+"%)";
+  $("policyStateTitle").textContent="Policy State: S"+step.policy+" "+STATES[step.policy-1]?.name;$("policyStateDesc").textContent=STATES[step.policy-1]?.desc||"";
+  $("detectorChip").textContent="S"+step.detector;$("policyChip").textContent="S"+step.policy;$("confChip").textContent=(step.conf*100).toFixed(1)+"%";$("hystChip").textContent=step.detector===step.policy?"stable":"holding";
+  setRisk(step.policy,step.conf);
+  step.probs.forEach((p,i)=>{probEls[i].bar.style.width=clamp(p*100,0,100)+"%";probEls[i].bar.style.background=STATES[i].color;probEls[i].val.textContent=(p*100).toFixed(1)+"%";});
+  $("footPolicy").textContent="S"+step.policy;$("footDetector").textContent="S"+step.detector;$("footAge").textContent=String(step.regimeAge);
+  updateWarmupBadge(step);
+  updateAll();
+}
 
+// ── SETTINGS ──────────────────────────────────────────────────────────────
+async function validateTDKey(key){if(!key)return null;try{const r=await fetch("https://api.twelvedata.com/price?symbol=EUR/USD&apikey="+encodeURIComponent(key),{cache:"no-store"});if(!r.ok)return false;const j=await r.json();return Number.isFinite(Number(j?.price))&&Number(j.price)>0;}catch{return false;}}
+function openSettings(){$("tdKeyInput").value=settings.twelvedataKey||"";$("pollInput").value=String(settings.pollMs||12000);$("alertThreshInput").value=String(settings.alertThreshPips||"");$("histDepthInput").value=String(settings.histDepth||60);$("fbUrlInput").value=settings.fbUrl||"";$("fbRoleInput").value=settings.fbRole||"AUTO";$("tdKeyValidTag").textContent="";$("settingsBack").style.display="flex";}
+function closeSettings(){$("settingsBack").style.display="none";}
+$("settingsBtn").addEventListener("click",openSettings);$("closeSettingsBtn").addEventListener("click",closeSettings);
+$("settingsBack").addEventListener("click",e=>{if(e.target===$("settingsBack"))closeSettings();});
+$("resetSettingsBtn").addEventListener("click",()=>{settings={twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbUrl:"",fbRole:"AUTO"};save(KEY.s,settings);openSettings();});
+$("saveSettingsBtn").addEventListener("click",async()=>{
+  const key=String($("tdKeyInput").value||"").trim(),
+        poll=Number($("pollInput").value||12000),
+        thresh=Number($("alertThreshInput").value||0),
+        depth=Number($("histDepthInput").value||60),
+        fbUrl=String($("fbUrlInput").value||"").trim(),
+        fbRole=$("fbRoleInput").value||"AUTO";
+  if(key){$("tdKeyValidTag").textContent=" Checking...";$("tdKeyValidTag").className="vTag";const valid=await validateTDKey(key);$("tdKeyValidTag").textContent=valid?" Valid":" Invalid";$("tdKeyValidTag").className="vTag "+(valid?"ok":"fail");if(valid===false&&!confirm("API key appears invalid. Save anyway?"))return;}
+  settings.twelvedataKey=key;
+  settings.pollMs=Number.isFinite(poll)&&poll>=6000?Math.round(poll):12000;
+  settings.alertThreshPips=Number.isFinite(thresh)&&thresh>0?Math.round(thresh):0;
+  settings.histDepth=clamp(Number.isFinite(depth)?Math.round(depth):60,10,120);
+  settings.fbUrl=fbUrl;settings.fbRole=fbRole;
+  save(KEY.s,settings);
+  FirebaseSync.init(fbUrl,fbRole);
+  if(settings.alertThreshPips>0&&"Notification"in window&&Notification.permission==="default")Notification.requestPermission();
+  closeSettings();
+  alert("Saved. Reload to apply polling cadence changes.");
+});
+
+$("pauseBtn").addEventListener("click",()=>{paused=!paused;$("pauseBtn").textContent=paused?"Resume":"Pause";$("sysStatus").textContent=paused?"PAUSED":"LIVE";$("liveDot").classList.toggle("amber",paused);});
+$("nightBtn").addEventListener("click",toggleNight);$("exportBtn").addEventListener("click",exportSnapshot);
+$("syncBtn").addEventListener("click",async()=>{if(syncing)return;syncing=true;$("syncBtn").textContent="Syncing...";$("syncBtn").classList.add("syncing");try{await Promise.allSettled([SpotFeed.tick(onSpotUpdate),MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()]);updateAll();}finally{syncing=false;$("syncBtn").textContent="Sync";$("syncBtn").classList.remove("syncing");}});
+window.addEventListener("keydown",e=>{if(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")return;const k=e.key.toLowerCase();if(k==="p")$("pauseBtn").click();else if(k==="s")$("syncBtn").click();else if(k==="n")toggleNight();else if(k==="x")exportSnapshot();else if(k==="?")$("kbHint").classList.toggle("show");});
+let tvLoaded=false;$("tvFrame").addEventListener("load",()=>{tvLoaded=true;});
+setTimeout(()=>{if(!tvLoaded)$("tvFallback").classList.add("show");},9000);
+
+// ── START ─────────────────────────────────────────────────────────────────
+async function start(){
+  initProbUI();MacroFeed.hydrate();
+  drawTimeline($("timelineCanvas"),recentStates);drawTM(Engine.getTM());
+  updateSessionUI();updatePB3UI(PB3.compute(null,null));updateArchUI(Classifier.classify(null));
+  updateCorrUI(CorrEngine.getCorrelations());
+  updateSharpeUI({sharpe:null,winRate:null,openPL:null,totalSignals:0,totalPips:0,openBias:null,equity:[0]});
+  updateWarmupBadge(null);
+  FirebaseSync.init(settings.fbUrl,settings.fbRole);
+
+  // Parallel initial fetch
+  await Promise.allSettled([
+    SpotFeed.tick(onSpotUpdate),
+    MacroFeed.tick(),
+    EventsFeed.tick(),
+    HeadlinesFeed.tick(),
+    FirebaseSync.tick(),
+  ]);
+  updateAll();renderEvents();renderHeadlines();
+
+  // Polling intervals
+  const poll=Math.max(Number(settings.pollMs)||12000,6000);
+  setInterval(()=>SpotFeed.tick(onSpotUpdate),poll);
+  setInterval(async()=>{await MacroFeed.tick();updateAll();},90000);           // macro every 90s
+  setInterval(async()=>{await EventsFeed.tick();renderEvents();},5*60*1000);   // cal every 5min
+  setInterval(async()=>{await HeadlinesFeed.tick();renderHeadlines();},5*60*1000); // news every 5min
+  setInterval(()=>{updateSessionUI();updateAll();},30000);                      // session clock every 30s
+  setInterval(()=>FirebaseSync.tick(),15000);                                   // firebase heartbeat 15s
+}
+start();
 })();
 </script>
 </body>
