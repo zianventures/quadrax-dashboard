@@ -179,81 +179,6 @@ tbody tr:hover{background:rgba(255,255,255,.03)}
 .tvFb{display:none;position:absolute;inset:0;align-items:center;justify-content:center;background:rgba(8,20,52,.88);font-size:12px;color:rgba(255,255,255,.60);text-align:center;gap:8px;flex-direction:column}
 .tvFb.show{display:flex}
 
-
-/* ── DEJA VU ── */
-.dvGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-@media(max-width:700px){.dvGrid{grid-template-columns:1fr}}
-.dvBox{border-radius:14px;background:rgba(8,20,52,.24);border:1px solid rgba(180,220,255,.09);padding:12px 14px}
-.dvBox .dk{font-size:9.5px;color:rgba(255,255,255,.46);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px}
-.dvBox .dv{font-size:20px;font-weight:700;font-family:var(--mono);line-height:1.1}
-.dvBox .dm{font-size:10px;color:rgba(255,255,255,.42);margin-top:3px;line-height:1.4}
-/* Blend bar */
-.blendBar{height:12px;border-radius:7px;background:rgba(180,220,255,.07);overflow:hidden;display:flex;margin:8px 0 4px;position:relative}
-.blendTrend{height:100%;background:rgba(43,108,255,.82);border-radius:7px 0 0 7px;transition:width .7s ease}
-.blendRevert{height:100%;background:rgba(255,138,64,.82);border-radius:0 7px 7px 0;transition:width .7s ease}
-.blendUncert{height:100%;background:rgba(180,220,255,.15)}
-.blendLabel{display:flex;justify-content:space-between;font-size:9.5px;color:rgba(255,255,255,.40)}
-/* State vector */
-.svGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
-@media(max-width:600px){.svGrid{grid-template-columns:repeat(2,1fr)}}
-.svBox{border-radius:10px;padding:8px 10px;border:1px solid rgba(180,220,255,.07);background:rgba(8,20,52,.20);transition:all .4s ease}
-.svBox .sl{font-size:8px;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
-.svBox .sp{font-size:13px;font-weight:700;font-family:var(--mono)}
-.svBox .st{font-size:8.5px;color:rgba(255,255,255,.32);margin-top:2px}
-/* Risk throttle meter */
-.throttleMeter{height:10px;border-radius:6px;background:rgba(180,220,255,.07);overflow:hidden;margin:7px 0 4px}
-.throttleFill{height:100%;border-radius:6px;transition:width .6s ease,background .6s ease}
-/* Regime quadrant */
-.quadGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0}
-.quadBox{border-radius:12px;padding:10px 12px;border:1px solid;transition:all .5s ease;cursor:default}
-.quadBox .ql{font-size:9px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;opacity:.65}
-.quadBox .qpct{font-size:18px;font-weight:700;font-family:var(--mono)}
-.quadBox .qd{font-size:9.5px;opacity:.55;margin-top:3px}
-/* Conditional Sharpe */
-.cseRow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(180,220,255,.06)}
-.cseRow:last-child{border-bottom:none}
-.cseLabel{font-size:10px;color:rgba(255,255,255,.55);width:120px;flex-shrink:0}
-.cseBar{flex:1;height:6px;border-radius:4px;background:rgba(180,220,255,.08);overflow:hidden}
-.cseFill{height:100%;border-radius:4px;transition:width .5s ease,background .5s ease}
-.cseVal{font-size:11px;font-weight:700;font-family:var(--mono);width:36px;text-align:right;flex-shrink:0}
-
-.teGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-@media(max-width:700px){.teGrid{grid-template-columns:1fr}}
-.teBox{border-radius:14px;background:rgba(8,20,52,.24);border:1px solid rgba(180,220,255,.09);padding:12px 14px;transition:border-color .4s}
-.teBox .tk{font-size:9px;color:rgba(255,255,255,.42);text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px}
-.teBox .tv{font-size:20px;font-weight:700;font-family:var(--mono);line-height:1}
-.teBox .tm{font-size:10px;color:rgba(255,255,255,.40);margin-top:3px;line-height:1.4}
-.teDivTable{width:100%;border-collapse:collapse;font-size:11px;margin-top:8px}
-.teDivTable th{font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.38);padding:4px 6px;text-align:left;border-bottom:1px solid rgba(180,220,255,.08)}
-.teDivTable td{padding:5px 6px;border-bottom:1px solid rgba(180,220,255,.05);vertical-align:top}
-.teDivTable tr:last-child td{border-bottom:none}
-.teDivTable .tn{color:rgba(255,255,255,.70)}
-.teDivTable .tu{font-family:var(--mono);font-size:10.5px}
-.teDivTable .tf{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.42)}
-.teDivTable .tc{font-size:9px}
-.divBar{height:10px;border-radius:6px;background:rgba(180,220,255,.07);overflow:hidden;position:relative;margin:8px 0 3px}
-.divFillUS{height:100%;border-radius:6px 0 0 6px;background:rgba(43,108,255,.80);transition:width .6s ease;position:absolute;right:50%;transform-origin:right}
-.divFillEU{height:100%;border-radius:0 6px 6px 0;background:rgba(255,138,64,.80);transition:width .6s ease;position:absolute;left:50%}
-.divMid{position:absolute;left:50%;top:-2px;width:2px;height:14px;background:rgba(255,255,255,.28);transform:translateX(-50%)}
-.divLabels{display:flex;justify-content:space-between;font-size:9px;color:rgba(255,255,255,.34)}
-.surpriseBar{height:8px;border-radius:5px;background:rgba(180,220,255,.07);overflow:hidden;margin:6px 0 3px}
-.surpriseFill{height:100%;border-radius:5px;transition:width .6s ease,background .6s ease}
-.teCalItem{padding:7px 0;border-bottom:1px solid rgba(180,220,255,.06)}
-.teCalItem:last-child{border-bottom:none}
-.teCalTime{font-size:9.5px;font-family:var(--mono);color:rgba(255,255,255,.40)}
-.teCalName{font-size:11px;color:rgba(255,255,255,.78);margin:2px 0}
-.teCalVals{font-size:9.5px;font-family:var(--mono);color:rgba(255,255,255,.50)}
-.teImp{font-size:8px;border-radius:3px;padding:1px 5px;font-weight:600;display:inline-block;margin-left:4px;vertical-align:middle}
-.teImp.H{background:rgba(255,77,77,.20);color:rgba(255,100,100,.90)}
-.teImp.M{background:rgba(255,176,32,.15);color:rgba(255,176,32,.85)}
-
-/* TE */
-.teFrame{width:100%;border:none;border-radius:10px;display:block}
-.teBadge{font-size:10px;color:rgba(180,220,255,.55);padding:3px 8px;border-radius:10px;background:rgba(180,220,255,.07);border:1px solid rgba(180,220,255,.12)}
-.teBox{border-radius:14px;overflow:hidden;border:1px solid rgba(180,220,255,.09);background:rgba(6,14,38,.50);margin-bottom:10px}
-.teBoxTitle{font-size:9.5px;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.40);padding:8px 12px 5px;border-bottom:1px solid rgba(180,220,255,.05)}
-.teGrid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:800px){.teGrid2{grid-template-columns:1fr}}
 .tickChart{width:100%;height:72px;display:block;margin:10px 0 4px;border-radius:8px}
 .pricePulse{animation:pPulse .4s ease}
 @keyframes pPulse{0%{opacity:.6;transform:scaleX(.99)}100%{opacity:1;transform:scaleX(1)}}
@@ -375,90 +300,6 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
         <div class="quoteBadges"><span class="tagOk" id="fxLatencyTag">--</span><span class="tagOk" id="fxLastTag">Last: --</span></div>
         <div class="smallNote" id="fxSpotMeta" style="margin-top:3px">Source: --</div>
       </div>
-    </div>
-  </div></div>
-
-  <div class="card"><div class="inner">
-    <div class="card-title"><h2>D&eacute;j&agrave; Vu &middot; Probabilistic Regime Blending</h2><div class="hint">Renaissance Technologies insight: don&rsquo;t choose trend OR reversion &mdash; probabilistically allocate to each based on regime confidence. The HMM probability vector drives capital weighting. Risk is throttled by regime certainty and volatility state.</div></div>
-
-    <!-- Regime Blend Bar -->
-    <div class="dvBox" style="margin-bottom:10px">
-      <div class="dk">Regime Signal Allocation &mdash; Trend vs Reversion vs Uncertain</div>
-      <div class="blendBar">
-        <div class="blendTrend" id="dvTrendBar" style="width:33%"></div>
-        <div class="blendRevert" id="dvRevertBar" style="width:33%"></div>
-        <div class="blendUncert" id="dvUncertBar" style="width:34%"></div>
-      </div>
-      <div class="blendLabel">
-        <span><span style="color:rgba(43,108,255,.90)">&bull;</span> Trend <span id="dvTrendPct" style="font-family:var(--mono);font-weight:700">--%</span></span>
-        <span><span style="color:rgba(255,138,64,.90)">&bull;</span> Reversion <span id="dvRevertPct" style="font-family:var(--mono);font-weight:700">--%</span></span>
-        <span><span style="color:rgba(180,220,255,.35)">&bull;</span> Uncertain <span id="dvUncertPct" style="font-family:var(--mono);font-weight:700">--%</span></span>
-      </div>
-      <div class="dm" id="dvBlendMeta">Blending across all 8 HMM state probabilities</div>
-    </div>
-
-    <div class="dvGrid">
-
-      <!-- Active Regime Bucket -->
-      <div class="dvBox">
-        <div class="dk">Dominant Regime Bucket</div>
-        <div class="dv" id="dvBucket">--</div>
-        <div class="dm" id="dvBucketMeta">--</div>
-        <div style="margin-top:8px">
-          <div class="dk">Risk Throttle</div>
-          <div class="throttleMeter"><div class="throttleFill" id="dvThrottleFill" style="width:100%;background:rgba(24,209,138,.80)"></div></div>
-          <div style="display:flex;justify-content:space-between;font-size:9px;color:rgba(255,255,255,.38)">
-            <span id="dvThrottlePct">100%</span><span id="dvThrottleLabel">Full risk</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Conditional Sharpe Expectations -->
-      <div class="dvBox">
-        <div class="dk">Conditional Sharpe Expectations by Bucket</div>
-        <div id="dvCSE">
-          <div class="cseRow"><div class="cseLabel">Trending</div><div class="cseBar"><div class="cseFill" id="cse1f" style="width:75%;background:rgba(43,108,255,.75)"></div></div><div class="cseVal" id="cse1v" style="color:rgba(43,108,255,.90)">--</div></div>
-          <div class="cseRow"><div class="cseLabel">Mean-Revert</div><div class="cseBar"><div class="cseFill" id="cse2f" style="width:55%;background:rgba(255,138,64,.75)"></div></div><div class="cseVal" id="cse2v" style="color:rgba(255,138,64,.90)">--</div></div>
-          <div class="cseRow"><div class="cseLabel">Dislocation</div><div class="cseBar"><div class="cseFill" id="cse3f" style="width:20%;background:rgba(255,77,77,.75)"></div></div><div class="cseVal" id="cse3v" style="color:rgba(255,77,77,.90)">--</div></div>
-          <div class="cseRow"><div class="cseLabel">Uncertain</div><div class="cseBar"><div class="cseFill" id="cse4f" style="width:15%;background:rgba(180,220,255,.35)"></div></div><div class="cseVal" id="cse4v" style="color:rgba(180,220,255,.55)">--</div></div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- State Vector (8 buckets mapped) -->
-    <div class="dk" style="margin-bottom:6px">State Vector &mdash; HMM Probability &times; Regime Character</div>
-    <div class="svGrid" id="dvStateVec">
-      <div class="svBox"><div class="sl">S1</div><div class="sp">--</div><div class="st">Mean-Rev</div></div>
-    </div>
-
-    <!-- 4 Regime Quadrants -->
-    <div class="dk" style="margin:10px 0 6px">Regime Quadrant Allocation</div>
-    <div class="quadGrid" id="dvQuadGrid">
-      <div class="quadBox" id="dqTrend" style="background:rgba(43,108,255,.08);border-color:rgba(43,108,255,.20)">
-        <div class="ql" style="color:rgba(43,108,255,.90)">TRENDING</div>
-        <div class="qpct" id="dqTrendPct" style="color:rgba(43,108,255,.95)">--%</div>
-        <div class="qd">Momentum persists. Follow. Trail stops.</div>
-      </div>
-      <div class="quadBox" id="dqRevert" style="background:rgba(255,138,64,.08);border-color:rgba(255,138,64,.20)">
-        <div class="ql" style="color:rgba(255,138,64,.90)">MEAN-REVERT</div>
-        <div class="qpct" id="dqRevertPct" style="color:rgba(255,138,64,.95)">--%</div>
-        <div class="qd">Overshoot. Fade extremes. Tight targets.</div>
-      </div>
-      <div class="quadBox" id="dqDisloc" style="background:rgba(255,77,77,.08);border-color:rgba(255,77,77,.20)">
-        <div class="ql" style="color:rgba(255,77,77,.90)">DISLOCATION</div>
-        <div class="qpct" id="dqDislocPct" style="color:rgba(255,77,77,.95)">--%</div>
-        <div class="qd">Forced flows. De-risk. Protect capital.</div>
-      </div>
-      <div class="quadBox" id="dqUncert" style="background:rgba(180,220,255,.04);border-color:rgba(180,220,255,.12)">
-        <div class="ql" style="color:rgba(180,220,255,.65)">UNCERTAIN</div>
-        <div class="qpct" id="dqUncertPct" style="color:rgba(180,220,255,.80)">--%</div>
-        <div class="qd">No clear edge. Reduce size. Wait.</div>
-      </div>
-    </div>
-
-    <div class="smallNote" style="margin-top:10px;line-height:1.65">
-      <b>Renaissance rule:</b> "What is the conditional probability of continuation vs mean reversion given this state vector?" &mdash; Capital allocated <em>proportionally</em> to each regime bucket. Hard switching destroys edge. Blend, weight, throttle.
     </div>
   </div></div>
 
@@ -672,21 +513,6 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
 <div class="stack">
   <div class="card"><div class="inner riskLevel"><div class="rlabel">Risk Level</div><div class="rbig" id="riskBig">--</div><div class="rrule" id="riskRule">Policy: state-aware sizing and entry gating</div></div></div>
 
-
-  <div class="card"><div class="inner">
-    <div class="card-title"><h2>Fundamental Divergence &middot; ECB vs Fed</h2><div style="display:flex;align-items:center;gap:8px"><span class="teBadge">TradingEconomics.com</span><div class="hint" style="margin:0;max-width:260px">Rate differential, inflation spread &amp; yield spread &mdash; structural EUR/USD regime drivers.</div></div></div>
-    <div class="teGrid2">
-      <div class="teBox"><div class="teBoxTitle">&#127482;&#127466; ECB Main Rate</div><iframe class="teFrame" style="min-height:210px" src="https://tradingeconomics.com/embed/?s=eurr002w&v=202410&type=chart&title=ECB+Rate&theme=dark&h=210" loading="lazy"></iframe></div>
-      <div class="teBox"><div class="teBoxTitle">&#127482;&#127480; Fed Funds Rate</div><iframe class="teFrame" style="min-height:210px" src="https://tradingeconomics.com/embed/?s=fdtr&v=202410&type=chart&title=Fed+Rate&theme=dark&h=210" loading="lazy"></iframe></div>
-      <div class="teBox"><div class="teBoxTitle">&#127482;&#127466; Euro Area CPI YoY</div><iframe class="teFrame" style="min-height:210px" src="https://tradingeconomics.com/embed/?s=eccpiyoy&v=202410&type=chart&title=EA+CPI&theme=dark&h=210" loading="lazy"></iframe></div>
-      <div class="teBox"><div class="teBoxTitle">&#127482;&#127480; US CPI YoY</div><iframe class="teFrame" style="min-height:210px" src="https://tradingeconomics.com/embed/?s=cpi+yoy&v=202410&type=chart&title=US+CPI&theme=dark&h=210" loading="lazy"></iframe></div>
-      <div class="teBox"><div class="teBoxTitle">&#127465;&#127466; Bund 10Y Yield</div><iframe class="teFrame" style="min-height:210px" src="https://tradingeconomics.com/embed/?s=gdbr10&v=202410&type=chart&title=Bund+10Y&theme=dark&h=210" loading="lazy"></iframe></div>
-      <div class="teBox"><div class="teBoxTitle">&#127482;&#127480; UST 10Y Yield</div><iframe class="teFrame" style="min-height:210px" src="https://tradingeconomics.com/embed/?s=usgg10yr&v=202410&type=chart&title=UST+10Y&theme=dark&h=210" loading="lazy"></iframe></div>
-    </div>
-    <div class="teBox"><div class="teBoxTitle">&#128200; EUR/USD &mdash; TradingEconomics Forecast</div><iframe class="teFrame" style="min-height:250px" src="https://tradingeconomics.com/embed/?s=eurusd&v=202410&type=chart&title=EURUSD&theme=dark&h=250" loading="lazy"></iframe></div>
-    <div style="font-size:9px;text-align:right;color:rgba(255,255,255,.22);margin-top:4px">Data: <a href="https://tradingeconomics.com" target="_blank" rel="noopener" style="color:rgba(100,160,255,.45);text-decoration:none">TradingEconomics.com</a></div>
-    <div class="smallNote" style="margin-top:8px;line-height:1.65">ECB&minus;Fed rate differential = primary structural EUR/USD driver. Bund&minus;UST yield spread independently confirms or contradicts. Regime: rate compression = range, divergence = trend.</div>
-  </div></div>
   <div class="card"><div class="inner">
     <div class="card-title"><h2>PB3 Behavioral Model</h2><div class="hint">Panic &middot; Bubble &middot; Boom &middot; Bust. Humans most predictable under stress.</div></div>
     <div class="pb3Dom" id="pb3Dom" style="background:rgba(8,20,52,.28);border:1px solid rgba(180,220,255,.10)">
@@ -717,10 +543,6 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
 
   <div class="card"><div class="inner">
     <div class="card-title"><h2>Macro Drivers</h2><div class="hint hint" id="macroHint">Yahoo Finance: Brent crude BZ=F &middot; Gold COMEX GC=F &middot; Silver COMEX SI=F &middot; Dollar Index DX-Y.NYB. Via AllOrigins proxy.</div></div>
-    <div class="teBox" style="margin-bottom:12px">
-      <div class="teBoxTitle">Live Currency Strength &mdash; TradingEconomics</div>
-      <iframe class="teFrame" style="min-height:180px" src="https://tradingeconomics.com/currencies?embed=true&theme=dark" title="Currency Strength" loading="lazy"></iframe>
-    </div>
     <div class="macroGrid">
       <div class="macroBox"><div class="k">Brent Crude ($/bbl) <span class="liveBadge stale" id="oilTag">--</span></div><div class="v" id="oilPx">--</div><div class="meta" id="oilMeta">No data</div><canvas class="sparkCanvas" id="oilSpark"></canvas></div>
       <div class="macroBox"><div class="k">Gold COMEX ($/oz) <span class="liveBadge stale" id="goldTag">--</span></div><div class="v" id="goldPx">--</div><div class="meta" id="goldMeta">No data</div><canvas class="sparkCanvas" id="goldSpark"></canvas></div>
@@ -730,8 +552,7 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
       <div class="macroBox"><div class="k">AUD/USD <span class="liveBadge stale" id="audTag">AUD</span></div><div class="v fx" id="audPx">--</div><div class="meta" id="audMeta">No data</div><canvas class="sparkCanvas" id="audSpark"></canvas></div>
       <div class="macroBox"><div class="k">NZD/USD <span class="liveBadge stale" id="nzdTag">NZD</span></div><div class="v fx" id="nzdPx">--</div><div class="meta" id="nzdMeta">No data</div><canvas class="sparkCanvas" id="nzdSpark"></canvas></div>
       <div class="macroBox"><div class="k">FX Confluence <span class="tagOk" id="fxConfChip">--</span></div><div style="font-size:13px;font-weight:700;font-family:var(--mono);margin-top:4px;line-height:1.3" id="fxConfBig">GBP+AUD+NZD</div><div class="meta" id="fxConfMeta">Correlated pair alignment</div></div>
-      <div class="macroBox" style="grid-column:1/span 2"><div class="k">Transmission Score <span class="tagOk" style="margin-left:6px">FX Conf <span id="fxIntChip">--%</span></span></div><div class="v" id="txBig">NEUTRAL</div><div class="meta" id="txMeta">Score 0.00 &middot; Neutral &middot; Intensity 0%</div>
-          <div class="meta" id="txStructural" style="margin-top:3px;color:rgba(255,176,32,.72)">TE Structural: loading...</div></div>
+      <div class="macroBox" style="grid-column:1/span 2"><div class="k">Transmission Score <span class="tagOk" style="margin-left:6px">FX Conf <span id="fxIntChip">--%</span></span></div><div class="v" id="txBig">NEUTRAL</div><div class="meta" id="txMeta">Score 0.00 &middot; Neutral &middot; Intensity 0%</div></div>
     </div>
   </div></div>
 
@@ -758,129 +579,16 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
     <div class="smallNote" style="margin-top:9px">First-order Markov online learning. Stateless per session = deterministic convergence across team instances.</div>
   </div></div>
 
-    <div class="card"><div class="inner">
-    <div class="card-title">
-      <h2>Macro Fundamentals &middot; Trading Economics</h2>
-      <div class="hint">US vs Eurozone structural indicators from Trading Economics. Rate differential, CPI, PMI, GDP and labor markets drive EUR/USD on multi-week timeframes. Feeds directly into the structural bias overlay.</div>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
-      <span class="liveBadge stale" id="teBadge">LOADING</span>
-      <span style="font-size:10px;color:rgba(255,255,255,.38)" id="teLastFetch">Fetching from Trading Economics...</span>
-      <a href="https://tradingeconomics.com/" target="_blank" rel="noopener noreferrer" class="link" style="font-size:10px;margin-left:auto">tradingeconomics.com &rarr;</a>
-    </div>
-
-    <div class="teBox" style="margin-bottom:10px">
-      <div class="tk">Monetary Policy Divergence &mdash; Fed Funds Rate vs ECB Deposit Rate</div>
-      <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:6px">
-        <div>
-          <div style="font-size:9px;color:rgba(43,108,255,.80);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Fed Funds</div>
-          <div class="tv" id="teFedRate" style="color:rgba(43,108,255,.95)">--</div>
-          <div class="tm" id="teFedMeta">--</div>
-        </div>
-        <div style="font-size:20px;color:rgba(255,255,255,.12);padding-bottom:4px">vs</div>
-        <div>
-          <div style="font-size:9px;color:rgba(255,138,64,.80);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">ECB Deposit</div>
-          <div class="tv" id="teEcbRate" style="color:rgba(255,138,64,.95)">--</div>
-          <div class="tm" id="teEcbMeta">--</div>
-        </div>
-        <div style="margin-left:auto;text-align:right">
-          <div style="font-size:9px;color:rgba(255,255,255,.38)">Spread (US-EU)</div>
-          <div class="tv" id="teSpread" style="font-size:26px">--</div>
-          <div class="tm" id="teSpreadSig">--</div>
-        </div>
-      </div>
-      <div class="divBar">
-        <div class="divFillUS" id="teDivUS" style="width:0%"></div>
-        <div class="divFillEU" id="teDivEU" style="width:0%"></div>
-        <div class="divMid"></div>
-      </div>
-      <div class="divLabels"><span>&bull; USD hawkish</span><span>&bull; EUR hawkish</span></div>
-    </div>
-
-    <div class="teGrid">
-      <div class="teBox">
-        <div class="tk">Inflation &mdash; CPI YoY %</div>
-        <table class="teDivTable">
-          <thead><tr><th>Country</th><th>CPI</th><th>Prev</th><th>Signal</th></tr></thead>
-          <tbody>
-            <tr><td class="tn">United States</td><td class="tu" id="teUsCpi">--</td><td class="tf" id="teUsCpiP">--</td><td class="tc" id="teUsCpiS">--</td></tr>
-            <tr><td class="tn">Eurozone</td><td class="tu" id="teEuCpi">--</td><td class="tf" id="teEuCpiP">--</td><td class="tc" id="teEuCpiS">--</td></tr>
-          </tbody>
-        </table>
-        <div class="tm" id="teCpiMeta" style="margin-top:6px">US CPI &gt; EU CPI = Fed hawkish = USD bid</div>
-      </div>
-      <div class="teBox">
-        <div class="tk">PMI &mdash; Economic Momentum</div>
-        <table class="teDivTable">
-          <thead><tr><th>Country</th><th>Mfg</th><th>Svcs</th><th>Signal</th></tr></thead>
-          <tbody>
-            <tr><td class="tn">United States</td><td class="tu" id="teUsMfg">--</td><td class="tu" id="teUsSvc">--</td><td class="tc" id="teUsPmiS">--</td></tr>
-            <tr><td class="tn">Eurozone</td><td class="tu" id="teEuMfg">--</td><td class="tu" id="teEuSvc">--</td><td class="tc" id="teEuPmiS">--</td></tr>
-          </tbody>
-        </table>
-        <div class="tm" id="tePmiMeta" style="margin-top:6px">PMI &gt;50 = expansion. US&gt;EU = USD momentum</div>
-      </div>
-      <div class="teBox">
-        <div class="tk">Labor Market</div>
-        <table class="teDivTable">
-          <thead><tr><th>Indicator</th><th>Latest</th><th>Prev</th></tr></thead>
-          <tbody>
-            <tr><td class="tn">US Unemployment %</td><td class="tu" id="teUsUnemp">--</td><td class="tf" id="teUsUnempP">--</td></tr>
-            <tr><td class="tn">EU Unemployment %</td><td class="tu" id="teEuUnemp">--</td><td class="tf" id="teEuUnempP">--</td></tr>
-            <tr><td class="tn">US NFP (000s)</td><td class="tu" id="teUsNfp">--</td><td class="tf" id="teUsNfpP">--</td></tr>
-          </tbody>
-        </table>
-        <div class="tm" id="teLaborMeta" style="margin-top:6px">Strong US labor = Fed patience = USD structural bid</div>
-      </div>
-      <div class="teBox">
-        <div class="tk">GDP Growth QoQ %</div>
-        <table class="teDivTable">
-          <thead><tr><th>Country</th><th>GDP</th><th>Prev</th><th>Signal</th></tr></thead>
-          <tbody>
-            <tr><td class="tn">United States</td><td class="tu" id="teUsGdp">--</td><td class="tf" id="teUsGdpP">--</td><td class="tc" id="teUsGdpS">--</td></tr>
-            <tr><td class="tn">Eurozone</td><td class="tu" id="teEuGdp">--</td><td class="tf" id="teEuGdpP">--</td><td class="tc" id="teEuGdpS">--</td></tr>
-          </tbody>
-        </table>
-        <div class="tm" id="teGdpMeta" style="margin-top:6px">Growth gap drives rate path expectations</div>
-      </div>
-    </div>
-
-    <div class="tk" style="margin-bottom:8px">
-      Upcoming High-Impact Events &mdash; Trading Economics
-      <span class="liveBadge stale" id="teCalBadge" style="margin-left:6px">--</span>
-    </div>
-    <div id="teCalBody" style="max-height:240px;overflow-y:auto">
-      <div style="color:rgba(255,255,255,.35);font-size:11px">Loading...</div>
-    </div>
-
-    <div class="teBox" style="margin-top:10px;background:rgba(8,20,52,.36)">
-      <div class="tk">Structural Macro Bias &mdash; EUR/USD Multi-Week View</div>
-      <div style="display:flex;align-items:baseline;gap:12px;margin-top:4px;flex-wrap:wrap">
-        <div class="tv" id="teBiasLabel" style="font-size:24px">--</div>
-        <div class="tm" id="teBiasDetail">Derived from rate spread, CPI diff, PMI gap, GDP gap</div>
-      </div>
-      <div class="surpriseBar"><div class="surpriseFill" id="teBiasBar" style="width:50%;background:rgba(180,220,255,.35)"></div></div>
-      <div style="display:flex;justify-content:space-between;font-size:9px;color:rgba(255,255,255,.30);margin-top:2px">
-        <span>Bearish EUR/USD</span><span>Neutral</span><span>Bullish EUR/USD</span>
-      </div>
-      <div class="tm" id="teBiasMeta" style="margin-top:6px">Structural backdrop &mdash; not a short-term signal. Combine with HMM regime for full conviction picture.</div>
-    </div>
-    <div class="smallNote" style="margin-top:10px">Data from Trading Economics via CORS proxies. Structural indicators update every 30 minutes. Calendar updates every 10 minutes.</div>
-  </div></div>
-
-<div class="card"><div class="inner">
+  <div class="card"><div class="inner">
     <div class="card-title">
       <h2>World Events Calendar</h2>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
-        <span class="liveBadge live" id="calBadge">&#8635; LIVE</span> <span class="teBadge">TradingEconomics</span>
+        <span class="liveBadge live" id="calBadge">&#8635; LIVE</span>
+        <div class="hint" style="margin:0;max-width:260px">Forex Factory HIGH/MED impact USD+EUR events. Auto-refresh every 30 min.</div>
       </div>
     </div>
-    <iframe class="teFrame" style="min-height:480px;margin:8px 0 10px" src="https://tradingeconomics.com/calendar/embed?c=eur,usd&importance=1,2&theme=dark" title="EUR USD Calendar" loading="lazy"></iframe>
-    <div style="font-size:9px;text-align:right;color:rgba(255,255,255,.22);margin-bottom:12px">Live: <a href="https://tradingeconomics.com/calendar" target="_blank" rel="noopener" style="color:rgba(100,160,255,.45);text-decoration:none">TradingEconomics.com</a></div>
-    <details><summary style="font-size:10px;color:rgba(255,255,255,.28);cursor:pointer;padding:4px 0">&#9660; Internal engine event parser</summary>
     <div class="tableWrap"><div class="scroll" style="max-height:230px"><table><thead><tr><th>When (UTC)</th><th>Event</th><th>Impact</th><th>Forecast</th><th>Previous</th><th>Countdown</th></tr></thead><tbody id="eventsBody"></tbody></table></div></div>
     <div class="muted" style="margin-top:9px;display:flex;align-items:center;gap:8px">High impact: <span class="impact"><span class="folder"></span>HIGH</span> <span class="smallNote" id="calLastFetch" style="margin-left:4px">Fetching...</span></div>
-    </details>
   </div></div>
 
   <div class="card"><div class="inner">
@@ -1146,38 +854,6 @@ const ProjTracker=(()=>{
 })();
 
 
-
-// == DEJA VU ENGINE (Renaissance Probabilistic Regime Blending) ============
-const DejaVuEngine=(()=>{
-  // Per-state regime character: [trend, revert, disloc, uncert]
-  const SC=[
-    [0.05,0.90,0.00,0.05],[0.10,0.10,0.10,0.70],[0.60,0.20,0.00,0.20],
-    [0.95,0.00,0.05,0.00],[0.65,0.15,0.20,0.00],[0.05,0.10,0.60,0.25],
-    [0.05,0.70,0.20,0.05],[0.00,0.30,0.65,0.05],
-  ];
-  const BS={TRENDING:2.4,MEAN_REVERT:1.6,DISLOCATION:-0.5,UNCERTAIN:0.4};
-  function throttle(blend,vr,cf){
-    let b=Math.max(blend.trend,blend.revert);
-    if(vr==="VOL SPIKE")b*=0.30;else if(vr==="ELEVATED")b*=0.65;else if(vr==="VOL CRUSH")b*=0.85;
-    return clamp(b*clamp(0.4+cf*0.8,0.30,1.0),0.10,1.0);
-  }
-  function compute(probs,conf,vr){
-    if(!probs||probs.length!==8)return null;
-    let t=0,r=0,d=0,u=0;
-    probs.forEach((p,i)=>{t+=p*SC[i][0];r+=p*SC[i][1];d+=p*SC[i][2];u+=p*SC[i][3];});
-    const tot=t+r+d+u||1;t/=tot;r/=tot;d/=tot;u/=tot;
-    const blend={trend:t,revert:r,disloc:d,uncert:u};
-    const buckets=[{name:"TRENDING",val:t,col:"rgba(43,108,255,.90)"},{name:"MEAN-REVERT",val:r,col:"rgba(255,138,64,.90)"},{name:"DISLOCATION",val:d,col:"rgba(255,77,77,.90)"},{name:"UNCERTAIN",val:u,col:"rgba(180,220,255,.65)"}];
-    const dom=buckets.reduce((a,b)=>b.val>a.val?b:a);
-    const thr=throttle(blend,vr||"NORMAL",conf||0.3);
-    const stateVec=SC.map((c,i)=>{const idx=c.indexOf(Math.max(...c));return{state:i+1,prob:probs[i],primary:["Trend","Revert","Disloc","Uncert"][idx]};});
-    const condSharpe=BS.TRENDING*t+BS.MEAN_REVERT*r+BS.DISLOCATION*d+BS.UNCERTAIN*u;
-    const guidance=dom.name==="TRENDING"?"Follow momentum. Trail stops.":dom.name==="MEAN-REVERT"?"Fade extremes. Tight targets.":dom.name==="DISLOCATION"?"De-risk. Stand aside.":"No clear edge. Reduce size.";
-    return{blend,dom,throttle:thr,stateVec,condSharpe,guidance,bucketPcts:{trend:Math.round(t*100),revert:Math.round(r*100),disloc:Math.round(d*100),uncert:Math.round(u*100)}};
-  }
-  return{compute,BS};
-})();
-
 // == QUANT ENGINE (Renaissance / Medallion inspired) ========================
 const QuantEngine=(()=>{
   let PH=[],RH=[];
@@ -1262,177 +938,6 @@ const QuantEngine=(()=>{
     return{H,ac1,ac2,ac3,ac4,ac5,kelly:kl,volRegime:vr,hist,halfLife:hl,signals,conviction,onCount:on,againstCount:against};
   }
   return{push,compute,getPrices:()=>PH,getReturns:()=>RH};
-})();
-
-
-// == TRADING ECONOMICS FEED =================================================
-const TEFeed=(()=>{
-  let cache={},lastFetch=0,calCache=[],calLastFetch=0;
-  const TTL=30*60*1000,CAL_TTL=10*60*1000;
-  const PROXIES=[
-    u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u),
-    u=>"https://corsproxy.io/?"+encodeURIComponent(u),
-  ];
-  async function proxyFetch(url,ms=12000){
-    for(const mkP of PROXIES){
-      const prox=mkP(url);const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);
-      try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(t);if(!res.ok)continue;const txt=await res.text();if(!txt||txt.length<5)continue;try{return JSON.parse(txt);}catch{continue;}}catch{clearTimeout(t);}
-    }return null;
-  }
-  const BASE="https://api.tradingeconomics.com/historical/country";
-  const IND={
-    usFed:   BASE+"/united-states/indicator/interest-rate?c=guest:guest&format=json",
-    ecbRate: BASE+"/euro-area/indicator/interest-rate?c=guest:guest&format=json",
-    usCpi:   BASE+"/united-states/indicator/inflation-cpi?c=guest:guest&format=json",
-    euCpi:   BASE+"/euro-area/indicator/inflation-cpi?c=guest:guest&format=json",
-    usMfg:   BASE+"/united-states/indicator/manufacturing-pmi?c=guest:guest&format=json",
-    euMfg:   BASE+"/euro-area/indicator/manufacturing-pmi?c=guest:guest&format=json",
-    usSvc:   BASE+"/united-states/indicator/services-pmi?c=guest:guest&format=json",
-    euSvc:   BASE+"/euro-area/indicator/services-pmi?c=guest:guest&format=json",
-    usUnemp: BASE+"/united-states/indicator/unemployment-rate?c=guest:guest&format=json",
-    euUnemp: BASE+"/euro-area/indicator/unemployment-rate?c=guest:guest&format=json",
-    usGdp:   BASE+"/united-states/indicator/gdp-growth-rate?c=guest:guest&format=json",
-    euGdp:   BASE+"/euro-area/indicator/gdp-growth-rate?c=guest:guest&format=json",
-    usNfp:   BASE+"/united-states/indicator/non-farm-payrolls?c=guest:guest&format=json",
-  };
-  // Hardcoded defaults - always populate card even if API unavailable
-  const DEF={
-    usFed:{v:4.50,p:4.50,d:"Jan 2025"},ecbRate:{v:3.00,p:3.25,d:"Jan 2025"},
-    usCpi:{v:2.9,p:2.7,d:"Jan 2025"},euCpi:{v:2.4,p:2.2,d:"Jan 2025"},
-    usMfg:{v:49.3,p:49.4,d:"Jan 2025"},euMfg:{v:45.8,p:45.1,d:"Jan 2025"},
-    usSvc:{v:52.9,p:54.1,d:"Jan 2025"},euSvc:{v:51.6,p:51.6,d:"Jan 2025"},
-    usUnemp:{v:4.1,p:4.1,d:"Jan 2025"},euUnemp:{v:6.3,p:6.3,d:"Jan 2025"},
-    usGdp:{v:2.3,p:3.1,d:"Q4 2024"},euGdp:{v:0.2,p:0.4,d:"Q4 2024"},
-    usNfp:{v:256,p:307,d:"Jan 2025"},
-  };
-  function extractLatest(json){
-    if(!Array.isArray(json)||!json.length)return null;
-    const last=json.at(-1),prev=json.length>1?json.at(-2):null;
-    const v=parseFloat(last.Value??last.value??last.Close??0);
-    const p=prev?parseFloat(prev.Value??prev.value??0):null;
-    return Number.isFinite(v)&&v!==0?{v,p:Number.isFinite(p)&&p!==0?p:null,d:last.DateTime??last.date??""}:null;
-  }
-  async function fetchOne(key){
-    const json=await proxyFetch(IND[key],11000);
-    const r=extractLatest(json);
-    return r||DEF[key]||null;
-  }
-  async function tick(){
-    const now=Date.now();
-    if(now-lastFetch<TTL&&Object.keys(cache).length>5)return;
-    const badge=$("teBadge"),info=$("teLastFetch");
-    if(badge){badge.className="liveBadge stale";badge.textContent="LOADING";}
-    // Always seed with defaults first so card is never empty
-    Object.entries(DEF).forEach(([k,d])=>{cache[k]=d;});
-    renderTE();
-    // Then try live fetch
-    const results=await Promise.allSettled(Object.keys(IND).map(k=>fetchOne(k).then(r=>({k,r}))));
-    let liveCount=0;
-    results.forEach(res=>{if(res.status==="fulfilled"&&res.value?.r){cache[res.value.k]=res.value.r;liveCount++;}});
-    lastFetch=now;
-    if(badge){badge.className="liveBadge "+(liveCount>3?"live":"stale");badge.textContent=liveCount>3?"LIVE":"DEFAULTS";}
-    if(info)info.textContent=liveCount>3?"Live data updated "+fmtTime(now):"Default values shown (API proxies blocked). Data from Jan 2025.";
-    renderTE();
-    fetchTECal();
-  }
-  async function fetchTECal(){
-    const now=Date.now();if(now-calLastFetch<CAL_TTL)return;
-    const badge=$("teCalBadge");
-    const CAL_URL="https://api.tradingeconomics.com/calendar/country/united-states,euro-area?c=guest:guest&format=json";
-    const json=await proxyFetch(CAL_URL,12000);
-    if(json&&Array.isArray(json)&&json.length){
-      calCache=json.filter(e=>["High","Medium"].includes(e.Importance||e.importance||""))
-        .map(e=>({date:e.Date||e.date||"",name:(e.Event||e.Category||"").trim(),country:e.Country||"",actual:e.Actual??null,forecast:e.Forecast||"",previous:e.Previous||"",impact:e.Importance||"Medium"}))
-        .slice(0,20);
-      calLastFetch=now;
-      if(badge){badge.className="liveBadge live";badge.textContent="LIVE";}
-    } else {
-      calCache=EventsFeed.get().map(e=>({date:e.when,name:e.event,country:"",actual:null,forecast:e.forecast,previous:e.previous,impact:e.impact}));
-      if(badge){badge.className="liveBadge stale";badge.textContent="FF DATA";}
-    }
-    renderTECal();
-  }
-  function calcBias(d){
-    let s=0,n=0;
-    if(d.usFed&&d.ecbRate){s+=clamp((d.usFed.v-d.ecbRate.v)/3,-1,1)*0.40;n++;}
-    if(d.usCpi&&d.euCpi){s+=clamp((d.usCpi.v-d.euCpi.v)/2,-1,1)*0.20;n++;}
-    const up=((d.usMfg?.v||50)+(d.usSvc?.v||50))/2,ep=((d.euMfg?.v||50)+(d.euSvc?.v||50))/2;
-    s+=clamp((up-ep)/5,-1,1)*0.20;n++;
-    if(d.usGdp&&d.euGdp){s+=clamp((d.usGdp.v-d.euGdp.v)/2,-1,1)*0.20;n++;}
-    return n>0?clamp(s,-1,1):0;
-  }
-  function renderTE(){
-    const d=cache;if(!Object.keys(d).length)return;
-    const fN=v=>v!=null?Number(v).toFixed(1):"--";
-    const fP=v=>v!=null?Number(v).toFixed(2)+"%":"--";
-    const setT=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
-    const setH=(id,v)=>{const e=$(id);if(e)e.innerHTML=v;};
-    const sigH=(a,b,pl,nl)=>a!=null&&b!=null?(a-b>0.1?"<span class='pos'>"+pl+"</span>":a-b<-0.1?"<span class='neg'>"+nl+"</span>":"<span style='color:rgba(255,255,255,.35)'>Neutral</span>"):"--";
-    // Rates
-    setT("teFedRate",fP(d.usFed?.v));setT("teFedMeta",d.usFed?"Last: "+d.usFed.d+(d.usFed.p!=null?" | Prev: "+fP(d.usFed.p):""):"");
-    setT("teEcbRate",fP(d.ecbRate?.v));setT("teEcbMeta",d.ecbRate?"Last: "+d.ecbRate.d+(d.ecbRate.p!=null?" | Prev: "+fP(d.ecbRate.p):""):"");
-    const sp=(d.usFed?.v||0)-(d.ecbRate?.v||0);
-    const spEl=$("teSpread");if(spEl){spEl.textContent=(sp>=0?"+":"")+sp.toFixed(2)+"%";spEl.style.color=sp>0?"rgba(43,108,255,.95)":"rgba(255,138,64,.95)";}
-    setH("teSpreadSig",sp>0.5?"<span class='neg'>USD hawkish &mdash; EUR/USD bearish</span>":sp<-0.5?"<span class='pos'>EUR hawkish &mdash; EUR/USD bullish</span>":"<span style='color:rgba(255,255,255,.38)'>Rates converging</span>");
-    const divUS=$("teDivUS"),divEU=$("teDivEU");
-    if(divUS)divUS.style.width=Math.min((d.usFed?.v||0)/8*50,50)+"%";
-    if(divEU)divEU.style.width=Math.min((d.ecbRate?.v||0)/8*50,50)+"%";
-    // CPI
-    setT("teUsCpi",fN(d.usCpi?.v)+"%");setT("teUsCpiP",d.usCpi?.p!=null?fN(d.usCpi.p)+"%":"--");
-    setT("teEuCpi",fN(d.euCpi?.v)+"%");setT("teEuCpiP",d.euCpi?.p!=null?fN(d.euCpi.p)+"%":"--");
-    setH("teUsCpiS",sigH(d.usCpi?.v,d.euCpi?.v,"USD","EUR"));setH("teEuCpiS",sigH(d.euCpi?.v,d.usCpi?.v,"EUR","USD"));
-    const cpiD=d.usCpi&&d.euCpi?(d.usCpi.v-d.euCpi.v).toFixed(1):null;
-    setT("teCpiMeta",cpiD?"US-EU CPI spread: "+cpiD+"% → "+(parseFloat(cpiD)>0?"Fed stays hawkish = USD bid":"ECB stays hawkish = EUR bid"):"Loading...");
-    // PMI
-    setT("teUsMfg",fN(d.usMfg?.v));setT("teUsSvc",fN(d.usSvc?.v));
-    setT("teEuMfg",fN(d.euMfg?.v));setT("teEuSvc",fN(d.euSvc?.v));
-    const up2=((d.usMfg?.v||50)+(d.usSvc?.v||50))/2,ep2=((d.euMfg?.v||50)+(d.euSvc?.v||50))/2;
-    setH("teUsPmiS",up2>50?"<span class='pos'>Expansion</span>":"<span class='neg'>Contraction</span>");
-    setH("teEuPmiS",ep2>50?"<span class='pos'>Expansion</span>":"<span class='neg'>Contraction</span>");
-    setT("tePmiMeta","US "+up2.toFixed(1)+" vs EU "+ep2.toFixed(1)+" \u2192 "+(up2>ep2?"US leads = USD tailwind":"EU leads = EUR tailwind"));
-    // Labor
-    setT("teUsUnemp",fN(d.usUnemp?.v)+"%");setT("teUsUnempP",d.usUnemp?.p!=null?fN(d.usUnemp.p)+"%":"--");
-    setT("teEuUnemp",fN(d.euUnemp?.v)+"%");setT("teEuUnempP",d.euUnemp?.p!=null?fN(d.euUnemp.p)+"%":"--");
-    setT("teUsNfp",d.usNfp?d.usNfp.v+"k":"--");setT("teUsNfpP",d.usNfp?.p!=null?d.usNfp.p+"k":"--");
-    setT("teLaborMeta",d.usUnemp&&d.euUnemp?"US "+fN(d.usUnemp.v)+"% vs EU "+fN(d.euUnemp.v)+"% \u2192 "+(d.usUnemp.v<d.euUnemp.v?"US labor tighter = Fed patience = USD bid":"EU labor tighter = EUR supported"):"Loading...");
-    // GDP
-    setT("teUsGdp",fN(d.usGdp?.v)+"%");setT("teUsGdpP",d.usGdp?.p!=null?fN(d.usGdp.p)+"%":"--");
-    setT("teEuGdp",fN(d.euGdp?.v)+"%");setT("teEuGdpP",d.euGdp?.p!=null?fN(d.euGdp.p)+"%":"--");
-    setH("teUsGdpS",sigH(d.usGdp?.v,d.euGdp?.v,"USD","EUR"));setH("teEuGdpS",sigH(d.euGdp?.v,d.usGdp?.v,"EUR","USD"));
-    const gdpD=d.usGdp&&d.euGdp?(d.usGdp.v-d.euGdp.v).toFixed(1):null;
-    setT("teGdpMeta",gdpD?"GDP gap: "+gdpD+"% \u2192 "+(parseFloat(gdpD)>0?"US outperforms = USD support":"EU outperforms = EUR support"):"Loading...");
-    // Structural Bias
-    const bias=calcBias(d);window._teBias=bias;window._teData=d;
-    const pct=Math.round((bias+1)/2*100);
-    const bb=$("teBiasBar"),bl=$("teBiasLabel"),bd=$("teBiasDetail"),bm=$("teBiasMeta");
-    if(bb){bb.style.width=pct+"%";bb.style.background=bias<-0.15?"rgba(255,77,77,.82)":bias>0.15?"rgba(24,209,138,.82)":"rgba(180,220,255,.38)";}
-    if(bl){bl.textContent=bias<-0.25?"USD STRONG":bias<-0.10?"USD LEADS":bias>0.25?"EUR STRONG":bias>0.10?"EUR LEADS":"NEUTRAL";bl.style.color=bias<-0.15?"rgba(255,77,77,.90)":bias>0.15?"rgba(24,209,138,.90)":"rgba(180,220,255,.75)";}
-    if(bd)bd.textContent="Score "+(bias>=0?"+":"")+bias.toFixed(3)+" | Spread "+(sp>=0?"+":"")+sp.toFixed(2)+"% | CPI diff "+(d.usCpi&&d.euCpi?(d.usCpi.v-d.euCpi.v).toFixed(1)+"%":"--");
-    if(bm)bm.textContent="Rate spread 40% + CPI diff 20% + PMI gap 20% + GDP gap 20%";
-    // Inject into Transmission structural overlay
-    const txS=$("txStructural");
-    if(txS)txS.textContent="TE Structural: "+(bias<-0.15?"USD STRUCTURAL LEAD":bias>0.15?"EUR STRUCTURAL LEAD":"NEUTRAL MACRO")+" ("+(bias>=0?"+":"")+bias.toFixed(2)+")";
-  }
-  function renderTECal(){
-    const el=$("teCalBody");if(!el||!calCache.length){if(el)el.innerHTML="<div style='color:rgba(255,255,255,.35);font-size:11px;padding:8px'>No high-impact events this week.</div>";return;}
-    const now=Date.now();
-    el.innerHTML=calCache.map(ev=>{
-      const dt=new Date(ev.date);const dtStr=Number.isNaN(dt.getTime())?"TBA":dt.toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit",timeZone:"UTC"})+" UTC";
-      const ms=dt.getTime()-now;const cd=ms>0?(ms>172800000?Math.floor(ms/86400000)+"d":ms>3600000?Math.floor(ms/3600000)+"h"+Math.floor((ms%3600000)/60000)+"m":Math.floor(ms/60000)+"m"):"Past";
-      const imp=ev.impact==="High"||ev.impact==="HIGH"?"H":"M";
-      const hasA=ev.actual!=null&&ev.actual!=="";
-      return "<div class='teCalItem'>"
-        +"<div style='display:flex;gap:6px;align-items:center;flex-wrap:wrap'>"
-        +"<span class='teCalTime'>"+dtStr+"</span>"
-        +"<span class='teImp "+imp+"'>"+ev.impact+"</span>"
-        +(ev.country?"<span style='font-size:9px;color:rgba(255,255,255,.32)'>"+ev.country+"</span>":"")
-        +"</div>"
-        +"<div class='teCalName'>"+ev.name+"</div>"
-        +"<div class='teCalVals'>"+(hasA?"<span style='color:rgba(24,209,138,.85)'>A:"+ev.actual+" </span>":"")+(ev.forecast?"F:"+ev.forecast+" ":"")+(ev.previous?"P:"+ev.previous+" ":"")+"<span style='color:rgba(255,176,32,.65)'>"+cd+"</span></div>"
-        +"</div>";
-    }).join("");
-  }
-  return{tick,get:()=>cache,getCal:()=>calCache,renderTE,renderTECal};
 })();
 
 // ── FIREBASE: writes/reads the COMPLETE state so READERs are pixel-identical ──
@@ -1565,7 +1070,6 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba){
     oilChg:MacroFeed.get("OIL")?.changePct,goldChg:MacroFeed.get("GOLD")?.changePct,usdChg:MacroFeed.get("USD")?.changePct,
     gbpChg:tx.gbpChg,audChg:tx.audChg,nzdChg:tx.nzdChg,fxConf:tx.fxConf,fxInt:tx.fxInt,
     ts:Date.now(),
-    teBias:window._teBias??null,teRates:{fed:window._teData?.usFed?.v??null,ecb:window._teData?.ecbRate?.v??null},
     qH:typeof _q!=='undefined'?_q?.H:null,
     qAC1:typeof _q!=='undefined'?_q?.ac1:null,
     qVR:typeof _q!=='undefined'?_q?.volRegime?.regime:null,
@@ -1692,8 +1196,6 @@ function applyFullStateToUI(st){
     const pca=$("paConeAdj"),cm=st.projCalibMult||1;
     if(pca)pca.textContent=cm>1.05?"Widening":cm<0.95?"Tightening":"Neutral";
   }
-  if(st.teBias!=null){window._teBias=st.teBias;const txS=$('txStructural');if(txS)txS.textContent='TE Structural: '+(st.teBias<-0.15?'USD STRUCTURAL LEAD':st.teBias>0.15?'EUR STRUCTURAL LEAD':'NEUTRAL MACRO')+' ('+(st.teBias>=0?'+':'')+st.teBias.toFixed(2)+')';}  // Deja Vu for READER
-  if(st.probs&&st.probs.length===8){const dvR=DejaVuEngine.compute(st.probs,st.conf||0.3,st.qVR||'NORMAL');if(dvR)updateDejaVuUI(dvR);}
   // Quant Engine for READER: render from state fields
   if(st.qH!=null){updateQuantUI({H:st.qH,ac1:st.qAC1||0,ac2:0,ac3:0,ac4:0,ac5:0,kelly:{f:st.qKelly||0,pct:Math.round(Math.abs(st.qKelly||0)*100)},volRegime:{ratio:st.qVRratio||1,regime:st.qVR||'NORMAL'},hist:{bins:[],min:0,max:0},halfLife:null,signals:st.qSignals||[],conviction:st.qConviction||0,onCount:st.qOnCount||0,againstCount:st.qAgainstCount||0});}
   // Signal Performance: if state has signal stats (from MASTER), render them
@@ -1713,58 +1215,6 @@ function applyFullStateToUI(st){
 }
 
 // ── PROJECTION ACCURACY UI ────────────────────────────────────────────────
-
-
-function updateDejaVuUI(dv){
-  if(!dv)return;
-  const{blend,dom,throttle:thr,stateVec,condSharpe,guidance,bucketPcts}=dv;
-  // Blend bar
-  const dislocPct=bucketPcts.disloc;
-  const nonTrend=bucketPcts.revert+dislocPct;
-  const setEl=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
-  const setW=(id,w)=>{const e=$(id);if(e)e.style.width=w+"%";};
-  setW("dvTrendBar",bucketPcts.trend);setEl("dvTrendPct",bucketPcts.trend+"%");
-  setW("dvRevertBar",nonTrend);setEl("dvRevertPct",nonTrend+"%");
-  setW("dvUncertBar",bucketPcts.uncert);setEl("dvUncertPct",bucketPcts.uncert+"%");
-  const bm=$("dvBlendMeta");if(bm)bm.textContent=guidance;
-  // Bucket label
-  const bk=$("dvBucket"),bkm=$("dvBucketMeta");
-  if(bk){bk.textContent=dom.name;bk.style.color=dom.col;}
-  if(bkm)bkm.textContent="Cond. Sharpe "+(condSharpe>=0?"+":"")+condSharpe.toFixed(2)+" | "+guidance.split(".")[0];
-  // Throttle
-  const tPct=Math.round(thr*100);
-  setW("dvThrottleFill",tPct);
-  const tf=$("dvThrottleFill");if(tf)tf.style.background=thr>=0.75?"rgba(24,209,138,.82)":thr>=0.45?"rgba(255,176,32,.82)":"rgba(255,77,77,.82)";
-  setEl("dvThrottlePct",tPct+"%");
-  setEl("dvThrottleLabel",thr>=0.75?"Full risk":thr>=0.45?"Reduced risk":thr>=0.25?"Minimum size":"Stand aside");
-  // Conditional Sharpe bars
-  [{id:"cse1",val:dv.dom?DejaVuEngine.BS.TRENDING:2.4,col:"rgba(43,108,255,.80)"},
-   {id:"cse2",val:DejaVuEngine.BS.MEAN_REVERT,col:"rgba(255,138,64,.80)"},
-   {id:"cse3",val:DejaVuEngine.BS.DISLOCATION,col:"rgba(255,77,77,.80)"},
-   {id:"cse4",val:DejaVuEngine.BS.UNCERTAIN,col:"rgba(180,220,255,.45)"},
-  ].forEach(b=>{
-    const f=$(b.id+"f"),v=$(b.id+"v");
-    const pct=Math.max(0,(b.val+1)/4*100);
-    if(f){f.style.width=pct+"%";f.style.background=b.col;}
-    if(v){v.textContent=(b.val>=0?"+":"")+b.val.toFixed(1);v.style.color=b.col;}
-  });
-  // State vector
-  const sv=$("dvStateVec");
-  if(sv){
-    const cols={Trend:"rgba(43,108,255,.85)",Revert:"rgba(255,138,64,.85)",Disloc:"rgba(255,77,77,.85)",Uncert:"rgba(180,220,255,.55)"};
-    const bgs={Trend:"rgba(43,108,255,.10)",Revert:"rgba(255,138,64,.10)",Disloc:"rgba(255,77,77,.10)",Uncert:"rgba(8,20,52,.22)"};
-    sv.innerHTML=stateVec.map(s=>{
-      const c=cols[s.primary]||cols.Uncert,bg=bgs[s.primary]||bgs.Uncert;
-      return "<div class='svBox' style='background:"+bg+";border-color:"+c+"'><div class='sl'>S"+s.state+"</div><div class='sp' style='color:"+c+"'>"+Math.round(s.prob*100)+"%</div><div class='st'>"+s.primary+"</div></div>";
-    }).join("");
-  }
-  // Quadrant pcts
-  [["dqTrendPct",bucketPcts.trend],["dqRevertPct",bucketPcts.revert],["dqDislocPct",bucketPcts.disloc],["dqUncertPct",bucketPcts.uncert]].forEach(([id,pct])=>setEl(id,pct+"%"));
-  // Highlight dominant quadrant
-  [["dqTrend","TRENDING"],["dqRevert","MEAN-REVERT"],["dqDisloc","DISLOCATION"],["dqUncert","UNCERTAIN"]].forEach(([id,name])=>{
-    const el=$(id);if(!el)return;el.style.transform=dom.name===name?"scale(1.02)":"scale(1)";el.style.boxShadow=dom.name===name?"0 0 18px rgba(255,255,255,.04)":"none";
-  });
-}
 
 function updateQuantUI(q){
   if(!q)return;
@@ -1929,13 +1379,10 @@ async function onSpotUpdate(s){
   const arch=Classifier.classify(tx);
   ProjTracker.logProjection({spot:s.price,bias:proj.bias,r1:proj.r1,r4:proj.r4,policy:step.policy});
   const _q=QuantEngine.compute(step,tx,pb3);
-  const _dv=DejaVuEngine.compute(step.probs,step.conf,_q?.volRegime?.regime);
-  updateDejaVuUI(_dv);
   updateQuantUI(_q);
   drawTickChart(QuantEngine.getPrices());
   {const fp=$('fxSpotPrice');if(fp){fp.classList.remove('pricePulse');void fp.offsetWidth;fp.classList.add('pricePulse');}}
   const fullState=buildFullState(step,tx,proj,pb3,arch,s,recentStates,cm,ba);
-  if(typeof _dv!=='undefined'&&_dv){fullState.dvBlend=_dv.bucketPcts;fullState.dvThrottle=_dv.throttle;fullState.dvDomBucket=_dv.dom?.name;fullState.dvCondSharpe=_dv.condSharpe;}
   lastFullState=fullState;
   applyFullStateToUI(fullState);
   if(!paused){SignalTracker.update(s.price,proj.bias);}
@@ -2037,9 +1484,6 @@ async function start(){
     setInterval(readerPoll,5000);
     // READERs still fetch macro/events/headlines for their own display panels
     setInterval(async()=>{await MacroFeed.tick();MacroFeed.hydrate();},90000);
-  TEFeed.tick();
-  setInterval(()=>TEFeed.tick(),30*60*1000);
-  setInterval(()=>TEFeed.renderTECal(),60*1000);
     setInterval(async()=>{await EventsFeed.tick();renderEvents();},5*60*1000);
     setInterval(async()=>{await HeadlinesFeed.tick();renderHeadlines();},5*60*1000);
     setInterval(updateSessionUI,30000);
