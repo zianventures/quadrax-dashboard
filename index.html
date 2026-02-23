@@ -247,6 +247,42 @@ tbody tr:hover{background:rgba(255,255,255,.03)}
 .alVal{font-size:11px;font-family:var(--mono);font-weight:600;text-align:right;min-width:50px}
 .alMiniBar{flex:1;height:4px;border-radius:3px;background:rgba(180,220,255,.08);overflow:hidden;max-width:80px}
 .alMiniFill{height:100%;border-radius:3px;transition:width .5s ease,background .5s ease}
+
+/* ── UNIFIED SIGNAL BUS ── */
+.busGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+@media(max-width:700px){.busGrid{grid-template-columns:1fr 1fr}}
+.busBox{border-radius:12px;background:rgba(8,20,52,.24);border:1px solid rgba(180,220,255,.08);padding:10px 12px}
+.busBox .bk{font-size:8.5px;color:rgba(255,255,255,.40);text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px}
+.busBox .bv{font-size:18px;font-weight:700;font-family:var(--mono);line-height:1.1}
+.busBox .bm{font-size:9.5px;color:rgba(255,255,255,.40);margin-top:2px}
+/* consensus banner */
+.busBanner{border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:16px;margin-bottom:12px;transition:all .5s ease}
+.busBannerDir{font-size:32px;font-weight:800;font-family:var(--mono);line-height:1}
+.busBannerRight{flex:1}
+.busBannerLabel{font-size:9.5px;text-transform:uppercase;letter-spacing:.7px;opacity:.65;margin-bottom:2px}
+.busBannerConv{font-size:15px;font-weight:600;font-family:var(--mono)}
+.busBannerMeta{font-size:10px;opacity:.55;margin-top:3px;line-height:1.5}
+/* Signal source pills */
+.srcPills{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.srcPill{border-radius:10px;padding:3px 9px;font-size:9.5px;font-weight:600;border:1px solid}
+.srcPill.agree{background:rgba(24,209,138,.12);border-color:rgba(24,209,138,.30);color:rgba(24,209,138,.90)}
+.srcPill.disagree{background:rgba(255,77,77,.10);border-color:rgba(255,77,77,.25);color:rgba(255,100,100,.80)}
+.srcPill.inactive{background:rgba(180,220,255,.04);border-color:rgba(180,220,255,.10);color:rgba(180,220,255,.40)}
+/* Coherence arc */
+.cohArc{width:52px;height:52px;position:relative;flex-shrink:0}
+.cohArc svg{transform:rotate(-90deg)}
+.cohArcVal{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;font-family:var(--mono)}
+/* Multi-TF forecast grid */
+.tfGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:10px 0}
+@media(max-width:700px){.tfGrid{grid-template-columns:repeat(3,1fr)}}
+.tfBox{border-radius:12px;padding:10px 10px;border:1px solid rgba(180,220,255,.08);background:rgba(8,20,52,.22);transition:border-color .4s,background .4s}
+.tfBox.active{border-color:rgba(24,209,138,.30);background:rgba(24,209,138,.06)}
+.tfBox.active.short{border-color:rgba(255,77,77,.30);background:rgba(255,77,77,.06)}
+.tfBox .tfl{font-size:9px;color:rgba(255,255,255,.40);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.tfBox .tfv{font-size:14px;font-weight:700;font-family:var(--mono)}
+.tfBox .tfr{font-size:9.5px;font-family:var(--mono);color:rgba(255,255,255,.42);margin-top:2px}
+.tfBox .tfc{font-size:9px;margin-top:3px}
+.tfArrow{font-size:16px;font-weight:800}
 .paGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:11px}
 @media(max-width:900px){.paGrid{grid-template-columns:1fr 1fr}}
 .paBox{border-radius:14px;background:rgba(8,20,52,.22);border:1px solid rgba(180,220,255,.10);padding:12px;display:grid;gap:4px}
@@ -465,9 +501,68 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
   </div></div>
 
   <div class="card"><div class="inner">
-    <div class="card-title"><h2>Forward Projection &middot; Regime-Conditioned Cone</h2><div class="hint">Cone self-calibrates from historical accuracy. Adaptive multiplier adjusts when range hit rate drifts outside 50-80%.</div></div>
+    <div class="card-title">
+      <h2>Unified Signal Bus &middot; System Coherence</h2>
+      <div class="hint">Single source of truth. Every metric in the dashboard is synthesised here into one consensus direction, risk multiplier, and conviction score. All forecast timeframes derive from this same output &mdash; nothing can contradict anything else.</div>
+    </div>
+
+    <!-- Consensus Banner -->
+    <div class="busBanner" id="busBanner" style="background:rgba(8,20,52,.36);border:1px solid rgba(180,220,255,.12)">
+      <svg class="cohArc" id="cohSvg" width="52" height="52" viewBox="0 0 52 52">
+        <circle cx="26" cy="26" r="20" fill="none" stroke="rgba(180,220,255,.08)" stroke-width="5"/>
+        <circle cx="26" cy="26" r="20" fill="none" stroke="rgba(24,209,138,.80)" stroke-width="5"
+          stroke-dasharray="126" stroke-dashoffset="126" id="cohArc" stroke-linecap="round"
+          style="transform:rotate(-90deg);transform-origin:26px 26px;transition:stroke-dashoffset .7s ease,stroke .7s ease"/>
+      </svg>
+      <div class="cohArcVal" id="cohPct" style="position:absolute;left:0;width:52px;text-align:center">0%</div>
+      <div class="busBannerRight">
+        <div class="busBannerLabel">Consensus Direction &mdash; All Systems</div>
+        <div style="display:flex;align-items:baseline;gap:10px">
+          <div class="busBannerDir" id="busDir">--</div>
+          <div class="busBannerConv" id="busConv" style="color:rgba(180,220,255,.70)">-- conviction</div>
+        </div>
+        <div class="busBannerMeta" id="busMeta">Synthesising signals...</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div class="bk">Risk Throttle</div>
+        <div class="bv" id="busRisk" style="font-size:24px">--%</div>
+        <div class="bm" id="busRiskLabel">Full size</div>
+      </div>
+    </div>
+
+    <!-- Source Pills -->
+    <div class="bk" style="margin-bottom:6px">Signal Sources &mdash; Agreement with Consensus</div>
+    <div class="srcPills" id="srcPills"></div>
+
+    <!-- Stats row -->
+    <div class="busGrid">
+      <div class="busBox"><div class="bk">Overall Conviction</div><div class="bv" id="busConvPct">--%</div><div class="bm">Weighted 6-signal stack</div></div>
+      <div class="busBox"><div class="bk">System Coherence</div><div class="bv" id="busCoherence">--%</div><div class="bm" id="busCohMeta">Signals aligned</div></div>
+      <div class="busBox"><div class="bk">Event Risk</div><div class="bv" id="busEventRisk">--%</div><div class="bm" id="busEventMeta">Calendar pressure</div></div>
+      <div class="busBox"><div class="bk">Vol Regime</div><div class="bv" id="busVolRegime">--</div><div class="bm" id="busVolMeta">Position sizing impact</div></div>
+      <div class="busBox"><div class="bk">Calibration Mult</div><div class="bv" id="busCalibMult">1.00x</div><div class="bm">Cone width factor</div></div>
+      <div class="busBox"><div class="bk">Risk Reasons</div><div class="bm" id="busRiskReasons" style="font-size:9px;margin-top:2px;line-height:1.6">Calculating...</div></div>
+    </div>
+
+    <!-- Multi-Timeframe Forecast (all from same consensus) -->
+    <div class="bk" style="margin-bottom:7px">All-Timeframe Forecast &mdash; Derived from Same Consensus Direction</div>
+    <div class="tfGrid">
+      <div class="tfBox" id="tf15m"><div class="tfl">15 Min</div><div class="tfArrow" id="tf15mDir">&#9644;</div><div class="tfv" id="tf15mTgt">--</div><div class="tfr" id="tf15mRng">-- pips</div><div class="tfc" id="tf15mConf" style="color:rgba(180,220,255,.50)">--%</div></div>
+      <div class="tfBox" id="tf1h"><div class="tfl">1 Hour</div><div class="tfArrow" id="tf1hDir">&#9644;</div><div class="tfv" id="tf1hTgt">--</div><div class="tfr" id="tf1hRng">-- pips</div><div class="tfc" id="tf1hConf" style="color:rgba(180,220,255,.50)">--%</div></div>
+      <div class="tfBox" id="tf4h"><div class="tfl">4 Hour</div><div class="tfArrow" id="tf4hDir">&#9644;</div><div class="tfv" id="tf4hTgt">--</div><div class="tfr" id="tf4hRng">-- pips</div><div class="tfc" id="tf4hConf" style="color:rgba(180,220,255,.50)">--%</div></div>
+      <div class="tfBox" id="tf1d"><div class="tfl">Daily</div><div class="tfArrow" id="tf1dDir">&#9644;</div><div class="tfv" id="tf1dTgt">--</div><div class="tfr" id="tf1dRng">-- pips</div><div class="tfc" id="tf1dConf" style="color:rgba(180,220,255,.50)">--%</div></div>
+      <div class="tfBox" id="tf1w"><div class="tfl">Weekly</div><div class="tfArrow" id="tf1wDir">&#9644;</div><div class="tfv" id="tf1wTgt">--</div><div class="tfr" id="tf1wRng">-- pips</div><div class="tfc" id="tf1wConf" style="color:rgba(180,220,255,.50)">--%</div></div>
+    </div>
+
+    <div class="smallNote" style="margin-top:8px;line-height:1.65">All 5 timeframes show the <em>same</em> directional call derived from the same consensus engine. A contradictory display is a system error, not a signal. If consensus is NEUTRAL, all timeframes show neutral. Risk throttle applies uniformly across all timeframes.</div>
+  </div></div>
+
+  <div class="card"><div class="inner">
+    <div class="card-title"><h2>Forward Projection &middot; Regime-Conditioned Cone</h2><div class="hint">Cone self-calibrates from historical accuracy. Direction bias sourced from the Unified Signal Bus — guaranteed to match the consensus across all cards. 15m and 1h ranges added.</div></div>
     <div class="fpGrid">
       <div class="fpBox"><div class="k">Trade Bias</div><div class="v" id="tradeBias">--</div><div class="meta" id="tradeBiasMeta">--</div></div>
+      <div class="fpBox"><div class="k">Range 15m</div><div class="v" id="rng15m">--</div><div class="meta" id="rng15mMeta">Bus-aligned</div></div>
+      <div class="fpBox"><div class="k">Range 1h</div><div class="v" id="rng1hFp">--</div><div class="meta" id="rng1hFpMeta">Bus-aligned</div></div>
       <div class="fpBox" id="rng1hBox"><div class="k">Move Range 1h</div><div class="v" id="rng1h">--</div><div class="meta" id="rng1hMeta">--</div></div>
       <div class="fpBox"><div class="k">Move Range 4h</div><div class="v" id="rng4h">--</div><div class="meta" id="rng4hMeta">--</div></div>
       <div class="fpBox"><div class="k">Decision Conf</div><div class="v" id="decConf">--</div><div class="meta" id="decConfMeta">Low agreement</div></div>
@@ -1180,6 +1275,166 @@ const ForecastEngine=(()=>{
   return{pushRegime,computeDaily,computeWeekly};
 })();
 
+
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  UNIFIED SIGNAL BUS — Single source of truth for ALL dashboard metrics  ║
+// ║  Every card reads from here. Nothing contradicts anything else.         ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+const SignalBus=(()=>{
+  let _state=null;
+
+  // Consensus direction resolver — weighted vote across all signal sources
+  function _resolveDirection(inputs){
+    const votes=[];
+    // HMM policy vote (strongest signal — 35% weight)
+    if(inputs.policy!=null){
+      const hmmDir=[4].includes(inputs.policy)?"LONG":[5].includes(inputs.policy)?"LONG":[1,7].includes(inputs.policy)?"SHORT":[8,6].includes(inputs.policy)?"NEUTRAL":null;
+      if(hmmDir&&hmmDir!=="NEUTRAL")votes.push({dir:hmmDir,w:0.35,src:"HMM"});
+    }
+    // HMM momentum score (15%)
+    if(inputs.momScore!=null){
+      const mDir=inputs.momScore>0.15?"LONG":inputs.momScore<-0.15?"SHORT":null;
+      if(mDir)votes.push({dir:mDir,w:0.15,src:"Momentum"});
+    }
+    // Transmission score (25%)
+    if(inputs.txScore!=null){
+      const tDir=inputs.txScore>0.10?"LONG":inputs.txScore<-0.10?"SHORT":null;
+      if(tDir)votes.push({dir:tDir,w:0.25,src:"Transmission"});
+    }
+    // FX Confluence (10%)
+    if(inputs.fxConf!=null){
+      const fDir=inputs.fxConf>0.12?"LONG":inputs.fxConf<-0.12?"SHORT":null;
+      if(fDir)votes.push({dir:fDir,w:0.10,src:"FX Conf"});
+    }
+    // Hurst edge (10%)
+    if(inputs.hurst!=null){
+      if(inputs.hurst>0.55&&inputs.txScore!=null)votes.push({dir:inputs.txScore>=0?"LONG":"SHORT",w:0.10,src:"Hurst"});
+    }
+    // AC1 momentum (5%)
+    if(inputs.ac1!=null){
+      const aDir=inputs.ac1>0.10?"LONG":inputs.ac1<-0.10?"SHORT":null;
+      if(aDir)votes.push({dir:aDir,w:0.05,src:"AC1"});
+    }
+
+    if(!votes.length)return{dir:"NEUTRAL",conf:0,agreement:0,sources:[]};
+
+    let longW=0,shortW=0;
+    votes.forEach(v=>{if(v.dir==="LONG")longW+=v.w;else shortW+=v.w;});
+    const totalW=longW+shortW;
+    const dir=longW>shortW?"LONG":shortW>longW?"SHORT":"NEUTRAL";
+    const conf=totalW>0?Math.abs(longW-shortW)/totalW:0;
+    const agreement=votes.filter(v=>v.dir===dir).length/votes.length;
+    return{dir,conf:clamp(conf,0,1),agreement:clamp(agreement,0,1),longW,shortW,sources:votes.map(v=>v.src)};
+  }
+
+  // Risk multiplier: how much of full size is appropriate RIGHT NOW?
+  function _resolveRisk(inputs){
+    let mult=1.0;
+    const reasons=[];
+    // Vol regime penalty
+    if(inputs.volRegime==="VOL SPIKE"){mult*=0.25;reasons.push("VOL SPIKE: 75% cut");}
+    else if(inputs.volRegime==="ELEVATED"){mult*=0.60;reasons.push("Elevated vol: 40% cut");}
+    else if(inputs.volRegime==="VOL CRUSH"){mult*=0.85;reasons.push("Vol crush: 15% cut");}
+    // HMM regime risk
+    if([6,8].includes(inputs.policy)){mult*=0.20;reasons.push("Panic/shock regime: 80% cut");}
+    else if([2].includes(inputs.policy)){mult*=0.40;reasons.push("Liquidity vacuum: 60% cut");}
+    else if([5].includes(inputs.policy)){mult*=0.65;reasons.push("Stop cascade: 35% cut");}
+    // Event risk
+    if(inputs.eventRisk>0.7){mult*=0.35;reasons.push("High event risk: 65% cut");}
+    else if(inputs.eventRisk>0.4){mult*=0.65;reasons.push("Moderate event risk: 35% cut");}
+    // Low conviction
+    if(inputs.conviction<0.25){mult*=0.50;reasons.push("Low conviction: 50% cut");}
+    else if(inputs.conviction<0.45){mult*=0.75;reasons.push("Moderate conviction: 25% cut");}
+    // Calib mult adjustment
+    if(inputs.calibMult>1.3)mult*=0.80;
+    return{mult:clamp(mult,0.05,1.0),pct:Math.round(clamp(mult,0.05,1.0)*100),reasons};
+  }
+
+  // Pip range by timeframe and regime
+  const REGIME_PIPS={
+    "15m":{1:8,2:5,3:10,4:18,5:28,6:35,7:15,8:45},
+    "1h": {1:18,2:10,3:22,4:38,5:55,6:65,7:30,8:90},
+    "4h": {1:40,2:25,3:50,4:80,5:110,6:130,7:65,8:180},
+    "1d": {1:45,2:30,3:55,4:85,5:110,6:130,7:70,8:150},
+    "1w": {1:100,2:70,3:130,4:220,5:280,6:350,7:180,8:400},
+  };
+
+  function _computeForecast(tf,dir,conf,price,policy,calibMult,eventRisk,volRegime,agreement){
+    const basePips=(REGIME_PIPS[tf]?.[policy]||50);
+    // Adjust for vol regime
+    const volMult=volRegime==="VOL SPIKE"?1.8:volRegime==="ELEVATED"?1.3:volRegime==="VOL CRUSH"?0.7:1.0;
+    // Adjust for event risk
+    const evMult=1.0+eventRisk*0.5;
+    const range=Math.round(basePips*volMult*evMult*calibMult);
+    const half=range/10000/2;
+    const target=(dir==="LONG"?price+half:dir==="SHORT"?price-half:price);
+
+    // Confidence: weighted by signal agreement, vol regime, conviction
+    const baseConf=clamp(conf*0.6+agreement*0.4,0.15,0.92);
+    const volConfPenalty=volRegime==="VOL SPIKE"?0.25:volRegime==="ELEVATED"?0.10:0;
+    const finalConf=clamp(baseConf-volConfPenalty,0.10,0.92);
+
+    // R:R for this timeframe (target vs stop = range vs range/2)
+    const rr=2.0; // target is full range, stop is half range
+    return{tf,dir,target:target.toFixed(5),range,confidence:Math.round(finalConf*100),rr};
+  }
+
+  function synthesize(step,tx,proj,pb3,_q,projStats,eventRisk){
+    if(!step)return null;
+    const policy=step.policy||1;
+    const txScore=tx?.score||0;
+    const fxConf=tx?.fxConf||0;
+    const conviction=_q?.conviction||0;
+    const hurst=_q?.H;
+    const ac1=_q?.ac1||0;
+    const volRegime=_q?.volRegime?.regime||"NORMAL";
+    const momScore=step.momScore||0;
+    const calibMult=projStats?.calibMult||1.0;
+    const price=step.lastPrice||1.10;
+
+    // 1. Resolve SINGLE consensus direction — used by ALL cards
+    const consensus=_resolveDirection({policy,txScore,fxConf,hurst,ac1,momScore,conviction});
+
+    // 2. Resolve risk
+    const risk=_resolveRisk({volRegime,policy,eventRisk:eventRisk||0,conviction,calibMult});
+
+    // 3. Compute all timeframe forecasts from SAME consensus direction
+    const forecasts={};
+    ["15m","1h","4h","1d","1w"].forEach(tf=>{
+      forecasts[tf]=_computeForecast(tf,consensus.dir,consensus.conf,price,policy,calibMult,eventRisk||0,volRegime,consensus.agreement);
+    });
+
+    // 4. Overall conviction: combine quant conviction + direction confidence
+    const overallConviction=clamp(conviction*0.5+consensus.conf*0.35+consensus.agreement*0.15,0,1);
+    const convPct=Math.round(overallConviction*100);
+
+    // 5. Coherence score: are all systems pointing the same way?
+    const signalSources=[
+      {name:"HMM Regime",dir:[4].includes(policy)?"LONG":[1,7].includes(policy)?"SHORT":null},
+      {name:"Transmission",dir:txScore>0.10?"LONG":txScore<-0.10?"SHORT":null},
+      {name:"FX Confluence",dir:fxConf>0.12?"LONG":fxConf<-0.12?"SHORT":null},
+      {name:"Momentum",dir:momScore>0.15?"LONG":momScore<-0.15?"SHORT":null},
+      {name:"Quant Edge",dir:_q?.onCount>_q?.againstCount?"LONG":_q?.againstCount>_q?.onCount?"SHORT":null},
+      {name:"PB3",dir:pb3?.dominant==="BOOM"?"LONG":pb3?.dominant==="BUST"?"SHORT":null},
+    ];
+    const activeSignals=signalSources.filter(s=>s.dir!=null);
+    const alignedSignals=activeSignals.filter(s=>s.dir===consensus.dir);
+    const coherence=activeSignals.length?alignedSignals.length/activeSignals.length:0;
+
+    _state={
+      consensus,risk,forecasts,
+      overallConviction,convPct,coherence,
+      signalSources,alignedSignals,
+      policy,volRegime,calibMult,txScore,fxConf,
+      eventRisk:eventRisk||0,
+      timestamp:Date.now(),
+    };
+    return _state;
+  }
+
+  return{synthesize,get:()=>_state};
+})();
+
 // ── FIREBASE: writes/reads the COMPLETE state so READERs are pixel-identical ──
 const FirebaseSync=(()=>{
   let dbUrl=null,role="MASTER",instanceId=Math.random().toString(36).slice(2,11);
@@ -1310,6 +1565,13 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba){
     oilChg:MacroFeed.get("OIL")?.changePct,goldChg:MacroFeed.get("GOLD")?.changePct,usdChg:MacroFeed.get("USD")?.changePct,
     gbpChg:tx.gbpChg,audChg:tx.audChg,nzdChg:tx.nzdChg,fxConf:tx.fxConf,fxInt:tx.fxInt,
     ts:Date.now(),
+    busDir:SignalBus.get()?.consensus?.dir??null,
+    busConvPct:SignalBus.get()?.convPct??null,
+    busRiskPct:SignalBus.get()?.risk?.pct??null,
+    busCoherence:SignalBus.get()?.coherence??null,
+    busForecast15m:SignalBus.get()?.forecasts?.["15m"]??null,
+    busForecast1h:SignalBus.get()?.forecasts?.["1h"]??null,
+    busForecast4h:SignalBus.get()?.forecasts?.["4h"]??null,
     qH:typeof _q!=='undefined'?_q?.H:null,
     qAC1:typeof _q!=='undefined'?_q?.ac1:null,
     qVR:typeof _q!=='undefined'?_q?.volRegime?.regime:null,
@@ -1436,6 +1698,21 @@ function applyFullStateToUI(st){
     const pca=$("paConeAdj"),cm=st.projCalibMult||1;
     if(pca)pca.textContent=cm>1.05?"Widening":cm<0.95?"Tightening":"Neutral";
   }
+  // Signal Bus for READER
+  if(st.busDir){
+    const bd=$("busDir");if(bd){bd.textContent=st.busDir;bd.style.color=st.busDir==="LONG"?"rgba(24,209,138,.95)":st.busDir==="SHORT"?"rgba(255,77,77,.90)":"rgba(180,220,255,.65)";}
+    const br=$("busRisk");if(br){br.textContent=(st.busRiskPct??'--')+"%";br.style.color=(st.busRiskPct??0)>=75?"rgba(24,209,138,.90)":(st.busRiskPct??0)>=40?"rgba(255,176,32,.85)":"rgba(255,77,77,.80)";}
+    const bc=$("busConvPct");if(bc)bc.textContent=(st.busConvPct??'--')+"%";
+    // Populate tf boxes from bus forecasts
+    [["15m",st.busForecast15m],["1h",st.busForecast1h],["4h",st.busForecast4h]].forEach(([tf,f])=>{
+      if(!f)return;
+      const tE=$("tf"+tf+"Tgt"),rE=$("tf"+tf+"Rng"),cE=$("tf"+tf+"Conf");
+      if(tE)tE.textContent=f.target;if(rE)rE.textContent="±"+f.range+"p";if(cE)cE.textContent=f.confidence+"%";
+      const r15=$("rng15m"),r1h=$("rng1hFp");
+      if(tf==="15m"&&r15)r15.textContent=(f.dir==="LONG"?"▲ ":f.dir==="SHORT"?"▼ ":"")+"±"+f.range+"p";
+      if(tf==="1h"&&r1h)r1h.textContent=(f.dir==="LONG"?"▲ ":f.dir==="SHORT"?"▼ ":"")+"±"+f.range+"p";
+    });
+  }
   // Quant Engine for READER: render from state fields
   if(st.qH!=null){updateQuantUI({H:st.qH,ac1:st.qAC1||0,ac2:0,ac3:0,ac4:0,ac5:0,kelly:{f:st.qKelly||0,pct:Math.round(Math.abs(st.qKelly||0)*100)},volRegime:{ratio:st.qVRratio||1,regime:st.qVR||'NORMAL'},hist:{bins:[],min:0,max:0},halfLife:null,signals:st.qSignals||[],conviction:st.qConviction||0,onCount:st.qOnCount||0,againstCount:st.qAgainstCount||0});}
   // Signal Performance: if state has signal stats (from MASTER), render them
@@ -1518,6 +1795,76 @@ function updateQuantUI(q){
    if(cd)cd.textContent=q.onCount+" of 7 signals aligned, "+q.againstCount+" against";
    if(sf){sf.style.width=pct+"%";sf.style.background=clr;}
    if(cr)cr.style.borderColor=q.conviction>=0.6?"rgba(24,209,138,.25)":q.conviction>=0.35?"rgba(255,176,32,.20)":"rgba(180,220,255,.10)";}
+}
+
+
+function updateSignalBusUI(bus){
+  if(!bus)return;
+  const{consensus,risk,forecasts,convPct,coherence,signalSources,alignedSignals,volRegime,eventRisk,calibMult}=bus;
+  const setT=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
+
+  // Banner
+  const banner=$("busBanner");
+  const isL=consensus.dir==="LONG",isS=consensus.dir==="SHORT";
+  if(banner){banner.style.background=isL?"rgba(24,209,138,.10)":isS?"rgba(255,77,77,.10)":"rgba(8,20,52,.36)";banner.style.borderColor=isL?"rgba(24,209,138,.28)":isS?"rgba(255,77,77,.28)":"rgba(180,220,255,.12)";}
+  const dirEl=$("busDir");
+  if(dirEl){dirEl.textContent=consensus.dir;dirEl.style.color=isL?"rgba(24,209,138,.95)":isS?"rgba(255,77,77,.90)":"rgba(180,220,255,.65)";}
+  const convEl=$("busConv");
+  if(convEl){convEl.textContent=convPct+"% conviction";convEl.style.color=convPct>=65?"rgba(24,209,138,.85)":convPct>=40?"rgba(255,176,32,.85)":"rgba(180,220,255,.50)";}
+  setT("busMeta","Agreement: "+Math.round(consensus.agreement*100)+"% | Sources: "+(consensus.sources.join(", ")||"Calculating"));
+
+  // Risk throttle
+  const rEl=$("busRisk");if(rEl){rEl.textContent=risk.pct+"%";rEl.style.color=risk.pct>=75?"rgba(24,209,138,.90)":risk.pct>=40?"rgba(255,176,32,.85)":"rgba(255,77,77,.80)";}
+  setT("busRiskLabel",risk.pct>=75?"Full size":risk.pct>=50?"Reduced size":risk.pct>=25?"Minimum size":"Stand aside");
+
+  // Coherence arc
+  const arc=$("cohArc"),pctEl=$("cohPct");
+  const cohPct=Math.round(coherence*100);
+  if(arc){arc.style.strokeDashoffset=126-(cohPct/100)*126;arc.style.stroke=cohPct>=70?"rgba(24,209,138,.85)":cohPct>=45?"rgba(255,176,32,.80)":"rgba(255,77,77,.70)";}
+  if(pctEl){pctEl.textContent=cohPct+"%";pctEl.style.color=cohPct>=70?"rgba(24,209,138,.90)":cohPct>=45?"rgba(255,176,32,.80)":"rgba(255,77,77,.75)";}
+
+  // Source pills
+  const pillsEl=$("srcPills");
+  if(pillsEl)pillsEl.innerHTML=signalSources.map(s=>{
+    const cls=s.dir===null?"inactive":s.dir===consensus.dir?"agree":"disagree";
+    return "<span class='srcPill "+cls+"'>"+(s.dir==="LONG"?"▲":s.dir==="SHORT"?"▼":"—")+" "+s.name+"</span>";
+  }).join("");
+
+  // Stats row
+  setT("busConvPct",convPct+"%");
+  setT("busCoherence",cohPct+"%");
+  setT("busCohMeta",(alignedSignals?.length||0)+" of "+signalSources.filter(s=>s.dir!=null).length+" signals aligned");
+  setT("busEventRisk",Math.round(eventRisk*100)+"%");
+  setT("busEventMeta",eventRisk>0.6?"High — size down":eventRisk>0.35?"Moderate — caution":"Low — normal ops");
+  setT("busVolRegime",volRegime);
+  setT("busVolMeta",volRegime==="VOL SPIKE"?"25% of normal":volRegime==="ELEVATED"?"60% of normal":volRegime==="VOL CRUSH"?"85% — cautious":"Normal sizing");
+  setT("busCalibMult",calibMult.toFixed(3)+"x");
+  setT("busRiskReasons",risk.reasons.length?risk.reasons.join(" · "):"No additional risk factors");
+
+  // Multi-TF boxes
+  [["15m","tf15m"],["1h","tf1h"],["4h","tf4h"],["1d","tf1d"],["1w","tf1w"]].forEach(([tf,id])=>{
+    const f=forecasts[tf];if(!f)return;
+    const box=$(id),isFL=f.dir==="LONG",isFS=f.dir==="SHORT";
+    if(box)box.className="tfBox"+(isFL?" active":isFS?" active short":"");
+    const dirE=$(id+"Dir");if(dirE)dirE.innerHTML=isFL?"<span style='color:rgba(24,209,138,.90)'>&#9650;</span>":isFS?"<span style='color:rgba(255,77,77,.85)'>&#9660;</span>":"<span style='color:rgba(180,220,255,.40)'>&#9644;</span>";
+    const tE=$("tf"+tf+"Tgt"),rE=$("tf"+tf+"Rng"),cE=$("tf"+tf+"Conf");
+    if(tE)tE.textContent=f.target;if(rE)rE.textContent="±"+f.range+"p";
+    if(cE){cE.textContent=f.confidence+"%";cE.style.color=f.confidence>=65?"rgba(24,209,138,.80)":f.confidence>=40?"rgba(255,176,32,.75)":"rgba(180,220,255,.45)";}
+  });
+
+  // Push 15m/1h into Forward Projection card
+  const f15=forecasts["15m"],f1h=forecasts["1h"];
+  const r15=$("rng15m"),r1h=$("rng1hFp"),r15m=$("rng15mMeta"),r1hm=$("rng1hFpMeta");
+  if(r15&&f15)r15.textContent=(f15.dir==="LONG"?"▲ ":f15.dir==="SHORT"?"▼ ":"")+"±"+f15.range+"p";
+  if(r1h&&f1h)r1h.textContent=(f1h.dir==="LONG"?"▲ ":f1h.dir==="SHORT"?"▼ ":"")+"±"+f1h.range+"p";
+  if(r15m&&f15)r15m.textContent=f15.confidence+"% conf · "+f15.target;
+  if(r1hm&&f1h)r1hm.textContent=f1h.confidence+"% conf · "+f1h.target;
+
+  // Override tradeBias display with bus consensus
+  const tb=$("tradeBias");
+  if(tb){tb.textContent=consensus.dir;tb.classList.remove("pos","neg");if(isL)tb.classList.add("pos");if(isS)tb.classList.add("neg");}
+  const tbm=$("tradeBiasMeta");
+  if(tbm)tbm.textContent="Conviction "+convPct+"% | Risk "+risk.pct+"% | Coherence "+cohPct+"%";
 }
 
 function updateForecastUI(daily,weekly){
@@ -1653,11 +2000,18 @@ async function onSpotUpdate(s){
   ProjTracker.logProjection({spot:s.price,bias:proj.bias,r1:proj.r1,r4:proj.r4,policy:step.policy});
   ForecastEngine.pushRegime(step.policy);
   const _projSt=ProjTracker.getStats();_projSt.calibMult=ProjTracker.getCalibMult();
-  const _dailyF=ForecastEngine.computeDaily(step,tx,s,_projSt);
-  const _weeklyF=ForecastEngine.computeWeekly(step,tx,s,_projSt);
-  updateForecastUI(_dailyF,_weeklyF);
   const _q=QuantEngine.compute(step,tx,pb3);
   updateQuantUI(_q);
+  // Unified Signal Bus — synthesise once, all cards read from this
+  const _eRisk=computeEventRisk?computeEventRisk():0;
+  step.lastPrice=s.price;
+  const _bus=SignalBus.synthesize(step,tx,proj,pb3,_q,_projSt,_eRisk);
+  updateSignalBusUI(_bus);
+  // Extended forecasts — bias overridden by bus so daily/weekly always agree
+  const _dailyF=ForecastEngine.computeDaily(step,tx,s,_projSt);
+  const _weeklyF=ForecastEngine.computeWeekly(step,tx,s,_projSt);
+  if(_bus){_dailyF.bias=_bus.consensus.dir;_weeklyF.bias=_bus.consensus.dir;}
+  updateForecastUI(_dailyF,_weeklyF);
   drawTickChart(QuantEngine.getPrices());
   {const fp=$('fxSpotPrice');if(fp){fp.classList.remove('pricePulse');void fp.offsetWidth;fp.classList.add('pricePulse');}}
   const fullState=buildFullState(step,tx,proj,pb3,arch,s,recentStates,cm,ba);
