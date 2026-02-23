@@ -210,6 +210,43 @@ tbody tr:hover{background:rgba(255,255,255,.03)}
 .volRingWrap{width:58px;height:58px;position:relative;flex-shrink:0}
 .volRingWrap svg{transform:rotate(-90deg)}
 .volRingVal{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;font-family:var(--mono)}
+
+/* ── DAILY / WEEKLY FORECAST ── */
+.fcastGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+@media(max-width:700px){.fcastGrid{grid-template-columns:1fr}}
+.fcastBox{border-radius:14px;background:rgba(8,20,52,.26);border:1px solid rgba(180,220,255,.09);padding:13px 15px;transition:border-color .5s}
+.fcastBox .fk{font-size:9px;color:rgba(255,255,255,.42);text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px}
+.fcastBox .fv{font-size:24px;font-weight:700;font-family:var(--mono);line-height:1.1}
+.fcastBox .fm{font-size:10px;color:rgba(255,255,255,.42);margin-top:3px;line-height:1.4}
+.fcastBias{display:inline-flex;align-items:center;gap:7px;border-radius:20px;padding:5px 12px;font-size:11px;font-weight:600;border:1px solid;margin-top:6px}
+.fcastBias.long{background:rgba(24,209,138,.12);border-color:rgba(24,209,138,.35);color:rgba(24,209,138,.92)}
+.fcastBias.short{background:rgba(255,77,77,.12);border-color:rgba(255,77,77,.35);color:rgba(255,100,100,.85)}
+.fcastBias.neutral{background:rgba(180,220,255,.06);border-color:rgba(180,220,255,.15);color:rgba(180,220,255,.65)}
+.fcastBar{height:7px;border-radius:5px;background:rgba(180,220,255,.08);overflow:hidden;margin:8px 0 3px}
+.fcastFill{height:100%;border-radius:5px;transition:width .7s ease,background .7s ease}
+.fcastConf{display:flex;justify-content:space-between;font-size:9px;color:rgba(255,255,255,.32)}
+.fcastRow{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(180,220,255,.05)}
+.fcastRow:last-child{border-bottom:none}
+.fcastRowL{font-size:10px;color:rgba(255,255,255,.50);flex:1}
+.fcastRowV{font-size:11px;font-family:var(--mono);font-weight:600;text-align:right}
+/* TE Newsfeed */
+.teNewsItem{padding:8px 0;border-bottom:1px solid rgba(180,220,255,.06);cursor:pointer}
+.teNewsItem:last-child{border-bottom:none}
+.teNewsItem:hover .teNewsTitle{color:rgba(232,239,255,1)}
+.teNewsTime{font-size:9px;color:rgba(255,255,255,.35);font-family:var(--mono);margin-bottom:2px}
+.teNewsTitle{font-size:11px;color:rgba(232,239,255,.78);line-height:1.4;transition:color .2s}
+.teNewsCategory{font-size:8.5px;border-radius:3px;padding:1px 6px;font-weight:600;display:inline-block;margin-top:3px}
+.teNewsCategory.USD{background:rgba(43,108,255,.20);color:rgba(100,160,255,.90)}
+.teNewsCategory.EUR{background:rgba(255,138,64,.18);color:rgba(255,160,80,.90)}
+.teNewsCategory.GBP{background:rgba(24,209,138,.15);color:rgba(24,209,138,.85)}
+.teNewsCategory.MKT{background:rgba(180,220,255,.10);color:rgba(180,220,255,.65)}
+/* Adaptive Learning enhanced */
+.alRow{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(180,220,255,.05)}
+.alRow:last-child{border-bottom:none}
+.alLabel{font-size:10px;color:rgba(255,255,255,.48);flex:1}
+.alVal{font-size:11px;font-family:var(--mono);font-weight:600;text-align:right;min-width:50px}
+.alMiniBar{flex:1;height:4px;border-radius:3px;background:rgba(180,220,255,.08);overflow:hidden;max-width:80px}
+.alMiniFill{height:100%;border-radius:3px;transition:width .5s ease,background .5s ease}
 .paGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:11px}
 @media(max-width:900px){.paGrid{grid-template-columns:1fr 1fr}}
 .paBox{border-radius:14px;background:rgba(8,20,52,.22);border:1px solid rgba(180,220,255,.10);padding:12px;display:grid;gap:4px}
@@ -445,6 +482,46 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
     </div>
     <div class="coneWrap"><canvas id="coneCanvas"></canvas></div>
     <div class="smallNote" style="margin-top:9px">Cone is a probabilistic range. Not a target price.</div>
+
+    <!-- Daily & Weekly Forecast -->
+    <div style="margin-top:14px">
+      <div class="card-title" style="padding:0 0 8px"><h3 style="font-size:11px;font-weight:600;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.7px;margin:0">Extended Forecast &mdash; Adaptive Learning</h3></div>
+      <div class="fcastGrid">
+
+        <!-- Daily Forecast -->
+        <div class="fcastBox" id="dailyFcastBox">
+          <div class="fk">Daily Forecast &mdash; Next 24h</div>
+          <div class="fv" id="dailyFcastPrice">1.--</div>
+          <div id="dailyFcastBias" class="fcastBias neutral"><span>&#9644;</span> NEUTRAL</div>
+          <div class="fcastBar"><div class="fcastFill" id="dailyFcastBar" style="width:50%;background:rgba(180,220,255,.35)"></div></div>
+          <div class="fcastConf"><span>Bearish</span><span id="dailyFcastConf">--% confidence</span><span>Bullish</span></div>
+          <div style="margin-top:10px">
+            <div class="alRow"><span class="alLabel">Expected Range</span><span class="alRowV alVal" id="dailyFcastRange">-- pips</span></div>
+            <div class="alRow"><span class="alLabel">Bias from Regime</span><span class="alRowV alVal" id="dailyFcastRegime">--</span></div>
+            <div class="alRow"><span class="alLabel">Daily Hist. Dir Hit</span><span class="alRowV alVal" id="dailyDirHit">--</span></div>
+            <div class="alRow"><span class="alLabel">Calibration (daily)</span><span class="alRowV alVal" id="dailyCalib">1.00x</span></div>
+          </div>
+          <div class="fm" id="dailyFcastMeta" style="margin-top:8px">Based on current regime × session volatility × adaptive calibration</div>
+        </div>
+
+        <!-- Weekly Forecast -->
+        <div class="fcastBox" id="weeklyFcastBox">
+          <div class="fk">Weekly Forecast &mdash; Next 5 Sessions</div>
+          <div class="fv" id="weeklyFcastPrice">1.--</div>
+          <div id="weeklyFcastBias" class="fcastBias neutral"><span>&#9644;</span> NEUTRAL</div>
+          <div class="fcastBar"><div class="fcastFill" id="weeklyFcastBar" style="width:50%;background:rgba(180,220,255,.35)"></div></div>
+          <div class="fcastConf"><span>Bearish</span><span id="weeklyFcastConf">--% confidence</span><span>Bullish</span></div>
+          <div style="margin-top:10px">
+            <div class="alRow"><span class="alLabel">Expected Weekly Range</span><span class="alRowV alVal" id="weeklyFcastRange">-- pips</span></div>
+            <div class="alRow"><span class="alLabel">Weekly Regime Trend</span><span class="alRowV alVal" id="weeklyRegimeTrend">--</span></div>
+            <div class="alRow"><span class="alLabel">Weekly Dir Hit Rate</span><span class="alRowV alVal" id="weeklyDirHit">--</span></div>
+            <div class="alRow"><span class="alLabel">Macro Alignment</span><span class="alRowV alVal" id="weeklyMacroAlign">--</span></div>
+          </div>
+          <div class="fm" id="weeklyFcastMeta" style="margin-top:8px">Aggregated from daily regime history × macro backdrop × vol expansion</div>
+        </div>
+
+      </div>
+    </div>
   </div></div>
 
   <div class="card"><div class="inner">
@@ -482,6 +559,36 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
       <div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Time</th><th>Bias</th><th>1h Range</th><th>4h Range</th><th>1h Dir</th><th>1h Rng</th><th>4h Dir</th><th>4h Rng</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
     </div>
     <div class="smallNote" style="margin-top:9px">Scores resolve automatically. 1h outcomes scored at +60min, 4h at +240min. Need 10+ resolved before multiplier adapts.</div>
+
+    <!-- Enhanced Adaptive Learning Breakdown -->
+    <div style="margin-top:14px;border-top:1px solid rgba(180,220,255,.08);padding-top:12px">
+      <div class="card-title" style="padding:0 0 8px"><h3 style="font-size:11px;font-weight:600;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.7px;margin:0">Adaptive Learning Engine &mdash; How It Self-Improves</h3></div>
+      <div class="fcastGrid">
+        <div class="fcastBox">
+          <div class="fk">Calibration Loop Status</div>
+          <div style="margin-top:4px">
+            <div class="alRow"><span class="alLabel">1h Range Hit Target</span><span class="alVal" id="alRngTarget1h">60-80%</span></div>
+            <div class="alRow"><span class="alLabel">Current 1h Hit</span><span class="alVal" id="alRngCurrent1h">--</span></div>
+            <div class="alRow"><span class="alLabel">4h Range Hit Target</span><span class="alVal" id="alRngTarget4h">60-80%</span></div>
+            <div class="alRow"><span class="alLabel">Current 4h Hit</span><span class="alVal" id="alRngCurrent4h">--</span></div>
+            <div class="alRow"><span class="alLabel">Cone Adjustment</span><span class="alVal" id="alConeAction">Neutral</span></div>
+          </div>
+          <div class="fm" style="margin-top:8px">Hit rate below 50% → cone widens 6%. Above 82% → tightens 4%. Target sweet spot: 60-80%.</div>
+        </div>
+        <div class="fcastBox">
+          <div class="fk">Direction Learning Status</div>
+          <div style="margin-top:4px">
+            <div class="alRow"><span class="alLabel">Bias Weight (current)</span><span class="alVal" id="alBiasWeight">1.00x</span></div>
+            <div class="alRow"><span class="alLabel">1h Dir Hit Rate</span><span class="alVal" id="alDirHit1h">--</span></div>
+            <div class="alRow"><span class="alLabel">Action at &lt;48%</span><span class="alVal" style="color:rgba(255,77,77,.80)">Downweight</span></div>
+            <div class="alRow"><span class="alLabel">Action at &gt;62%</span><span class="alVal" style="color:rgba(24,209,138,.80)">Upweight</span></div>
+            <div class="alRow"><span class="alLabel">Resolved Projections</span><span class="alVal" id="alResolvedN">0</span></div>
+          </div>
+          <div class="fm" style="margin-top:8px">Direction accuracy below 48% → bias confidence reduced. Above 62% → amplified. Engine adjusts every scored call.</div>
+        </div>
+      </div>
+    </div>
+
   </div></div>
   <div class="card"><div class="inner">
     <div class="card-title"><h2>Signal Performance &middot; Rolling Sharpe</h2><div class="hint">Hypothetical P&amp;L on live bias signals. Sharpe annualized. Target 2.5. Needs 20+ closed signals.</div></div>
@@ -589,6 +696,22 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
     </div>
     <div class="tableWrap"><div class="scroll" style="max-height:230px"><table><thead><tr><th>When (UTC)</th><th>Event</th><th>Impact</th><th>Forecast</th><th>Previous</th><th>Countdown</th></tr></thead><tbody id="eventsBody"></tbody></table></div></div>
     <div class="muted" style="margin-top:9px;display:flex;align-items:center;gap:8px">High impact: <span class="impact"><span class="folder"></span>HIGH</span> <span class="smallNote" id="calLastFetch" style="margin-left:4px">Fetching...</span></div>
+  </div></div>
+
+  <div class="card"><div class="inner">
+    <div class="card-title">
+      <h2>Trading Economics &middot; Live Newsfeed</h2>
+      <div class="hint">Real-time macro news from Trading Economics relevant to USD and EUR. Click any headline to read the full article.</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+      <span class="liveBadge stale" id="teNewsBadge">LOADING</span>
+      <span style="font-size:10px;color:rgba(255,255,255,.38)" id="teNewsCount">Fetching...</span>
+      <a href="https://tradingeconomics.com/" target="_blank" rel="noopener noreferrer" style="font-size:10px;color:rgba(180,220,255,.55);margin-left:auto;text-decoration:none">tradingeconomics.com &rarr;</a>
+    </div>
+    <div id="teNewsBody" style="max-height:400px;overflow-y:auto">
+      <div style="color:rgba(255,255,255,.35);font-size:11px;padding:8px 0">Loading news from Trading Economics...</div>
+    </div>
+    <div class="smallNote" style="margin-top:8px">Refreshes every 10 minutes. Categorized by currency relevance (USD / EUR / GBP / MKT). Click to open full article.</div>
   </div></div>
 
   <div class="card"><div class="inner">
@@ -940,6 +1063,123 @@ const QuantEngine=(()=>{
   return{push,compute,getPrices:()=>PH,getReturns:()=>RH};
 })();
 
+// == TRADING ECONOMICS NEWSFEED =============================================
+const TENewsFeed=(()=>{
+  let articles=[],lastFetch=0;
+  const TTL=10*60*1000;
+  const PROXIES=[
+    u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u),
+    u=>"https://corsproxy.io/?"+encodeURIComponent(u),
+    u=>"https://api.codetabs.com/v1/proxy?quest="+encodeURIComponent(u),
+  ];
+  const FEEDS=["https://tradingeconomics.com/rss/news.aspx"];
+  async function proxyFetch(url,ms=10000){
+    for(const mkP of PROXIES){
+      const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),ms);
+      try{const r=await fetch(mkP(url),{cache:"no-store",signal:ctrl.signal});clearTimeout(t);if(!r.ok)continue;return await r.text();}catch{clearTimeout(t);}
+    }return null;
+  }
+  function parseRSS(xml){
+    const items=[];
+    const matches=[...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)];
+    for(const m of matches.slice(0,20)){
+      const inner=m[1];
+      const get=(tag)=>{const tm=inner.match(new RegExp("<"+tag+"[^>]*>([\\s\\S]*?)<\\/"+tag+">"));return tm?tm[1].replace(/<[^>]+>/g,"").replace(/&amp;/g,"&").replace(/&#[0-9]+;/g,"").trim():""};
+      const title=get("title"),link=get("link"),desc=get("description"),pubDate=get("pubDate");
+      if(title.length>5)items.push({title,link,desc:desc.slice(0,110),ts:new Date(pubDate).getTime()||Date.now(),pubDate});
+    }
+    return items;
+  }
+  function categorizeFx(text){
+    const t=text.toUpperCase();
+    if(t.includes("FEDERAL RESERVE")||t.includes("FED ")||t.includes(" USD")||t.includes("DOLLAR")||t.includes("NFP")||t.includes("CPI")||t.includes("FOMC"))return"USD";
+    if(t.includes("ECB")||t.includes("EURO")||t.includes("EUR")||t.includes("EUROZONE"))return"EUR";
+    if(t.includes("BOE")||t.includes("POUND")||t.includes("GBP"))return"GBP";
+    return"MKT";
+  }
+  async function tick(){
+    const now=Date.now();
+    if(now-lastFetch<TTL&&articles.length>3)return;
+    const badge=$("teNewsBadge"),cnt=$("teNewsCount");
+    if(badge){badge.className="liveBadge stale";badge.textContent="LOADING";}
+    let parsed=[];
+    for(const feed of FEEDS){const xml=await proxyFetch(feed,12000);if(xml&&xml.includes("<item>")){parsed=parseRSS(xml);break;}}
+    if(parsed.length){articles=parsed.sort((a,b)=>b.ts-a.ts);lastFetch=now;if(badge){badge.className="liveBadge live";badge.textContent="LIVE";}if(cnt)cnt.textContent=articles.length+" articles";}
+    else{if(badge){badge.className="liveBadge stale";badge.textContent="UNAVAIL";}if(cnt)cnt.textContent="Proxy blocked";}
+    render();
+  }
+  function render(){
+    const el=$("teNewsBody");if(!el)return;
+    if(!articles.length){el.innerHTML="<div style='color:rgba(255,255,255,.35);font-size:11px;padding:8px'>Loading Trading Economics news...</div>";return;}
+    const now=Date.now();
+    el.innerHTML=articles.slice(0,15).map(a=>{
+      const ageMins=Math.round((now-a.ts)/60000);
+      const ageStr=ageMins<60?ageMins+"m ago":Math.floor(ageMins/60)+"h ago";
+      const cat=categorizeFx(a.title+" "+a.desc);
+      return "<a href='"+(a.link||"https://tradingeconomics.com")+"' target='_blank' rel='noopener' style='text-decoration:none'>"
+        +"<div class='teNewsItem'>"
+        +"<div class='teNewsTime'>"+ageStr+" \u2014 Trading Economics</div>"
+        +"<div class='teNewsTitle'>"+a.title+"</div>"
+        +(a.desc?"<div style='font-size:9.5px;color:rgba(255,255,255,.38);margin-top:2px'>"+a.desc+"</div>":"")
+        +"<span class='teNewsCategory "+cat+"'>"+cat+"</span>"
+        +"</div></a>";
+    }).join("");
+  }
+  return{tick,render,get:()=>articles};
+})();
+
+// == DAILY / WEEKLY FORECAST ENGINE ========================================
+const ForecastEngine=(()=>{
+  const REGIME_DAILY_PIPS={1:45,2:30,3:55,4:85,5:110,6:130,7:70,8:150};
+  const WEEKLY_MULT=3.2;
+  let regimeHistory=[];
+  function pushRegime(policy){
+    if(!policy)return;
+    regimeHistory.push({policy,ts:Date.now()});
+    if(regimeHistory.length>120)regimeHistory.shift();
+  }
+  function _domWeekly(){
+    if(!regimeHistory.length)return null;
+    const c={};regimeHistory.forEach(r=>{c[r.policy]=(c[r.policy]||0)+1;});
+    return parseInt(Object.entries(c).sort((a,b)=>b[1]-a[1])[0][0]);
+  }
+  function _biasDir(policy){
+    if(policy===4||policy===3)return"LONG";
+    if(policy===1||policy===7)return"SHORT";
+    return"NEUTRAL";
+  }
+  function computeDaily(step,tx,spot,projStats){
+    const policy=step?.policy||1;
+    const dailyPips=REGIME_DAILY_PIPS[policy]||55;
+    const cm=projStats?.calibMult||1.0;
+    const range=Math.round(dailyPips*cm);
+    const regimeBias=_biasDir(policy);
+    const txScore=tx?.score||0;
+    let biasDir=regimeBias==="NEUTRAL"?(txScore>0.15?"LONG":txScore<-0.15?"SHORT":"NEUTRAL"):regimeBias;
+    const maxProb=step?.probs?Math.max(...step.probs):0.5;
+    const conf=clamp((maxProb*0.6+Math.abs(txScore)*0.4),0.25,0.92);
+    const price=spot?.price||1.10;
+    const half=(range/2)/10000;
+    const target=(biasDir==="LONG"?price+half:biasDir==="SHORT"?price-half:price).toFixed(5);
+    return{bias:biasDir,target,range,confidence:Math.round(conf*100),regimeName:step?.stateName||"S"+policy,dir1hRate:projStats?.dir1hRate,calibMult:cm,policy};
+  }
+  function computeWeekly(step,tx,spot,projStats){
+    const dom=_domWeekly()||step?.policy||1;
+    const range=Math.round((REGIME_DAILY_PIPS[dom]||55)*WEEKLY_MULT*(projStats?.calibMult||1.0));
+    let tL=0,tS=0;
+    regimeHistory.slice(-40).forEach(r=>{const d=_biasDir(r.policy);if(d==="LONG")tL++;else if(d==="SHORT")tS++;});
+    const tot=tL+tS||1;
+    const bias=tL/tot>0.60?"LONG":tS/tot>0.60?"SHORT":"NEUTRAL";
+    const conf=Math.round(Math.max(tL,tS)/tot*100);
+    const price=spot?.price||1.10;
+    const target=(bias==="LONG"?price+(range/2)/10000:bias==="SHORT"?price-(range/2)/10000:price).toFixed(5);
+    const txScore=tx?.score||0;
+    const macroAlign=txScore>0.20?"Bullish":txScore<-0.20?"Bearish":"Neutral";
+    return{bias,target,range,confidence:conf,domRegimeName:step?.stateName||"S"+dom,regimeHistory:regimeHistory.length,macroAlign};
+  }
+  return{pushRegime,computeDaily,computeWeekly};
+})();
+
 // ── FIREBASE: writes/reads the COMPLETE state so READERs are pixel-identical ──
 const FirebaseSync=(()=>{
   let dbUrl=null,role="MASTER",instanceId=Math.random().toString(36).slice(2,11);
@@ -1280,6 +1520,39 @@ function updateQuantUI(q){
    if(cr)cr.style.borderColor=q.conviction>=0.6?"rgba(24,209,138,.25)":q.conviction>=0.35?"rgba(255,176,32,.20)":"rgba(180,220,255,.10)";}
 }
 
+function updateForecastUI(daily,weekly){
+  if(!daily||!weekly)return;
+  const setT=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
+  // Daily
+  setT("dailyFcastPrice",daily.target);
+  const dbEl=$("dailyFcastBias");
+  if(dbEl){dbEl.className="fcastBias "+(daily.bias==="LONG"?"long":daily.bias==="SHORT"?"short":"neutral");dbEl.innerHTML=(daily.bias==="LONG"?"&#9650; LONG 24h":daily.bias==="SHORT"?"&#9660; SHORT 24h":"&#9644; NEUTRAL 24h");}
+  const dBar=$("dailyFcastBar");if(dBar){dBar.style.width=daily.confidence+"%";dBar.style.background=daily.bias==="LONG"?"rgba(24,209,138,.82)":daily.bias==="SHORT"?"rgba(255,77,77,.82)":"rgba(180,220,255,.35)";}
+  setT("dailyFcastConf",daily.confidence+"% confidence");
+  setT("dailyFcastRange","±"+daily.range+" pips");
+  setT("dailyFcastRegime",daily.regimeName);
+  setT("dailyDirHit",daily.dir1hRate!=null?Math.round(daily.dir1hRate*100)+"% accuracy":"Collecting...");
+  setT("dailyCalib",(daily.calibMult||1).toFixed(3)+"x");
+  const dfb=$("dailyFcastBox");if(dfb)dfb.style.borderColor=daily.bias==="LONG"?"rgba(24,209,138,.25)":daily.bias==="SHORT"?"rgba(255,77,77,.25)":"rgba(180,220,255,.09)";
+  // Weekly
+  setT("weeklyFcastPrice",weekly.target);
+  const wbEl=$("weeklyFcastBias");
+  if(wbEl){wbEl.className="fcastBias "+(weekly.bias==="LONG"?"long":weekly.bias==="SHORT"?"short":"neutral");wbEl.innerHTML=(weekly.bias==="LONG"?"&#9650; LONG WEEK":weekly.bias==="SHORT"?"&#9660; SHORT WEEK":"&#9644; NEUTRAL WEEK");}
+  const wBar=$("weeklyFcastBar");if(wBar){wBar.style.width=weekly.confidence+"%";wBar.style.background=weekly.bias==="LONG"?"rgba(24,209,138,.82)":weekly.bias==="SHORT"?"rgba(255,77,77,.82)":"rgba(180,220,255,.35)";}
+  setT("weeklyFcastConf",weekly.confidence+"% confidence");
+  setT("weeklyFcastRange","±"+weekly.range+" pips");
+  setT("weeklyRegimeTrend",weekly.domRegimeName+" ("+weekly.regimeHistory+" obs)");
+  setT("weeklyDirHit",weekly.confidence+"% direction confidence");
+  setT("weeklyMacroAlign",weekly.macroAlign);
+  const wfb=$("weeklyFcastBox");if(wfb)wfb.style.borderColor=weekly.bias==="LONG"?"rgba(24,209,138,.25)":weekly.bias==="SHORT"?"rgba(255,77,77,.25)":"rgba(180,220,255,.09)";
+  // Adaptive Learning panel
+  const s=ProjTracker.getStats(),cm=ProjTracker.getCalibMult(),ba=ProjTracker.getBiasConfAdj();
+  const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
+  setT("alRngCurrent1h",fmt(s.rng1hRate));setT("alRngCurrent4h",fmt(s.rng4hRate));
+  setT("alDirHit1h",fmt(s.dir1hRate));setT("alBiasWeight",ba.toFixed(3)+"x");
+  setT("alResolvedN",(s.total-s.pending)+" of "+s.total);
+  const coneEl=$("alConeAction");if(coneEl)coneEl.textContent=cm>1.05?"Widening +"+Math.round((cm-1)*100)+"%":cm<0.95?"Tightening -"+Math.round((1-cm)*100)+"%":"Calibrated";
+}
 function updateProjAccuracyUI(){
   const s=ProjTracker.getStats(),cm=ProjTracker.getCalibMult(),ba=ProjTracker.getBiasConfAdj();
   const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
@@ -1378,6 +1651,11 @@ async function onSpotUpdate(s){
   const pb3=PB3.compute(step,tx);
   const arch=Classifier.classify(tx);
   ProjTracker.logProjection({spot:s.price,bias:proj.bias,r1:proj.r1,r4:proj.r4,policy:step.policy});
+  ForecastEngine.pushRegime(step.policy);
+  const _projSt=ProjTracker.getStats();_projSt.calibMult=ProjTracker.getCalibMult();
+  const _dailyF=ForecastEngine.computeDaily(step,tx,s,_projSt);
+  const _weeklyF=ForecastEngine.computeWeekly(step,tx,s,_projSt);
+  updateForecastUI(_dailyF,_weeklyF);
   const _q=QuantEngine.compute(step,tx,pb3);
   updateQuantUI(_q);
   drawTickChart(QuantEngine.getPrices());
@@ -1484,6 +1762,10 @@ async function start(){
     setInterval(readerPoll,5000);
     // READERs still fetch macro/events/headlines for their own display panels
     setInterval(async()=>{await MacroFeed.tick();MacroFeed.hydrate();},90000);
+  TENewsFeed.tick();
+  setInterval(()=>TENewsFeed.tick(),10*60*1000);
+  TENewsFeed.tick();
+  setInterval(()=>TENewsFeed.tick(),10*60*1000);
     setInterval(async()=>{await EventsFeed.tick();renderEvents();},5*60*1000);
     setInterval(async()=>{await HeadlinesFeed.tick();renderHeadlines();},5*60*1000);
     setInterval(updateSessionUI,30000);
