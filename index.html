@@ -349,7 +349,7 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
         <div class="muted" id="policyStateDesc" style="position:relative;z-index:1">Warming up engine...</div>
         <div class="chipRow">
           <div class="chip">Det <b id="detectorChip">--</b></div><div class="chip">Policy <b id="policyChip">--</b></div>
-          <div class="chip">Conf <b id="confChip">--</b></div><div class="chip">Hyst <b id="hystChip">--</b></div>
+          <span id="confChip" style="display:none"></span><div class="chip">Hyst <b id="hystChip">--</b></div>
           <div class="chip">Age <b id="ageChip">0</b></div><div class="chip">Tick <b id="tickChip">0/20</b></div>
           <span class="pillTag" id="modeTag">Mode: --</span>
         </div>
@@ -377,7 +377,7 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
   </div></div>
 
   <div class="card"><div class="inner">
-    <div class="card-title"><h2>Quantitative Edge &middot; Renaissance Signal Engine</h2><div class="hint">Jim Simons / Medallion Fund principles applied live: Hurst exponent determines regime type, autocorrelation reveals serial structure in returns, Kelly criterion gives optimal position sizing, vol regime gates risk. 7 independent signals stacked = conviction score.</div></div>
+    <div class="card-title"><h2>Quantitative Edge &middot; Signal Engine</h2><div class="hint">Hurst exponent determines regime type; autocorrelation reveals serial structure in returns; Kelly criterion gives optimal position sizing; vol regime gates risk. 7 independent signals stacked = conviction score.</div></div>
 
     <div class="convicRow" id="convicRow" style="background:rgba(8,20,52,.28);border:1px solid rgba(180,220,255,.10)">
       <svg width="72" height="72" viewBox="0 0 72 72" id="convicSvg">
@@ -486,17 +486,17 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
         <div class="histWrap" id="retHistWrap">
           <div class="histBar" style="background:rgba(100,160,255,.35);height:10%"></div>
         </div>
-        <div class="qm" id="retHistMeta">Simons: "The tail risk is real. Size for survival."</div>
+        <div class="qm" id="retHistMeta">Fat tails = dislocation risk. Size for survival.</div>
       </div>
 
     </div>
 
-    <div class="qk" style="margin-bottom:8px">Independent Signal Alignment &mdash; Medallion Stack</div>
+    <div class="qk" style="margin-bottom:8px">Independent Signal Alignment &mdash; Multi-Layer Stack</div>
     <div class="sigStack" id="sigStack">
       <div class="sigPill off"><span class="sdot"></span>HMM Regime</div>
     </div>
     <div class="smallNote" style="margin-top:10px;line-height:1.6">
-      "We are right 50.75% of the time, but we are right 50.75% of the time on a lot of money. It adds up." &mdash; Jim Simons. Signal stacking edges: each aligned signal independently validates the call.
+      Statistical edge compounds across multiple independent confirmation sources. Each aligned signal validates the call — stacked edges create conviction.
     </div>
   </div></div>
 
@@ -578,45 +578,6 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
     <div class="coneWrap"><canvas id="coneCanvas"></canvas></div>
     <div class="smallNote" style="margin-top:6px">Cone is a probabilistic range. Not a target price.</div>
 
-    <!-- Daily & Weekly Forecast -->
-    <div style="margin-top:14px">
-      <div class="card-title" style="padding:0 0 8px"><h3 style="font-size:11px;font-weight:600;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.7px;margin:0">Extended Forecast &mdash; Adaptive Learning</h3></div>
-      <div class="fcastGrid">
-
-        <!-- Daily Forecast -->
-        <div class="fcastBox" id="dailyFcastBox">
-          <div class="fk">Daily Forecast &mdash; Next 24h</div>
-          <div class="fv" id="dailyFcastPrice">1.--</div>
-          <div id="dailyFcastBias" class="fcastBias neutral"><span>&#9644;</span> NEUTRAL</div>
-          <div class="fcastBar"><div class="fcastFill" id="dailyFcastBar" style="width:50%;background:rgba(180,220,255,.35)"></div></div>
-          <div class="fcastConf"><span>Bearish</span><span id="dailyFcastConf">--% confidence</span><span>Bullish</span></div>
-          <div style="margin-top:10px">
-            <div class="alRow"><span class="alLabel">Expected Range</span><span class="alRowV alVal" id="dailyFcastRange">-- pips</span></div>
-            <div class="alRow"><span class="alLabel">Bias from Regime</span><span class="alRowV alVal" id="dailyFcastRegime">--</span></div>
-            <div class="alRow"><span class="alLabel">Daily Hist. Dir Hit</span><span class="alRowV alVal" id="dailyDirHit">--</span></div>
-            <div class="alRow"><span class="alLabel">Calibration (daily)</span><span class="alRowV alVal" id="dailyCalib">1.00x</span></div>
-          </div>
-          <div class="fm" id="dailyFcastMeta" style="margin-top:8px">Based on current regime × session volatility × adaptive calibration</div>
-        </div>
-
-        <!-- Weekly Forecast -->
-        <div class="fcastBox" id="weeklyFcastBox">
-          <div class="fk">Weekly Forecast &mdash; Next 5 Sessions</div>
-          <div class="fv" id="weeklyFcastPrice">1.--</div>
-          <div id="weeklyFcastBias" class="fcastBias neutral"><span>&#9644;</span> NEUTRAL</div>
-          <div class="fcastBar"><div class="fcastFill" id="weeklyFcastBar" style="width:50%;background:rgba(180,220,255,.35)"></div></div>
-          <div class="fcastConf"><span>Bearish</span><span id="weeklyFcastConf">--% confidence</span><span>Bullish</span></div>
-          <div style="margin-top:10px">
-            <div class="alRow"><span class="alLabel">Expected Weekly Range</span><span class="alRowV alVal" id="weeklyFcastRange">-- pips</span></div>
-            <div class="alRow"><span class="alLabel">Weekly Regime Trend</span><span class="alRowV alVal" id="weeklyRegimeTrend">--</span></div>
-            <div class="alRow"><span class="alLabel">Weekly Dir Hit Rate</span><span class="alRowV alVal" id="weeklyDirHit">--</span></div>
-            <div class="alRow"><span class="alLabel">Macro Alignment</span><span class="alRowV alVal" id="weeklyMacroAlign">--</span></div>
-          </div>
-          <div class="fm" id="weeklyFcastMeta" style="margin-top:8px">Aggregated from daily regime history × macro backdrop × vol expansion</div>
-        </div>
-
-      </div>
-    </div>
   </div></div>
 
   <div class="card"><div class="inner">
@@ -636,7 +597,9 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
 
   <div class="card"><div class="inner">
     <div class="card-title"><h2>Projection Accuracy &middot; Adaptive Learning</h2><div class="hint">Every LONG/SHORT call is scored at 1h and 4h. Hit rates drive cone width calibration and bias confidence weighting. Engine self-improves over time.</div></div>
-    <div class="paGrid">
+    <div class="paGrid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="paBox"><div class="k">15m Direction Hit</div><div class="v" id="pa15mDir">--</div><div class="meta" id="pa15mDirMeta">n=0 scored</div></div>
+      <div class="paBox"><div class="k">15m Range Hit</div><div class="v" id="pa15mRng">--</div><div class="meta" id="pa15mRngMeta">Target 60-80%</div></div>
       <div class="paBox"><div class="k">1h Direction Hit</div><div class="v" id="pa1hDir">--</div><div class="meta" id="pa1hDirMeta">n=0 scored</div></div>
       <div class="paBox"><div class="k">1h Range Hit</div><div class="v" id="pa1hRng">--</div><div class="meta" id="pa1hRngMeta">Target 60-80%</div></div>
       <div class="paBox"><div class="k">4h Direction Hit</div><div class="v" id="pa4hDir">--</div><div class="meta" id="pa4hDirMeta">n=0 scored</div></div>
@@ -651,7 +614,7 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
     </div>
     <div class="paLog">
       <div class="paLogLabel">Recent projection log &mdash; last 20 calls</div>
-      <div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Time</th><th>Bias</th><th>1h Range</th><th>4h Range</th><th>1h Dir</th><th>1h Rng</th><th>4h Dir</th><th>4h Rng</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
+      <div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Date</th><th>Entry</th><th>Exit</th><th>Bias</th><th>15m Rng</th><th>15m D</th><th>15m R</th><th>1h Rng</th><th>1h D</th><th>1h R</th><th>4h Rng</th><th>4h D</th><th>4h R</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
     </div>
     <div class="smallNote" style="margin-top:6px">Scores resolve automatically. 1h outcomes scored at +60min, 4h at +240min. Need 10+ resolved before multiplier adapts.</div>
 
@@ -674,6 +637,8 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
           <div class="fk">Direction Learning Status</div>
           <div style="margin-top:4px">
             <div class="alRow"><span class="alLabel">Bias Weight (current)</span><span class="alVal" id="alBiasWeight">1.00x</span></div>
+            <div class="alRow"><span class="alLabel">15m Dir Hit Rate</span><span class="alVal" id="alDirHit15m">--</span></div>
+            <div class="alRow"><span class="alLabel">15m Range Hit Rate</span><span class="alVal" id="alRngCurrent15m">--</span></div>
             <div class="alRow"><span class="alLabel">1h Dir Hit Rate</span><span class="alVal" id="alDirHit1h">--</span></div>
             <div class="alRow"><span class="alLabel">Action at &lt;48%</span><span class="alVal" style="color:rgba(255,77,77,.80)">Downweight</span></div>
             <div class="alRow"><span class="alLabel">Action at &gt;62%</span><span class="alVal" style="color:rgba(24,209,138,.80)">Upweight</span></div>
@@ -1035,16 +1000,16 @@ const SignalTracker=(()=>{
 // ── PROJECTION ACCURACY TRACKER ──────────────────────────────────────────
 const ProjTracker=(()=>{
   const MIN_N=5;
-  let log=loadArr(KEY.proj,[]).slice(-200);
+  let log=loadArr(KEY.proj,[]).slice(-200).map(p=>({outcome15m:null,...p})); // normalize: add outcome15m if missing from old entries
   let calibMult=Number(settings.calibMult)||1.0;
   let biasConfAdj=Number(settings.biasConfAdj)||1.0;
 
-  function logProjection({spot,bias,r1,r4,policy}){
+  function logProjection({spot,bias,r1,r4,r15,policy}){
     if(!spot||bias==="NEUTRAL")return;
     // Don't log more often than every 10 minutes to avoid flooding
     const last=log.length?log.at(-1):null;
     if(last&&(Date.now()-last.ts)<5*60*1000)return;
-    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,policy,outcome1h:null,outcome4h:null});
+    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,r15:r15||Math.round(r1*0.4),policy,outcome15m:null,outcome1h:null,outcome4h:null});
     if(log.length>200)log=log.slice(-200);
     _persist();
   }
@@ -1056,15 +1021,19 @@ const ProjTracker=(()=>{
       const ageMins=(now-p.ts)/60000;
       const movePips=(currentSpot-p.spot)*10000;
       const dirOk=p.bias==="LONG"?movePips>0:movePips<0;
-      if(p.outcome1h===null&&ageMins>=60){p.outcome1h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r1,movePips,ageMins};changed=true;}
+      if(p.outcome15m===null&&ageMins>=15){p.outcome15m={dirHit:dirOk,rngHit:Math.abs(movePips)<=(p.r15||Math.round(p.r1*0.4)),movePips,exitSpot:currentSpot};changed=true;}
+      if(p.outcome1h===null&&ageMins>=60){p.outcome1h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r1,movePips,exitSpot:currentSpot};changed=true;}
       if(p.outcome4h===null&&ageMins>=240){p.outcome4h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r4,movePips,ageMins};changed=true;}
     });
     if(changed){_adapt();_persist();}
   }
 
   function _stats(){
-    const r1=log.filter(p=>p.outcome1h!==null),r4=log.filter(p=>p.outcome4h!==null);
+    const r15=log.filter(p=>p.outcome15m!=null),r1=log.filter(p=>p.outcome1h!==null),r4=log.filter(p=>p.outcome4h!==null);
     return{
+      n15m:r15.length,
+      dir15mRate:r15.length?r15.filter(p=>p.outcome15m.dirHit).length/r15.length:null,
+      rng15mRate:r15.length?r15.filter(p=>p.outcome15m.rngHit).length/r15.length:null,
       n1h:r1.length,
       dir1hRate:r1.length?r1.filter(p=>p.outcome1h.dirHit).length/r1.length:null,
       rng1hRate:r1.length?r1.filter(p=>p.outcome1h.rngHit).length/r1.length:null,
@@ -1100,7 +1069,7 @@ const ProjTracker=(()=>{
 })();
 
 
-// == QUANT ENGINE (Renaissance / Medallion inspired) ========================
+// == QUANT ENGINE (Multi-layer signal stack) ================================
 const QuantEngine=(()=>{
   let PH=[],RH=[];
   function push(price){
@@ -1644,16 +1613,17 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba){
 function injectSignalStats(state,sigStats){
   state.sigSharpe=sigStats.sharpe;state.sigWinRate=sigStats.winRate;state.sigOpenPL=sigStats.openPL;
   state.sigTotalPips=sigStats.totalPips;state.sigOpenBias=sigStats.openBias;state.sigTotalSignals=sigStats.totalSignals;
-  // Only send last 60 equity points to keep payload small
   state.sigEquity=sigStats.equity.slice(-60);
-  // Also inject projection tracker data so READERs see accuracy
+  // Full projection stats — all timeframes including 15m
   const projS=ProjTracker.getStats();
-  state.projDir1h=projS.dir1hRate;state.projRng1h=projS.rng1hRate;
-  state.projDir4h=projS.dir4hRate;state.projRng4h=projS.rng4hRate;
-  state.projN1h=projS.n1h;state.projN4h=projS.n4h;
+  state.projDir15m=projS.dir15mRate;state.projRng15m=projS.rng15mRate;state.projN15m=projS.n15m||0;
+  state.projDir1h=projS.dir1hRate;state.projRng1h=projS.rng1hRate;state.projN1h=projS.n1h;
+  state.projDir4h=projS.dir4hRate;state.projRng4h=projS.rng4hRate;state.projN4h=projS.n4h;
   state.projTotal=projS.total;state.projPending=projS.pending;
   state.projCalibMult=ProjTracker.getCalibMult();
   state.projBiasAdj=ProjTracker.getBiasConfAdj();
+  // Send last 30 log entries so READERs can render the projection log table identically
+  state.projLogEntries=ProjTracker.getLog().slice(-30);
   return state;
 }
 
@@ -1740,6 +1710,9 @@ function applyFullStateToUI(st){
   if(FirebaseSync.isReader&&st.projTotal!=null){
     const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
     const setV=(id,v,ok,bad)=>{const el=$(id);if(!el)return;el.textContent=v;el.classList.remove("pos","neg");if(ok)el.classList.add("pos");else if(bad)el.classList.add("neg");};
+    setV("pa15mDir",fmt(st.projDir15m),(st.projDir15m||0)>=0.55,(st.projDir15m!=null)&&st.projDir15m<0.45);
+    setV("pa15mRng",fmt(st.projRng15m),(st.projRng15m||0)>=0.60&&(st.projRng15m||0)<=0.82,false);
+    const p15dm=$("pa15mDirMeta");if(p15dm)p15dm.textContent="n="+(st.projN15m||0)+" scored";
     setV("pa1hDir",fmt(st.projDir1h),st.projDir1h>=0.55,st.projDir1h!=null&&st.projDir1h<0.45);
     setV("pa1hRng",fmt(st.projRng1h),st.projRng1h>=0.60&&st.projRng1h<=0.82,false);
     setV("pa4hDir",fmt(st.projDir4h),st.projDir4h>=0.55,st.projDir4h!=null&&st.projDir4h<0.45);
@@ -1754,6 +1727,37 @@ function applyFullStateToUI(st){
     const ps=$("paStatus");if(ps)ps.textContent=ready?"Active from MASTER":"Collecting on MASTER ("+Math.min(st.projN1h||0,st.projN4h||0)+"/5)";
     const pca=$("paConeAdj"),cm=st.projCalibMult||1;
     if(pca)pca.textContent=cm>1.05?"Widening":cm<0.95?"Tightening":"Neutral";
+    // Render projection log entries from MASTER state so READER sees full log
+    if(st.projLogEntries?.length){
+      const plb=$("paLogBody");
+      if(plb){
+        const fmt2=r=>r!=null?Math.round(r*100)+"%":"--";
+        plb.innerHTML=st.projLogEntries.slice().reverse().map(p=>{
+          const d15=p.outcome15m,d1=p.outcome1h,d4=p.outcome4h;
+          const cls=v=>v===null?"pending":v?"hit":"miss";
+          const dtxt=o=>o===null?"...":o.dirHit?"✓":"✗";
+          const rtxt=o=>o===null?"...":o.rngHit?"IN":"OUT";
+          const exitSpot=d1?.exitSpot??d15?.exitSpot??null;
+          const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
+          const r15=p.r15||Math.round(p.r1*0.4);
+          return"<tr>"
+            +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
+            +"<td style='font-family:var(--mono);font-size:10px'>"+(p.spot?p.spot.toFixed(5):"--")+"</td>"
+            +"<td style='font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.55)'>"+(exitSpot?exitSpot.toFixed(5):"pend")+"</td>"
+            +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
+            +"<td style='font-family:var(--mono)'>±"+r15+"p</td>"
+            +"<td class='"+cls(d15?.dirHit??null)+"'>"+dtxt(d15)+"</td>"
+            +"<td class='"+cls(d15?.rngHit??null)+"'>"+rtxt(d15)+"</td>"
+            +"<td style='font-family:var(--mono)'>±"+p.r1+"p</td>"
+            +"<td class='"+cls(d1?.dirHit??null)+"'>"+dtxt(d1)+"</td>"
+            +"<td class='"+cls(d1?.rngHit??null)+"'>"+rtxt(d1)+"</td>"
+            +"<td style='font-family:var(--mono)'>±"+p.r4+"p</td>"
+            +"<td class='"+cls(d4?.dirHit??null)+"'>"+dtxt(d4)+"</td>"
+            +"<td class='"+cls(d4?.rngHit??null)+"'>"+rtxt(d4)+"</td>"
+            +"</tr>";
+        }).join("");
+      }
+    }
   }
   // Signal Bus for READER
   if(st.busDir){
@@ -1952,8 +1956,8 @@ function updateForecastUI(daily,weekly){
   // Adaptive Learning panel
   const s=ProjTracker.getStats(),cm=ProjTracker.getCalibMult(),ba=ProjTracker.getBiasConfAdj();
   const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
-  setT("alRngCurrent1h",fmt(s.rng1hRate));setT("alRngCurrent4h",fmt(s.rng4hRate));
-  setT("alDirHit1h",fmt(s.dir1hRate));setT("alBiasWeight",ba.toFixed(3)+"x");
+  setT("alRngCurrent15m",fmt(s.rng15mRate));setT("alRngCurrent1h",fmt(s.rng1hRate));setT("alRngCurrent4h",fmt(s.rng4hRate));
+  setT("alDirHit15m",fmt(s.dir15mRate));setT("alDirHit1h",fmt(s.dir1hRate));setT("alBiasWeight",ba.toFixed(3)+"x");
   setT("alResolvedN",(s.total-s.pending)+" of "+s.total);
   const coneEl=$("alConeAction");if(coneEl)coneEl.textContent=cm>1.05?"Widening +"+Math.round((cm-1)*100)+"%":cm<0.95?"Tightening -"+Math.round((1-cm)*100)+"%":"Calibrated";
 }
@@ -1961,6 +1965,9 @@ function updateProjAccuracyUI(){
   const s=ProjTracker.getStats(),cm=ProjTracker.getCalibMult(),ba=ProjTracker.getBiasConfAdj();
   const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
   const setV=(id,v,ok,bad)=>{const el=$(id);if(!el)return;el.textContent=v;el.classList.remove("pos","neg");if(ok)el.classList.add("pos");else if(bad)el.classList.add("neg");};
+  setV("pa15mDir",fmt(s.dir15mRate),s.dir15mRate>=0.55,s.dir15mRate!=null&&s.dir15mRate<0.45);
+  const p15dm=$("pa15mDirMeta");if(p15dm)p15dm.textContent="n="+(s.n15m||0)+" scored";
+  setV("pa15mRng",fmt(s.rng15mRate),s.rng15mRate>=0.60&&s.rng15mRate<=0.82,false);
   setV("pa1hDir",fmt(s.dir1hRate),s.dir1hRate>=0.55,s.dir1hRate!=null&&s.dir1hRate<0.45);
   const p1dm=$("pa1hDirMeta");if(p1dm)p1dm.textContent="n="+s.n1h+" scored";
   setV("pa1hRng",fmt(s.rng1hRate),s.rng1hRate>=0.60&&s.rng1hRate<=0.82,s.rng1hRate!=null&&(s.rng1hRate<0.45||s.rng1hRate>0.88));
@@ -1981,18 +1988,27 @@ function updateProjAccuracyUI(){
   // Log table
   const plb=$("paLogBody");if(!plb)return;
   const log=ProjTracker.getLog();
-  if(!log.length){plb.innerHTML="<tr><td colspan='8' class='pending'>No projections logged yet. First entry scores after 1 hour.</td></tr>";return;}
-  plb.innerHTML=log.map(p=>{
-    const d1=p.outcome1h,d4=p.outcome4h;
+  if(!log.length){plb.innerHTML="<tr><td colspan='13' class='pending'>No projections logged yet. First entry scores after 1 hour.</td></tr>";return;}
+  plb.innerHTML=log.slice().reverse().map(p=>{
+    const d15=p.outcome15m,d1=p.outcome1h,d4=p.outcome4h;
     const cls=v=>v===null?"pending":v?"hit":"miss";
-    const dtxt=o=>o===null?"...":o.dirHit?"Y("+o.movePips.toFixed(1)+"p)":"N("+o.movePips.toFixed(1)+"p)";
+    const dtxt=o=>o===null?"...":o.dirHit?"✓":"✗";
     const rtxt=o=>o===null?"...":o.rngHit?"IN":"OUT";
-    return"<tr><td>"+fmtTS(p.ts)+"</td>"
+    const exitSpot=d1?.exitSpot??d15?.exitSpot??null;
+    const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
+    const r15=p.r15||Math.round(p.r1*0.4);
+    return"<tr>"
+      +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
+      +"<td style='font-family:var(--mono);font-size:10px'>"+( p.spot?p.spot.toFixed(5):"--")+"</td>"
+      +"<td style='font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.55)'>"+(exitSpot?exitSpot.toFixed(5):"pend")+"</td>"
       +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
-      +"<td style='font-family:var(--mono)'>\xb1"+p.r1+"p</td>"
-      +"<td style='font-family:var(--mono)'>\xb1"+p.r4+"p</td>"
+      +"<td style='font-family:var(--mono)'>±"+r15+"p</td>"
+      +"<td class='"+cls(d15?.dirHit??null)+"'>"+dtxt(d15)+"</td>"
+      +"<td class='"+cls(d15?.rngHit??null)+"'>"+rtxt(d15)+"</td>"
+      +"<td style='font-family:var(--mono)'>±"+p.r1+"p</td>"
       +"<td class='"+cls(d1?.dirHit??null)+"'>"+dtxt(d1)+"</td>"
       +"<td class='"+cls(d1?.rngHit??null)+"'>"+rtxt(d1)+"</td>"
+      +"<td style='font-family:var(--mono)'>±"+p.r4+"p</td>"
       +"<td class='"+cls(d4?.dirHit??null)+"'>"+dtxt(d4)+"</td>"
       +"<td class='"+cls(d4?.rngHit??null)+"'>"+rtxt(d4)+"</td>"
       +"</tr>";
@@ -2036,6 +2052,7 @@ let lastSpot=null,lastFullState=null,paused=false,syncing=false;
 async function onSpotUpdate(s){
   // READER: never compute locally - all state comes from Firebase
   if(FirebaseSync.isReader)return;
+  try{
   const now=Date.now();const lu=$("lastUpdate");if(lu)lu.textContent=fmtTime(now);
   if(!s.ok){setFxStatus("ERROR");return;}
   lastSpot=s;
@@ -2098,6 +2115,7 @@ async function onSpotUpdate(s){
   const sigStats=SignalTracker.getStats(s.price);
   injectSignalStats(fullState,sigStats);
   if(FirebaseSync.configured&&FirebaseSync.role==="MASTER")FirebaseSync.writeFullState(fullState);
+  }catch(err){console.error('[QuadraX] onSpotUpdate crash:',err);}
 }
 
 // ── READER POLL ───────────────────────────────────────────────────────────
