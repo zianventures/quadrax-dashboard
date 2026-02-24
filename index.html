@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuadraX Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box}
 :root{--bg0:#030810;--bg1:#060f28;--green:#18d18a;--amber:#ffb020;--red:#ff4d4d;--pink:#ff3aa5;--blue:#2b6cff;--purple:#a066ff;--text:#e8efff;--muted:rgba(232,239,255,.68);--sh:0 20px 60px rgba(0,0,0,.65);--sh2:0 10px 32px rgba(0,0,0,.50);--r:22px;--font:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;--mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;--night:none}
@@ -51,6 +53,7 @@ body.night{--night:brightness(.52) sepia(.12) hue-rotate(-5deg)}
 .pos{color:rgba(24,209,138,.95)}.neg{color:rgba(255,77,77,.95)}
 .chipRow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:9px;position:relative;z-index:1}
 .chip{display:flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:11px;color:rgba(255,255,255,.84);background:rgba(8,20,52,.32);border:1px solid rgba(180,220,255,.12);white-space:nowrap}
+.btn.disabled, button:disabled{opacity:.45;cursor:not-allowed;filter:saturate(.6);}
 .chip b{font-weight:700;font-family:var(--mono)}
 .pillTag{font-family:var(--mono);font-size:10.5px;padding:5px 9px;border-radius:999px;border:1px solid rgba(180,220,255,.12);background:rgba(8,20,52,.22);color:rgba(255,255,255,.78)}
 .tagOk{font-family:var(--mono);font-size:10px;padding:3px 7px;border-radius:999px;border:1px solid rgba(180,220,255,.10);background:rgba(8,20,52,.22);color:rgba(255,255,255,.70);white-space:nowrap}
@@ -257,10 +260,10 @@ tbody tr:hover{background:rgba(255,255,255,.03)}
 .busBox .bm{font-size:9.5px;color:rgba(255,255,255,.40);margin-top:2px}
 /* consensus banner */
 .busBanner{border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:16px;margin-bottom:12px;transition:all .5s ease}
-.busBannerDir{font-size:32px;font-weight:800;font-family:var(--mono);line-height:1}
+.busBannerDir{font-size:32px;font-weight:800;font-family:var(--font);line-height:1;letter-spacing:-.02em}
 .busBannerRight{flex:1}
 .busBannerLabel{font-size:9.5px;text-transform:uppercase;letter-spacing:.7px;opacity:.65;margin-bottom:2px}
-.busBannerConv{font-size:15px;font-weight:600;font-family:var(--mono)}
+.busBannerConv{font-size:14px;font-weight:650;font-family:var(--font)}
 .busBannerMeta{font-size:10px;opacity:.55;margin-top:3px;line-height:1.5}
 /* Signal source pills */
 .srcPills{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
@@ -271,6 +274,7 @@ tbody tr:hover{background:rgba(255,255,255,.03)}
 /* Coherence arc */
 .cohArc{width:52px;height:52px;position:relative;flex-shrink:0}
 .cohArc svg{transform:rotate(-90deg)}
+.cohWrap{position:relative;width:52px;height:52px;flex:0 0 52px;display:grid;place-items:center}
 .cohArcVal{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;font-family:var(--mono)}
 /* Multi-TF forecast grid */
 .tfGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:7px 0}
@@ -508,13 +512,15 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
 
     <!-- Consensus Banner -->
     <div class="busBanner" id="busBanner" style="background:rgba(8,20,52,.36);border:1px solid rgba(180,220,255,.12)">
-      <svg class="cohArc" id="cohSvg" width="52" height="52" viewBox="0 0 52 52">
-        <circle cx="26" cy="26" r="20" fill="none" stroke="rgba(180,220,255,.08)" stroke-width="5"/>
-        <circle cx="26" cy="26" r="20" fill="none" stroke="rgba(24,209,138,.80)" stroke-width="5"
-          stroke-dasharray="126" stroke-dashoffset="126" id="cohArc" stroke-linecap="round"
-          style="transform:rotate(-90deg);transform-origin:26px 26px;transition:stroke-dashoffset .7s ease,stroke .7s ease"/>
-      </svg>
-      <div class="cohArcVal" id="cohPct" style="position:absolute;left:0;width:52px;text-align:center">0%</div>
+      <div class="cohWrap">
+        <svg class="cohArc" id="cohSvg" width="52" height="52" viewBox="0 0 52 52">
+          <circle cx="26" cy="26" r="20" fill="none" stroke="rgba(180,220,255,.08)" stroke-width="5"/>
+          <circle cx="26" cy="26" r="20" fill="none" stroke="rgba(24,209,138,.80)" stroke-width="5"
+            stroke-dasharray="126" stroke-dashoffset="126" id="cohArc" stroke-linecap="round"
+            style="transform:rotate(-90deg);transform-origin:26px 26px;transition:stroke-dashoffset .7s ease,stroke .7s ease"/>
+        </svg>
+        <div class="cohArcVal" id="cohPct">0%</div>
+      </div>
       <div class="busBannerRight">
         <div class="busBannerLabel">Consensus Direction &mdash; All Systems</div>
         <div style="display:flex;align-items:baseline;gap:10px">
@@ -1047,16 +1053,29 @@ const ProjTracker=(()=>{
 
   function _adapt(){
     const s=_stats();
+
+    // 15m drives fast calibration. 1h is the slower stabiliser.
+    const has15=(s.n15m>=MIN_N && s.rng15mRate!=null && s.dir15mRate!=null);
+    const has1h=(s.n1h>=MIN_N && s.rng1hRate!=null && s.dir1hRate!=null);
+
     // CONE: target range hit rate 60-80%. Outside that range -> adjust
-    if(s.n1h>=MIN_N&&s.rng1hRate!=null){
-      if(s.rng1hRate<0.50)calibMult=clamp(calibMult*1.06,0.40,3.0);       // too narrow -> widen
-      else if(s.rng1hRate>0.82)calibMult=clamp(calibMult*0.96,0.40,3.0);  // too wide -> tighten
+    if(has15){
+      if(s.rng15mRate<0.50)calibMult=clamp(calibMult*1.03,0.40,3.0);
+      else if(s.rng15mRate>0.82)calibMult=clamp(calibMult*0.98,0.40,3.0);
+    } else if(has1h){
+      if(s.rng1hRate<0.50)calibMult=clamp(calibMult*1.06,0.40,3.0);
+      else if(s.rng1hRate>0.82)calibMult=clamp(calibMult*0.96,0.40,3.0);
     }
+
     // BIAS CONFIDENCE: direction < 50% -> downweight; > 62% -> upweight
-    if(s.n1h>=MIN_N&&s.dir1hRate!=null){
+    if(has15){
+      if(s.dir15mRate<0.48)biasConfAdj=clamp(biasConfAdj*0.97,0.20,1.60);
+      else if(s.dir15mRate>0.62)biasConfAdj=clamp(biasConfAdj*1.02,0.20,1.60);
+    } else if(has1h){
       if(s.dir1hRate<0.48)biasConfAdj=clamp(biasConfAdj*0.94,0.20,1.60);
       else if(s.dir1hRate>0.62)biasConfAdj=clamp(biasConfAdj*1.04,0.20,1.60);
     }
+
     calibMult=Math.round(calibMult*1000)/1000;
     biasConfAdj=Math.round(biasConfAdj*1000)/1000;
     settings.calibMult=calibMult;settings.biasConfAdj=biasConfAdj;
@@ -1473,8 +1492,8 @@ const FirebaseSync=(()=>{
   }
   async function api(method,path,data){if(!dbUrl)return null;try{const opts={method,headers:{"Content-Type":"application/json"},cache:"no-store"};if(data)opts.body=JSON.stringify(data);const r=await fetch(dbUrl+"/qx5/"+path+".json",opts);if(!r.ok)return null;return method==="GET"?r.json():true;}catch{return null;}}
   async function writeFullState(payload){
-    // MASTER and AUTO both write state
-    if(!dbUrl||role==="READER")return;
+    // MASTER-only publish (single authority)
+    if(!dbUrl||role!=="MASTER")return;
     await api("PUT","state",{...payload,masterId:instanceId,ts:Date.now()});
   }
   async function pullState(){
@@ -1496,7 +1515,7 @@ const FirebaseSync=(()=>{
     if(!dbUrl){sb.className="syncBadge synced";sb.innerHTML='<span class="dot"></span><span>STANDALONE</span>';return;}
     if(role==="MASTER"){sb.className="syncBadge fbmaster";sb.innerHTML='<span class="dot"></span><span>FB MASTER</span>';}
     else if(role==="READER"){sb.className="syncBadge fbreader";sb.innerHTML='<span class="dot"></span><span>FB READER</span>';}
-    else{sb.className="syncBadge fbmaster";sb.innerHTML='<span class="dot"></span><span>AUTO SYNC</span>';}
+    else{sb.className="syncBadge fbmaster";sb.innerHTML='<span class="dot"></span><span>AUTO (LOCAL)</span>';}
   }
   return{init,writeFullState,pullState,peekState,updateBadge,get role(){return role;},get configured(){return!!dbUrl;},get isReader(){return role==="READER";}};
 })();
@@ -1574,7 +1593,18 @@ function computeProj(step,tx,cm,ba){const base1h={1:6,2:10,3:7,4:12,5:18,6:16,7:
 
 // ── BUILD FULL STATE (MASTER packs everything, READERs unpack and render) ──
 function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba){
+  const u={
+    spot:{price:spot?.price,delta:spot?.lastDelta,source:spot?.source,ts:spot?.ts},
+    hmm:{policy:step.policy,detector:step.detector,conf:step.conf,hold:step.hold,regimeAge:step.regimeAge,momScore:step.momScore,tickN:step.tickN,warmed:step.warmed,probs:step.probs,predictedNext:step.predictedNext,TM:step.TM,recentStates:recentSts},
+    projection:{bias:proj.bias,r15:proj.r15||Math.round(proj.r1*0.4),r1:proj.r1,r4:proj.r4,decPct:proj.decPct,volMult:proj.volMult,txMult:proj.txMult,eRisk:proj.eRisk,calibMult:cm,biasConfAdj:ba},
+    tx:{score:tx.score,intensity:tx.intensity,bias:tx.bias,components:tx.components,fx:{gbpChg:tx.gbpChg,audChg:tx.audChg,nzdChg:tx.nzdChg,conf:tx.fxConf,intensity:tx.fxInt}},
+    pb3:{panic:pb3.panic,bubble:pb3.bubble,boom:pb3.boom,bust:pb3.bust,dominant:pb3.dominant,note:pb3.note},
+    archetype:{name:arch.archetype,confidence:arch.confidence,bias:arch.eurusdBias,note:arch.note,analog:arch.analog},
+    bus:(SignalBus.get?SignalBus.get():null),
+    meta:{ts:Date.now()}
+  };
   return{
+    u,
     spotPrice:spot?.price,spotDelta:spot?.lastDelta,spotSource:spot?.source,spotTs:spot?.ts,
     policy:step.policy,detector:step.detector,conf:step.conf,hold:step.hold,
     regimeAge:step.regimeAge,momScore:step.momScore,tickN:step.tickN,warmed:step.warmed,
@@ -1624,6 +1654,21 @@ function injectSignalStats(state,sigStats){
   state.projBiasAdj=ProjTracker.getBiasConfAdj();
   // Send last 30 log entries so READERs can render the projection log table identically
   state.projLogEntries=ProjTracker.getLog().slice(-30);
+
+  // Mirror into unified snapshot for downstream tooling
+  if(state.u){
+    state.u.signalPerformance={
+      sharpe:state.sigSharpe,winRate:state.sigWinRate,openPL:state.sigOpenPL,totalPips:state.sigTotalPips,openBias:state.sigOpenBias,totalSignals:state.sigTotalSignals,equity:state.sigEquity
+    };
+    state.u.projectionStats={
+      n15m:state.projN15m,dir15m:state.projDir15m,rng15m:state.projRng15m,
+      n1h:state.projN1h,dir1h:state.projDir1h,rng1h:state.projRng1h,
+      n4h:state.projN4h,dir4h:state.projDir4h,rng4h:state.projRng4h,
+      calibMult:state.projCalibMult,biasAdj:state.projBiasAdj,
+      total:state.projTotal,pending:state.projPending
+    };
+    state.u.projectionLog=state.projLogEntries;
+  }
   return state;
 }
 
@@ -1962,7 +2007,11 @@ function updateForecastUI(daily,weekly){
   const coneEl=$("alConeAction");if(coneEl)coneEl.textContent=cm>1.05?"Widening +"+Math.round((cm-1)*100)+"%":cm<0.95?"Tightening -"+Math.round((1-cm)*100)+"%":"Calibrated";
 }
 function updateProjAccuracyUI(){
-  const s=ProjTracker.getStats(),cm=ProjTracker.getCalibMult(),ba=ProjTracker.getBiasConfAdj();
+  // READER must render MASTER-computed projection stats/logs (no local drift)
+  const fromFB = (FirebaseSync && FirebaseSync.isReader && lastFullState);
+  const s = fromFB && lastFullState.projStats ? lastFullState.projStats : ProjTracker.getStats();
+  const cm = fromFB ? (lastFullState.calibMult ?? lastFullState.projStats?.calibMult ?? ProjTracker.getCalibMult()) : ProjTracker.getCalibMult();
+  const ba = fromFB ? (lastFullState.biasConfAdj ?? lastFullState.projStats?.biasConfAdj ?? ProjTracker.getBiasConfAdj()) : ProjTracker.getBiasConfAdj();
   const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
   const setV=(id,v,ok,bad)=>{const el=$(id);if(!el)return;el.textContent=v;el.classList.remove("pos","neg");if(ok)el.classList.add("pos");else if(bad)el.classList.add("neg");};
   setV("pa15mDir",fmt(s.dir15mRate),s.dir15mRate>=0.55,s.dir15mRate!=null&&s.dir15mRate<0.45);
@@ -1987,7 +2036,7 @@ function updateProjAccuracyUI(){
   if(cmc)cmc.textContent=cm.toFixed(2);if(c1d)c1d.textContent=fmt(s.dir1hRate);if(c1r)c1r.textContent=fmt(s.rng1hRate);if(c4d)c4d.textContent=fmt(s.dir4hRate);if(c4r)c4r.textContent=fmt(s.rng4hRate);if(cn)cn.textContent=s.total;
   // Log table
   const plb=$("paLogBody");if(!plb)return;
-  const log=ProjTracker.getLog();
+  const log = (FirebaseSync && FirebaseSync.isReader && lastFullState && Array.isArray(lastFullState.projLogEntries)) ? lastFullState.projLogEntries : ProjTracker.getLog();
   if(!log.length){plb.innerHTML="<tr><td colspan='13' class='pending'>No projections logged yet. First entry scores after 1 hour.</td></tr>";return;}
   plb.innerHTML=log.slice().reverse().map(p=>{
     const d15=p.outcome15m,d1=p.outcome1h,d4=p.outcome4h;
@@ -2132,7 +2181,8 @@ async function readerPoll(){
   }
   lastFullState=st;
   applyFullStateToUI(st);
-  updateSessionUI();updateProjAccuracyUI();
+  // READER hardlock: never recompute from local engines
+  // All UI must render from MASTER snapshot only.
   // Show MASTER's timestamp so team can see data freshness
   const lu=$("lastUpdate");if(lu)lu.textContent=fmtTime(st.ts||Date.now())+" (M)";
   setFxStatus("LIVE");
@@ -2160,47 +2210,47 @@ const pBtn=$("pauseBtn"),nBtn=$("nightBtn"),eBtn=$("exportBtn"),syncBtn=$("syncB
 if(pBtn)pBtn.addEventListener("click",()=>{paused=!paused;pBtn.textContent=paused?"Resume":"Pause";const ss=$("sysStatus");if(ss)ss.textContent=paused?"PAUSED":"LIVE";const ld=$("liveDot");if(ld)ld.classList.toggle("amber",paused);});
 if(nBtn)nBtn.addEventListener("click",toggleNight);
 if(eBtn)eBtn.addEventListener("click",exportSnapshot);
-if(syncBtn)syncBtn.addEventListener("click",async()=>{if(syncing)return;syncing=true;syncBtn.textContent="Syncing...";syncBtn.classList.add("syncing");try{await Promise.allSettled([SpotFeed.tick(onSpotUpdate),MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()]);}finally{syncing=false;syncBtn.textContent="Sync";syncBtn.classList.remove("syncing");}});
+if(syncBtn)syncBtn.addEventListener("click",async()=>{if(FirebaseSync.isReader){return;}if(syncing)return;syncing=true;syncBtn.textContent="Syncing...";syncBtn.classList.add("syncing");try{await Promise.allSettled([SpotFeed.tick(onSpotUpdate),MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()]);}finally{syncing=false;syncBtn.textContent="Sync";syncBtn.classList.remove("syncing");}});
 window.addEventListener("keydown",e=>{if(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")return;const k=e.key.toLowerCase();if(k==="p"&&pBtn)pBtn.click();else if(k==="s"&&syncBtn)syncBtn.click();else if(k==="n")toggleNight();else if(k==="x")exportSnapshot();else if(k==="?"){const kh=$("kbHint");if(kh)kh.classList.toggle("show");}});
 const tvf=$("tvFrame");if(tvf){let tvLoaded=false;tvf.addEventListener("load",()=>{tvLoaded=true;});setTimeout(()=>{if(!tvLoaded){const fb=$("tvFallback");if(fb)fb.classList.add("show");}},9000);}
 
 // ── START ─────────────────────────────────────────────────────────────────
 async function start(){
   initProbUI();
-  MacroFeed.hydrate();
-  drawTimeline($("timelineCanvas"),recentStates);
-  drawTM(Engine.getTM());
-  updateSessionUI();
-  updateProjAccuracyUI();
-  updateCorrUI(CorrEngine.getCorrelations());
-  updateSharpeUI({sharpe:null,winRate:null,openPL:null,totalSignals:0,totalPips:0,openBias:null,equity:[0]});
   FirebaseSync.init(settings.fbUrl,settings.fbRole);
-  // READER skips spot feed entirely - spot price arrives via Firebase state
-  const initFeeds=FirebaseSync.isReader
-    ?[MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()]
-    :[SpotFeed.tick(onSpotUpdate),MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()];
+  const isReader = FirebaseSync.isReader;
+
+  if(!isReader){
+    MacroFeed.hydrate();
+    drawTimeline($("timelineCanvas"),recentStates);
+    drawTM(Engine.getTM());
+    updateSessionUI();
+    updateProjAccuracyUI();
+    updateCorrUI(CorrEngine.getCorrelations());
+    updateSharpeUI({sharpe:null,winRate:null,openPL:null,totalSignals:0,totalPips:0,openBias:null,equity:[0]});
+  }else{
+    // READER HARDLOCK: wait for MASTER snapshot, render only from Firebase
+    const pst=$("policyStateTitle"); if(pst) pst.textContent="Waiting for MASTER data...";
+    const psd=$("policyStateDesc"); if(psd) psd.textContent="FB READER connected. Awaiting MASTER snapshot.";
+    setFxStatus("CHECKING");
+  }
+  // READER HARDLOCK: no external feeds, no local compute. Only Firebase snapshot renders.
+  const initFeeds = isReader ? [] : [SpotFeed.tick(onSpotUpdate), MacroFeed.tick(), EventsFeed.tick(), HeadlinesFeed.tick()];
   await Promise.allSettled(initFeeds);
-  // Retry macro once after 3s if first fetch missed some pairs
-  setTimeout(async()=>{await MacroFeed.tick();MacroFeed.hydrate();},3000);
-  renderEvents();renderHeadlines();
+  if(!isReader){
+    // Retry macro once after 3s if first fetch missed some pairs
+    setTimeout(async()=>{await MacroFeed.tick();MacroFeed.hydrate();},3000);
+    renderEvents();renderHeadlines();
+  }
   const poll=Math.max(Number(settings.pollMs)||8000,5000);
   if(FirebaseSync.isReader){
-    // READER mode: ONLY pull Firebase state. No spot feed. No local Engine calls.
-    // Firebase state already contains spotPrice from MASTER.
+    // READER HARDLOCK: Firebase snapshot only
     readerPoll();
-    setInterval(readerPoll,5000);
-    // READERs still fetch macro/events/headlines for their own display panels
-    setInterval(async()=>{await MacroFeed.tick();MacroFeed.hydrate();},90000);
-  TENewsFeed.tick();
-  setInterval(()=>TENewsFeed.tick(),10*60*1000);
-  TENewsFeed.tick();
-  setInterval(()=>TENewsFeed.tick(),10*60*1000);
-    setInterval(async()=>{await EventsFeed.tick();renderEvents();},5*60*1000);
-    setInterval(async()=>{await HeadlinesFeed.tick();renderHeadlines();},5*60*1000);
-    setInterval(updateSessionUI,30000);
-    setInterval(updateProjAccuracyUI,60000);
-    // Countdown timer for events still needs updating
-    setInterval(renderEvents,30000);
+    setInterval(readerPoll, 1500);
+    // Disable controls that imply local compute
+    const sb=$('syncBtn'); if(sb){sb.disabled=true; sb.classList.add('disabled');}
+    const pb=$('pauseBtn'); if(pb){pb.disabled=true; pb.classList.add('disabled');}
+    const sys=$('sysStatus'); if(sys) sys.textContent='FB READER';
   }else{
     // MASTER mode: full compute loop
     setInterval(()=>SpotFeed.tick(onSpotUpdate),poll);
