@@ -377,7 +377,7 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
   </div></div>
 
   <div class="card"><div class="inner">
-    <div class="card-title"><h2>Quantitative Edge &middot; Renaissance Signal Engine</h2><div class="hint">Quantitative principles applied live: Hurst exponent determines regime type, autocorrelation reveals serial structure in returns, Kelly criterion gives optimal position sizing, vol regime gates risk. 7 independent signals stacked = conviction score.</div></div>
+    <div class="card-title"><h2>Quantitative Edge &middot; Renaissance Signal Engine</h2><div class="hint">Jim Simons / Medallion Fund principles applied live: Hurst exponent determines regime type, autocorrelation reveals serial structure in returns, Kelly criterion gives optimal position sizing, vol regime gates risk. 7 independent signals stacked = conviction score.</div></div>
 
     <div class="convicRow" id="convicRow" style="background:rgba(8,20,52,.28);border:1px solid rgba(180,220,255,.10)">
       <svg width="72" height="72" viewBox="0 0 72 72" id="convicSvg">
@@ -496,7 +496,7 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
       <div class="sigPill off"><span class="sdot"></span>HMM Regime</div>
     </div>
     <div class="smallNote" style="margin-top:10px;line-height:1.6">
-      "We are right 50.75% of the time, but we are right 50.75% of the time on a lot of money. It adds up." Signal stacking edges: each aligned signal independently validates the call.
+      "We are right 50.75% of the time, but we are right 50.75% of the time on a lot of money. It adds up." &mdash; Jim Simons. Signal stacking edges: each aligned signal independently validates the call.
     </div>
   </div></div>
 
@@ -508,15 +508,13 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
 
     <!-- Consensus Banner -->
     <div class="busBanner" id="busBanner" style="background:rgba(8,20,52,.36);border:1px solid rgba(180,220,255,.12)">
-      <div style="position:relative;width:52px;height:52px;flex-shrink:0">
-        <svg id="cohSvg" width="52" height="52" viewBox="0 0 52 52" style="display:block">
-          <circle cx="26" cy="26" r="20" fill="none" stroke="rgba(180,220,255,.08)" stroke-width="5"/>
-          <circle cx="26" cy="26" r="20" fill="none" stroke="rgba(24,209,138,.80)" stroke-width="5"
-            stroke-dasharray="126" stroke-dashoffset="126" id="cohArc" stroke-linecap="round"
-            style="transform:rotate(-90deg);transform-origin:26px 26px;transition:stroke-dashoffset .7s ease,stroke .7s ease"/>
-        </svg>
-        <div id="cohPct" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--mono);pointer-events:none">0%</div>
-      </div>
+      <svg class="cohArc" id="cohSvg" width="52" height="52" viewBox="0 0 52 52">
+        <circle cx="26" cy="26" r="20" fill="none" stroke="rgba(180,220,255,.08)" stroke-width="5"/>
+        <circle cx="26" cy="26" r="20" fill="none" stroke="rgba(24,209,138,.80)" stroke-width="5"
+          stroke-dasharray="126" stroke-dashoffset="126" id="cohArc" stroke-linecap="round"
+          style="transform:rotate(-90deg);transform-origin:26px 26px;transition:stroke-dashoffset .7s ease,stroke .7s ease"/>
+      </svg>
+      <div class="cohArcVal" id="cohPct" style="position:absolute;left:0;width:52px;text-align:center">0%</div>
       <div class="busBannerRight">
         <div class="busBannerLabel">Consensus Direction &mdash; All Systems</div>
         <div style="display:flex;align-items:baseline;gap:10px">
@@ -580,7 +578,46 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
     <div class="coneWrap"><canvas id="coneCanvas"></canvas></div>
     <div class="smallNote" style="margin-top:6px">Cone is a probabilistic range. Not a target price.</div>
 
-</div>
+    <!-- Daily & Weekly Forecast -->
+    <div style="margin-top:14px">
+      <div class="card-title" style="padding:0 0 8px"><h3 style="font-size:11px;font-weight:600;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.7px;margin:0">Extended Forecast &mdash; Adaptive Learning</h3></div>
+      <div class="fcastGrid">
+
+        <!-- Daily Forecast -->
+        <div class="fcastBox" id="dailyFcastBox">
+          <div class="fk">Daily Forecast &mdash; Next 24h</div>
+          <div class="fv" id="dailyFcastPrice">1.--</div>
+          <div id="dailyFcastBias" class="fcastBias neutral"><span>&#9644;</span> NEUTRAL</div>
+          <div class="fcastBar"><div class="fcastFill" id="dailyFcastBar" style="width:50%;background:rgba(180,220,255,.35)"></div></div>
+          <div class="fcastConf"><span>Bearish</span><span id="dailyFcastConf">--% confidence</span><span>Bullish</span></div>
+          <div style="margin-top:10px">
+            <div class="alRow"><span class="alLabel">Expected Range</span><span class="alRowV alVal" id="dailyFcastRange">-- pips</span></div>
+            <div class="alRow"><span class="alLabel">Bias from Regime</span><span class="alRowV alVal" id="dailyFcastRegime">--</span></div>
+            <div class="alRow"><span class="alLabel">Daily Hist. Dir Hit</span><span class="alRowV alVal" id="dailyDirHit">--</span></div>
+            <div class="alRow"><span class="alLabel">Calibration (daily)</span><span class="alRowV alVal" id="dailyCalib">1.00x</span></div>
+          </div>
+          <div class="fm" id="dailyFcastMeta" style="margin-top:8px">Based on current regime × session volatility × adaptive calibration</div>
+        </div>
+
+        <!-- Weekly Forecast -->
+        <div class="fcastBox" id="weeklyFcastBox">
+          <div class="fk">Weekly Forecast &mdash; Next 5 Sessions</div>
+          <div class="fv" id="weeklyFcastPrice">1.--</div>
+          <div id="weeklyFcastBias" class="fcastBias neutral"><span>&#9644;</span> NEUTRAL</div>
+          <div class="fcastBar"><div class="fcastFill" id="weeklyFcastBar" style="width:50%;background:rgba(180,220,255,.35)"></div></div>
+          <div class="fcastConf"><span>Bearish</span><span id="weeklyFcastConf">--% confidence</span><span>Bullish</span></div>
+          <div style="margin-top:10px">
+            <div class="alRow"><span class="alLabel">Expected Weekly Range</span><span class="alRowV alVal" id="weeklyFcastRange">-- pips</span></div>
+            <div class="alRow"><span class="alLabel">Weekly Regime Trend</span><span class="alRowV alVal" id="weeklyRegimeTrend">--</span></div>
+            <div class="alRow"><span class="alLabel">Weekly Dir Hit Rate</span><span class="alRowV alVal" id="weeklyDirHit">--</span></div>
+            <div class="alRow"><span class="alLabel">Macro Alignment</span><span class="alRowV alVal" id="weeklyMacroAlign">--</span></div>
+          </div>
+          <div class="fm" id="weeklyFcastMeta" style="margin-top:8px">Aggregated from daily regime history × macro backdrop × vol expansion</div>
+        </div>
+
+      </div>
+    </div>
+  </div></div>
 
   <div class="card"><div class="inner">
     <div class="card-title"><h2>Session Intelligence &middot; 24h Effect</h2><div class="hint">LDN/NY overlap (12:00&ndash;16:00 UTC) = peak volume. Day-of-week effects empirically documented in EUR/USD.</div></div>
@@ -599,18 +636,14 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
 
   <div class="card"><div class="inner">
     <div class="card-title"><h2>Projection Accuracy &middot; Adaptive Learning</h2><div class="hint">Every LONG/SHORT call is scored at 1h and 4h. Hit rates drive cone width calibration and bias confidence weighting. Engine self-improves over time.</div></div>
-    <div class="paGrid" style="grid-template-columns:repeat(3,1fr)">
-      <div class="paBox"><div class="k">15m Dir Hit</div><div class="v" id="pa15mDir">--</div><div class="meta" id="pa15mDirMeta">n=0 scored</div></div>
-      <div class="paBox"><div class="k">15m Range Hit</div><div class="v" id="pa15mRng">--</div><div class="meta" id="pa15mRngMeta">Target 50-75%</div></div>
-      <div class="paBox"><div class="k">Calibration Mult</div><div class="v" id="paCalibMult">1.00x</div><div class="meta" id="paCalibMeta">Cone width factor</div></div>
-      <div class="paBox"><div class="k">1h Dir Hit</div><div class="v" id="pa1hDir">--</div><div class="meta" id="pa1hDirMeta">n=0 scored</div></div>
+    <div class="paGrid">
+      <div class="paBox"><div class="k">1h Direction Hit</div><div class="v" id="pa1hDir">--</div><div class="meta" id="pa1hDirMeta">n=0 scored</div></div>
       <div class="paBox"><div class="k">1h Range Hit</div><div class="v" id="pa1hRng">--</div><div class="meta" id="pa1hRngMeta">Target 60-80%</div></div>
-      <div class="paBox"><div class="k">Logged / Resolved</div><div class="v" id="paTotalN">0</div><div class="meta" id="paTotalMeta">0 resolved, 0 pending</div></div>
-      <div class="paBox"><div class="k">4h Dir Hit</div><div class="v" id="pa4hDir">--</div><div class="meta" id="pa4hDirMeta">n=0 scored</div></div>
+      <div class="paBox"><div class="k">4h Direction Hit</div><div class="v" id="pa4hDir">--</div><div class="meta" id="pa4hDirMeta">n=0 scored</div></div>
       <div class="paBox"><div class="k">4h Range Hit</div><div class="v" id="pa4hRng">--</div><div class="meta" id="pa4hRngMeta">Target 60-80%</div></div>
-      <div class="paBox" style="border-color:rgba(24,209,138,.18);background:rgba(24,209,138,.04)"><div class="k" style="color:rgba(24,209,138,.65)">Team Sync</div><div class="v" id="paTeamSync" style="font-size:12px">--</div><div class="meta" id="paTeamSyncMeta">Firebase shared log</div></div>
+      <div class="paBox"><div class="k">Calibration Mult</div><div class="v" id="paCalibMult">1.00x</div><div class="meta" id="paCalibMeta">Cone width factor</div></div>
+      <div class="paBox"><div class="k">Logged / Resolved</div><div class="v" id="paTotalN">0</div><div class="meta" id="paTotalMeta">0 resolved, 0 pending</div></div>
     </div>
-    <div id="paSyncTs" style="margin-top:4px;font-size:9px;color:rgba(180,220,255,.35);font-family:var(--mono)">Team log sync: --</div>
     <div class="paCalibRow" id="paCalibRow" style="background:rgba(8,20,52,.28);border:1px solid rgba(180,220,255,.10)">
       <div><div class="ck">Engine Status</div><div class="cv" id="paStatus">Collecting data...</div></div>
       <div><div class="ck">Cone Adaptation</div><div class="cv" id="paConeAdj">Neutral</div></div>
@@ -618,7 +651,7 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
     </div>
     <div class="paLog">
       <div class="paLogLabel">Recent projection log &mdash; last 20 calls</div>
-      <div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Date</th><th>Bias</th><th>Entry</th><th>±15m</th><th>±1h</th><th>±4h</th><th>15mD</th><th>15mR</th><th>1hD</th><th>1hR</th><th>4hD</th><th>4hR</th><th>Exit</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
+      <div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Time</th><th>Bias</th><th>1h Range</th><th>4h Range</th><th>1h Dir</th><th>1h Rng</th><th>4h Dir</th><th>4h Rng</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
     </div>
     <div class="smallNote" style="margin-top:6px">Scores resolve automatically. 1h outcomes scored at +60min, 4h at +240min. Need 10+ resolved before multiplier adapts.</div>
 
@@ -823,7 +856,7 @@ textarea{width:100%;min-height:130px;resize:vertical;border-radius:12px;border:1
 (function(){"use strict";
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const fmtTime=ms=>new Date(ms).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"});
-const fmtTS=ms=>{const d=new Date(ms);return d.toLocaleDateString([],{month:"short",day:"numeric"})+" "+d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});};
+const fmtTS=ms=>new Date(ms).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
 const bp=x=>x*10000;
 const minsAgo=ts=>ts?Math.round((Date.now()-ts)/60000):null;
 const $=id=>document.getElementById(id);
@@ -974,58 +1007,36 @@ const SignalTracker=(()=>{
 // ── PROJECTION ACCURACY TRACKER ──────────────────────────────────────────
 const ProjTracker=(()=>{
   const MIN_N=5;
-  let log=loadArr(KEY.proj,[]).slice(-300);
+  let log=loadArr(KEY.proj,[]).slice(-200);
   let calibMult=Number(settings.calibMult)||1.0;
   let biasConfAdj=Number(settings.biasConfAdj)||1.0;
-  let _pushing=false;
 
-  function logProjection({spot,bias,r1,r4,r15m,policy}){
+  function logProjection({spot,bias,r1,r4,policy}){
     if(!spot||bias==="NEUTRAL")return;
+    // Don't log more often than every 10 minutes to avoid flooding
     const last=log.length?log.at(-1):null;
     if(last&&(Date.now()-last.ts)<5*60*1000)return;
-    log.push({
-      id:Date.now(),ts:Date.now(),
-      entrySpot:spot,
-      bias,r1,r4,
-      r15m:r15m||Math.round(r1*0.38),
-      policy,
-      outcome15m:null,outcome1h:null,outcome4h:null
-    });
-    if(log.length>300)log=log.slice(-300);
-    _persist();_fbPush();
+    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,policy,outcome1h:null,outcome4h:null});
+    if(log.length>200)log=log.slice(-200);
+    _persist();
   }
 
   function scoreOutcomes(currentSpot){
     if(!Number.isFinite(currentSpot))return;
     const now=Date.now();let changed=false;
     log.forEach(p=>{
-      const age=(now-p.ts)/60000;
-      const mv=(currentSpot-p.entrySpot)*10000;
-      const dirOk=p.bias==="LONG"?mv>0:mv<0;
-      if(p.outcome15m===null&&age>=15){
-        p.outcome15m={dirHit:dirOk,rngHit:Math.abs(mv)<=p.r15m,movePips:mv,exitSpot:currentSpot};
-        changed=true;
-      }
-      if(p.outcome1h===null&&age>=60){
-        p.outcome1h={dirHit:dirOk,rngHit:Math.abs(mv)<=p.r1,movePips:mv,exitSpot:currentSpot};
-        changed=true;
-      }
-      if(p.outcome4h===null&&age>=240){
-        p.outcome4h={dirHit:dirOk,rngHit:Math.abs(mv)<=p.r4,movePips:mv,exitSpot:currentSpot};
-        changed=true;
-      }
+      const ageMins=(now-p.ts)/60000;
+      const movePips=(currentSpot-p.spot)*10000;
+      const dirOk=p.bias==="LONG"?movePips>0:movePips<0;
+      if(p.outcome1h===null&&ageMins>=60){p.outcome1h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r1,movePips,ageMins};changed=true;}
+      if(p.outcome4h===null&&ageMins>=240){p.outcome4h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r4,movePips,ageMins};changed=true;}
     });
-    if(changed){_adapt();_persist();_fbPush();}
+    if(changed){_adapt();_persist();}
   }
 
   function _stats(){
-    const r15=log.filter(p=>p.outcome15m!==null);
-    const r1=log.filter(p=>p.outcome1h!==null);
-    const r4=log.filter(p=>p.outcome4h!==null);
+    const r1=log.filter(p=>p.outcome1h!==null),r4=log.filter(p=>p.outcome4h!==null);
     return{
-      n15m:r15.length,
-      dir15mRate:r15.length?r15.filter(p=>p.outcome15m.dirHit).length/r15.length:null,
-      rng15mRate:r15.length?r15.filter(p=>p.outcome15m.rngHit).length/r15.length:null,
       n1h:r1.length,
       dir1hRate:r1.length?r1.filter(p=>p.outcome1h.dirHit).length/r1.length:null,
       rng1hRate:r1.length?r1.filter(p=>p.outcome1h.rngHit).length/r1.length:null,
@@ -1033,16 +1044,18 @@ const ProjTracker=(()=>{
       dir4hRate:r4.length?r4.filter(p=>p.outcome4h.dirHit).length/r4.length:null,
       rng4hRate:r4.length?r4.filter(p=>p.outcome4h.rngHit).length/r4.length:null,
       total:log.length,
-      pending:log.filter(p=>p.outcome15m===null||p.outcome1h===null||p.outcome4h===null).length,
+      pending:log.filter(p=>p.outcome1h===null||p.outcome4h===null).length,
     };
   }
 
   function _adapt(){
     const s=_stats();
+    // CONE: target range hit rate 60-80%. Outside that range -> adjust
     if(s.n1h>=MIN_N&&s.rng1hRate!=null){
-      if(s.rng1hRate<0.50)calibMult=clamp(calibMult*1.06,0.40,3.0);
-      else if(s.rng1hRate>0.82)calibMult=clamp(calibMult*0.96,0.40,3.0);
+      if(s.rng1hRate<0.50)calibMult=clamp(calibMult*1.06,0.40,3.0);       // too narrow -> widen
+      else if(s.rng1hRate>0.82)calibMult=clamp(calibMult*0.96,0.40,3.0);  // too wide -> tighten
     }
+    // BIAS CONFIDENCE: direction < 50% -> downweight; > 62% -> upweight
     if(s.n1h>=MIN_N&&s.dir1hRate!=null){
       if(s.dir1hRate<0.48)biasConfAdj=clamp(biasConfAdj*0.94,0.20,1.60);
       else if(s.dir1hRate>0.62)biasConfAdj=clamp(biasConfAdj*1.04,0.20,1.60);
@@ -1053,44 +1066,9 @@ const ProjTracker=(()=>{
     save(KEY.s,settings);
   }
 
-  function _persist(){save(KEY.proj,log.slice(-300));}
-
-  async function _fbPush(){
-    if(!FirebaseSync?.configured||FirebaseSync?.role==="READER"||_pushing)return;
-    _pushing=true;
-    try{await FirebaseSync.api("PUT","projlog",{log:log.slice(-300),calibMult,biasConfAdj,ts:Date.now()});}
-    catch(e){console.warn("projlog push:",e);}
-    _pushing=false;
-  }
-
-  async function fbPullLog(){
-    if(!FirebaseSync?.configured)return;
-    try{
-      const r=await FirebaseSync.api("GET","projlog",null);
-      if(!r||!Array.isArray(r.log)||!r.ts)return;
-      if(Date.now()-r.ts>15*60*1000)return;
-      const ids=new Set(log.map(p=>p.id));
-      const added=r.log.filter(p=>!ids.has(p.id));
-      if(added.length||r.calibMult!==calibMult||r.biasConfAdj!==biasConfAdj){
-        log=[...log,...added].sort((a,b)=>a.ts-b.ts).slice(-300);
-        if(r.calibMult)calibMult=r.calibMult;
-        if(r.biasConfAdj)biasConfAdj=r.biasConfAdj;
-        _persist();updateProjAccuracyUI();
-      }
-      const el=document.getElementById("paSyncTs");
-      if(el)el.textContent="Team log synced "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"});
-    }catch(e){console.warn("projlog pull:",e);}
-  }
-
-  function reset(){
-    log=[];calibMult=1.0;biasConfAdj=1.0;
-    settings.calibMult=1.0;settings.biasConfAdj=1.0;
-    save(KEY.s,settings);save(KEY.proj,[]);_fbPush();updateProjAccuracyUI();
-  }
-
-  return{logProjection,scoreOutcomes,getStats:_stats,
-    getCalibMult:()=>calibMult,getBiasConfAdj:()=>biasConfAdj,
-    getLog:()=>log.slice(-20).reverse(),fbPullLog,reset};
+  function _persist(){save(KEY.proj,log.slice(-200));}
+  function reset(){log=[];calibMult=1.0;biasConfAdj=1.0;settings.calibMult=1.0;settings.biasConfAdj=1.0;save(KEY.s,settings);save(KEY.proj,[]);updateProjAccuracyUI();}
+  return{logProjection,scoreOutcomes,getStats:_stats,getCalibMult:()=>calibMult,getBiasConfAdj:()=>biasConfAdj,getLog:()=>log.slice(-20).reverse(),reset};
 })();
 
 
@@ -1955,68 +1933,43 @@ function updateProjAccuracyUI(){
   const s=ProjTracker.getStats(),cm=ProjTracker.getCalibMult(),ba=ProjTracker.getBiasConfAdj();
   const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
   const setV=(id,v,ok,bad)=>{const el=$(id);if(!el)return;el.textContent=v;el.classList.remove("pos","neg");if(ok)el.classList.add("pos");else if(bad)el.classList.add("neg");};
-  // 15m
-  setV("pa15mDir",fmt(s.dir15mRate),s.dir15mRate>=0.52,s.dir15mRate!=null&&s.dir15mRate<0.42);
-  const p15m=$("pa15mDirMeta");if(p15m)p15m.textContent="n="+s.n15m+" scored";
-  setV("pa15mRng",fmt(s.rng15mRate),(s.rng15mRate>=0.50&&s.rng15mRate<=0.75),s.rng15mRate!=null&&(s.rng15mRate<0.35||s.rng15mRate>0.85));
-  // 1h
   setV("pa1hDir",fmt(s.dir1hRate),s.dir1hRate>=0.55,s.dir1hRate!=null&&s.dir1hRate<0.45);
   const p1dm=$("pa1hDirMeta");if(p1dm)p1dm.textContent="n="+s.n1h+" scored";
-  setV("pa1hRng",fmt(s.rng1hRate),(s.rng1hRate>=0.60&&s.rng1hRate<=0.82),s.rng1hRate!=null&&(s.rng1hRate<0.45||s.rng1hRate>0.88));
-  // 4h
+  setV("pa1hRng",fmt(s.rng1hRate),s.rng1hRate>=0.60&&s.rng1hRate<=0.82,s.rng1hRate!=null&&(s.rng1hRate<0.45||s.rng1hRate>0.88));
   setV("pa4hDir",fmt(s.dir4hRate),s.dir4hRate>=0.55,s.dir4hRate!=null&&s.dir4hRate<0.45);
   const p4dm=$("pa4hDirMeta");if(p4dm)p4dm.textContent="n="+s.n4h+" scored";
-  setV("pa4hRng",fmt(s.rng4hRate),(s.rng4hRate>=0.60&&s.rng4hRate<=0.82),s.rng4hRate!=null&&(s.rng4hRate<0.45||s.rng4hRate>0.88));
-  // Calibration
+  setV("pa4hRng",fmt(s.rng4hRate),s.rng4hRate>=0.60&&s.rng4hRate<=0.82,s.rng4hRate!=null&&(s.rng4hRate<0.45||s.rng4hRate>0.88));
   setV("paCalibMult",cm.toFixed(3)+"x",Math.abs(cm-1)<0.05,false);
   const pcm=$("paCalibMeta");if(pcm)pcm.textContent=cm>1.05?"Widening cone":cm<0.95?"Tightening cone":"Well-calibrated";
-  const ptn=$("paTotalN"),ptm=$("paTotalMeta");
-  if(ptn)ptn.textContent=String(s.total);
-  if(ptm)ptm.textContent=(s.total-s.pending)+" resolved, "+s.pending+" pending";
-  // Team Sync
-  const fbOn=!!(FirebaseSync?.configured);
-  const pts=$("paTeamSync"),ptm2=$("paTeamSyncMeta");
-  if(pts){pts.textContent=fbOn?"SYNCED":"LOCAL";pts.style.color=fbOn?"rgba(24,209,138,.90)":"rgba(255,176,32,.80)";}
-  if(ptm2)ptm2.textContent=fbOn?"All devices share hit rates":"Configure Firebase in Settings";
-  // Engine status chips
+  const ptn=$("paTotalN"),ptm=$("paTotalMeta");if(ptn)ptn.textContent=String(s.total);if(ptm)ptm.textContent=(s.total-s.pending)+" resolved, "+s.pending+" pending";
   const ready=Math.min(s.n1h,s.n4h)>=10;
   const ps=$("paStatus"),pca=$("paConeAdj"),pba=$("paBiasAdj");
   if(ps)ps.textContent=ready?"Active ("+Math.min(s.n1h,s.n4h)+"+ scored)":"Collecting data (need 10, have "+Math.min(s.n1h,s.n4h)+")";
   if(pca)pca.textContent=cm>1.05?"Widening (+"+Math.round((cm-1)*100)+"%)":cm<0.95?"Tightening (-"+Math.round((1-cm)*100)+"%)":"Neutral";
   if(pba)pba.textContent=ba<0.95?"Reducing weight (-"+Math.round((1-ba)*100)+"%)":ba>1.05?"Increasing weight (+"+Math.round((ba-1)*100)+"%)":"Neutral";
-  // Mini header chips
+  // Mini chips in projection header
   const cmc=$("calibMult"),c1d=$("calib1hDir"),c1r=$("calib1hRng"),c4d=$("calib4hDir"),c4r=$("calib4hRng"),cn=$("calibN");
   if(cmc)cmc.textContent=cm.toFixed(2);if(c1d)c1d.textContent=fmt(s.dir1hRate);if(c1r)c1r.textContent=fmt(s.rng1hRate);if(c4d)c4d.textContent=fmt(s.dir4hRate);if(c4r)c4r.textContent=fmt(s.rng4hRate);if(cn)cn.textContent=s.total;
-  // Log table — 13 cols: Date|Bias|Entry|±15m|±1h|±4h|15mD|15mR|1hD|1hR|4hD|4hR|Exit
+  // Log table
   const plb=$("paLogBody");if(!plb)return;
   const log=ProjTracker.getLog();
-  if(!log.length){plb.innerHTML="<tr><td colspan='13' class='pending'>No projections logged yet. First 15m outcome resolves +15min after signal.</td></tr>";return;}
-  const mn="font-family:var(--mono);font-size:9.5px";
+  if(!log.length){plb.innerHTML="<tr><td colspan='8' class='pending'>No projections logged yet. First entry scores after 1 hour.</td></tr>";return;}
   plb.innerHTML=log.map(p=>{
-    const d15=p.outcome15m,d1=p.outcome1h,d4=p.outcome4h;
+    const d1=p.outcome1h,d4=p.outcome4h;
     const cls=v=>v===null?"pending":v?"hit":"miss";
-    const pip=v=>v!=null?(v>0?"+":"")+v.toFixed(1)+"p":"...";
-    const dtxt=o=>o===null?"...":o.dirHit?"Y("+pip(o.movePips)+")":"N("+pip(o.movePips)+")";
+    const dtxt=o=>o===null?"...":o.dirHit?"Y("+o.movePips.toFixed(1)+"p)":"N("+o.movePips.toFixed(1)+"p)";
     const rtxt=o=>o===null?"...":o.rngHit?"IN":"OUT";
-    const exitSp=d4?.exitSpot??d1?.exitSpot??d15?.exitSpot??null;
-    return"<tr>"
-      +"<td style='"+mn+";white-space:nowrap'>"+fmtTS(p.ts)+"</td>"
+    return"<tr><td>"+fmtTS(p.ts)+"</td>"
       +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
-      +"<td style='"+mn+"'>"+(p.entrySpot?(+p.entrySpot).toFixed(5):"--")+"</td>"
-      +"<td style='"+mn+"'>\xb1"+(p.r15m||"?")+"p</td>"
-      +"<td style='"+mn+"'>\xb1"+p.r1+"p</td>"
-      +"<td style='"+mn+"'>\xb1"+p.r4+"p</td>"
-      +"<td class='"+cls(d15?.dirHit??null)+"'>"+dtxt(d15)+"</td>"
-      +"<td class='"+cls(d15?.rngHit??null)+"'>"+rtxt(d15)+"</td>"
+      +"<td style='font-family:var(--mono)'>\xb1"+p.r1+"p</td>"
+      +"<td style='font-family:var(--mono)'>\xb1"+p.r4+"p</td>"
       +"<td class='"+cls(d1?.dirHit??null)+"'>"+dtxt(d1)+"</td>"
       +"<td class='"+cls(d1?.rngHit??null)+"'>"+rtxt(d1)+"</td>"
       +"<td class='"+cls(d4?.dirHit??null)+"'>"+dtxt(d4)+"</td>"
       +"<td class='"+cls(d4?.rngHit??null)+"'>"+rtxt(d4)+"</td>"
-      +"<td style='"+mn+";color:rgba(255,255,255,.42)'>"+(exitSp?(+exitSp).toFixed(5):"...")+"</td>"
       +"</tr>";
   }).join("");
 }
-
 
 // ── FX PAIR DISPLAY HELPER ───────────────────────────────────────────────
 function paintFxPair(key,pxId,metaId,tagId,sparkId,changePct){
@@ -2073,7 +2026,7 @@ async function onSpotUpdate(s){
   const proj=computeProj(step,tx,cm,ba);
   const pb3=PB3.compute(step,tx);
   const arch=Classifier.classify(tx);
-  ProjTracker.logProjection({spot:s.price,bias:proj.bias,r1:proj.r1,r4:proj.r4,r15m:proj.r15m||Math.round(proj.r1*0.38),policy:step.policy});
+  ProjTracker.logProjection({spot:s.price,bias:proj.bias,r1:proj.r1,r4:proj.r4,policy:step.policy});
   ForecastEngine.pushRegime(step.policy);
   const _projSt=ProjTracker.getStats();_projSt.calibMult=ProjTracker.getCalibMult();
   const _q=QuantEngine.compute(step,tx,pb3);
@@ -2120,33 +2073,23 @@ async function onSpotUpdate(s){
 }
 
 // ── READER POLL ───────────────────────────────────────────────────────────
-function readerPoll(){
-  (async()=>{
-    if(FirebaseSync.role!=="READER"||!FirebaseSync.configured)return;
-    const st=await FirebaseSync.pullState();
-    if(!st){
-      const pst=$("policyStateTitle");if(pst)pst.textContent="Waiting for MASTER data...";
-      const psd=$("policyStateDesc");if(psd)psd.textContent="FB READER connected. MASTER must be running and writing state.";
-      const lu=$("lastUpdate");if(lu)lu.textContent=fmtTime(Date.now());
-      setFxStatus("CHECKING");
-      return;
-    }
-    // Flag data as STALE if Firebase state is >30 seconds old
-    const dataAgeMs=Date.now()-(st.ts||0);
-    const isStale=dataAgeMs>30000;
-    lastFullState=st;
-    applyFullStateToUI(st);
-    updateSessionUI();updateProjAccuracyUI();
-    const lu=$("lastUpdate");
-    if(lu){
-      const ageS=Math.round(dataAgeMs/1000);
-      lu.textContent=fmtTime(st.ts||Date.now())+(isStale?" ⚠ STALE "+ageS+"s":" (M)");
-      lu.style.color=isStale?"rgba(255,176,32,.90)":"";
-    }
-    setFxStatus(isStale?"STALE":"LIVE");
-    // Pull shared projection log so all team members see identical hit-rate stats
-    ProjTracker.fbPullLog();
-  })();
+async function readerPoll(){
+  if(FirebaseSync.role!=="READER"||!FirebaseSync.configured)return;
+  const st=await FirebaseSync.pullState();
+  if(!st){
+    // No fresh state yet - show waiting message but don't render stale local compute
+    const pst=$("policyStateTitle");if(pst)pst.textContent="Waiting for MASTER data...";
+    const psd=$("policyStateDesc");if(psd)psd.textContent="FB READER connected. MASTER must be running and writing state.";
+    const lu=$("lastUpdate");if(lu)lu.textContent=fmtTime(Date.now());
+    setFxStatus("CHECKING");
+    return;
+  }
+  lastFullState=st;
+  applyFullStateToUI(st);
+  updateSessionUI();updateProjAccuracyUI();
+  // Show MASTER's timestamp so team can see data freshness
+  const lu=$("lastUpdate");if(lu)lu.textContent=fmtTime(st.ts||Date.now())+" (M)";
+  setFxStatus("LIVE");
 }
 
 // ── SETTINGS ──────────────────────────────────────────────────────────────
@@ -2214,9 +2157,6 @@ async function start(){
     setInterval(renderEvents,30000);
   }else{
     // MASTER mode: full compute loop
-    // Pull shared projlog so MASTER also merges team entries
-    ProjTracker.fbPullLog();
-    setInterval(()=>ProjTracker.fbPullLog(),60*1000);
     setInterval(()=>SpotFeed.tick(onSpotUpdate),poll);
     setInterval(async()=>{await MacroFeed.tick();MacroFeed.hydrate();},90000);
     setInterval(async()=>{await EventsFeed.tick();renderEvents();},5*60*1000);
