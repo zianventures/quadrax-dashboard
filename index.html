@@ -916,7 +916,7 @@ const Engine=(()=>{
   const transRow=si=>{const row=TM[si],total=row.reduce((a,b)=>a+b,0);return total>0?row.map(v=>v/total):new Array(8).fill(.125);};
   function predictNext(pol){const row=transRow(pol-1);let bi=0;for(let i=1;i<row.length;i++)if(row[i]>row[bi])bi=i;return{state:bi+1,prob:row[bi]};}
   function step(price){tickN++;const p=Number(price);if(!Number.isFinite(p)||p<=0)return null;const prev=prices.length?prices.at(-1):null;prices.push(p);if(prices.length>HN)prices.shift();if(prev!=null){returns.push(p-prev);if(returns.length>HN)returns.shift();}const f=feats();if(!f)return null;const probs=scoreStates(f),det=pick(probs),pr=updatePol(det),pol=pr.policy;if(prevPol!=null&&prevPol!==pol)TM[prevPol-1][pol-1]++;if(prevPol!==pol)prevPol=pol;regAge=(lastPol===pol)?regAge+1:0;lastPol=pol;return{tickN,features:f,probs,detector:det,policy:pol,hold:pr.hold,conf:conf(probs,pol),regimeAge:regAge,momScore:f.momScore,predictedNext:predictNext(pol),TM,warmed:tickN>=WARMUP};}
-  return{step,getTM:()=>TM,WARMUP};
+  return{step,getTM:()=>TM,WARMUP,get _tickN(){return tickN}};
 })();
 
 const SessionEngine=(()=>{
@@ -2124,8 +2124,17 @@ async function onSpotUpdate(s){
   setFxStatus(s.status);
   CorrEngine.pushEur(s.lastDelta);
   QuantEngine.push(s.price);
+  // Show price immediately — don't wait for Engine warmup
+  {const fp=$("fxSpotPrice");if(fp&&s.price)fp.textContent=s.price.toFixed(5);}
+  {const fd=$("fxSpotDelta");if(fd)fd.textContent=(s.lastDelta>=0?"+":"")+s.lastDelta.toFixed(5);}
   if(paused)return;
-  const step=Engine.step(s.price);if(!step)return;
+  const step=Engine.step(s.price);
+  // Always update warmup counter so user can see progress, even before full state is ready
+  if(step){updateWarmupBadge(step.tickN,step.warmed);}else{
+    const sb=$("syncBadge");if(sb&&sb.className.includes("warming")){
+      const tn=$("syncText");if(tn)tn.textContent="Warming "+Engine._tickN+"/"+Engine.WARMUP;}
+    return;
+  }
   pushState(step.policy);
   ProjTracker.scoreOutcomes(s.price);
   const tx=computeTx();
@@ -2133,7 +2142,6 @@ async function onSpotUpdate(s){
   const proj=computeProj(step,tx,cm,ba);
   const pb3=PB3.compute(step,tx);
   const arch=Classifier.classify(tx);
-  ProjTracker.logProjection({spot:s.price,bias:proj.bias,r15:_bus?.forecasts?.["15m"]?.range||Math.round(proj.r1*0.4),r1:proj.r1,r4:proj.r4,policy:step.policy});
   ForecastEngine.pushRegime(step.policy);
   const _projSt=ProjTracker.getStats();_projSt.calibMult=ProjTracker.getCalibMult();
   const _q=QuantEngine.compute(step,tx,pb3);
@@ -2142,6 +2150,8 @@ async function onSpotUpdate(s){
   const _eRisk=computeEventRisk?computeEventRisk():0;
   step.lastPrice=s.price;
   const _bus=SignalBus.synthesize(step,tx,proj,pb3,_q,_projSt,_eRisk);
+  // logProjection AFTER _bus is declared — fixes TDZ ReferenceError that killed every tick
+  ProjTracker.logProjection({spot:s.price,bias:proj.bias,r15:_bus?.forecasts?.["15m"]?.range||Math.round(proj.r1*0.4),r1:proj.r1,r4:proj.r4,policy:step.policy});
   updateSignalBusUI(_bus);
   // Extended forecasts — bias overridden by bus so daily/weekly always agree
   const _dailyF=ForecastEngine.computeDaily(step,tx,s,_projSt);
