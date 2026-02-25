@@ -678,8 +678,7 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
       
       <span class="tagOk">1h Rng <span id="calib1hRng">--%</span></span>
       <span class="tagOk">4h Rng <span id="calib4hRng">--%</span></span>
-      
-      
+      <span class="tagOk">1d Rng <span id="calib1dRng">--%</span></span>
       <span class="tagOk">n=<span id="calibN">0</span></span>
     </div>
     <div class="coneWrap"><canvas id="coneCanvas"></canvas></div>
@@ -703,11 +702,11 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
   </div></div>
 
   <div class="card"><div class="inner">
-    <div class="card-title"><h2>Projection Accuracy &middot; Adaptive Learning</h2><div class="hint">Every LONG/SHORT call is scored at 1h and 4h. Hit rates drive cone width calibration and bias confidence weighting. Engine self-improves over time.</div></div>
+    <div class="card-title"><h2>Projection Accuracy &middot; Adaptive Learning</h2><div class="hint">Every LONG/SHORT call is scored at 1h, 4h and 1d. Hit rates drive cone width calibration and bias confidence weighting. Engine self-improves over time.</div></div>
     <div class="paGrid" style="grid-template-columns:repeat(5,1fr)">
-      <div class="paBox"><div class="k">15m Range Hit</div><div class="v" id="pa15mRng">--</div><div class="meta" id="pa15mRngMeta">n=0 scored</div></div>
       <div class="paBox"><div class="k">1h Range Hit</div><div class="v" id="pa1hRng">--</div><div class="meta" id="pa1hRngMeta">n=0 scored</div></div>
       <div class="paBox"><div class="k">4h Range Hit</div><div class="v" id="pa4hRng">--</div><div class="meta" id="pa4hRngMeta">n=0 scored</div></div>
+      <div class="paBox"><div class="k">1d Range Hit</div><div class="v" id="pa1dRng">--</div><div class="meta" id="pa1dRngMeta">n=0 scored</div></div>
       <div class="paBox"><div class="k">Calibration Mult</div><div class="v" id="paCalibMult">1.00x</div><div class="meta" id="paCalibMeta">Cone width factor</div></div>
       <div class="paBox"><div class="k">Logged / Resolved</div><div class="v" id="paTotalN">0</div><div class="meta" id="paTotalMeta">0 resolved, 0 pending</div></div>
     </div>
@@ -718,10 +717,10 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
       <div><div class="ck">Bully Overlay</div><div class="cv" id="paBullyOverlay">Off</div></div>
     </div>
     <div class="paLog">
-      <div class="paLogLabel">Recent projection log &mdash; last 20 calls</div>
-      <div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Date</th><th>Entry</th><th>Exit</th><th>Bias</th><th>15m Range</th><th>15m Result</th><th>1h Range</th><th>1h Result</th><th>4h Range</th><th>4h Result</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
+      <div class="paLogLabel">Recent projection log &mdash; last 100 calls</div>
+      <div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Date</th><th>Entry</th><th>Stop</th><th>Exit 1h</th><th>Exit 4h</th><th>Exit 1d</th><th>Bias</th><th>1h Range</th><th>1h Result</th><th>4h Range</th><th>4h Result</th><th>1d Range</th><th>1d Result</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
     </div>
-    <div class="smallNote" style="margin-top:6px">Scores resolve automatically. 1h outcomes scored at +60min, 4h at +240min. Need 10+ resolved before multiplier adapts.</div>
+    <div class="smallNote" style="margin-top:6px">Scores resolve automatically. 1h outcomes scored at +60min, 4h at +240min, 1d at +1440min. Need 10+ resolved before multiplier adapts.</div>
 
     <!-- Enhanced Adaptive Learning Breakdown -->
     <div style="margin-top:14px;border-top:1px solid rgba(180,220,255,.08);padding-top:12px">
@@ -1105,7 +1104,21 @@ const SignalTracker=(()=>{
 // ── PROJECTION ACCURACY TRACKER ──────────────────────────────────────────
 const ProjTracker=(()=>{
   const MIN_N=5;
-  let log=loadArr(KEY.proj,[]).slice(-200).map(p=>({outcome15m:null,...p})); // normalize: add outcome15m if missing from old entries
+  let log=loadArr(KEY.proj,[]).slice(-200).map(p=>{
+    // normalize/migrate older entries so new UI fields populate
+    const o={outcome15m:null,outcome1d:null,stopSpot:null,r1d:null,...p};
+    const spotN=Number(o.spot);
+    const r1N=Number(o.r1);
+    const r4N=Number(o.r4);
+    if(o.r1d==null && Number.isFinite(r4N)) o.r1d=Math.max(10, Math.round(r4N*2.5));
+    // Backfill stopSpot if missing. Uses r1 * 0.75 with an 8 pip floor (same as new logging).
+    if(o.stopSpot==null && Number.isFinite(spotN)){
+      const stopPips = Math.max(8, Math.round((Number.isFinite(r1N)?r1N:0)*0.75));
+      const stopSpot = (o.bias==="LONG") ? (spotN - stopPips/10000) : (o.bias==="SHORT") ? (spotN + stopPips/10000) : null;
+      if(stopSpot!=null) o.stopSpot=stopSpot;
+    }
+    return o;
+  }); // normalize: add outcome15m if missing from old entries
   let calibMult=Number(settings.calibMult)||1.0;
   let biasConfAdj=Number(settings.biasConfAdj)||1.0;
   let sharpeAdj=Number(settings.sharpeAdj)||1.0
@@ -1151,7 +1164,11 @@ const ProjTracker=(()=>{
     // Don't log more often than every 10 minutes to avoid flooding
     const last=log.length?log.at(-1):null;
     if(last&&(Date.now()-last.ts)<5*60*1000)return;
-    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,r15:r15||Math.round(r1*0.4),policy,outcome15m:null,outcome1h:null,outcome4h:null});
+    const r15p = r15||Math.round(r1*0.4);
+    const r1d = Math.max(10, Math.round((r4||0)*2.5)); // ~sqrt(24/4) scaling (2.45x) rounded
+    const stopPips = Math.max(8, Math.round((r1||0)*0.75));
+    const stopSpot = bias==="LONG" ? (spot - stopPips/10000) : (spot + stopPips/10000);
+    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,r15:r15p,r1d,stopSpot,policy,outcome15m:null,outcome1h:null,outcome4h:null,outcome1d:null});
     if(log.length>200)log=log.slice(-200);
     _persist();
   }
@@ -1165,13 +1182,14 @@ const ProjTracker=(()=>{
       const dirOk=p.bias==="LONG"?movePips>0:movePips<0;
       if(p.outcome15m===null&&ageMins>=15){p.outcome15m={dirHit:dirOk,rngHit:Math.abs(movePips)<=(p.r15||Math.round(p.r1*0.4)),movePips,exitSpot:currentSpot};changed=true;}
       if(p.outcome1h===null&&ageMins>=60){p.outcome1h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r1,movePips,exitSpot:currentSpot};changed=true;}
-      if(p.outcome4h===null&&ageMins>=240){p.outcome4h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r4,movePips,ageMins};changed=true;}
+      if(p.outcome4h===null&&ageMins>=240){p.outcome4h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r4,movePips,exitSpot:currentSpot};changed=true;}
+      if(p.outcome1d===null&&ageMins>=1440){p.outcome1d={dirHit:dirOk,rngHit:Math.abs(movePips)<= (p.r1d||Math.max(10,Math.round(p.r4*2.5))),movePips,exitSpot:currentSpot};changed=true;}
     });
     if(changed){_adapt(currentSpot);_persist();}
   }
 
   function _stats(){
-    const r15=log.filter(p=>p.outcome15m!=null),r1=log.filter(p=>p.outcome1h!==null),r4=log.filter(p=>p.outcome4h!==null);
+    const r15=log.filter(p=>p.outcome15m!=null),r1=log.filter(p=>p.outcome1h!==null),r4=log.filter(p=>p.outcome4h!==null),r1d=log.filter(p=>p.outcome1d!==null);
     return{
       n15m:r15.length,
       dir15mRate:r15.length?r15.filter(p=>p.outcome15m.dirHit).length/r15.length:null,
@@ -1182,6 +1200,9 @@ const ProjTracker=(()=>{
       n4h:r4.length,
       dir4hRate:r4.length?r4.filter(p=>p.outcome4h.dirHit).length/r4.length:null,
       rng4hRate:r4.length?r4.filter(p=>p.outcome4h.rngHit).length/r4.length:null,
+      n1d:r1d.length,
+      dir1dRate:r1d.length?r1d.filter(p=>p.outcome1d.dirHit).length/r1d.length:null,
+      rng1dRate:r1d.length?r1d.filter(p=>p.outcome1d.rngHit).length/r1d.length:null,
       total:log.length,
       pending:log.filter(p=>p.outcome1h===null||p.outcome4h===null).length,
     };
@@ -1223,7 +1244,7 @@ const ProjTracker=(()=>{
 
   function _persist(){save(KEY.proj,log.slice(-200));}
   function reset(){log=[];calibMult=1.0;biasConfAdj=1.0;sharpeAdj=1.0;settings.calibMult=1.0;settings.biasConfAdj=1.0;settings.sharpeAdj=1.0;save(KEY.s,settings);save(KEY.proj,[]);updateProjAccuracyUI();}
-  return{logProjection,scoreOutcomes,getStats:_stats,getSignalPerf,getCalibMult:()=>calibMult,getBiasConfAdj:()=>biasConfAdj,getSharpeAdj:()=>sharpeAdj,getLog:()=>log.slice(-20).reverse(),reset};
+  return{logProjection,scoreOutcomes,getStats:_stats,getSignalPerf,getCalibMult:()=>calibMult,getBiasConfAdj:()=>biasConfAdj,getSharpeAdj:()=>sharpeAdj,getLog:()=>log.slice(-200),reset};
 })();
 
 
@@ -1900,12 +1921,13 @@ function injectSignalStats(state,sigStats){
   state.projDir15m=projS.dir15mRate;state.projRng15m=projS.rng15mRate;state.projN15m=projS.n15m||0;
   state.projDir1h=projS.dir1hRate;state.projRng1h=projS.rng1hRate;state.projN1h=projS.n1h;
   state.projDir4h=projS.dir4hRate;state.projRng4h=projS.rng4hRate;state.projN4h=projS.n4h;
+  state.projDir1d=projS.dir1dRate;state.projRng1d=projS.rng1dRate;state.projN1d=projS.n1d||0;
   state.projTotal=projS.total;state.projPending=projS.pending;
   state.projCalibMult=ProjTracker.getCalibMult();
   state.projBiasAdj=ProjTracker.getBiasConfAdj();
   state.projSharpeAdj=ProjTracker.getSharpeAdj();
   // Send last 30 log entries so READERs can render the projection log table identically
-  state.projLogEntries=ProjTracker.getLog().slice(-30);
+  state.projLogEntries=ProjTracker.getLog().slice(-100);
   return state;
 }
 
@@ -1992,14 +2014,17 @@ function applyFullStateToUI(st){
   if(FirebaseSync.isReader&&st.projTotal!=null){
     const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
     const setV=(id,v,ok,bad)=>{const el=$(id);if(!el)return;el.textContent=v;el.classList.remove("pos","neg");if(ok)el.classList.add("pos");else if(bad)el.classList.add("neg");};
-    setV("pa15mRng",fmt(st.projRng15m),(st.projRng15m||0)>=0.60&&(st.projRng15m||0)<=0.82,false);
     setV("pa1hRng",fmt(st.projRng1h),st.projRng1h>=0.60&&st.projRng1h<=0.82,false);
     setV("pa4hRng",fmt(st.projRng4h),st.projRng4h>=0.60&&st.projRng4h<=0.82,false);
-    setV("pa4hRng",fmt(st.projRng4h),st.projRng4h>=0.60&&st.projRng4h<=0.82,false);
+    setV("pa1dRng",fmt(st.projRng1d),st.projRng1d>=0.60&&st.projRng1d<=0.82,false);
     setV("paCalibMult",(st.projCalibMult||1).toFixed(3)+"x",Math.abs((st.projCalibMult||1)-1)<0.05,false);
     const ptn=$("paTotalN"),ptm=$("paTotalMeta");
     if(ptn)ptn.textContent=String(st.projTotal||0);
     if(ptm)ptm.textContent=((st.projTotal||0)-(st.projPending||0))+" resolved, "+(st.projPending||0)+" pending";
+    const m1=$("pa1hRngMeta"),m4=$("pa4hRngMeta"),m1d=$("pa1dRngMeta");
+    if(m1)m1.textContent="n="+(st.projN1h||0)+" scored";
+    if(m4)m4.textContent="n="+(st.projN4h||0)+" scored";
+    if(m1d)m1d.textContent="n="+(st.projN1d||0)+" scored";
     const ready=Math.min(st.projN1h||0,st.projN4h||0)>=5;
     const ps=$("paStatus");if(ps)ps.textContent=ready?"Active from MASTER":"Collecting on MASTER ("+Math.min(st.projN1h||0,st.projN4h||0)+"/5)";
     const pca=$("paConeAdj"),cm=st.projCalibMult||1;
@@ -2009,25 +2034,30 @@ function applyFullStateToUI(st){
       const plb=$("paLogBody");
       if(plb){
         const fmt2=r=>r!=null?Math.round(r*100)+"%":"--";
-        plb.innerHTML=st.projLogEntries.slice().reverse().map(p=>{
-          const d15=p.outcome15m,d1=p.outcome1h,d4=p.outcome4h;
+        plb.innerHTML=st.projLogEntries.slice(-100).reverse().map(p=>{
+          const d1=p.outcome1h,d4=p.outcome4h,d1d=p.outcome1d;
           const cls=v=>v===null?"pending":v?"hit":"miss";
-          const dtxt=o=>o===null?"...":o.dirHit?"✓":"✗";
           const rtxt=o=>o===null?"...":o.rngHit?"IN":"OUT";
-          const exitSpot=d1?.exitSpot??d15?.exitSpot??null;
           const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
-          const r15=p.r15||Math.round(p.r1*0.4);
+          const stop = (p.stopSpot!=null && Number.isFinite(Number(p.stopSpot))) ? Number(p.stopSpot).toFixed(5) : "--";
+          const e1 = (d1?.exitSpot!=null && Number.isFinite(d1.exitSpot)) ? d1.exitSpot.toFixed(5) : "pend";
+          const e4 = (d4?.exitSpot!=null && Number.isFinite(d4.exitSpot)) ? d4.exitSpot.toFixed(5) : "pend";
+          const e1d= (d1d?.exitSpot!=null && Number.isFinite(d1d.exitSpot)) ? d1d.exitSpot.toFixed(5) : "pend";
+          const r1d = p.r1d || Math.max(10, Math.round((p.r4||0)*2.5));
           return"<tr>"
             +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
-            +"<td style='font-family:var(--mono);font-size:10px'>"+(p.spot?p.spot.toFixed(5):"--")+"</td>"
-            +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+(exitSpot?exitSpot.toFixed(5):"pend")+"</td>"
+            +"<td style='font-family:var(--mono);font-size:10px'>"+( p.spot?p.spot.toFixed(5):"--")+"</td>"
+            +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+stop+"</td>"
+            +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e1+"</td>"
+            +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e4+"</td>"
+            +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e1d+"</td>"
             +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
-            +"<td style='font-family:var(--mono)'>±"+r15+"p</td>"
-            +"<td class='"+cls(d15?.rngHit??null)+"'>"+rtxt(d15)+"</td>"
             +"<td style='font-family:var(--mono)'>±"+p.r1+"p</td>"
             +"<td class='"+cls(d1?.rngHit??null)+"'>"+rtxt(d1)+"</td>"
             +"<td style='font-family:var(--mono)'>±"+p.r4+"p</td>"
             +"<td class='"+cls(d4?.rngHit??null)+"'>"+rtxt(d4)+"</td>"
+            +"<td style='font-family:var(--mono)'>±"+r1d+"p</td>"
+            +"<td class='"+cls(d1d?.rngHit??null)+"'>"+rtxt(d1d)+"</td>"
             +"</tr>";
         }).join("");
       }
@@ -2258,13 +2288,16 @@ function updateProjAccuracyUI(){
   const s=ProjTracker.getStats(),cm=ProjTracker.getCalibMult(),ba=ProjTracker.getBiasConfAdj();
   const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
   const setV=(id,v,ok,bad)=>{const el=$(id);if(!el)return;el.textContent=v;el.classList.remove("pos","neg");if(ok)el.classList.add("pos");else if(bad)el.classList.add("neg");};
-  setV("pa15mRng",fmt(s.rng15mRate),s.rng15mRate>=0.60&&s.rng15mRate<=0.82,false);
   setV("pa1hRng",fmt(s.rng1hRate),s.rng1hRate>=0.60&&s.rng1hRate<=0.82,s.rng1hRate!=null&&(s.rng1hRate<0.45||s.rng1hRate>0.88));
   setV("pa4hRng",fmt(s.rng4hRate),s.rng4hRate>=0.60&&s.rng4hRate<=0.82,s.rng4hRate!=null&&(s.rng4hRate<0.45||s.rng4hRate>0.88));
-  setV("pa4hRng",fmt(s.rng4hRate),s.rng4hRate>=0.60&&s.rng4hRate<=0.82,s.rng4hRate!=null&&(s.rng4hRate<0.45||s.rng4hRate>0.88));
+  setV("pa1dRng",fmt(s.rng1dRate),s.rng1dRate>=0.60&&s.rng1dRate<=0.82,s.rng1dRate!=null&&(s.rng1dRate<0.45||s.rng1dRate>0.88));
   setV("paCalibMult",cm.toFixed(3)+"x",Math.abs(cm-1)<0.05,false);
   const pcm=$("paCalibMeta");if(pcm)pcm.textContent=cm>1.05?"Widening cone":cm<0.95?"Tightening cone":"Well-calibrated";
   const ptn=$("paTotalN"),ptm=$("paTotalMeta");if(ptn)ptn.textContent=String(s.total);if(ptm)ptm.textContent=(s.total-s.pending)+" resolved, "+s.pending+" pending";
+  const m1=$("pa1hRngMeta"),m4=$("pa4hRngMeta"),m1d=$("pa1dRngMeta");
+  if(m1)m1.textContent="n="+(s.n1h||0)+" scored";
+  if(m4)m4.textContent="n="+(s.n4h||0)+" scored";
+  if(m1d)m1d.textContent="n="+(s.n1d||0)+" scored";
   const ready=Math.min(s.n1h,s.n4h)>=10;
   const ps=$("paStatus"),pca=$("paConeAdj"),pba=$("paBiasAdj"),pbo=$("paBullyOverlay");
   if(ps)ps.textContent=ready?"Active ("+Math.min(s.n1h,s.n4h)+"+ scored)":"Collecting data (need 10, have "+Math.min(s.n1h,s.n4h)+")";
@@ -2274,31 +2307,36 @@ function updateProjAccuracyUI(){
   try{const bo=(lastFullState?.bullyOverlay)||(lastFullState?.signalBus?.bullyOverlay);if(pbo){if(bo?.active){const b=Math.round((bo.boost||0)*100);pbo.textContent=`ON (${bo.session||""} +${b}% / risk x${(bo.riskMult||1).toFixed(2)})`;}else{pbo.textContent="Off";}}}catch(e){}
 
   // Mini chips in projection header
-  const cmc=$("calibMult"),c15r=$("calib15mRng"),c1r=$("calib1hRng"),c4r=$("calib4hRng"),cn=$("calibN");
-  if(cmc)cmc.textContent=cm.toFixed(2);if(c15r)c15r.textContent=fmt(s.rng15mRate);if(c1r)c1r.textContent=fmt(s.rng1hRate);if(c4r)c4r.textContent=fmt(s.rng4hRate);if(cn)cn.textContent=s.total;
+  const cmc=$("calibMult"),c1r=$("calib1hRng"),c4r=$("calib4hRng"),c1d=$("calib1dRng"),cn=$("calibN");
+  if(cmc)cmc.textContent=cm.toFixed(2);if(c1r)c1r.textContent=fmt(s.rng1hRate);if(c4r)c4r.textContent=fmt(s.rng4hRate);if(c1d)c1d.textContent=fmt(s.rng1dRate);if(cn)cn.textContent=s.total;
   // Log table
   const plb=$("paLogBody");if(!plb)return;
   const log=ProjTracker.getLog();
   if(!log.length){plb.innerHTML="<tr><td colspan='13' class='pending'>No projections logged yet. First entry scores after 1 hour.</td></tr>";return;}
-  plb.innerHTML=log.slice().reverse().map(p=>{
-    const d15=p.outcome15m,d1=p.outcome1h,d4=p.outcome4h;
+  plb.innerHTML=log.slice(-100).reverse().map(p=>{
+    const d1=p.outcome1h,d4=p.outcome4h,d1d=p.outcome1d;
     const cls=v=>v===null?"pending":v?"hit":"miss";
-    const dtxt=o=>o===null?"...":o.dirHit?"✓":"✗";
     const rtxt=o=>o===null?"...":o.rngHit?"IN":"OUT";
-    const exitSpot=d1?.exitSpot??d15?.exitSpot??null;
     const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
-    const r15=p.r15||Math.round(p.r1*0.4);
+    const stop = (p.stopSpot!=null && Number.isFinite(Number(p.stopSpot))) ? Number(p.stopSpot).toFixed(5) : "--";
+    const e1 = (d1?.exitSpot!=null && Number.isFinite(d1.exitSpot)) ? d1.exitSpot.toFixed(5) : "pend";
+    const e4 = (d4?.exitSpot!=null && Number.isFinite(d4.exitSpot)) ? d4.exitSpot.toFixed(5) : "pend";
+    const e1d= (d1d?.exitSpot!=null && Number.isFinite(d1d.exitSpot)) ? d1d.exitSpot.toFixed(5) : "pend";
+    const r1d = p.r1d || Math.max(10, Math.round((p.r4||0)*2.5));
     return"<tr>"
       +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
       +"<td style='font-family:var(--mono);font-size:10px'>"+( p.spot?p.spot.toFixed(5):"--")+"</td>"
-      +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+(exitSpot?exitSpot.toFixed(5):"pend")+"</td>"
+      +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+stop+"</td>"
+      +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e1+"</td>"
+      +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e4+"</td>"
+      +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e1d+"</td>"
       +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
-      +"<td style='font-family:var(--mono)'>±"+r15+"p</td>"
-      +"<td class='"+cls(d15?.rngHit??null)+"'>"+rtxt(d15)+"</td>"
       +"<td style='font-family:var(--mono)'>±"+p.r1+"p</td>"
       +"<td class='"+cls(d1?.rngHit??null)+"'>"+rtxt(d1)+"</td>"
       +"<td style='font-family:var(--mono)'>±"+p.r4+"p</td>"
       +"<td class='"+cls(d4?.rngHit??null)+"'>"+rtxt(d4)+"</td>"
+      +"<td style='font-family:var(--mono)'>±"+r1d+"p</td>"
+      +"<td class='"+cls(d1d?.rngHit??null)+"'>"+rtxt(d1d)+"</td>"
       +"</tr>";
   }).join("");
 }
