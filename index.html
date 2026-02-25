@@ -715,6 +715,7 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
       <div><div class="ck">Engine Status</div><div class="cv" id="paStatus">Collecting data...</div></div>
       <div><div class="ck">Cone Adaptation</div><div class="cv" id="paConeAdj">Neutral</div></div>
       <div><div class="ck">Bias Adaptation</div><div class="cv" id="paBiasAdj">Neutral</div></div>
+      <div><div class="ck">Bully Overlay</div><div class="cv" id="paBullyOverlay">Off</div></div>
     </div>
     <div class="paLog">
       <div class="paLogLabel">Recent projection log &mdash; last 20 calls</div>
@@ -936,7 +937,7 @@ const KEY={s:"qx_s_v5",sg:"qx_sg_v1",rh:"qx_rh_v3",proj:"qx_proj_v1"};
 function loadObj(k,fb){try{const r=localStorage.getItem(k);if(!r)return fb;const p=JSON.parse(r);return(p&&typeof p==="object")?p:fb;}catch{return fb;}}
 function loadArr(k,fb){try{const r=localStorage.getItem(k);if(!r)return fb;const p=JSON.parse(r);return Array.isArray(p)?p:fb;}catch{return fb;}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
-let settings=loadObj(KEY.s,{twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbUrl:"",fbRole:"AUTO",calibMult:1.0,biasConfAdj:1.0,sharpeAdj:1.0});
+let settings=loadObj(KEY.s,{twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbUrl:"",fbRole:"AUTO",calibMult:1.0,biasConfAdj:1.0,sharpeAdj:1.0,mbOverlay:{enabled:true,sharpeTrigger:1.0,confMin:0.35,confMax:0.75,minAgreement:0.45,maxEventRisk:0.60,allowedPolicies:[1,2,3,4,7],sessionsUTC:[{name:"London",start:"06:45",end:"09:15"},{name:"New York",start:"12:45",end:"15:15"}],confBoostMax:0.12,riskTighten:0.90,cooldownMin:15}});
 const STATES=[
   {id:1,name:"Mean-Reverting",  desc:"Range-bound. Fade extremes, keep size disciplined.",       color:"rgba(0,214,143,.85)"},
   {id:2,name:"Liquidity Vacuum",desc:"Thin market. Reduce size, wait for confirmation.",          color:"rgba(255,176,32,.85)"},
@@ -1463,6 +1464,65 @@ const ForecastEngine=(()=>{
 // ║  UNIFIED SIGNAL BUS — Single source of truth for ALL dashboard metrics  ║
 // ║  Every card reads from here. Nothing contradicts anything else.         ║
 // ╚══════════════════════════════════════════════════════════════════════════╝
+
+// ── MARKET BULLY OVERLAY (Option 1: Tactical overlay, never overrides CORE direction) ──
+// Purpose: During high-liquidity windows (London/NY), if CORE edge is soft (Sharpe down / mid-confidence),
+// we allow a small confidence boost when aligned, while tightening risk. This prevents "two engines fighting".
+const MarketBullyOverlay=(()=>{
+  const _pad2=n=>String(n).padStart(2,"0");
+  const _utcMinutes=()=>{
+    const d=new Date();
+    return d.getUTCHours()*60+d.getUTCMinutes();
+  };
+  const _parseHm=hm=>{
+    if(typeof hm!=="string")return null;
+    const m=hm.match(/^(\d{1,2}):(\d{2})$/);
+    if(!m)return null;
+    const h=Math.max(0,Math.min(23,Number(m[1])));
+    const mi=Math.max(0,Math.min(59,Number(m[2])));
+    return h*60+mi;
+  };
+  const _inWindow=(nowMin,startMin,endMin)=>{
+    if(startMin==null||endMin==null)return false;
+    if(endMin>=startMin) return nowMin>=startMin && nowMin<=endMin;
+    // overnight window
+    return nowMin>=startMin || nowMin<=endMin;
+  };
+  function currentSession(cfg){
+    const now=_utcMinutes();
+    const sessions=(cfg?.sessionsUTC)||[];
+    for(const s of sessions){
+      const a=_parseHm(s.start), b=_parseHm(s.end);
+      if(_inWindow(now,a,b)) return s.name||"Session";
+    }
+    return null;
+  }
+  function evaluate({policy,consDir,consConf,agreement,sharpe,eventRisk}){
+    const cfg=settings?.mbOverlay||{};
+    if(!cfg.enabled) return {active:false,session:null,boost:0,riskMult:1.0,reason:"disabled"};
+    const session=currentSession(cfg);
+    if(!session) return {active:false,session:null,boost:0,riskMult:1.0,reason:"out_of_session"};
+    if(!consDir) return {active:false,session,boost:0,riskMult:1.0,reason:"neutral"};
+    if(!Array.isArray(cfg.allowedPolicies) || !cfg.allowedPolicies.includes(policy)) return {active:false,session,boost:0,riskMult:1.0,reason:"policy_gate"};
+    if((eventRisk??0) > (cfg.maxEventRisk??0.60)) return {active:false,session,boost:0,riskMult:1.0,reason:"event_risk"};
+    if((agreement??0) < (cfg.minAgreement??0.45)) return {active:false,session,boost:0,riskMult:1.0,reason:"low_coherence"};
+    const cMin=cfg.confMin??0.35, cMax=cfg.confMax??0.75;
+    const confInBand = (consConf>=cMin && consConf<=cMax);
+    const sharpeSoft = (Number.isFinite(sharpe) ? (sharpe < (cfg.sharpeTrigger??1.0)) : false);
+    if(!(confInBand || sharpeSoft)) return {active:false,session,boost:0,riskMult:1.0,reason:"core_strong"};
+    // boost is small and bounded to avoid "fighting" the core engine
+    let boost=0.05;
+    if(sharpeSoft && Number.isFinite(sharpe) && sharpe<0.5) boost=0.08;
+    // scale boost down if already near top of band
+    const bandPos = (consConf-cMin)/Math.max(1e-9,(cMax-cMin));
+    boost*= (1.0 - clamp(bandPos,0,1)*0.6);
+    boost=clamp(boost,0,(cfg.confBoostMax??0.12));
+    const riskMult=clamp(cfg.riskTighten??0.90,0.50,1.0);
+    return {active:true,session,boost,riskMult,reason:sharpeSoft?"sharpe_soft":"mid_conf"};
+  }
+  return {evaluate,currentSession};
+})();
+
 const SignalBus=(()=>{
   let _state=null;
 
@@ -1583,9 +1643,16 @@ const SignalBus=(()=>{
     consensus.biasAdj=biasAdj;
     consensus.conf=clamp(consensus.conf*biasAdj,0,1);
 
+    // Market Bully Overlay (tactical): small confidence boost + slight risk tighten, never overrides direction
+    const _mbEval=MarketBullyOverlay.evaluate({policy,consDir:consensus.dir,consConf:consensus.conf,agreement:consensus.agreement,sharpe:projStats?.signalPerf?.sharpe,eventRisk:eventRisk||0});
+    if(_mbEval.active){
+      consensus.conf=clamp(consensus.conf*(1+_mbEval.boost),0,1);
+    }
 
     // 2. Resolve risk
     const risk=_resolveRisk({volRegime,policy,eventRisk:eventRisk||0,conviction,calibMult});
+    if(_mbEval.active){risk.mult=clamp(risk.mult*(_mbEval.riskMult||1.0),0.05,1.0);risk.pct=Math.round(risk.mult*100);(risk.reasons||[]).push(`Bully overlay: risk tighten ${Math.round((1-(_mbEval.riskMult||1))*100)}%`);} 
+
 
     // 3. Compute all timeframe forecasts from SAME consensus direction
     const forecasts={};
@@ -1612,6 +1679,7 @@ const SignalBus=(()=>{
 
     _state={
       consensus,risk,forecasts,
+      bullyOverlay:_mbEval,
       overallConviction,convPct,coherence,
       signalSources,alignedSignals,
       policy,volRegime,calibMult,txScore,fxConf,
@@ -1786,7 +1854,7 @@ function leverPaint(barEl,pctEl,val,dir){const pct=Math.round(val*100);if(pctEl)
 function computeProj(step,tx,cm,ba,sa){const base1h={1:6,2:10,3:7,4:12,5:18,6:16,7:14,8:26};const pol=step?.policy||1,volx=step?.features?.volx??1,momBp=bp(step?.features?.mom??0),conf=(step?.conf??.25)*((ba||1)*(sa||1));const volMult=clamp(.75+.18*volx,.65,1.85),txMult=clamp(1.0+.55*tx.intensity,1.0,1.6),eRisk=tx.components.eventInt;const r1Raw=Math.round((base1h[pol]??8)*volMult*txMult*clamp(1.0+.65*eRisk,1,1.7));const r4Raw=Math.round(r1Raw*2.6*clamp(1.0+.35*eRisk,1,1.35));const momDir=Math.tanh(momBp/18),score=clamp(.55*momDir+.75*tx.score,-1,1);const bias=score>=.20?"LONG":score<=-.20?"SHORT":"NEUTRAL";const agree=1-Math.abs(momDir-tx.score)/2,dec=clamp(.35*conf+.45*agree+.20*(1-eRisk*.6),0,1);return{bias,r1:clamp(r1Raw,3,80),r4:clamp(r4Raw,6,160),decPct:Math.round(dec*100),volMult,txMult,eRisk};}
 
 // ── BUILD FULL STATE (MASTER packs everything, READERs unpack and render) ──
-function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba,sa){
+function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba,sa,signalBus,projStats,projLogEntries){
   return{
     spotPrice:spot?.price,spotDelta:spot?.lastDelta,spotSource:spot?.source,spotTs:spot?.ts,
     policy:step.policy,detector:step.detector,conf:step.conf,hold:step.hold,
@@ -1795,7 +1863,7 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba,sa){
     stateName:STATES[step.policy-1]?.name,stateDesc:STATES[step.policy-1]?.desc,
     recentStates:recentSts,TM:step.TM,
     bias:proj.bias,r1:proj.r1,r4:proj.r4,decPct:proj.decPct,volMult:proj.volMult,txMult:proj.txMult,eRisk:proj.eRisk,
-    calibMult:cm,biasConfAdj:ba,sharpeAdj:sa,
+    calibMult:cm,biasConfAdj:ba,sharpeAdj:sa,signalBus:signalBus||null,bullyOverlay:signalBus?.bullyOverlay||null,projStats:projStats||null,projLogEntries:projLogEntries||null,
     pb3Panic:pb3.panic,pb3Bubble:pb3.bubble,pb3Boom:pb3.boom,pb3Bust:pb3.bust,
     pb3Dominant:pb3.dominant,pb3Note:pb3.note,
     archetype:arch.archetype,archConf:arch.confidence,archBias:arch.eurusdBias,archNote:arch.note,archAnalog:arch.analog,
@@ -2198,10 +2266,13 @@ function updateProjAccuracyUI(){
   const pcm=$("paCalibMeta");if(pcm)pcm.textContent=cm>1.05?"Widening cone":cm<0.95?"Tightening cone":"Well-calibrated";
   const ptn=$("paTotalN"),ptm=$("paTotalMeta");if(ptn)ptn.textContent=String(s.total);if(ptm)ptm.textContent=(s.total-s.pending)+" resolved, "+s.pending+" pending";
   const ready=Math.min(s.n1h,s.n4h)>=10;
-  const ps=$("paStatus"),pca=$("paConeAdj"),pba=$("paBiasAdj");
+  const ps=$("paStatus"),pca=$("paConeAdj"),pba=$("paBiasAdj"),pbo=$("paBullyOverlay");
   if(ps)ps.textContent=ready?"Active ("+Math.min(s.n1h,s.n4h)+"+ scored)":"Collecting data (need 10, have "+Math.min(s.n1h,s.n4h)+")";
   if(pca)pca.textContent=cm>1.05?"Widening (+"+Math.round((cm-1)*100)+"%)":cm<0.95?"Tightening (-"+Math.round((1-cm)*100)+"%)":"Neutral";
   if(pba)pba.textContent=ba<0.95?"Reducing weight (-"+Math.round((1-ba)*100)+"%)":ba>1.05?"Increasing weight (+"+Math.round((ba-1)*100)+"%)":"Neutral";
+  // Market Bully overlay status (MASTER computed, READER mirrored)
+  try{const bo=(lastFullState?.bullyOverlay)||(lastFullState?.signalBus?.bullyOverlay);if(pbo){if(bo?.active){const b=Math.round((bo.boost||0)*100);pbo.textContent=`ON (${bo.session||""} +${b}% / risk x${(bo.riskMult||1).toFixed(2)})`;}else{pbo.textContent="Off";}}}catch(e){}
+
   // Mini chips in projection header
   const cmc=$("calibMult"),c15r=$("calib15mRng"),c1r=$("calib1hRng"),c4r=$("calib4hRng"),cn=$("calibN");
   if(cmc)cmc.textContent=cm.toFixed(2);if(c15r)c15r.textContent=fmt(s.rng15mRate);if(c1r)c1r.textContent=fmt(s.rng1hRate);if(c4r)c4r.textContent=fmt(s.rng4hRate);if(cn)cn.textContent=s.total;
@@ -2289,7 +2360,7 @@ async function onSpotUpdate(s){
   const pb3=PB3.compute(step,tx);
   const arch=Classifier.classify(tx);
   ForecastEngine.pushRegime(step.policy);
-  const _projSt=ProjTracker.getStats();_projSt.calibMult=ProjTracker.getCalibMult();_projSt.biasConfAdj=ProjTracker.getBiasConfAdj();_projSt.sharpeAdj=ProjTracker.getSharpeAdj();
+  const _projSt=ProjTracker.getStats();_projSt.calibMult=ProjTracker.getCalibMult();_projSt.biasConfAdj=ProjTracker.getBiasConfAdj();_projSt.sharpeAdj=ProjTracker.getSharpeAdj();_projSt.signalPerf=ProjTracker.getSignalPerf(s.price,30);
   const _q=QuantEngine.compute(step,tx,pb3);
   updateQuantUI(_q);
   // Unified Signal Bus — synthesise once, all cards read from this
@@ -2305,7 +2376,7 @@ async function onSpotUpdate(s){
   updateForecastUI(_dailyF,_weeklyF);
   drawTickChart(QuantEngine.getPrices());
   {const fp=$('fxSpotPrice');if(fp){fp.classList.remove('pricePulse');void fp.offsetWidth;fp.classList.add('pricePulse');}}
-  const fullState=buildFullState(step,tx,proj,pb3,arch,s,recentStates,cm,ba,sa);
+  const fullState=buildFullState(step,tx,proj,pb3,arch,s,recentStates,cm,ba,sa,_bus,_projSt,ProjTracker.getLog());
   lastFullState=fullState;
   applyFullStateToUI(fullState);
   // Signal performance now derived from projection logs (15m outcomes)
