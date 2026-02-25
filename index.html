@@ -675,10 +675,10 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
     </div>
     <div style="display:flex;gap:9px;margin-top:9px;flex-wrap:wrap">
       <span class="tagOk">Calib x<span id="calibMult">1.00</span></span>
-      <span class="tagOk">1h Dir <span id="calib1hDir">--%</span></span>
+      
       <span class="tagOk">1h Rng <span id="calib1hRng">--%</span></span>
-      <span class="tagOk">4h Dir <span id="calib4hDir">--%</span></span>
-      <span class="tagOk">4h Rng <span id="calib4hRng">--%</span></span>
+      
+      
       <span class="tagOk">n=<span id="calibN">0</span></span>
     </div>
     <div class="coneWrap"><canvas id="coneCanvas"></canvas></div>
@@ -704,9 +704,7 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
   <div class="card"><div class="inner">
     <div class="card-title"><h2>Projection Accuracy &middot; Adaptive Learning</h2><div class="hint">Every LONG/SHORT call is scored at 1h and 4h. Hit rates drive cone width calibration and bias confidence weighting. Engine self-improves over time.</div></div>
     <div class="paGrid" style="grid-template-columns:repeat(4,1fr)">
-      <div class="paBox"><div class="k">15m Direction Hit</div><div class="v" id="pa15mDir">--</div><div class="meta" id="pa15mDirMeta">n=0 scored</div></div>
       <div class="paBox"><div class="k">15m Range Hit</div><div class="v" id="pa15mRng">--</div><div class="meta" id="pa15mRngMeta">Target 60–80%</div></div>
-      <div class="paBox"><div class="k">1h Direction Hit</div><div class="v" id="pa1hDir">--</div><div class="meta" id="pa1hDirMeta">n=0 scored</div></div>
       <div class="paBox"><div class="k">1h Range Hit</div><div class="v" id="pa1hRng">--</div><div class="meta" id="pa1hRngMeta">Target 60–80%</div></div>
       <div class="paBox"><div class="k">Calibration Mult</div><div class="v" id="paCalibMult">1.00x</div><div class="meta" id="paCalibMeta">Cone width factor</div></div>
       <div class="paBox"><div class="k">Logged / Resolved</div><div class="v" id="paTotalN">0</div><div class="meta" id="paTotalMeta">0 resolved, 0 pending</div></div>
@@ -718,7 +716,7 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
     </div>
     <div class="paLog">
       <div class="paLogLabel">Recent projection log &mdash; last 20 calls</div>
-      <div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Date</th><th>Entry</th><th>Exit</th><th>Bias</th><th>15m Rng</th><th>15m D</th><th>15m R</th><th>1h Rng</th><th>1h D</th><th>1h R</th><th>4h Rng</th><th>4h D</th><th>4h R</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
+      <div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Date</th><th>Entry</th><th>Exit</th><th>Bias</th><th>15m Range</th><th>15m Result</th><th>1h Range</th><th>1h Result</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
     </div>
     <div class="smallNote" style="margin-top:6px">Scores resolve automatically. 1h outcomes scored at +60min, 4h at +240min. Need 10+ resolved before multiplier adapts.</div>
 
@@ -731,7 +729,7 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
           <div style="margin-top:4px">
             <div class="alRow"><span class="alLabel">1h Range Hit Target</span><span class="alVal" id="alRngTarget1h">60-80%</span></div>
             <div class="alRow"><span class="alLabel">Current 1h Hit</span><span class="alVal" id="alRngCurrent1h">--</span></div>
-            <div class="alRow"><span class="alLabel">4h Range Hit Target</span><span class="alVal" id="alRngTarget4h">60-80%</span></div>
+            
             <div class="alRow"><span class="alLabel">Current 4h Hit</span><span class="alVal" id="alRngCurrent4h">--</span></div>
             <div class="alRow"><span class="alLabel">Cone Adjustment</span><span class="alVal" id="alConeAction">Neutral</span></div>
           </div>
@@ -1864,19 +1862,12 @@ function applyFullStateToUI(st){
   if(FirebaseSync.isReader&&st.projTotal!=null){
     const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
     const setV=(id,v,ok,bad)=>{const el=$(id);if(!el)return;el.textContent=v;el.classList.remove("pos","neg");if(ok)el.classList.add("pos");else if(bad)el.classList.add("neg");};
-    setV("pa15mDir",fmt(st.projDir15m),(st.projDir15m||0)>=0.55,(st.projDir15m!=null)&&st.projDir15m<0.45);
     setV("pa15mRng",fmt(st.projRng15m),(st.projRng15m||0)>=0.60&&(st.projRng15m||0)<=0.82,false);
-    const p15dm=$("pa15mDirMeta");if(p15dm)p15dm.textContent="n="+(st.projN15m||0)+" scored";
-    setV("pa1hDir",fmt(st.projDir1h),st.projDir1h>=0.55,st.projDir1h!=null&&st.projDir1h<0.45);
     setV("pa1hRng",fmt(st.projRng1h),st.projRng1h>=0.60&&st.projRng1h<=0.82,false);
-    setV("pa4hDir",fmt(st.projDir4h),st.projDir4h>=0.55,st.projDir4h!=null&&st.projDir4h<0.45);
-    setV("pa4hRng",fmt(st.projRng4h),st.projRng4h>=0.60&&st.projRng4h<=0.82,false);
     setV("paCalibMult",(st.projCalibMult||1).toFixed(3)+"x",Math.abs((st.projCalibMult||1)-1)<0.05,false);
     const ptn=$("paTotalN"),ptm=$("paTotalMeta");
     if(ptn)ptn.textContent=String(st.projTotal||0);
     if(ptm)ptm.textContent=((st.projTotal||0)-(st.projPending||0))+" resolved, "+(st.projPending||0)+" pending";
-    const p1dm=$("pa1hDirMeta");if(p1dm)p1dm.textContent="n="+(st.projN1h||0)+" scored";
-    const p4dm=$("pa4hDirMeta");if(p4dm)p4dm.textContent="n="+(st.projN4h||0)+" scored";
     const ready=Math.min(st.projN1h||0,st.projN4h||0)>=5;
     const ps=$("paStatus");if(ps)ps.textContent=ready?"Active from MASTER":"Collecting on MASTER ("+Math.min(st.projN1h||0,st.projN4h||0)+"/5)";
     const pca=$("paConeAdj"),cm=st.projCalibMult||1;
@@ -1897,17 +1888,12 @@ function applyFullStateToUI(st){
           return"<tr>"
             +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
             +"<td style='font-family:var(--mono);font-size:10px'>"+(p.spot?p.spot.toFixed(5):"--")+"</td>"
-            +"<td style='font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.55)'>"+(exitSpot?exitSpot.toFixed(5):"pend")+"</td>"
+            +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+(exitSpot?exitSpot.toFixed(5):"pend")+"</td>"
             +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
             +"<td style='font-family:var(--mono)'>±"+r15+"p</td>"
-            +"<td class='"+cls(d15?.dirHit??null)+"'>"+dtxt(d15)+"</td>"
             +"<td class='"+cls(d15?.rngHit??null)+"'>"+rtxt(d15)+"</td>"
             +"<td style='font-family:var(--mono)'>±"+p.r1+"p</td>"
-            +"<td class='"+cls(d1?.dirHit??null)+"'>"+dtxt(d1)+"</td>"
             +"<td class='"+cls(d1?.rngHit??null)+"'>"+rtxt(d1)+"</td>"
-            +"<td style='font-family:var(--mono)'>±"+p.r4+"p</td>"
-            +"<td class='"+cls(d4?.dirHit??null)+"'>"+dtxt(d4)+"</td>"
-            +"<td class='"+cls(d4?.rngHit??null)+"'>"+rtxt(d4)+"</td>"
             +"</tr>";
         }).join("");
       }
@@ -2139,15 +2125,8 @@ function updateProjAccuracyUI(){
   const s=ProjTracker.getStats(),cm=ProjTracker.getCalibMult(),ba=ProjTracker.getBiasConfAdj();
   const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
   const setV=(id,v,ok,bad)=>{const el=$(id);if(!el)return;el.textContent=v;el.classList.remove("pos","neg");if(ok)el.classList.add("pos");else if(bad)el.classList.add("neg");};
-  setV("pa15mDir",fmt(s.dir15mRate),s.dir15mRate>=0.55,s.dir15mRate!=null&&s.dir15mRate<0.45);
-  const p15dm=$("pa15mDirMeta");if(p15dm)p15dm.textContent="n="+(s.n15m||0)+" scored";
   setV("pa15mRng",fmt(s.rng15mRate),s.rng15mRate>=0.60&&s.rng15mRate<=0.82,false);
-  setV("pa1hDir",fmt(s.dir1hRate),s.dir1hRate>=0.55,s.dir1hRate!=null&&s.dir1hRate<0.45);
-  const p1dm=$("pa1hDirMeta");if(p1dm)p1dm.textContent="n="+s.n1h+" scored";
   setV("pa1hRng",fmt(s.rng1hRate),s.rng1hRate>=0.60&&s.rng1hRate<=0.82,s.rng1hRate!=null&&(s.rng1hRate<0.45||s.rng1hRate>0.88));
-  setV("pa4hDir",fmt(s.dir4hRate),s.dir4hRate>=0.55,s.dir4hRate!=null&&s.dir4hRate<0.45);
-  const p4dm=$("pa4hDirMeta");if(p4dm)p4dm.textContent="n="+s.n4h+" scored";
-  setV("pa4hRng",fmt(s.rng4hRate),s.rng4hRate>=0.60&&s.rng4hRate<=0.82,s.rng4hRate!=null&&(s.rng4hRate<0.45||s.rng4hRate>0.88));
   setV("paCalibMult",cm.toFixed(3)+"x",Math.abs(cm-1)<0.05,false);
   const pcm=$("paCalibMeta");if(pcm)pcm.textContent=cm>1.05?"Widening cone":cm<0.95?"Tightening cone":"Well-calibrated";
   const ptn=$("paTotalN"),ptm=$("paTotalMeta");if(ptn)ptn.textContent=String(s.total);if(ptm)ptm.textContent=(s.total-s.pending)+" resolved, "+s.pending+" pending";
@@ -2157,8 +2136,8 @@ function updateProjAccuracyUI(){
   if(pca)pca.textContent=cm>1.05?"Widening (+"+Math.round((cm-1)*100)+"%)":cm<0.95?"Tightening (-"+Math.round((1-cm)*100)+"%)":"Neutral";
   if(pba)pba.textContent=ba<0.95?"Reducing weight (-"+Math.round((1-ba)*100)+"%)":ba>1.05?"Increasing weight (+"+Math.round((ba-1)*100)+"%)":"Neutral";
   // Mini chips in projection header
-  const cmc=$("calibMult"),c1d=$("calib1hDir"),c1r=$("calib1hRng"),c4d=$("calib4hDir"),c4r=$("calib4hRng"),cn=$("calibN");
-  if(cmc)cmc.textContent=cm.toFixed(2);if(c1d)c1d.textContent=fmt(s.dir1hRate);if(c1r)c1r.textContent=fmt(s.rng1hRate);if(c4d)c4d.textContent=fmt(s.dir4hRate);if(c4r)c4r.textContent=fmt(s.rng4hRate);if(cn)cn.textContent=s.total;
+  const cmc=$("calibMult"),c15r=$("calib15mRng"),c1r=$("calib1hRng"),cn=$("calibN");
+  if(cmc)cmc.textContent=cm.toFixed(2);if(c15r)c15r.textContent=fmt(s.rng15mRate);if(c1r)c1r.textContent=fmt(s.rng1hRate);if(cn)cn.textContent=s.total;
   // Log table
   const plb=$("paLogBody");if(!plb)return;
   const log=ProjTracker.getLog();
@@ -2174,17 +2153,12 @@ function updateProjAccuracyUI(){
     return"<tr>"
       +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
       +"<td style='font-family:var(--mono);font-size:10px'>"+( p.spot?p.spot.toFixed(5):"--")+"</td>"
-      +"<td style='font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.55)'>"+(exitSpot?exitSpot.toFixed(5):"pend")+"</td>"
+      +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+(exitSpot?exitSpot.toFixed(5):"pend")+"</td>"
       +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
       +"<td style='font-family:var(--mono)'>±"+r15+"p</td>"
-      +"<td class='"+cls(d15?.dirHit??null)+"'>"+dtxt(d15)+"</td>"
       +"<td class='"+cls(d15?.rngHit??null)+"'>"+rtxt(d15)+"</td>"
       +"<td style='font-family:var(--mono)'>±"+p.r1+"p</td>"
-      +"<td class='"+cls(d1?.dirHit??null)+"'>"+dtxt(d1)+"</td>"
       +"<td class='"+cls(d1?.rngHit??null)+"'>"+rtxt(d1)+"</td>"
-      +"<td style='font-family:var(--mono)'>±"+p.r4+"p</td>"
-      +"<td class='"+cls(d4?.dirHit??null)+"'>"+dtxt(d4)+"</td>"
-      +"<td class='"+cls(d4?.rngHit??null)+"'>"+rtxt(d4)+"</td>"
       +"</tr>";
   }).join("");
 }
