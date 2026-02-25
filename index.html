@@ -755,7 +755,7 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
 
   </div></div>
   <div class="card"><div class="inner">
-    <div class="card-title"><h2>Signal Performance &middot; Rolling Sharpe</h2><div class="hint">Hypothetical P&amp;L on live bias signals. Sharpe annualized. Target 2.5. Needs 20+ closed signals.</div></div>
+    <div class="card-title"><h2>Signal Performance &middot; Rolling Sharpe</h2><div class="hint">Derived from projection log outcomes (15m). Sharpe annualized. Target 2.5. Needs 20+ closed signals.</div></div>
     <div class="sharpeGrid">
       <div class="sharpeBox"><div class="k">Rolling Sharpe</div><div class="v" id="sharpeVal">--</div><div class="meta" id="sharpeMeta">Target: 2.5</div></div>
       <div class="sharpeBox"><div class="k">Win Rate</div><div class="v" id="winRateVal">--</div><div class="meta" id="winRateMeta">0 signals</div></div>
@@ -936,7 +936,7 @@ const KEY={s:"qx_s_v5",sg:"qx_sg_v1",rh:"qx_rh_v3",proj:"qx_proj_v1"};
 function loadObj(k,fb){try{const r=localStorage.getItem(k);if(!r)return fb;const p=JSON.parse(r);return(p&&typeof p==="object")?p:fb;}catch{return fb;}}
 function loadArr(k,fb){try{const r=localStorage.getItem(k);if(!r)return fb;const p=JSON.parse(r);return Array.isArray(p)?p:fb;}catch{return fb;}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
-let settings=loadObj(KEY.s,{twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbUrl:"",fbRole:"AUTO",calibMult:1.0,biasConfAdj:1.0});
+let settings=loadObj(KEY.s,{twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbUrl:"",fbRole:"AUTO",calibMult:1.0,biasConfAdj:1.0,sharpeAdj:1.0});
 const STATES=[
   {id:1,name:"Mean-Reverting",  desc:"Range-bound. Fade extremes, keep size disciplined.",       color:"rgba(0,214,143,.85)"},
   {id:2,name:"Liquidity Vacuum",desc:"Thin market. Reduce size, wait for confirmation.",          color:"rgba(255,176,32,.85)"},
@@ -1107,6 +1107,43 @@ const ProjTracker=(()=>{
   let log=loadArr(KEY.proj,[]).slice(-200).map(p=>({outcome15m:null,...p})); // normalize: add outcome15m if missing from old entries
   let calibMult=Number(settings.calibMult)||1.0;
   let biasConfAdj=Number(settings.biasConfAdj)||1.0;
+  let sharpeAdj=Number(settings.sharpeAdj)||1.0
+  // Signal performance derived from projection outcomes (15m by default).
+  // This ensures MASTER and READER share identical performance metrics because they are computed from the same logged calls.
+  const PERIODS_PER_YEAR_15M = 252*96; // 15-minute periods in a 24h FX market
+  function _rollingSharpe(returns, periodsPerYear){
+    const arr = returns.filter(x=>Number.isFinite(x));
+    const n = arr.length;
+    if(n < 2) return null;
+    const mean = arr.reduce((a,b)=>a+b,0)/n;
+    const v = arr.reduce((s,x)=>s+(x-mean)**2,0)/(n-1);
+    const std = Math.sqrt(v);
+    if(std <= 0) return null;
+    return (mean/std) * Math.sqrt(periodsPerYear||PERIODS_PER_YEAR_15M);
+  }
+  function getSignalPerf(currentSpot, window=30){
+    const p = Number(currentSpot);
+    const resolved = log.filter(x=>x?.outcome15m && Number.isFinite(x.outcome15m.movePips));
+    const pnl = resolved.map(x => (x.bias==="LONG"?1:-1) * Number(x.outcome15m.movePips));
+    const roll = pnl.slice(-window);
+    const sharpe = _rollingSharpe(roll, PERIODS_PER_YEAR_15M);
+    const closedN = roll.length;
+    const wins = roll.filter(x=>x>0).length;
+    const losses = roll.filter(x=>x<0).length;
+    const winRate = (wins+losses)>0 ? wins/(wins+losses) : null;
+    const closedPips = roll.reduce((a,b)=>a+b,0);
+
+    // Open P&L: include projections not yet scored at 15m (age < 15m) using current spot.
+    let openPL = null;
+    if(Number.isFinite(p)){
+      const now = Date.now();
+      const open = log.filter(x => x && x.outcome15m==null && ((now-x.ts)/60000) < 15);
+      const openPnl = open.map(x => (x.bias==="LONG"?1:-1) * ((p - Number(x.spot))*10000));
+      openPL = openPnl.length ? openPnl.reduce((a,b)=>a+b,0) : 0;
+    }
+    return {sharpe, winRate, openPL, closedN, closedPips, window};
+  }
+;
 
   function logProjection({spot,bias,r1,r4,r15,policy}){
     if(!spot||bias==="NEUTRAL")return;
@@ -1129,7 +1166,7 @@ const ProjTracker=(()=>{
       if(p.outcome1h===null&&ageMins>=60){p.outcome1h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r1,movePips,exitSpot:currentSpot};changed=true;}
       if(p.outcome4h===null&&ageMins>=240){p.outcome4h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r4,movePips,ageMins};changed=true;}
     });
-    if(changed){_adapt();_persist();}
+    if(changed){_adapt(currentSpot);_persist();}
   }
 
   function _stats(){
@@ -1149,7 +1186,7 @@ const ProjTracker=(()=>{
     };
   }
 
-  function _adapt(){
+  function _adapt(currentSpot){
     const s=_stats();
     // CONE: target range hit rate 60-80%. Outside that range -> adjust
     if(s.n1h>=MIN_N&&s.rng1hRate!=null){
@@ -1161,15 +1198,31 @@ const ProjTracker=(()=>{
       if(s.dir1hRate<0.48)biasConfAdj=clamp(biasConfAdj*0.94,0.20,1.60);
       else if(s.dir1hRate>0.62)biasConfAdj=clamp(biasConfAdj*1.04,0.20,1.60);
     }
+
+    // SIGNAL PERFORMANCE (rolling Sharpe) derived from projection outcomes (15m).
+    // Strong Sharpe -> allow slightly higher confidence; weak Sharpe -> dampen.
+    try{
+      const sp=getSignalPerf(currentSpot,30);
+      const sh=sp?.sharpe;
+      const nSig=sp?.closedN||0;
+      if(Number.isFinite(sh) && nSig>=20){
+        if(sh<0.50)sharpeAdj=clamp(sharpeAdj*0.95,0.50,1.50);
+        else if(sh>2.50)sharpeAdj=clamp(sharpeAdj*1.03,0.50,1.50);
+      }else{
+        sharpeAdj=clamp(sharpeAdj*0.995+0.005,0.50,1.50);
+      }
+    }catch(e){}
+
     calibMult=Math.round(calibMult*1000)/1000;
     biasConfAdj=Math.round(biasConfAdj*1000)/1000;
-    settings.calibMult=calibMult;settings.biasConfAdj=biasConfAdj;
+    sharpeAdj=Math.round(sharpeAdj*1000)/1000;
+    settings.calibMult=calibMult;settings.biasConfAdj=biasConfAdj;settings.sharpeAdj=sharpeAdj;
     save(KEY.s,settings);
   }
 
   function _persist(){save(KEY.proj,log.slice(-200));}
-  function reset(){log=[];calibMult=1.0;biasConfAdj=1.0;settings.calibMult=1.0;settings.biasConfAdj=1.0;save(KEY.s,settings);save(KEY.proj,[]);updateProjAccuracyUI();}
-  return{logProjection,scoreOutcomes,getStats:_stats,getCalibMult:()=>calibMult,getBiasConfAdj:()=>biasConfAdj,getLog:()=>log.slice(-20).reverse(),reset};
+  function reset(){log=[];calibMult=1.0;biasConfAdj=1.0;sharpeAdj=1.0;settings.calibMult=1.0;settings.biasConfAdj=1.0;settings.sharpeAdj=1.0;save(KEY.s,settings);save(KEY.proj,[]);updateProjAccuracyUI();}
+  return{logProjection,scoreOutcomes,getStats:_stats,getSignalPerf,getCalibMult:()=>calibMult,getBiasConfAdj:()=>biasConfAdj,getSharpeAdj:()=>sharpeAdj,getLog:()=>log.slice(-20).reverse(),reset};
 })();
 
 
@@ -1525,6 +1578,12 @@ const SignalBus=(()=>{
     // 1. Resolve SINGLE consensus direction — used by ALL cards
     const consensus=_resolveDirection({policy,txScore,fxConf,hurst,ac1,momScore,conviction});
 
+    // Adaptive learning: scale direction confidence by projection hit-rate adjustment AND rolling Sharpe quality.
+    const biasAdj=clamp((projStats?.biasConfAdj||1.0)*(projStats?.sharpeAdj||1.0),0.50,1.50);
+    consensus.biasAdj=biasAdj;
+    consensus.conf=clamp(consensus.conf*biasAdj,0,1);
+
+
     // 2. Resolve risk
     const risk=_resolveRisk({volRegime,policy,eventRisk:eventRisk||0,conviction,calibMult});
 
@@ -1724,10 +1783,10 @@ function computeTx(){
   const gbpChg=gbp?.changePct??null,audChg=aud?.changePct??null,nzdChg=nzd?.changePct??null;
   return{score,intensity,bias,fxConf,fxInt,gbpChg,audChg,nzdChg,components:{oilInt,usdInt,fearInt,silvInt,eventInt:eRisk,fxInt}};}
 function leverPaint(barEl,pctEl,val,dir){const pct=Math.round(val*100);if(pctEl)pctEl.textContent=pct+"%";if(barEl){barEl.style.width=clamp(pct,0,100)+"%";barEl.style.background=dir==="bad"?"rgba(255,71,87,.82)":dir==="good"?"rgba(0,214,143,.82)":"rgba(41,121,255,.78)";}}
-function computeProj(step,tx,cm,ba){const base1h={1:6,2:10,3:7,4:12,5:18,6:16,7:14,8:26};const pol=step?.policy||1,volx=step?.features?.volx??1,momBp=bp(step?.features?.mom??0),conf=(step?.conf??.25)*(ba||1);const volMult=clamp(.75+.18*volx,.65,1.85),txMult=clamp(1.0+.55*tx.intensity,1.0,1.6),eRisk=tx.components.eventInt;const r1Raw=Math.round((base1h[pol]??8)*volMult*txMult*clamp(1.0+.65*eRisk,1,1.7));const r4Raw=Math.round(r1Raw*2.6*clamp(1.0+.35*eRisk,1,1.35));const momDir=Math.tanh(momBp/18),score=clamp(.55*momDir+.75*tx.score,-1,1);const bias=score>=.20?"LONG":score<=-.20?"SHORT":"NEUTRAL";const agree=1-Math.abs(momDir-tx.score)/2,dec=clamp(.35*conf+.45*agree+.20*(1-eRisk*.6),0,1);return{bias,r1:clamp(r1Raw,3,80),r4:clamp(r4Raw,6,160),decPct:Math.round(dec*100),volMult,txMult,eRisk};}
+function computeProj(step,tx,cm,ba,sa){const base1h={1:6,2:10,3:7,4:12,5:18,6:16,7:14,8:26};const pol=step?.policy||1,volx=step?.features?.volx??1,momBp=bp(step?.features?.mom??0),conf=(step?.conf??.25)*((ba||1)*(sa||1));const volMult=clamp(.75+.18*volx,.65,1.85),txMult=clamp(1.0+.55*tx.intensity,1.0,1.6),eRisk=tx.components.eventInt;const r1Raw=Math.round((base1h[pol]??8)*volMult*txMult*clamp(1.0+.65*eRisk,1,1.7));const r4Raw=Math.round(r1Raw*2.6*clamp(1.0+.35*eRisk,1,1.35));const momDir=Math.tanh(momBp/18),score=clamp(.55*momDir+.75*tx.score,-1,1);const bias=score>=.20?"LONG":score<=-.20?"SHORT":"NEUTRAL";const agree=1-Math.abs(momDir-tx.score)/2,dec=clamp(.35*conf+.45*agree+.20*(1-eRisk*.6),0,1);return{bias,r1:clamp(r1Raw,3,80),r4:clamp(r4Raw,6,160),decPct:Math.round(dec*100),volMult,txMult,eRisk};}
 
 // ── BUILD FULL STATE (MASTER packs everything, READERs unpack and render) ──
-function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba){
+function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba,sa){
   return{
     spotPrice:spot?.price,spotDelta:spot?.lastDelta,spotSource:spot?.source,spotTs:spot?.ts,
     policy:step.policy,detector:step.detector,conf:step.conf,hold:step.hold,
@@ -1736,7 +1795,7 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba){
     stateName:STATES[step.policy-1]?.name,stateDesc:STATES[step.policy-1]?.desc,
     recentStates:recentSts,TM:step.TM,
     bias:proj.bias,r1:proj.r1,r4:proj.r4,decPct:proj.decPct,volMult:proj.volMult,txMult:proj.txMult,eRisk:proj.eRisk,
-    calibMult:cm,biasConfAdj:ba,
+    calibMult:cm,biasConfAdj:ba,sharpeAdj:sa,
     pb3Panic:pb3.panic,pb3Bubble:pb3.bubble,pb3Boom:pb3.boom,pb3Bust:pb3.bust,
     pb3Dominant:pb3.dominant,pb3Note:pb3.note,
     archetype:arch.archetype,archConf:arch.confidence,archBias:arch.eurusdBias,archNote:arch.note,archAnalog:arch.analog,
@@ -1765,7 +1824,7 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba){
 }
 // Inject signal stats + projection data into state for READER rendering
 function injectSignalStats(state,sigStats){
-  state.sigSharpe=sigStats.sharpe;state.sigWinRate=sigStats.winRate;state.sigOpenPL=sigStats.openPL;
+  state.sigSharpe=sigStats.sharpe;state.sigWinRate=sigStats.winRate;state.sigOpenPL=sigStats.openPL;state.sigTotalSignals=sigStats.closedN||0;state.sigTotalPips=sigStats.closedPips||0;state.sigOpenBias=null;state.sigEquity=null;
   state.sigTotalPips=sigStats.totalPips;state.sigOpenBias=sigStats.openBias;state.sigTotalSignals=sigStats.totalSignals;
   state.sigEquity=sigStats.equity.slice(-60);
   // Full projection stats — all timeframes including 15m
@@ -1776,6 +1835,7 @@ function injectSignalStats(state,sigStats){
   state.projTotal=projS.total;state.projPending=projS.pending;
   state.projCalibMult=ProjTracker.getCalibMult();
   state.projBiasAdj=ProjTracker.getBiasConfAdj();
+  state.projSharpeAdj=ProjTracker.getSharpeAdj();
   // Send last 30 log entries so READERs can render the projection log table identically
   state.projLogEntries=ProjTracker.getLog().slice(-30);
   return state;
@@ -1940,8 +2000,7 @@ function applyFullStateToUI(st){
   // Signal Performance: if state has signal stats (from MASTER), render them
   // This gives READER identical signal display to MASTER
   if(st.sigEquity!=null){
-    updateSharpeUI({sharpe:st.sigSharpe,winRate:st.sigWinRate,openPL:st.sigOpenPL,
-      totalPips:st.sigTotalPips||0,openBias:st.sigOpenBias,totalSignals:st.sigTotalSignals||0,equity:st.sigEquity||[0]});
+    updateSharpeUI({sharpe:st.sigSharpe,winRate:st.sigWinRate,openPL:st.sigOpenPL,totalPips:st.sigTotalPips||0,totalSignals:st.sigTotalSignals||0});
   }
   // FX pair confluence chips in transmission
   const fxcEl=$("fxConfChip"),fxiEl=$("fxIntChip");
@@ -2195,7 +2254,7 @@ function setRisk(pol,cf){const MAP={1:["NORMAL","Range logic. Fade extremes."],2
 function setFxStatus(st){const fs=$("fxSpotStatus"),fd=$("fxStatusDot");if(fs)fs.textContent=st;if(fd){fd.classList.remove("live","err");if(st==="LIVE")fd.classList.add("live");else if(st==="ERROR"||st==="STALE")fd.classList.add("err");}}
 function updateSessionUI(){const{openSessions,primary,isOverlap,dayInfo,minsLeft}=SessionEngine.compute();SessionEngine.SESS.forEach(s=>{const box=$("sb_"+s.id),st=$("ss_"+s.id);if(!box||!st)return;const isOpen=openSessions.includes(s.id),isOL=isOverlap&&(s.id==="LONDON"||s.id==="NEW_YORK");box.style.borderColor=isOpen?s.color.replace(/[\d.]+\)$/,"0.40)"):"rgba(180,220,255,.10)";box.style.background=isOpen?s.color.replace(/[\d.]+\)$/,"0.07)"):"rgba(8,20,52,.22)";st.textContent=isOL?"Overlap":isOpen?"Open":"Closed";st.className="sStat "+(isOL?"overlap":isOpen?"open":"closed");});const cdn=$("currentDayName"),csl=$("currentSessionLabel"),den=$("dayEffectNote"),sob=$("sessionOverlapBadge"),sml=$("sessionMinsLeft");if(cdn)cdn.textContent=dayInfo.name;if(csl)csl.textContent=primary?"Session: "+primary.label:"Session: Closed";if(den)den.textContent=dayInfo.effect;if(sob){sob.textContent=isOverlap?"LDN/NY OVERLAP - Highest Vol":openSessions.length?openSessions.join("+")+" Open":"All sessions closed";sob.style.color=isOverlap?"rgba(100,180,255,.92)":"rgba(255,255,255,.58)";}if(sml)sml.textContent=minsLeft!=null?"~"+minsLeft+"m left":"";}
 function updateWarmupBadge(tickN,warmed){if(FirebaseSync.isReader||FirebaseSync.isAutoFollower)return;const sb=$("syncBadge");if(!sb)return;if(!warmed){sb.className="syncBadge warming";sb.innerHTML='<span class="dot amber"></span><span>Warming '+tickN+"/"+Engine.WARMUP+"</span>";}else{sb.className="syncBadge synced";sb.innerHTML='<span class="dot"></span><span>SYNCED (det)</span>';}}
-function updateSharpeUI(stats){const sv=$("sharpeVal"),sm=$("sharpeMeta");if(sv&&sm){if(stats.sharpe!=null&&Number.isFinite(stats.sharpe)){sv.textContent=stats.sharpe.toFixed(2);sv.classList.remove("pos","neg");if(stats.sharpe>=2.5)sv.classList.add("pos");else if(stats.sharpe<0)sv.classList.add("neg");sm.textContent=stats.sharpe>=2.5?"Target met":"Below target 2.5";}else{sv.textContent="--";sm.textContent="Need >=20 signals ("+stats.totalSignals+")";}}const wr=$("winRateVal"),wrm=$("winRateMeta");if(wr&&wrm){if(stats.winRate!=null){wr.textContent=Math.round(stats.winRate*100)+"%";wr.classList.remove("pos","neg");if(stats.winRate>=.55)wr.classList.add("pos");else if(stats.winRate<.40)wr.classList.add("neg");wrm.textContent=stats.totalSignals+" closed signals";}else{wr.textContent="--";wrm.textContent="No closed signals";}}const pl=$("openPLVal"),plm=$("openPLMeta");if(pl&&plm){if(stats.openPL!=null){pl.textContent=(stats.openPL>=0?"+":"")+stats.openPL.toFixed(1)+" p";pl.classList.remove("pos","neg");if(stats.openPL>0)pl.classList.add("pos");else if(stats.openPL<0)pl.classList.add("neg");plm.textContent=stats.openBias?"Open "+stats.openBias:"--";}else{pl.textContent="--";plm.textContent="No open signal";}}const cp=$("cumPipsVal");if(cp){cp.textContent=(stats.totalPips>=0?"+":"")+stats.totalPips.toFixed(1)+" p";cp.classList.remove("pos","neg");if(stats.totalPips>0)cp.classList.add("pos");else if(stats.totalPips<0)cp.classList.add("neg");}const fs=$("footSharpe");if(fs)fs.textContent=stats.sharpe!=null?stats.sharpe.toFixed(2):"--";drawEquity(stats.equity.length>=2?stats.equity:[0,0]);}
+function updateSharpeUI(stats){const sv=$("sharpeVal"),sm=$("sharpeMeta");if(sv&&sm){if(stats.sharpe!=null&&Number.isFinite(stats.sharpe)){sv.textContent=stats.sharpe.toFixed(2);sv.classList.remove("pos","neg");if(stats.sharpe>=2.5)sv.classList.add("pos");else if(stats.sharpe<0)sv.classList.add("neg");sm.textContent=stats.sharpe>=2.5?"Target met":"Below target 2.5";}else{sv.textContent="--";sm.textContent="Need >=20 scored calls ("+stats.totalSignals+")";}}const wr=$("winRateVal"),wrm=$("winRateMeta");if(wr&&wrm){if(stats.winRate!=null){wr.textContent=Math.round(stats.winRate*100)+"%";wr.classList.remove("pos","neg");if(stats.winRate>=.55)wr.classList.add("pos");else if(stats.winRate<.40)wr.classList.add("neg");wrm.textContent=stats.totalSignals+" closed signals";}else{wr.textContent="--";wrm.textContent="No closed signals";}}const pl=$("openPLVal"),plm=$("openPLMeta");if(pl&&plm){if(stats.openPL!=null){pl.textContent=(stats.openPL>=0?"+":"")+stats.openPL.toFixed(1)+" p";pl.classList.remove("pos","neg");if(stats.openPL>0)pl.classList.add("pos");else if(stats.openPL<0)pl.classList.add("neg");plm.textContent="Open P&L (unscored 15m)";}else{pl.textContent="--";plm.textContent="No open signal";}}const cp=$("cumPipsVal");if(cp){cp.textContent=(stats.totalPips>=0?"+":"")+stats.totalPips.toFixed(1)+" p";cp.classList.remove("pos","neg");if(stats.totalPips>0)cp.classList.add("pos");else if(stats.totalPips<0)cp.classList.add("neg");}const fs=$("footSharpe");if(fs)fs.textContent=stats.sharpe!=null?stats.sharpe.toFixed(2):"--";drawEquity(stats.equity.length>=2?stats.equity:[0,0]);}
 function updateCorrUI(corrs){const assets=[{key:"OIL",label:"Brent (BZ=F)",dir:"Negative"},{key:"GOLD",label:"Gold COMEX (GC=F)",dir:"Positive"},{key:"SILV",label:"Silver COMEX (SI=F)",dir:"Positive"},{key:"USD",label:"DXY (DX-Y.NYB)",dir:"Negative"},{key:"GBP",label:"GBP/USD",dir:"Positive (r≈80-95%)"},{key:"AUD",label:"AUD/USD",dir:"Positive (r≈70-90%)"},{key:"NZD",label:"NZD/USD",dir:"Positive (r≈65-85%)"}];const cb=$("corrBody");if(!cb)return;cb.innerHTML=assets.map(a=>{const c=corrs[a.key]||{r:0,tStat:0,n:0,sig:"ns"};const rStr=c.n>=5?c.r.toFixed(3):"--",tStr=c.n>=5?c.tStat.toFixed(2):"--";const sigClass=c.sig==="**"?"sig2":c.sig==="*"?"sig1":"sigNS";const rClass=c.r>.05?"corrPos":c.r<-.05?"corrNeg":"";return"<tr><td>"+a.label+"</td><td class='"+rClass+"'>"+rStr+"</td><td>"+tStr+"</td><td class='"+sigClass+"'>"+c.sig+"</td><td>"+c.n+"</td><td style='color:rgba(255,255,255,.45);font-size:10px'>"+a.dir+"</td></tr>";}).join("");}
 
 let lastAlertAt=0;
@@ -2225,12 +2284,12 @@ async function onSpotUpdate(s){
   pushState(step.policy);
   ProjTracker.scoreOutcomes(s.price);
   const tx=computeTx();
-  const cm=ProjTracker.getCalibMult(),ba=ProjTracker.getBiasConfAdj();
-  const proj=computeProj(step,tx,cm,ba);
+  const cm=ProjTracker.getCalibMult(),ba=ProjTracker.getBiasConfAdj(),sa=ProjTracker.getSharpeAdj();
+  const proj=computeProj(step,tx,cm,ba,sa);
   const pb3=PB3.compute(step,tx);
   const arch=Classifier.classify(tx);
   ForecastEngine.pushRegime(step.policy);
-  const _projSt=ProjTracker.getStats();_projSt.calibMult=ProjTracker.getCalibMult();
+  const _projSt=ProjTracker.getStats();_projSt.calibMult=ProjTracker.getCalibMult();_projSt.biasConfAdj=ProjTracker.getBiasConfAdj();_projSt.sharpeAdj=ProjTracker.getSharpeAdj();
   const _q=QuantEngine.compute(step,tx,pb3);
   updateQuantUI(_q);
   // Unified Signal Bus — synthesise once, all cards read from this
@@ -2246,11 +2305,11 @@ async function onSpotUpdate(s){
   updateForecastUI(_dailyF,_weeklyF);
   drawTickChart(QuantEngine.getPrices());
   {const fp=$('fxSpotPrice');if(fp){fp.classList.remove('pricePulse');void fp.offsetWidth;fp.classList.add('pricePulse');}}
-  const fullState=buildFullState(step,tx,proj,pb3,arch,s,recentStates,cm,ba);
+  const fullState=buildFullState(step,tx,proj,pb3,arch,s,recentStates,cm,ba,sa);
   lastFullState=fullState;
   applyFullStateToUI(fullState);
-  if(!paused){SignalTracker.update(s.price,proj.bias);}
-  updateSharpeUI(SignalTracker.getStats(s.price));
+  // Signal performance now derived from projection logs (15m outcomes)
+  updateSharpeUI(ProjTracker.getSignalPerf(s.price,30));
   CorrEngine.onMacroUpdate();updateCorrUI(CorrEngine.getCorrelations());
   updateSessionUI();updateProjAccuracyUI();checkAlerts(proj.r1,proj.bias);
   MacroFeed.hydrate();
@@ -2270,7 +2329,7 @@ async function onSpotUpdate(s){
    leverPaint($("fxLeverBar"),$("fxLeverPct"),fxlv,fxc>0.15?"good":fxc<-0.15?"bad":"neutral");
    const fxlm=$("fxLeverMeta");if(fxlm)fxlm.textContent=fxc>0.15?"Bullish confluence — "+Math.round(fxlv*100)+"% confirm":fxc<-0.15?"Bearish confluence — "+Math.round(fxlv*100)+"% confirm":"Mixed/neutral — no clear alignment";}
   // Inject signal stats so READER can render Signal Performance identically
-  const sigStats=SignalTracker.getStats(s.price);
+  const sigStats=ProjTracker.getSignalPerf(s.price,30);
   injectSignalStats(fullState,sigStats);
   if(FirebaseSync.configured&&FirebaseSync.isWriting)FirebaseSync.writeFullState(fullState);
   }catch(err){console.error('[QuadraX] onSpotUpdate crash:',err);}
@@ -2315,7 +2374,7 @@ const sBtn=$("settingsBtn"),cBtn=$("closeSettingsBtn"),sBack=$("settingsBack"),r
 if(sBtn)sBtn.addEventListener("click",openSettings);
 if(cBtn)cBtn.addEventListener("click",closeSettings);
 if(sBack)sBack.addEventListener("click",e=>{if(e.target===sBack)closeSettings();});
-if(rBtn)rBtn.addEventListener("click",()=>{settings={twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbUrl:"",fbRole:"MASTER",calibMult:1.0,biasConfAdj:1.0};save(KEY.s,settings);openSettings();});
+if(rBtn)rBtn.addEventListener("click",()=>{settings={twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbUrl:"",fbRole:"MASTER",calibMult:1.0,biasConfAdj:1.0,sharpeAdj:1.0};save(KEY.s,settings);openSettings();});
 if(rpBtn)rpBtn.addEventListener("click",()=>{if(confirm("Reset all projection logs and calibration multiplier to 1.00?"))ProjTracker.reset();});
 if(saveBtn)saveBtn.addEventListener("click",async()=>{
   const key=String($("tdKeyInput")?.value||"").trim(),poll=Number($("pollInput")?.value||12000),thresh=Number($("alertThreshInput")?.value||0),depth=Number($("histDepthInput")?.value||60),fbUrl=String($("fbUrlInput")?.value||"").trim(),fbRole=$("fbRoleInput")?.value||"MASTER";
