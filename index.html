@@ -421,8 +421,13 @@ textarea:focus{border-color:var(--border3)}
 /* ── NIGHT MODE ──────────────────────────────────────── */
 body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter .6s}
 
-/* V27: disable 15m across UI (keep nodes to avoid JS errors) */
-#tf15m, #rng15m { display:none !important; }
+/* ── Regime risk strip ───────────────────────────────────────────── */
+.riskStrip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px;padding:10px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(180,220,255,0.10)}
+.riskItem{padding:10px;border-radius:12px;background:rgba(8,20,52,0.32);border:1px solid rgba(180,220,255,0.10)}
+.rk{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(180,220,255,0.55)}
+.rv{margin-top:4px;font-size:16px;font-weight:700;color:rgba(255,255,255,0.92)}
+.rm{margin-top:4px;font-size:11px;line-height:1.45;color:rgba(180,220,255,0.55)}
+
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -444,6 +449,7 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
     <button class="btn" id="nightBtn">Night</button>
     <button class="btn primary" id="exportBtn">Export</button>
     <button class="btn" id="settingsBtn">Settings</button>
+    <button class="btn" id="guideBtn">Guide</button>
   </div>
 </div>
 <div class="grid">
@@ -464,7 +470,25 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
           <div class="chip">Bias <b id="macroBiasChip">--</b></div><div class="chip">EvRisk <b id="eventRiskChip">--</b></div>
           <div class="chip">Tx <b id="txScoreChip">--</b></div><div class="chip">Mom <b id="momChip">--</b></div>
           <div class="chip">Next <b id="nextStateChip">--</b></div>
+        
+        <div class="riskStrip">
+          <div class="riskItem">
+            <div class="rk">Move Risk</div>
+            <div class="rv" id="moveRiskVal">--</div>
+            <div class="rm" id="moveRiskMeta">Expected intraday movement risk for this regime.</div>
+          </div>
+          <div class="riskItem">
+            <div class="rk">Large Move Prob</div>
+            <div class="rv" id="largeMoveVal">--</div>
+            <div class="rm" id="largeMoveMeta">P(|move| &gt; ~0.6% FX day)</div>
+          </div>
+          <div class="riskItem" style="grid-column:1 / span 2">
+            <div class="rk">What you see on chart</div>
+            <div class="rv" id="chartPatternVal">--</div>
+            <div class="rm" id="microBehaviorVal">--</div>
+          </div>
         </div>
+</div>
         <div class="tlWrap"><div class="tlLabel">Regime history &middot; <span id="timelineDepth">0</span> ticks</div><canvas id="timelineCanvas" class="tlCanvas"></canvas></div>
         <div class="probBlock"><div class="muted" style="margin-bottom:7px;font-size:11px">P(state|features) &mdash; HMM emission probs. Softmax T=1.35.</div><div id="probList"></div></div>
       </div>
@@ -667,10 +691,10 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
   </div></div>
 
   <div class="card"><div class="inner">
-    <div class="card-title"><h2>Forward Projection &middot; Regime-Conditioned Cone</h2><div class="hint">Cone self-calibrates from historical accuracy. Direction bias sourced from the Unified Signal Bus — guaranteed to match the consensus across all cards. 1h, 4h and 1d ranges added.</div></div>
+    <div class="card-title"><h2>Forward Projection &middot; Regime-Conditioned Cone</h2><div class="hint">Cone self-calibrates from historical accuracy. Direction bias sourced from the Unified Signal Bus — guaranteed to match the consensus across all cards. 15m and 1h ranges added.</div></div>
     <div class="fpGrid">
       <div class="fpBox"><div class="k">Trade Bias</div><div class="v" id="tradeBias">--</div><div class="meta" id="tradeBiasMeta">--</div></div>
-      <div class="fpBox"><div class="k">Range 1h</div><div class="v" id="rng15m">--</div><div class="meta" id="rng15mMeta">Bus-aligned</div></div>
+      <div class="fpBox"><div class="k">Range 15m</div><div class="v" id="rng15m">--</div><div class="meta" id="rng15mMeta">Bus-aligned</div></div>
       <div class="fpBox"><div class="k">Range 1h</div><div class="v" id="rng1hFp">--</div><div class="meta" id="rng1hFpMeta">Bus-aligned</div></div>
       <div class="fpBox" id="rng1hBox"><div class="k">Move Range 1h</div><div class="v" id="rng1h">--</div><div class="meta" id="rng1hMeta">--</div></div>
       <div class="fpBox"><div class="k">Move Range 4h</div><div class="v" id="rng4h">--</div><div class="meta" id="rng4hMeta">--</div></div>
@@ -744,8 +768,8 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
           <div class="fk">Direction Learning Status</div>
           <div style="margin-top:4px">
             <div class="alRow"><span class="alLabel">Bias Weight (current)</span><span class="alVal" id="alBiasWeight">1.00x</span></div>
-            <div class="alRow"><span class="alLabel">1h Dir Hit Rate</span><span class="alVal" id="alDirHit15m">--</span></div>
-            <div class="alRow"><span class="alLabel">1h Range Hit Rate</span><span class="alVal" id="alRngCurrent15m">--</span></div>
+            <div class="alRow"><span class="alLabel">15m Dir Hit Rate</span><span class="alVal" id="alDirHit15m">--</span></div>
+            <div class="alRow"><span class="alLabel">15m Range Hit Rate</span><span class="alVal" id="alRngCurrent15m">--</span></div>
             <div class="alRow"><span class="alLabel">1h Dir Hit Rate</span><span class="alVal" id="alDirHit1h">--</span></div>
             <div class="alRow"><span class="alLabel">Action at &lt;48%</span><span class="alVal" style="color:rgba(255,71,87,.80)">Downweight</span></div>
             <div class="alRow"><span class="alLabel">Action at &gt;62%</span><span class="alVal" style="color:rgba(0,214,143,.80)">Upweight</span></div>
@@ -758,7 +782,7 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
 
   </div></div>
   <div class="card"><div class="inner">
-    <div class="card-title"><h2>Signal Performance &middot; Rolling Sharpe</h2><div class="hint">Derived from projection log outcomes (1h). Sharpe annualized. Target 2.5. Needs 20+ closed signals.</div></div>
+    <div class="card-title"><h2>Signal Performance &middot; Rolling Sharpe</h2><div class="hint">Derived from projection log outcomes (15m). Sharpe annualized. Target 2.5. Needs 20+ closed signals.</div></div>
     <div class="sharpeGrid">
       <div class="sharpeBox"><div class="k">Rolling Sharpe</div><div class="v" id="sharpeVal">--</div><div class="meta" id="sharpeMeta">Target: 2.5</div></div>
       <div class="sharpeBox"><div class="k">Win Rate</div><div class="v" id="winRateVal">--</div><div class="meta" id="winRateMeta">0 signals</div></div>
@@ -924,6 +948,56 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
     </div>
   </div>
 </div>
+<div class="mBack" id="guideBack" style="display:none">
+  <div class="modal" style="max-width:980px">
+    <div class="mHead">
+      <h3>Dashboard Guide &mdash; How to read what you're seeing</h3>
+      <button class="btn" id="closeGuideBtn">Close</button>
+    </div>
+    <div class="mBody">
+      <div class="smallNote" style="line-height:1.65;margin-bottom:10px">
+        This page is a single decision system: the Unified Signal Bus synthesises all components into one direction, conviction and risk throttle.
+        If two cards disagree, it&apos;s a system bug, not a trading signal.
+      </div>
+
+      <div class="grid" style="grid-template-columns:1.1fr .9fr;gap:14px">
+        <div class="card" style="margin:0"><div class="inner" style="padding:14px">
+          <div class="bk" style="margin-bottom:8px">Hidden Market Regime &mdash; what each Policy State means</div>
+          <div class="smallNote" style="margin-bottom:10px">Use this to translate state labels (S1&ndash;S8) into chart behavior and move risk.</div>
+          <div class="scroll" style="max-height:320px">
+            <table class="paLogTable">
+              <thead>
+                <tr>
+                  <th>State</th><th>Name</th><th>Chart</th><th>Microstructure</th><th>Move Risk</th><th>Large Move Prob</th>
+                </tr>
+              </thead>
+              <tbody id="regimeGuideBody"></tbody>
+            </table>
+          </div>
+          <div class="smallNote" style="margin-top:10px;line-height:1.6">
+            Most dangerous transition path: <b>1 → 2 → 3 → 4 → 5 → 7 → 8</b> (build → trend → break → cascade → forced).
+          </div>
+        </div></div>
+
+        <div class="card" style="margin:0"><div class="inner" style="padding:14px">
+          <div class="bk" style="margin-bottom:8px">What each area of the dashboard does</div>
+          <ul style="margin:0;padding-left:18px;line-height:1.7;color:rgba(255,255,255,0.86);font-size:13px">
+            <li><b>Current Market State (HMM)</b>: identifies the regime you&apos;re in and how likely it is to persist or transition.</li>
+            <li><b>Unified Signal Bus</b>: the single source of truth. Converts all signals into one direction + conviction + risk throttle.</li>
+            <li><b>Forward Projection</b>: converts conviction + calibrated range into 1h/4h/1d cones. Use it for expectation management, not certainty.</li>
+            <li><b>Projection Accuracy / Adaptive Learning</b>: scores past calls and automatically adjusts cone width and confidence weight so the system self-calibrates.</li>
+            <li><b>Signal Performance</b>: rolling Sharpe/win rate/open P&amp;L derived from the same projection ledger (1h outcomes).</li>
+            <li><b>PB3 + Macro / Transmission</b>: context layer. Explains the likely driver and whether cross-asset confirms or contradicts.</li>
+          </ul>
+          <div class="smallNote" style="margin-top:10px;line-height:1.6">
+            Operator workflow: <b>Regime → Risk</b>, then <b>Bus Direction → Conviction</b>, then <b>Projection Cone</b>, then <b>Adaptive Learning</b> for trust calibration.
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){"use strict";
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
@@ -950,6 +1024,29 @@ const STATES=[
   {id:7,name:"Dealer Unwind",   desc:"Choppy reversal risk. Protect, demand confirmation.",       color:"rgba(160,120,255,.90)"},
   {id:8,name:"Panic/Forced",    desc:"Dislocation. Risk off. Protect capital first.",             color:"rgba(255,58,165,.90)"},
 ];
+
+// ── Regime risk mapping (policy state semantics) ───────────────────────────
+const REGIME_META={
+  1:{name:"Mean-Reverting Noise",chart:"Tight chop, overlapping candles",micro:"Balanced book, dealers hedged",moveRisk:"Very Low",largeMove:0.01},
+  2:{name:"Liquidity Vacuum",chart:"Random spikes inside range",micro:"Depth disappears, probing algos",moveRisk:"Medium",largeMove:0.08},
+  3:{name:"Drift Trend",chart:"Many small same-color candles",micro:"Slow institutional positioning",moveRisk:"Medium",largeMove:0.15},
+  4:{name:"Strong Trend",chart:"Pullbacks shallow, steady push",micro:"Passive liquidity pulls",moveRisk:"High",largeMove:0.35},
+  5:{name:"Stop Cascade",chart:"Breakout → acceleration",micro:"Stops + dealer hedging feedback",moveRisk:"Very High",largeMove:0.70},
+  6:{name:"News Absorption",chart:"Violent whipsaws",micro:"Repricing & spread expansion",moveRisk:"Very High",largeMove:0.65},
+  7:{name:"Dealer Unwind",chart:"Directional push w/o news",micro:"Bank inventory hedging",moveRisk:"High",largeMove:0.50},
+  8:{name:"Panic / Forced Flow",chart:"Vertical candles, gaps",micro:"Liquidations / CTA deleveraging",moveRisk:"Extreme",largeMove:0.90},
+};
+function fmtPct(p){return (p==null||!isFinite(p))?"--":Math.round(p*100)+"%";}
+function populateRegimeGuide(){
+  const tb=$("regimeGuideBody"); if(!tb) return;
+  tb.innerHTML="";
+  for(let s=1;s<=8;s++){
+    const r=REGIME_META[s];
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>S${s}</b></td><td>${r?.name||"--"}</td><td>${r?.chart||"--"}</td><td>${r?.micro||"--"}</td><td>${r?.moveRisk||"--"}</td><td>${fmtPct(r?.largeMove)}</td>`;
+    tb.appendChild(tr);
+  }
+}
 const probEls=[];
 function initProbUI(){$("probList").innerHTML="";probEls.length=0;STATES.forEach(s=>{const row=document.createElement("div");row.className="probRow";row.innerHTML=`<div class="probName"><span class="pdot" style="background:${s.color}"></span>S${s.id}: ${s.name}</div><div class="pbar"><i></i></div><div class="probVal">--%</div>`;$("probList").appendChild(row);probEls.push({bar:row.querySelector(".pbar>i"),val:row.querySelector(".probVal")});});}
 let recentStates=loadArr(KEY.rh,[]);
@@ -1125,9 +1222,9 @@ const ProjTracker=(()=>{
   let calibMult=Number(settings.calibMult)||1.0;
   let biasConfAdj=Number(settings.biasConfAdj)||1.0;
   let sharpeAdj=Number(settings.sharpeAdj)||1.0
-  // Signal performance derived from projection outcomes (1h).
+  // Signal performance derived from projection outcomes (15m by default).
   // This ensures MASTER and READER share identical performance metrics because they are computed from the same logged calls.
-  const PERIODS_PER_YEAR_1H = 252*24; // hourly periods in FX (approx) // 15-minute periods in a 24h FX market
+  const PERIODS_PER_YEAR_15M = 252*96; // 15-minute periods in a 24h FX market
   function _rollingSharpe(returns, periodsPerYear){
     const arr = returns.filter(x=>Number.isFinite(x));
     const n = arr.length;
@@ -1136,25 +1233,25 @@ const ProjTracker=(()=>{
     const v = arr.reduce((s,x)=>s+(x-mean)**2,0)/(n-1);
     const std = Math.sqrt(v);
     if(std <= 0) return null;
-    return (mean/std) * Math.sqrt(periodsPerYear||PERIODS_PER_YEAR_1H);
+    return (mean/std) * Math.sqrt(periodsPerYear||PERIODS_PER_YEAR_15M);
   }
   function getSignalPerf(currentSpot, window=30){
     const p = Number(currentSpot);
-    const resolved = log.filter(x=>x?.outcome1h && Number.isFinite(x.outcome1h.movePips));
-    const pnl = resolved.map(x => (x.bias==="LONG"?1:-1) * Number(x.outcome1h.movePips));
+    const resolved = log.filter(x=>x?.outcome15m && Number.isFinite(x.outcome15m.movePips));
+    const pnl = resolved.map(x => (x.bias==="LONG"?1:-1) * Number(x.outcome15m.movePips));
     const roll = pnl.slice(-window);
-    const sharpe = _rollingSharpe(roll, PERIODS_PER_YEAR_1H);
+    const sharpe = _rollingSharpe(roll, PERIODS_PER_YEAR_15M);
     const closedN = roll.length;
     const wins = roll.filter(x=>x>0).length;
     const losses = roll.filter(x=>x<0).length;
     const winRate = (wins+losses)>0 ? wins/(wins+losses) : null;
     const closedPips = roll.reduce((a,b)=>a+b,0);
 
-    // Open P&L: include projections not yet scored at 1h (age < 60m) using current spot.
+    // Open P&L: include projections not yet scored at 15m (age < 15m) using current spot.
     let openPL = null;
     if(Number.isFinite(p)){
       const now = Date.now();
-          const open = log.filter(x=>!x?.outcome1h && (Date.now()-x.ts)<60*60*1000);
+      const open = log.filter(x => x && x.outcome15m==null && ((now-x.ts)/60000) < 15);
       const openPnl = open.map(x => (x.bias==="LONG"?1:-1) * ((p - Number(x.spot))*10000));
       openPL = openPnl.length ? openPnl.reduce((a,b)=>a+b,0) : 0;
     }
@@ -1171,7 +1268,7 @@ const ProjTracker=(()=>{
     const r1d = Math.max(10, Math.round((r4||0)*2.5)); // ~sqrt(24/4) scaling (2.45x) rounded
     const stopPips = Math.max(8, Math.round((r1||0)*0.75));
     const stopSpot = bias==="LONG" ? (spot - stopPips/10000) : (spot + stopPips/10000);
-    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,r15:r15p,r1d,stopSpot,policy,outcome1h:null,outcome1h:null,outcome4h:null,outcome1d:null});
+    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,r15:r15p,r1d,stopSpot,policy,outcome15m:null,outcome1h:null,outcome4h:null,outcome1d:null});
     if(log.length>200)log=log.slice(-200);
     _persist();
   }
@@ -1183,7 +1280,7 @@ const ProjTracker=(()=>{
       const ageMins=(now-p.ts)/60000;
       const movePips=(currentSpot-p.spot)*10000;
       const dirOk=p.bias==="LONG"?movePips>0:movePips<0;
-      if(p.outcome1h===null&&ageMins>=15){p.outcome1h={dirHit:dirOk,rngHit:Math.abs(movePips)<=(p.r15||Math.round(p.r1*0.4)),movePips,exitSpot:currentSpot};changed=true;}
+      if(p.outcome15m===null&&ageMins>=15){p.outcome15m={dirHit:dirOk,rngHit:Math.abs(movePips)<=(p.r15||Math.round(p.r1*0.4)),movePips,exitSpot:currentSpot};changed=true;}
       if(p.outcome1h===null&&ageMins>=60){p.outcome1h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r1,movePips,exitSpot:currentSpot};changed=true;}
       if(p.outcome4h===null&&ageMins>=240){p.outcome4h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r4,movePips,exitSpot:currentSpot};changed=true;}
       if(p.outcome1d===null&&ageMins>=1440){p.outcome1d={dirHit:dirOk,rngHit:Math.abs(movePips)<= (p.r1d||Math.max(10,Math.round(p.r4*2.5))),movePips,exitSpot:currentSpot};changed=true;}
@@ -1192,11 +1289,11 @@ const ProjTracker=(()=>{
   }
 
   function _stats(){
-    const r15=log.filter(p=>p.outcome1h!=null),r1=log.filter(p=>p.outcome1h!==null),r4=log.filter(p=>p.outcome4h!==null),r1d=log.filter(p=>p.outcome1d!==null);
+    const r15=log.filter(p=>p.outcome15m!=null),r1=log.filter(p=>p.outcome1h!==null),r4=log.filter(p=>p.outcome4h!==null),r1d=log.filter(p=>p.outcome1d!==null);
     return{
       n15m:r15.length,
-      dir15mRate:r15.length?r15.filter(p=>p.outcome1h.dirHit).length/r15.length:null,
-      rng15mRate:r15.length?r15.filter(p=>p.outcome1h.rngHit).length/r15.length:null,
+      dir15mRate:r15.length?r15.filter(p=>p.outcome15m.dirHit).length/r15.length:null,
+      rng15mRate:r15.length?r15.filter(p=>p.outcome15m.rngHit).length/r15.length:null,
       n1h:r1.length,
       dir1hRate:r1.length?r1.filter(p=>p.outcome1h.dirHit).length/r1.length:null,
       rng1hRate:r1.length?r1.filter(p=>p.outcome1h.rngHit).length/r1.length:null,
@@ -1959,6 +2056,13 @@ function applyFullStateToUI(st){
     const mb=$("miniBar");if(mb){mb.style.width=Math.max(10,dw)+"%";mb.style.background=(st.spotDelta||0)>=0?"rgba(0,214,143,.85)":"rgba(255,71,87,.85)";}
   }
   setRisk(st.policy,st.conf);
+  // Regime move risk + large move probability (policy state semantics)
+  const rm=REGIME_META[st.policy];
+  if($("moveRiskVal")) $("moveRiskVal").textContent=rm?rm.moveRisk:"--";
+  if($("largeMoveVal")) $("largeMoveVal").textContent=rm?fmtPct(rm.largeMove):"--";
+  if($("chartPatternVal")) $("chartPatternVal").textContent=rm?rm.chart:"--";
+  if($("microBehaviorVal")) $("microBehaviorVal").textContent=rm?rm.micro:"--";
+
   // PB3 - full color-coded rendering
   const pbData={PANIC:st.pb3Panic,BUBBLE:st.pb3Bubble,BOOM:st.pb3Boom,BUST:st.pb3Bust};
   const pbLabels={PANIC:"pb3Panic",BUBBLE:"pb3Bubble",BOOM:"pb3Boom",BUST:"pb3Bust"};
@@ -2279,8 +2383,8 @@ function updateForecastUI(daily,weekly){
   if(!FirebaseSync.isReader&&!FirebaseSync.isAutoFollower){
     const s=ProjTracker.getStats(),cm=ProjTracker.getCalibMult(),ba=ProjTracker.getBiasConfAdj();
     const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
-    setT("alRngCurrent15m",fmt(s.rng1hRate));setT("alRngCurrent1h",fmt(s.rng1hRate));setT("alRngCurrent4h",fmt(s.rng4hRate));
-    setT("alDirHit15m",fmt(s.dir1hRate));setT("alDirHit1h",fmt(s.dir1hRate));setT("alBiasWeight",ba.toFixed(3)+"x");
+    setT("alRngCurrent15m",fmt(s.rng15mRate));setT("alRngCurrent1h",fmt(s.rng1hRate));setT("alRngCurrent4h",fmt(s.rng4hRate));
+    setT("alDirHit15m",fmt(s.dir15mRate));setT("alDirHit1h",fmt(s.dir1hRate));setT("alBiasWeight",ba.toFixed(3)+"x");
     setT("alResolvedN",(s.total-s.pending)+" of "+s.total);
     const coneEl=$("alConeAction");if(coneEl)coneEl.textContent=cm>1.05?"Widening +"+Math.round((cm-1)*100)+"%":cm<0.95?"Tightening -"+Math.round((1-cm)*100)+"%":"Calibrated";
   }
@@ -2486,6 +2590,14 @@ const sBtn=$("settingsBtn"),cBtn=$("closeSettingsBtn"),sBack=$("settingsBack"),r
 if(sBtn)sBtn.addEventListener("click",openSettings);
 if(cBtn)cBtn.addEventListener("click",closeSettings);
 if(sBack)sBack.addEventListener("click",e=>{if(e.target===sBack)closeSettings();});
+
+// Guide (read-only)
+function openGuide(){populateRegimeGuide();const gb=$("guideBack");if(gb)gb.style.display="flex";}
+function closeGuide(){const gb=$("guideBack");if(gb)gb.style.display="none";}
+const gBtn=$("guideBtn"),gClose=$("closeGuideBtn"),gBack=$("guideBack");
+if(gBtn)gBtn.addEventListener("click",openGuide);
+if(gClose)gClose.addEventListener("click",closeGuide);
+if(gBack)gBack.addEventListener("click",e=>{if(e.target===gBack)closeGuide();});
 if(rBtn)rBtn.addEventListener("click",()=>{settings={twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbUrl:"",fbRole:"MASTER",calibMult:1.0,biasConfAdj:1.0,sharpeAdj:1.0};save(KEY.s,settings);openSettings();});
 if(rpBtn)rpBtn.addEventListener("click",()=>{if(confirm("Reset all projection logs and calibration multiplier to 1.00?"))ProjTracker.reset();});
 if(saveBtn)saveBtn.addEventListener("click",async()=>{
