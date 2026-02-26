@@ -1037,6 +1037,14 @@ const REGIME_META={
   8:{name:"Panic / Forced Flow",chart:"Vertical candles, gaps",micro:"Liquidations / CTA deleveraging",moveRisk:"Extreme",largeMove:0.90},
 };
 function fmtPct(p){return (p==null||!isFinite(p))?"--":Math.round(p*100)+"%";}
+function fmtSignedPips(dir,pips,suffix){
+  const n=Number(pips);
+  const u=suffix||" pips";
+  if(!Number.isFinite(n)) return "--";
+  if(dir==="SHORT") return "-"+n+u;
+  if(dir==="LONG") return "+"+n+u;
+  return "±"+n+u;
+}
 function populateRegimeGuide(){
   const tb=$("regimeGuideBody"); if(!tb) return;
   tb.innerHTML="";
@@ -1277,16 +1285,34 @@ const ProjTracker=(()=>{
     if(!Number.isFinite(currentSpot))return;
     const now=Date.now();let changed=false;
     log.forEach(p=>{
+      if(!p||!Number.isFinite(Number(p.spot)))return;
       const ageMins=(now-p.ts)/60000;
       const movePips=(currentSpot-p.spot)*10000;
-      const dirOk=p.bias==="LONG"?movePips>0:movePips<0;
-      if(p.outcome15m===null&&ageMins>=15){p.outcome15m={dirHit:dirOk,rngHit:Math.abs(movePips)<=(p.r15||Math.round(p.r1*0.4)),movePips,exitSpot:currentSpot};changed=true;}
-      if(p.outcome1h===null&&ageMins>=60){p.outcome1h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r1,movePips,exitSpot:currentSpot};changed=true;}
-      if(p.outcome4h===null&&ageMins>=240){p.outcome4h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r4,movePips,exitSpot:currentSpot};changed=true;}
-      if(p.outcome1d===null&&ageMins>=1440){p.outcome1d={dirHit:dirOk,rngHit:Math.abs(movePips)<= (p.r1d||Math.max(10,Math.round(p.r4*2.5))),movePips,exitSpot:currentSpot};changed=true;}
+      const dirOk=p.bias==="LONG"?movePips>0:p.bias==="SHORT"?movePips<0:false;
+
+      // Stop trigger detection (best-effort using spot updates; true intrabar sweeps are not observable here)
+      if(!p.stopHit && Number.isFinite(Number(p.stopSpot))){
+        if(p.bias==="LONG" && currentSpot<=p.stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
+        if(p.bias==="SHORT" && currentSpot>=p.stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
+      }
+
+      if(p.outcome1h===null&&ageMins>=60){
+        p.outcome1h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r1,movePips,exitSpot:currentSpot};
+        changed=true;
+      }
+      if(p.outcome4h===null&&ageMins>=240){
+        p.outcome4h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r4,movePips,exitSpot:currentSpot};
+        changed=true;
+      }
+      if(p.outcome1d===null&&ageMins>=1440){
+        const r1d=(p.r1d||Math.max(10,Math.round((p.r4||0)*2.5)));
+        p.outcome1d={dirHit:dirOk,rngHit:Math.abs(movePips)<=r1d,movePips,exitSpot:currentSpot};
+        changed=true;
+      }
     });
     if(changed){_adapt(currentSpot);_persist();}
   }
+
 
   function _stats(){
     const r15=log.filter(p=>p.outcome15m!=null),r1=log.filter(p=>p.outcome1h!==null),r4=log.filter(p=>p.outcome4h!==null),r1d=log.filter(p=>p.outcome1d!==null);
@@ -2088,8 +2114,8 @@ function applyFullStateToUI(st){
   const tb=$("tradeBias");if(tb){tb.textContent=st.bias;tb.classList.remove("pos","neg");if(st.bias==="LONG")tb.classList.add("pos");if(st.bias==="SHORT")tb.classList.add("neg");}
   const tbm=$("tradeBiasMeta");if(tbm)tbm.textContent=st.txBias+" | Event "+Math.round(st.eRisk*100)+"%";
   const r1el=$("rng1h"),r1m=$("rng1hMeta"),r4el=$("rng4h"),r4m=$("rng4hMeta");
-  if(r1el)r1el.textContent="\xb1"+st.r1+" pips";if(r1m)r1m.textContent="Vol x"+st.volMult.toFixed(2)+" Macro x"+st.txMult.toFixed(2);
-  if(r4el)r4el.textContent="\xb1"+st.r4+" pips";if(r4m)r4m.textContent="4h scaled | Tx "+st.txScore.toFixed(2);
+  if(r1el)r1el.textContent=fmtSignedPips(st.bias,st.r1);if(r1m)r1m.textContent="Vol x"+st.volMult.toFixed(2)+" Macro x"+st.txMult.toFixed(2);
+  if(r4el)r4el.textContent=fmtSignedPips(st.bias,st.r4);if(r4m)r4m.textContent="4h scaled | Tx "+st.txScore.toFixed(2);
   const dc=$("decConf"),dcm=$("decConfMeta");if(dc){dc.textContent=st.decPct+"%";dc.classList.remove("pos","neg");if(st.decPct>=55)dc.classList.add("pos");if(st.decPct<=30)dc.classList.add("neg");}
   if(dcm)dcm.textContent=st.decPct>=55?"Higher agreement":st.decPct>=40?"Mixed signals":"Caution";
   const cm=$("calibMult");if(cm)cm.textContent=(st.calibMult||1).toFixed(2);
@@ -2146,7 +2172,8 @@ function applyFullStateToUI(st){
           const cls=v=>v===null?"pending":v?"hit":"miss";
           const rtxt=o=>o===null?"...":o.rngHit?"IN":"OUT";
           const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
-          const stop = (p.stopSpot!=null && Number.isFinite(Number(p.stopSpot))) ? Number(p.stopSpot).toFixed(5) : "--";
+          const stopBase = (p.stopSpot!=null && Number.isFinite(Number(p.stopSpot))) ? Number(p.stopSpot).toFixed(5) : "--";
+          const stop = (p.stopHit ? (stopBase+" TRIG") : stopBase);
           const e1 = (d1?.exitSpot!=null && Number.isFinite(d1.exitSpot)) ? d1.exitSpot.toFixed(5) : "pend";
           const e4 = (d4?.exitSpot!=null && Number.isFinite(d4.exitSpot)) ? d4.exitSpot.toFixed(5) : "pend";
           const e1d= (d1d?.exitSpot!=null && Number.isFinite(d1d.exitSpot)) ? d1d.exitSpot.toFixed(5) : "pend";
@@ -2159,11 +2186,11 @@ function applyFullStateToUI(st){
             +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e4+"</td>"
             +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e1d+"</td>"
             +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
-            +"<td style='font-family:var(--mono)'>±"+p.r1+"p</td>"
+            +"<td style=\'font-family:var(--mono)\'>"+fmtSignedPips(p.bias,p.r1,"p")+"</td>"
             +"<td class='"+cls(d1?.rngHit??null)+"'>"+rtxt(d1)+"</td>"
-            +"<td style='font-family:var(--mono)'>±"+p.r4+"p</td>"
+            +"<td style=\'font-family:var(--mono)\'>"+fmtSignedPips(p.bias,p.r4,"p")+"</td>"
             +"<td class='"+cls(d4?.rngHit??null)+"'>"+rtxt(d4)+"</td>"
-            +"<td style='font-family:var(--mono)'>±"+r1d+"p</td>"
+            +"<td style=\'font-family:var(--mono)\'>"+fmtSignedPips(p.bias,r1d,"p")+"</td>"
             +"<td class='"+cls(d1d?.rngHit??null)+"'>"+rtxt(d1d)+"</td>"
             +"</tr>";
         }).join("");
@@ -2194,10 +2221,10 @@ function applyFullStateToUI(st){
     [["15m",st.busForecast15m],["1h",st.busForecast1h],["4h",st.busForecast4h]].forEach(([tf,f])=>{
       if(!f)return;
       const tE=$("tf"+tf+"Tgt"),rE=$("tf"+tf+"Rng"),cE=$("tf"+tf+"Conf");
-      if(tE)tE.textContent=f.target;if(rE)rE.textContent="±"+f.range+"p";if(cE)cE.textContent=f.confidence+"%";
+      if(tE)tE.textContent=f.target;if(rE)rE.textContent=fmtSignedPips(f.dir,f.range,"p");if(cE)cE.textContent=f.confidence+"%";
       const r15=$("rng15m"),r1h=$("rng1hFp");
-      if(tf==="15m"&&r15)r15.textContent=(f.dir==="LONG"?"▲ ":f.dir==="SHORT"?"▼ ":"")+"±"+f.range+"p";
-      if(tf==="1h"&&r1h)r1h.textContent=(f.dir==="LONG"?"▲ ":f.dir==="SHORT"?"▼ ":"")+"±"+f.range+"p";
+      if(tf==="15m"&&r15)r15.textContent=(f.dir==="LONG"?"▲ ":f.dir==="SHORT"?"▼ ":"")+fmtSignedPips(f.dir,f.range,"p");
+      if(tf==="1h"&&r1h)r1h.textContent=(f.dir==="LONG"?"▲ ":f.dir==="SHORT"?"▼ ":"")+fmtSignedPips(f.dir,f.range,"p");
     });
   }
   // Quant Engine for READER: render from state fields
@@ -2334,15 +2361,15 @@ function updateSignalBusUI(bus){
     if(box)box.className="tfBox"+(isFL?" active":isFS?" active short":"");
     const dirE=$(id+"Dir");if(dirE)dirE.innerHTML=isFL?"<span style='color:rgba(0,214,143,.90)'>&#9650;</span>":isFS?"<span style='color:rgba(255,71,87,.85)'>&#9660;</span>":"<span style='color:rgba(180,220,255,.40)'>&#9644;</span>";
     const tE=$("tf"+tf+"Tgt"),rE=$("tf"+tf+"Rng"),cE=$("tf"+tf+"Conf");
-    if(tE)tE.textContent=f.target;if(rE)rE.textContent="±"+f.range+"p";
+    if(tE)tE.textContent=f.target;if(rE)rE.textContent=fmtSignedPips(f.dir,f.range,"p");
     if(cE){cE.textContent=f.confidence+"%";cE.style.color=f.confidence>=65?"rgba(0,214,143,.80)":f.confidence>=40?"rgba(255,176,32,.75)":"rgba(180,220,255,.45)";}
   });
 
   // Push 15m/1h into Forward Projection card
   const f15=forecasts["15m"],f1h=forecasts["1h"];
   const r15=$("rng15m"),r1h=$("rng1hFp"),r15m=$("rng15mMeta"),r1hm=$("rng1hFpMeta");
-  if(r15&&f15)r15.textContent=(f15.dir==="LONG"?"▲ ":f15.dir==="SHORT"?"▼ ":"")+"±"+f15.range+"p";
-  if(r1h&&f1h)r1h.textContent=(f1h.dir==="LONG"?"▲ ":f1h.dir==="SHORT"?"▼ ":"")+"±"+f1h.range+"p";
+  if(r15&&f15)r15.textContent=(f15.dir==="LONG"?"▲ ":f15.dir==="SHORT"?"▼ ":"")+fmtSignedPips(f15.dir,f15.range,"p");
+  if(r1h&&f1h)r1h.textContent=(f1h.dir==="LONG"?"▲ ":f1h.dir==="SHORT"?"▼ ":"")+fmtSignedPips(f1h.dir,f1h.range,"p");
   if(r15m&&f15)r15m.textContent=f15.confidence+"% conf · "+f15.target;
   if(r1hm&&f1h)r1hm.textContent=f1h.confidence+"% conf · "+f1h.target;
 
@@ -2362,7 +2389,7 @@ function updateForecastUI(daily,weekly){
   if(dbEl){dbEl.className="fcastBias "+(daily.bias==="LONG"?"long":daily.bias==="SHORT"?"short":"neutral");dbEl.innerHTML=(daily.bias==="LONG"?"&#9650; LONG 24h":daily.bias==="SHORT"?"&#9660; SHORT 24h":"&#9644; NEUTRAL 24h");}
   const dBar=$("dailyFcastBar");if(dBar){dBar.style.width=daily.confidence+"%";dBar.style.background=daily.bias==="LONG"?"rgba(0,214,143,.82)":daily.bias==="SHORT"?"rgba(255,71,87,.82)":"rgba(180,220,255,.35)";}
   setT("dailyFcastConf",daily.confidence+"% confidence");
-  setT("dailyFcastRange","±"+daily.range+" pips");
+  setT("dailyFcastRange",fmtSignedPips(daily.dir||daily.bias||daily.direction,daily.range));
   setT("dailyFcastRegime",daily.regimeName);
   setT("dailyDirHit",daily.dir1hRate!=null?Math.round(daily.dir1hRate*100)+"% accuracy":"Collecting...");
   setT("dailyCalib",(daily.calibMult||1).toFixed(3)+"x");
@@ -2373,7 +2400,7 @@ function updateForecastUI(daily,weekly){
   if(wbEl){wbEl.className="fcastBias "+(weekly.bias==="LONG"?"long":weekly.bias==="SHORT"?"short":"neutral");wbEl.innerHTML=(weekly.bias==="LONG"?"&#9650; LONG WEEK":weekly.bias==="SHORT"?"&#9660; SHORT WEEK":"&#9644; NEUTRAL WEEK");}
   const wBar=$("weeklyFcastBar");if(wBar){wBar.style.width=weekly.confidence+"%";wBar.style.background=weekly.bias==="LONG"?"rgba(0,214,143,.82)":weekly.bias==="SHORT"?"rgba(255,71,87,.82)":"rgba(180,220,255,.35)";}
   setT("weeklyFcastConf",weekly.confidence+"% confidence");
-  setT("weeklyFcastRange","±"+weekly.range+" pips");
+  setT("weeklyFcastRange",fmtSignedPips(weekly.dir||weekly.bias||weekly.direction,weekly.range));
   setT("weeklyRegimeTrend",weekly.domRegimeName+" ("+weekly.regimeHistory+" obs)");
   setT("weeklyDirHit",weekly.confidence+"% direction confidence");
   setT("weeklyMacroAlign",weekly.macroAlign);
@@ -2425,7 +2452,8 @@ function updateProjAccuracyUI(){
     const cls=v=>v===null?"pending":v?"hit":"miss";
     const rtxt=o=>o===null?"...":o.rngHit?"IN":"OUT";
     const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
-    const stop = (p.stopSpot!=null && Number.isFinite(Number(p.stopSpot))) ? Number(p.stopSpot).toFixed(5) : "--";
+    const stopBase = (p.stopSpot!=null && Number.isFinite(Number(p.stopSpot))) ? Number(p.stopSpot).toFixed(5) : "--";
+          const stop = (p.stopHit ? (stopBase+" TRIG") : stopBase);
     const e1 = (d1?.exitSpot!=null && Number.isFinite(d1.exitSpot)) ? d1.exitSpot.toFixed(5) : "pend";
     const e4 = (d4?.exitSpot!=null && Number.isFinite(d4.exitSpot)) ? d4.exitSpot.toFixed(5) : "pend";
     const e1d= (d1d?.exitSpot!=null && Number.isFinite(d1d.exitSpot)) ? d1d.exitSpot.toFixed(5) : "pend";
@@ -2438,11 +2466,11 @@ function updateProjAccuracyUI(){
       +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e4+"</td>"
       +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e1d+"</td>"
       +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
-      +"<td style='font-family:var(--mono)'>±"+p.r1+"p</td>"
+      +"<td style=\'font-family:var(--mono)\'>"+fmtSignedPips(p.bias,p.r1,"p")+"</td>"
       +"<td class='"+cls(d1?.rngHit??null)+"'>"+rtxt(d1)+"</td>"
-      +"<td style='font-family:var(--mono)'>±"+p.r4+"p</td>"
+      +"<td style=\'font-family:var(--mono)\'>"+fmtSignedPips(p.bias,p.r4,"p")+"</td>"
       +"<td class='"+cls(d4?.rngHit??null)+"'>"+rtxt(d4)+"</td>"
-      +"<td style='font-family:var(--mono)'>±"+r1d+"p</td>"
+      +"<td style=\'font-family:var(--mono)\'>"+fmtSignedPips(p.bias,r1d,"p")+"</td>"
       +"<td class='"+cls(d1d?.rngHit??null)+"'>"+rtxt(d1d)+"</td>"
       +"</tr>";
   }).join("");
