@@ -680,7 +680,6 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
     <!-- Multi-Timeframe Forecast (all from same consensus) -->
     <div class="bk" style="margin-bottom:7px">All-Timeframe Forecast &mdash; Derived from Same Consensus Direction</div>
     <div class="tfGrid">
-      <div class="tfBox" id="tf15m"><div class="tfl">15 Min</div><div class="tfArrow" id="tf15mDir">&#9644;</div><div class="tfv" id="tf15mTgt">--</div><div class="tfr" id="tf15mRng">-- pips</div><div class="tfc" id="tf15mConf" style="color:rgba(180,220,255,.50)">--%</div></div>
       <div class="tfBox" id="tf1h"><div class="tfl">1 Hour</div><div class="tfArrow" id="tf1hDir">&#9644;</div><div class="tfv" id="tf1hTgt">--</div><div class="tfr" id="tf1hRng">-- pips</div><div class="tfc" id="tf1hConf" style="color:rgba(180,220,255,.50)">--%</div></div>
       <div class="tfBox" id="tf4h"><div class="tfl">4 Hour</div><div class="tfArrow" id="tf4hDir">&#9644;</div><div class="tfv" id="tf4hTgt">--</div><div class="tfr" id="tf4hRng">-- pips</div><div class="tfc" id="tf4hConf" style="color:rgba(180,220,255,.50)">--%</div></div>
       <div class="tfBox" id="tf1d"><div class="tfl">Daily</div><div class="tfArrow" id="tf1dDir">&#9644;</div><div class="tfv" id="tf1dTgt">--</div><div class="tfr" id="tf1dRng">-- pips</div><div class="tfc" id="tf1dConf" style="color:rgba(180,220,255,.50)">--%</div></div>
@@ -691,11 +690,12 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
   </div></div>
 
   <div class="card"><div class="inner">
-    <div class="card-title"><h2>Forward Projection &middot; Regime-Conditioned Cone</h2><div class="hint">Cone self-calibrates from historical accuracy. Direction bias sourced from the Unified Signal Bus — guaranteed to match the consensus across all cards. 15m and 1h ranges added.</div></div>
+    <div class="card-title"><h2>Forward Projection &middot; Regime-Conditioned Cone</h2><div class="hint">Cone self-calibrates from historical accuracy. Direction bias sourced from the Unified Signal Bus — guaranteed to match the consensus across all cards. 1h, 4h, and 1d ranges added.</div></div>
     <div class="fpGrid">
       <div class="fpBox"><div class="k">Trade Bias</div><div class="v" id="tradeBias">--</div><div class="meta" id="tradeBiasMeta">--</div></div>
-      <div class="fpBox"><div class="k">Range 15m</div><div class="v" id="rng15m">--</div><div class="meta" id="rng15mMeta">Bus-aligned</div></div>
       <div class="fpBox"><div class="k">Range 1h</div><div class="v" id="rng1hFp">--</div><div class="meta" id="rng1hFpMeta">Bus-aligned</div></div>
+      <div class="fpBox"><div class="k">Range 4h</div><div class="v" id="rng4hFp">--</div><div class="meta" id="rng4hFpMeta">Bus-aligned</div></div>
+      <div class="fpBox"><div class="k">Range 1d</div><div class="v" id="rng1dFp">--</div><div class="meta" id="rng1dFpMeta">Bus-aligned</div></div>
       <div class="fpBox" id="rng1hBox"><div class="k">Move Range 1h</div><div class="v" id="rng1h">--</div><div class="meta" id="rng1hMeta">--</div></div>
       <div class="fpBox"><div class="k">Move Range 4h</div><div class="v" id="rng4h">--</div><div class="meta" id="rng4hMeta">--</div></div>
       <div class="fpBox"><div class="k">Decision Conf</div><div class="v" id="decConf">--</div><div class="meta" id="decConfMeta">Low agreement</div></div>
@@ -768,9 +768,7 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
           <div class="fk">Direction Learning Status</div>
           <div style="margin-top:4px">
             <div class="alRow"><span class="alLabel">Bias Weight (current)</span><span class="alVal" id="alBiasWeight">1.00x</span></div>
-            <div class="alRow"><span class="alLabel">15m Dir Hit Rate</span><span class="alVal" id="alDirHit15m">--</span></div>
-            <div class="alRow"><span class="alLabel">15m Range Hit Rate</span><span class="alVal" id="alRngCurrent15m">--</span></div>
-            <div class="alRow"><span class="alLabel">1h Dir Hit Rate</span><span class="alVal" id="alDirHit1h">--</span></div>
+<div class="alRow"><span class="alLabel">1h Dir Hit Rate</span><span class="alVal" id="alDirHit1h">--</span></div>
             <div class="alRow"><span class="alLabel">Action at &lt;48%</span><span class="alVal" style="color:rgba(255,71,87,.80)">Downweight</span></div>
             <div class="alRow"><span class="alLabel">Action at &gt;62%</span><span class="alVal" style="color:rgba(0,214,143,.80)">Upweight</span></div>
             <div class="alRow"><span class="alLabel">Resolved Projections</span><span class="alVal" id="alResolvedN">0</span></div>
@@ -782,7 +780,7 @@ body.night{filter:brightness(.50) sepia(.10) hue-rotate(-5deg);transition:filter
 
   </div></div>
   <div class="card"><div class="inner">
-    <div class="card-title"><h2>Signal Performance &middot; Rolling Sharpe</h2><div class="hint">Derived from projection log outcomes (15m). Sharpe annualized. Target 2.5. Needs 20+ closed signals.</div></div>
+    <div class="card-title"><h2>Signal Performance &middot; Rolling Sharpe</h2><div class="hint">Derived from projection log outcomes (1h). Sharpe annualized. Target 2.5. Needs 20+ closed signals.</div></div>
     <div class="sharpeGrid">
       <div class="sharpeBox"><div class="k">Rolling Sharpe</div><div class="v" id="sharpeVal">--</div><div class="meta" id="sharpeMeta">Target: 2.5</div></div>
       <div class="sharpeBox"><div class="k">Win Rate</div><div class="v" id="winRateVal">--</div><div class="meta" id="winRateMeta">0 signals</div></div>
@@ -1214,7 +1212,7 @@ const ProjTracker=(()=>{
   const MIN_N=5;
   let log=loadArr(KEY.proj,[]).slice(-200).map(p=>{
     // normalize/migrate older entries so new UI fields populate
-    const o={outcome15m:null,outcome1d:null,stopSpot:null,r1d:null,...p};
+    const o={outcome1h:null,outcome4h:null,outcome1d:null,stopSpot:null,r1d:null,...p};
     const spotN=Number(o.spot);
     const r1N=Number(o.r1);
     const r4N=Number(o.r4);
@@ -1226,13 +1224,13 @@ const ProjTracker=(()=>{
       if(stopSpot!=null) o.stopSpot=stopSpot;
     }
     return o;
-  }); // normalize: add outcome15m if missing from old entries
+  }); // normalize older entries so newer UI fields populate
   let calibMult=Number(settings.calibMult)||1.0;
   let biasConfAdj=Number(settings.biasConfAdj)||1.0;
   let sharpeAdj=Number(settings.sharpeAdj)||1.0
-  // Signal performance derived from projection outcomes (15m by default).
+  // Signal performance derived from projection outcomes (1h).
   // This ensures MASTER and READER share identical performance metrics because they are computed from the same logged calls.
-  const PERIODS_PER_YEAR_15M = 252*96; // 15-minute periods in a 24h FX market
+  const PERIODS_PER_YEAR_1H = 252*24; // 1-hour periods in a 24h FX market
   function _rollingSharpe(returns, periodsPerYear){
     const arr = returns.filter(x=>Number.isFinite(x));
     const n = arr.length;
@@ -1241,25 +1239,25 @@ const ProjTracker=(()=>{
     const v = arr.reduce((s,x)=>s+(x-mean)**2,0)/(n-1);
     const std = Math.sqrt(v);
     if(std <= 0) return null;
-    return (mean/std) * Math.sqrt(periodsPerYear||PERIODS_PER_YEAR_15M);
+    return (mean/std) * Math.sqrt(periodsPerYear||PERIODS_PER_YEAR_1H);
   }
   function getSignalPerf(currentSpot, window=30){
     const p = Number(currentSpot);
-    const resolved = log.filter(x=>x?.outcome15m && Number.isFinite(x.outcome15m.movePips));
-    const pnl = resolved.map(x => (x.bias==="LONG"?1:-1) * Number(x.outcome15m.movePips));
+    const resolved = log.filter(x=>x?.outcome1h && Number.isFinite(x.outcome1h.movePips));
+    const pnl = resolved.map(x => (x.bias==="LONG"?1:-1) * Number(x.outcome1h.movePips));
     const roll = pnl.slice(-window);
-    const sharpe = _rollingSharpe(roll, PERIODS_PER_YEAR_15M);
+    const sharpe = _rollingSharpe(roll, PERIODS_PER_YEAR_1H);
     const closedN = roll.length;
     const wins = roll.filter(x=>x>0).length;
     const losses = roll.filter(x=>x<0).length;
     const winRate = (wins+losses)>0 ? wins/(wins+losses) : null;
     const closedPips = roll.reduce((a,b)=>a+b,0);
 
-    // Open P&L: include projections not yet scored at 15m (age < 15m) using current spot.
+    // Open P&L: include projections not yet scored at 1h (age < 60m) using current spot.
     let openPL = null;
     if(Number.isFinite(p)){
       const now = Date.now();
-      const open = log.filter(x => x && x.outcome15m==null && ((now-x.ts)/60000) < 15);
+      const open = log.filter(x => x && x.outcome1h==null && ((now-x.ts)/60000) < 60);
       const openPnl = open.map(x => (x.bias==="LONG"?1:-1) * ((p - Number(x.spot))*10000));
       openPL = openPnl.length ? openPnl.reduce((a,b)=>a+b,0) : 0;
     }
@@ -1267,16 +1265,15 @@ const ProjTracker=(()=>{
   }
 ;
 
-  function logProjection({spot,bias,r1,r4,r15,policy}){
+  function logProjection({spot,bias,r1,r4,policy}){
     if(!spot||bias==="NEUTRAL")return;
-    // Don't log more often than every 10 minutes to avoid flooding
+    // Don't log more often than every 5 minutes to avoid flooding
     const last=log.length?log.at(-1):null;
     if(last&&(Date.now()-last.ts)<5*60*1000)return;
-    const r15p = r15||Math.round(r1*0.4);
     const r1d = Math.max(10, Math.round((r4||0)*2.5)); // ~sqrt(24/4) scaling (2.45x) rounded
     const stopPips = Math.max(8, Math.round((r1||0)*0.75));
     const stopSpot = bias==="LONG" ? (spot - stopPips/10000) : (spot + stopPips/10000);
-    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,r15:r15p,r1d,stopSpot,policy,outcome15m:null,outcome1h:null,outcome4h:null,outcome1d:null});
+    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,r1d,stopSpot,policy,outcome1h:null,outcome4h:null,outcome1d:null});
     if(log.length>200)log=log.slice(-200);
     _persist();
   }
@@ -1315,11 +1312,8 @@ const ProjTracker=(()=>{
 
 
   function _stats(){
-    const r15=log.filter(p=>p.outcome15m!=null),r1=log.filter(p=>p.outcome1h!==null),r4=log.filter(p=>p.outcome4h!==null),r1d=log.filter(p=>p.outcome1d!==null);
+    const r1=log.filter(p=>p.outcome1h!==null), r4=log.filter(p=>p.outcome4h!==null), r1d=log.filter(p=>p.outcome1d!==null);
     return{
-      n15m:r15.length,
-      dir15mRate:r15.length?r15.filter(p=>p.outcome15m.dirHit).length/r15.length:null,
-      rng15mRate:r15.length?r15.filter(p=>p.outcome15m.rngHit).length/r15.length:null,
       n1h:r1.length,
       dir1hRate:r1.length?r1.filter(p=>p.outcome1h.dirHit).length/r1.length:null,
       rng1hRate:r1.length?r1.filter(p=>p.outcome1h.rngHit).length/r1.length:null,
@@ -1330,11 +1324,11 @@ const ProjTracker=(()=>{
       dir1dRate:r1d.length?r1d.filter(p=>p.outcome1d.dirHit).length/r1d.length:null,
       rng1dRate:r1d.length?r1d.filter(p=>p.outcome1d.rngHit).length/r1d.length:null,
       total:log.length,
-      pending:log.filter(p=>p.outcome1h===null||p.outcome4h===null).length,
+      pending:log.filter(p=>p.outcome1h===null).length,
     };
   }
 
-  function _adapt(currentSpot){
+function _adapt(currentSpot){
     const s=_stats();
     // CONE: target range hit rate 60-80%. Outside that range -> adjust
     if(s.n1h>=MIN_N&&s.rng1hRate!=null){
@@ -1347,7 +1341,7 @@ const ProjTracker=(()=>{
       else if(s.dir1hRate>0.62)biasConfAdj=clamp(biasConfAdj*1.04,0.20,1.60);
     }
 
-    // SIGNAL PERFORMANCE (rolling Sharpe) derived from projection outcomes (15m).
+    // SIGNAL PERFORMANCE (rolling Sharpe) derived from projection outcomes (1h).
     // Strong Sharpe -> allow slightly higher confidence; weak Sharpe -> dampen.
     try{
       const sp=getSignalPerf(currentSpot,30);
@@ -1742,8 +1736,7 @@ const SignalBus=(()=>{
 
   // Pip range by timeframe and regime
   const REGIME_PIPS={
-    "15m":{1:8,2:5,3:10,4:18,5:28,6:35,7:15,8:45},
-    "1h": {1:18,2:10,3:22,4:38,5:55,6:65,7:30,8:90},
+"1h": {1:18,2:10,3:22,4:38,5:55,6:65,7:30,8:90},
     "4h": {1:40,2:25,3:50,4:80,5:110,6:130,7:65,8:180},
     "1d": {1:45,2:30,3:55,4:85,5:110,6:130,7:70,8:150},
     "1w": {1:100,2:70,3:130,4:220,5:280,6:350,7:180,8:400},
@@ -1803,7 +1796,7 @@ const SignalBus=(()=>{
 
     // 3. Compute all timeframe forecasts from SAME consensus direction
     const forecasts={};
-    ["15m","1h","4h","1d","1w"].forEach(tf=>{
+    ["1h","4h","1d"].forEach(tf=>{
       forecasts[tf]=_computeForecast(tf,consensus.dir,consensus.conf,price,policy,calibMult,eventRisk||0,volRegime,consensus.agreement);
     });
 
@@ -2022,9 +2015,7 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba,sa,signalBus,
     busDir:SignalBus.get()?.consensus?.dir??null,
     busConvPct:SignalBus.get()?.convPct??null,
     busRiskPct:SignalBus.get()?.risk?.pct??null,
-    busCoherence:SignalBus.get()?.coherence??null,
-    busForecast15m:SignalBus.get()?.forecasts?.["15m"]??null,
-    busForecast1h:SignalBus.get()?.forecasts?.["1h"]??null,
+    busCoherence:SignalBus.get()?.coherence??null,    busForecast1h:SignalBus.get()?.forecasts?.["1h"]??null,
     busForecast4h:SignalBus.get()?.forecasts?.["4h"]??null,
     qH:typeof _q!=='undefined'?_q?.H:null,
     qAC1:typeof _q!=='undefined'?_q?.ac1:null,
@@ -2042,10 +2033,8 @@ function injectSignalStats(state,sigStats){
   state.sigSharpe=sigStats.sharpe;state.sigWinRate=sigStats.winRate;state.sigOpenPL=sigStats.openPL;state.sigTotalSignals=sigStats.closedN||0;state.sigTotalPips=sigStats.closedPips||0;state.sigOpenBias=null;state.sigEquity=null;
   state.sigTotalPips=sigStats.totalPips;state.sigOpenBias=sigStats.openBias;state.sigTotalSignals=sigStats.totalSignals;
   state.sigEquity=sigStats.equity.slice(-60);
-  // Full projection stats — all timeframes including 15m
-  const projS=ProjTracker.getStats();
-  state.projDir15m=projS.dir15mRate;state.projRng15m=projS.rng15mRate;state.projN15m=projS.n15m||0;
-  state.projDir1h=projS.dir1hRate;state.projRng1h=projS.rng1hRate;state.projN1h=projS.n1h;
+  // Full projection stats — 1h/4h/1d only
+  const projS=ProjTracker.getStats();  state.projDir1h=projS.dir1hRate;state.projRng1h=projS.rng1hRate;state.projN1h=projS.n1h;
   state.projDir4h=projS.dir4hRate;state.projRng4h=projS.rng4hRate;state.projN4h=projS.n4h;
   state.projDir1d=projS.dir1dRate;state.projRng1d=projS.rng1dRate;state.projN1d=projS.n1d||0;
   state.projTotal=projS.total;state.projPending=projS.pending;
@@ -2200,12 +2189,8 @@ function applyFullStateToUI(st){
   // ── Adaptive Learning panel for READER: render from MASTER state ──
   if((FirebaseSync.isReader||FirebaseSync.isAutoFollower)&&st.projTotal!=null){
     const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
-    const setT=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
-    setT("alRngCurrent15m",fmt(st.projRng15m));
-    setT("alRngCurrent1h",fmt(st.projRng1h));
-    setT("alRngCurrent4h",fmt(st.projRng4h));
-    setT("alDirHit15m",fmt(st.projDir15m));
-    setT("alDirHit1h",fmt(st.projDir1h));
+    const setT=(id,v)=>{const e=$(id);if(e)e.textContent=v;};setT("alRngCurrent1h",fmt(st.projRng1h));
+    setT("alRngCurrent4h",fmt(st.projRng4h));setT("alDirHit1h",fmt(st.projDir1h));
     setT("alBiasWeight",(st.projBiasAdj||1).toFixed(3)+"x");
     setT("alResolvedN",((st.projTotal||0)-(st.projPending||0))+" of "+(st.projTotal||0));
     const coneEl=$("alConeAction");
@@ -2218,13 +2203,10 @@ function applyFullStateToUI(st){
     const br=$("busRisk");if(br){br.textContent=(st.busRiskPct??'--')+"%";br.style.color=(st.busRiskPct??0)>=75?"rgba(0,214,143,.90)":(st.busRiskPct??0)>=40?"rgba(255,176,32,.85)":"rgba(255,71,87,.80)";}
     const bc=$("busConvPct");if(bc)bc.textContent=(st.busConvPct??'--')+"%";
     // Populate tf boxes from bus forecasts
-    [["15m",st.busForecast15m],["1h",st.busForecast1h],["4h",st.busForecast4h]].forEach(([tf,f])=>{
+    [["1h",st.busForecast1h],["4h",st.busForecast4h],["1d",st.busForecast1d]].forEach(([tf,f])=>{
       if(!f)return;
       const tE=$("tf"+tf+"Tgt"),rE=$("tf"+tf+"Rng"),cE=$("tf"+tf+"Conf");
-      if(tE)tE.textContent=f.target;if(rE)rE.textContent=fmtSignedPips(f.dir,f.range,"p");if(cE)cE.textContent=f.confidence+"%";
-      const r15=$("rng15m"),r1h=$("rng1hFp");
-      if(tf==="15m"&&r15)r15.textContent=(f.dir==="LONG"?"▲ ":f.dir==="SHORT"?"▼ ":"")+fmtSignedPips(f.dir,f.range,"p");
-      if(tf==="1h"&&r1h)r1h.textContent=(f.dir==="LONG"?"▲ ":f.dir==="SHORT"?"▼ ":"")+fmtSignedPips(f.dir,f.range,"p");
+      if(tE)tE.textContent=f.target;if(rE)rE.textContent=fmtSignedPips(f.dir,f.range,"p");if(cE)cE.textContent=f.confidence+"%";      const r1h=$("rng1hFp"), r4h=$("rng4hFp"), r1d=$("rng1dFp");      if(tf==="1h"&&r1h)r1h.textContent=(f.dir==="LONG"?"▲ ":f.dir==="SHORT"?"▼ ":"")+fmtSignedPips(f.dir,f.range,"p");
     });
   }
   // Quant Engine for READER: render from state fields
@@ -2355,7 +2337,7 @@ function updateSignalBusUI(bus){
   setT("busRiskReasons",risk.reasons.length?risk.reasons.join(" · "):"No additional risk factors");
 
   // Multi-TF boxes
-  [["15m","tf15m"],["1h","tf1h"],["4h","tf4h"],["1d","tf1d"],["1w","tf1w"]].forEach(([tf,id])=>{
+  [["1h","tf1h"],["4h","tf4h"],["1d","tf1d"]].forEach(([tf,id])=>{
     const f=forecasts[tf];if(!f)return;
     const box=$(id),isFL=f.dir==="LONG",isFS=f.dir==="SHORT";
     if(box)box.className="tfBox"+(isFL?" active":isFS?" active short":"");
@@ -2365,13 +2347,16 @@ function updateSignalBusUI(bus){
     if(cE){cE.textContent=f.confidence+"%";cE.style.color=f.confidence>=65?"rgba(0,214,143,.80)":f.confidence>=40?"rgba(255,176,32,.75)":"rgba(180,220,255,.45)";}
   });
 
-  // Push 15m/1h into Forward Projection card
-  const f15=forecasts["15m"],f1h=forecasts["1h"];
-  const r15=$("rng15m"),r1h=$("rng1hFp"),r15m=$("rng15mMeta"),r1hm=$("rng1hFpMeta");
-  if(r15&&f15)r15.textContent=(f15.dir==="LONG"?"▲ ":f15.dir==="SHORT"?"▼ ":"")+fmtSignedPips(f15.dir,f15.range,"p");
-  if(r1h&&f1h)r1h.textContent=(f1h.dir==="LONG"?"▲ ":f1h.dir==="SHORT"?"▼ ":"")+fmtSignedPips(f1h.dir,f1h.range,"p");
-  if(r15m&&f15)r15m.textContent=f15.confidence+"% conf · "+f15.target;
-  if(r1hm&&f1h)r1hm.textContent=f1h.confidence+"% conf · "+f1h.target;
+  // Push 1h/4h/1d into Forward Projection card
+  const f1h=forecasts["1h"], f4h=forecasts["4h"], f1d=forecasts["1d"];
+  const r1h=$("rng1hFp"), r4h=$("rng4hFp"), r1d=$("rng1dFp");
+  const r1hm=$("rng1hFpMeta"), r4hm=$("rng4hFpMeta"), r1dm=$("rng1dFpMeta");
+  if(r1h&&f1h) r1h.textContent=(f1h.dir==="LONG"?"▲ ":f1h.dir==="SHORT"?"▼ ":"")+fmtSignedPips(f1h.dir,f1h.range,"p");
+  if(r4h&&f4h) r4h.textContent=(f4h.dir==="LONG"?"▲ ":f4h.dir==="SHORT"?"▼ ":"")+fmtSignedPips(f4h.dir,f4h.range,"p");
+  if(r1d&&f1d) r1d.textContent=(f1d.dir==="LONG"?"▲ ":f1d.dir==="SHORT"?"▼ ":"")+fmtSignedPips(f1d.dir,f1d.range,"p");
+  if(r1hm&&f1h) r1hm.textContent=f1h.confidence+"% conf · "+f1h.target;
+  if(r4hm&&f4h) r4hm.textContent=f4h.confidence+"% conf · "+f4h.target;
+  if(r1dm&&f1d) r1dm.textContent=f1d.confidence+"% conf · "+f1d.target;
 
   // Override tradeBias display with bus consensus
   const tb=$("tradeBias");
@@ -2409,9 +2394,7 @@ function updateForecastUI(daily,weekly){
   // Only update Adaptive Learning panel from local tracker if we are the writer
   if(!FirebaseSync.isReader&&!FirebaseSync.isAutoFollower){
     const s=ProjTracker.getStats(),cm=ProjTracker.getCalibMult(),ba=ProjTracker.getBiasConfAdj();
-    const fmt=r=>r!=null?Math.round(r*100)+"%":"--";
-    setT("alRngCurrent15m",fmt(s.rng15mRate));setT("alRngCurrent1h",fmt(s.rng1hRate));setT("alRngCurrent4h",fmt(s.rng4hRate));
-    setT("alDirHit15m",fmt(s.dir15mRate));setT("alDirHit1h",fmt(s.dir1hRate));setT("alBiasWeight",ba.toFixed(3)+"x");
+    const fmt=r=>r!=null?Math.round(r*100)+"%":"--";setT("alRngCurrent1h",fmt(s.rng1hRate));setT("alRngCurrent4h",fmt(s.rng4hRate));setT("alDirHit1h",fmt(s.dir1hRate));setT("alBiasWeight",ba.toFixed(3)+"x");
     setT("alResolvedN",(s.total-s.pending)+" of "+s.total);
     const coneEl=$("alConeAction");if(coneEl)coneEl.textContent=cm>1.05?"Widening +"+Math.round((cm-1)*100)+"%":cm<0.95?"Tightening -"+Math.round((1-cm)*100)+"%":"Calibrated";
   }
@@ -2498,7 +2481,7 @@ function setRisk(pol,cf){const MAP={1:["NORMAL","Range logic. Fade extremes."],2
 function setFxStatus(st){const fs=$("fxSpotStatus"),fd=$("fxStatusDot");if(fs)fs.textContent=st;if(fd){fd.classList.remove("live","err");if(st==="LIVE")fd.classList.add("live");else if(st==="ERROR"||st==="STALE")fd.classList.add("err");}}
 function updateSessionUI(){const{openSessions,primary,isOverlap,dayInfo,minsLeft}=SessionEngine.compute();SessionEngine.SESS.forEach(s=>{const box=$("sb_"+s.id),st=$("ss_"+s.id);if(!box||!st)return;const isOpen=openSessions.includes(s.id),isOL=isOverlap&&(s.id==="LONDON"||s.id==="NEW_YORK");box.style.borderColor=isOpen?s.color.replace(/[\d.]+\)$/,"0.40)"):"rgba(180,220,255,.10)";box.style.background=isOpen?s.color.replace(/[\d.]+\)$/,"0.07)"):"rgba(8,20,52,.22)";st.textContent=isOL?"Overlap":isOpen?"Open":"Closed";st.className="sStat "+(isOL?"overlap":isOpen?"open":"closed");});const cdn=$("currentDayName"),csl=$("currentSessionLabel"),den=$("dayEffectNote"),sob=$("sessionOverlapBadge"),sml=$("sessionMinsLeft");if(cdn)cdn.textContent=dayInfo.name;if(csl)csl.textContent=primary?"Session: "+primary.label:"Session: Closed";if(den)den.textContent=dayInfo.effect;if(sob){sob.textContent=isOverlap?"LDN/NY OVERLAP - Highest Vol":openSessions.length?openSessions.join("+")+" Open":"All sessions closed";sob.style.color=isOverlap?"rgba(100,180,255,.92)":"rgba(255,255,255,.58)";}if(sml)sml.textContent=minsLeft!=null?"~"+minsLeft+"m left":"";}
 function updateWarmupBadge(tickN,warmed){if(FirebaseSync.isReader||FirebaseSync.isAutoFollower)return;const sb=$("syncBadge");if(!sb)return;if(!warmed){sb.className="syncBadge warming";sb.innerHTML='<span class="dot amber"></span><span>Warming '+tickN+"/"+Engine.WARMUP+"</span>";}else{sb.className="syncBadge synced";sb.innerHTML='<span class="dot"></span><span>SYNCED (det)</span>';}}
-function updateSharpeUI(stats){const sv=$("sharpeVal"),sm=$("sharpeMeta");if(sv&&sm){if(stats.sharpe!=null&&Number.isFinite(stats.sharpe)){sv.textContent=stats.sharpe.toFixed(2);sv.classList.remove("pos","neg");if(stats.sharpe>=2.5)sv.classList.add("pos");else if(stats.sharpe<0)sv.classList.add("neg");sm.textContent=stats.sharpe>=2.5?"Target met":"Below target 2.5";}else{sv.textContent="--";sm.textContent="Need >=20 scored calls ("+stats.totalSignals+")";}}const wr=$("winRateVal"),wrm=$("winRateMeta");if(wr&&wrm){if(stats.winRate!=null){wr.textContent=Math.round(stats.winRate*100)+"%";wr.classList.remove("pos","neg");if(stats.winRate>=.55)wr.classList.add("pos");else if(stats.winRate<.40)wr.classList.add("neg");wrm.textContent=stats.totalSignals+" closed signals";}else{wr.textContent="--";wrm.textContent="No closed signals";}}const pl=$("openPLVal"),plm=$("openPLMeta");if(pl&&plm){if(stats.openPL!=null){pl.textContent=(stats.openPL>=0?"+":"")+stats.openPL.toFixed(1)+" p";pl.classList.remove("pos","neg");if(stats.openPL>0)pl.classList.add("pos");else if(stats.openPL<0)pl.classList.add("neg");plm.textContent="Open P&L (unscored 15m)";}else{pl.textContent="--";plm.textContent="No open signal";}}const cp=$("cumPipsVal");if(cp){cp.textContent=(stats.totalPips>=0?"+":"")+stats.totalPips.toFixed(1)+" p";cp.classList.remove("pos","neg");if(stats.totalPips>0)cp.classList.add("pos");else if(stats.totalPips<0)cp.classList.add("neg");}const fs=$("footSharpe");if(fs)fs.textContent=stats.sharpe!=null?stats.sharpe.toFixed(2):"--";drawEquity(stats.equity.length>=2?stats.equity:[0,0]);}
+function updateSharpeUI(stats){const sv=$("sharpeVal"),sm=$("sharpeMeta");if(sv&&sm){if(stats.sharpe!=null&&Number.isFinite(stats.sharpe)){sv.textContent=stats.sharpe.toFixed(2);sv.classList.remove("pos","neg");if(stats.sharpe>=2.5)sv.classList.add("pos");else if(stats.sharpe<0)sv.classList.add("neg");sm.textContent=stats.sharpe>=2.5?"Target met":"Below target 2.5";}else{sv.textContent="--";sm.textContent="Need >=20 scored calls ("+stats.totalSignals+")";}}const wr=$("winRateVal"),wrm=$("winRateMeta");if(wr&&wrm){if(stats.winRate!=null){wr.textContent=Math.round(stats.winRate*100)+"%";wr.classList.remove("pos","neg");if(stats.winRate>=.55)wr.classList.add("pos");else if(stats.winRate<.40)wr.classList.add("neg");wrm.textContent=stats.totalSignals+" closed signals";}else{wr.textContent="--";wrm.textContent="No closed signals";}}const pl=$("openPLVal"),plm=$("openPLMeta");if(pl&&plm){if(stats.openPL!=null){pl.textContent=(stats.openPL>=0?"+":"")+stats.openPL.toFixed(1)+" p";pl.classList.remove("pos","neg");if(stats.openPL>0)pl.classList.add("pos");else if(stats.openPL<0)pl.classList.add("neg");plm.textContent="Open P&L (unscored 1h)";}else{pl.textContent="--";plm.textContent="No open signal";}}const cp=$("cumPipsVal");if(cp){cp.textContent=(stats.totalPips>=0?"+":"")+stats.totalPips.toFixed(1)+" p";cp.classList.remove("pos","neg");if(stats.totalPips>0)cp.classList.add("pos");else if(stats.totalPips<0)cp.classList.add("neg");}const fs=$("footSharpe");if(fs)fs.textContent=stats.sharpe!=null?stats.sharpe.toFixed(2):"--";drawEquity(stats.equity.length>=2?stats.equity:[0,0]);}
 function updateCorrUI(corrs){const assets=[{key:"OIL",label:"Brent (BZ=F)",dir:"Negative"},{key:"GOLD",label:"Gold COMEX (GC=F)",dir:"Positive"},{key:"SILV",label:"Silver COMEX (SI=F)",dir:"Positive"},{key:"USD",label:"DXY (DX-Y.NYB)",dir:"Negative"},{key:"GBP",label:"GBP/USD",dir:"Positive (r≈80-95%)"},{key:"AUD",label:"AUD/USD",dir:"Positive (r≈70-90%)"},{key:"NZD",label:"NZD/USD",dir:"Positive (r≈65-85%)"}];const cb=$("corrBody");if(!cb)return;cb.innerHTML=assets.map(a=>{const c=corrs[a.key]||{r:0,tStat:0,n:0,sig:"ns"};const rStr=c.n>=5?c.r.toFixed(3):"--",tStr=c.n>=5?c.tStat.toFixed(2):"--";const sigClass=c.sig==="**"?"sig2":c.sig==="*"?"sig1":"sigNS";const rClass=c.r>.05?"corrPos":c.r<-.05?"corrNeg":"";return"<tr><td>"+a.label+"</td><td class='"+rClass+"'>"+rStr+"</td><td>"+tStr+"</td><td class='"+sigClass+"'>"+c.sig+"</td><td>"+c.n+"</td><td style='color:rgba(255,255,255,.45);font-size:10px'>"+a.dir+"</td></tr>";}).join("");}
 
 let lastAlertAt=0;
@@ -2552,7 +2535,7 @@ async function onSpotUpdate(s){
   const fullState=buildFullState(step,tx,proj,pb3,arch,s,recentStates,cm,ba,sa,_bus,_projSt,ProjTracker.getLog());
   lastFullState=fullState;
   applyFullStateToUI(fullState);
-  // Signal performance now derived from projection logs (15m outcomes)
+  // Signal performance now derived from projection logs (1h outcomes)
   updateSharpeUI(ProjTracker.getSignalPerf(s.price,30));
   CorrEngine.onMacroUpdate();updateCorrUI(CorrEngine.getCorrelations());
   updateSessionUI();updateProjAccuracyUI();checkAlerts(proj.r1,proj.bias);
