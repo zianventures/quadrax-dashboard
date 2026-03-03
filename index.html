@@ -1917,8 +1917,11 @@ const FirebaseSync=(()=>{
       if(!firebase.apps.length)firebase.initializeApp(config);
       auth=firebase.auth();
       db=firebase.firestore();
-      // Offline persistence so Readers survive brief network drops
-      db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+      // Offline persistence: must be enabled BEFORE any Firestore reads/writes and only once per page load.
+      if(!window.__quadraxPersistenceAttempted){
+        window.__quadraxPersistenceAttempted = true;
+        db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+      }
       // Sign in
       const cred=await auth.signInWithEmailAndPassword(email,password);
       // Read custom claim to determine role — set once via Admin SDK
@@ -1961,12 +1964,43 @@ const FirebaseSync=(()=>{
     );
   }
 
-  // ── Write: called by MASTER at end of every onSpotUpdate ─────────────────
+  
+// Firestore does NOT allow "arrays inside arrays" (nested arrays), undefined, NaN/Infinity, or functions.
+// This sanitizer converts nested arrays into arrays-of-objects and drops undefined so writes never fail.
+function sanitizeForFirestore(x){
+  if(x === undefined) return undefined;
+  if(typeof x === "number"){
+    return Number.isFinite(x) ? x : null;
+  }
+  if(x === null) return null;
+  if(Array.isArray(x)){
+    // If any element is an array, wrap those arrays so the outer array does not contain arrays.
+    if(x.some(Array.isArray)){
+      return x.map(v => Array.isArray(v) ? ({ _arr: v.map(sanitizeForFirestore) }) : sanitizeForFirestore(v));
+    }
+    return x.map(sanitizeForFirestore);
+  }
+  if(typeof x === "object"){
+    // Convert Dates to millis
+    if(x instanceof Date) return x.getTime();
+    const o = {};
+    for(const k in x){
+      const v = sanitizeForFirestore(x[k]);
+      if(v !== undefined) o[k] = v;
+    }
+    return o;
+  }
+  if(typeof x === "function") return undefined;
+  return x;
+}
+
+// ── Write: called by MASTER at end of every onSpotUpdate ─────────────────
   async function writeState(payload){
     if(!db||!_isMaster)return;
     try{
+      const safePayload = sanitizeForFirestore(payload) || {};
       await db.collection("quadrax").doc("state").set({
-        ...payload,
+        ...safePayload,
         masterId:auth?.currentUser?.uid||"",
         ts:Date.now(),
         serverTs:firebase.firestore.FieldValue.serverTimestamp()
