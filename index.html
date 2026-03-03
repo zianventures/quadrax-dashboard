@@ -2184,6 +2184,12 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba,sa,signalBus,
     busForecast4h:SignalBus.get()?.forecasts?.["4h"]??null,
     qH:typeof _q!=='undefined'?(_q?.H??null):null,
     qAC1:typeof _q!=='undefined'?(_q?.ac1??null):null,
+    qAC2:typeof _q!=='undefined'?(_q?.ac2??null):null,
+    qAC3:typeof _q!=='undefined'?(_q?.ac3??null):null,
+    qAC4:typeof _q!=='undefined'?(_q?.ac4??null):null,
+    qAC5:typeof _q!=='undefined'?(_q?.ac5??null):null,
+    qHist:typeof _q!=='undefined'?(_q?.hist??null):null,
+    qHalfLife:typeof _q!=='undefined'?(_q?.halfLife??null):null,
     qVR:typeof _q!=='undefined'?_q?.volRegime?.regime:null,
     qVRratio:typeof _q!=='undefined'?_q?.volRegime?.ratio:null,
     qKelly:typeof _q!=='undefined'?(_q?.kelly?.f??null):null,
@@ -2191,6 +2197,7 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba,sa,signalBus,
     qOnCount:typeof _q!=='undefined'?(_q?.onCount??null):null,
     qAgainstCount:typeof _q!=='undefined'?(_q?.againstCount??null):null,
     qSignals:typeof _q!=='undefined'?_q?.signals:null,
+    qPrices:QuantEngine.getPrices().slice(-128),
   };
 }
 // Inject signal stats + projection data into state for READER rendering
@@ -2212,6 +2219,8 @@ function injectSignalStats(state,sigStats){
   state.projSharpeAdj=ProjTracker.getSharpeAdj();
   // Send last 30 log entries so READERs can render the projection log table identically
   state.projLogEntries=ProjTracker.getLog().slice(-100);
+  // Correlation matrix — computed live on MASTER, sent to all Readers via Firestore
+  state.corrData=CorrEngine.getCorrelations();
   return state;
 }
 
@@ -2240,6 +2249,8 @@ function applyFullStateToUI(st){
     const mb=$("miniBar");if(mb){mb.style.width=Math.max(10,dw)+"%";mb.style.background=(st.spotDelta||0)>=0?"rgba(0,214,143,.85)":"rgba(255,71,87,.85)";}
   }
   setRisk(st.policy,st.conf);
+  // Tick chart — draw from MASTER price history sent in state
+  if(st.qPrices&&st.qPrices.length>=2)drawTickChart(st.qPrices);
   // Regime move risk + large move probability (policy state semantics)
   const rm=REGIME_META[st.policy];
   if($("moveRiskVal")) $("moveRiskVal").textContent=rm?rm.moveRisk:"--";
@@ -2388,7 +2399,8 @@ function applyFullStateToUI(st){
     });
   }
   // Quant Engine for READER: render from state fields
-  if(st.qH!=null){updateQuantUI({H:st.qH,ac1:st.qAC1||0,ac2:0,ac3:0,ac4:0,ac5:0,kelly:{f:st.qKelly||0,pct:Math.round(Math.abs(st.qKelly||0)*100)},volRegime:{ratio:st.qVRratio||1,regime:st.qVR||'NORMAL'},hist:{bins:[],min:0,max:0},halfLife:null,signals:st.qSignals||[],conviction:st.qConviction||0,onCount:st.qOnCount||0,againstCount:st.qAgainstCount||0});}
+  // Always call updateQuantUI — it handles null fields internally (shows '--' placeholders)
+  updateQuantUI({H:st.qH??null,ac1:st.qAC1||0,ac2:st.qAC2||0,ac3:st.qAC3||0,ac4:st.qAC4||0,ac5:st.qAC5||0,kelly:{f:st.qKelly||0,pct:Math.round(Math.abs(st.qKelly||0)*100)},volRegime:{ratio:st.qVRratio||1,regime:st.qVR||'NORMAL'},hist:st.qHist||{bins:[],min:0,max:0},halfLife:st.qHalfLife??null,signals:st.qSignals||[],conviction:st.qConviction||0,onCount:st.qOnCount||0,againstCount:st.qAgainstCount||0});
   // Signal Performance: if state has signal stats (from MASTER), render them
   // This gives READER identical signal display to MASTER
   if(st.sigEquity!=null){
@@ -2402,6 +2414,10 @@ function applyFullStateToUI(st){
   paintFxPair("GBP","gbpPx","gbpMeta","gbpTag","gbpSpark",st.gbpChg);
   paintFxPair("AUD","audPx","audMeta","audTag","audSpark",st.audChg);
   paintFxPair("NZD","nzdPx","nzdMeta","nzdTag","nzdSpark",st.nzdChg);
+  // Correlation matrix — Readers render from MASTER's corrData (CorrEngine is MASTER-only)
+  if(st.corrData){
+    updateCorrUI(st.corrData);
+  }
 }
 
 // ── PROJECTION ACCURACY UI ────────────────────────────────────────────────
@@ -2465,7 +2481,7 @@ function updateQuantUI(q){
    if(ca){ca.style.strokeDashoffset=(circ*(1-q.conviction));ca.style.stroke=clr;}
    if(cp)cp.textContent=pct+"%";
    if(cl){cl.textContent=q.conviction>=0.65?"HIGH CONVICTION":q.conviction>=0.45?"MODERATE":q.conviction>=0.25?"BUILDING":"NEUTRAL";cl.style.color=clr;}
-   if(cd)cd.textContent=q.onCount+" of 7 signals aligned, "+q.againstCount+" against";
+   if(cd)cd.textContent=(q.onCount||0)+" of 7 signals aligned, "+(q.againstCount||0)+" against";
    if(sf){sf.style.width=pct+"%";sf.style.background=clr;}
    if(cr)cr.style.borderColor=q.conviction>=0.6?"rgba(24,209,138,.25)":q.conviction>=0.35?"rgba(255,176,32,.20)":"rgba(180,220,255,.10)";}
 }
