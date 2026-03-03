@@ -2159,7 +2159,7 @@ function leverPaint(barEl,pctEl,val,dir){const pct=Math.round(val*100);if(pctEl)
 function computeProj(step,tx,cm,ba,sa){const base1h={1:6,2:10,3:7,4:12,5:18,6:16,7:14,8:26};const pol=step?.policy||1,volx=step?.features?.volx??1,momBp=bp(step?.features?.mom??0),conf=(step?.conf??.25)*((ba||1)*(sa||1));const volMult=clamp(.75+.18*volx,.65,1.85),txMult=clamp(1.0+.55*tx.intensity,1.0,1.6),eRisk=tx.components.eventInt;const r1Raw=Math.round((base1h[pol]??8)*volMult*txMult*clamp(1.0+.65*eRisk,1,1.7));const r4Raw=Math.round(r1Raw*2.6*clamp(1.0+.35*eRisk,1,1.35));const momDir=Math.tanh(momBp/18),score=clamp(.55*momDir+.75*tx.score,-1,1);const bias=score>=.20?"LONG":score<=-.20?"SHORT":"NEUTRAL";const agree=1-Math.abs(momDir-tx.score)/2,dec=clamp(.35*conf+.45*agree+.20*(1-eRisk*.6),0,1);const r1dRaw=Math.round(r4Raw*2.5);return{bias,r1:clamp(r1Raw,3,80),r4:clamp(r4Raw,6,160),r1d:clamp(r1dRaw,12,400),decPct:Math.round(dec*100),volMult,txMult,eRisk};}
 
 // ── BUILD FULL STATE (MASTER packs everything, READERs unpack and render) ──
-function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba,sa,signalBus,projStats,projLogEntries){
+function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba,sa,signalBus,projStats,projLogEntries,_quant){
   return{
     spotPrice:spot?.price,spotDelta:spot?.lastDelta,spotSource:spot?.source,spotTs:spot?.ts,
     policy:step.policy,detector:step.detector,conf:step.conf,hold:step.hold,
@@ -2182,21 +2182,21 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba,sa,signalBus,
     busRiskPct:SignalBus.get()?.risk?.pct??null,
     busCoherence:SignalBus.get()?.coherence??null,    busForecast1h:SignalBus.get()?.forecasts?.["1h"]??null,
     busForecast4h:SignalBus.get()?.forecasts?.["4h"]??null,
-    qH:typeof _q!=='undefined'?(_q?.H??null):null,
-    qAC1:typeof _q!=='undefined'?(_q?.ac1??null):null,
-    qAC2:typeof _q!=='undefined'?(_q?.ac2??null):null,
-    qAC3:typeof _q!=='undefined'?(_q?.ac3??null):null,
-    qAC4:typeof _q!=='undefined'?(_q?.ac4??null):null,
-    qAC5:typeof _q!=='undefined'?(_q?.ac5??null):null,
-    qHist:typeof _q!=='undefined'?(_q?.hist??null):null,
-    qHalfLife:typeof _q!=='undefined'?(_q?.halfLife??null):null,
-    qVR:typeof _q!=='undefined'?_q?.volRegime?.regime:null,
-    qVRratio:typeof _q!=='undefined'?_q?.volRegime?.ratio:null,
-    qKelly:typeof _q!=='undefined'?(_q?.kelly?.f??null):null,
-    qConviction:typeof _q!=='undefined'?(_q?.conviction??null):null,
-    qOnCount:typeof _q!=='undefined'?(_q?.onCount??null):null,
-    qAgainstCount:typeof _q!=='undefined'?(_q?.againstCount??null):null,
-    qSignals:typeof _q!=='undefined'?_q?.signals:null,
+    qH:_quant?.H??null,
+    qAC1:_quant?.ac1??null,
+    qAC2:_quant?.ac2??null,
+    qAC3:_quant?.ac3??null,
+    qAC4:_quant?.ac4??null,
+    qAC5:_quant?.ac5??null,
+    qHist:_quant?.hist??null,
+    qHalfLife:_quant?.halfLife??null,
+    qVR:_quant?.volRegime?.regime??null,
+    qVRratio:_quant?.volRegime?.ratio??null,
+    qKelly:_quant?.kelly?.f??null,
+    qConviction:_quant?.conviction??null,
+    qOnCount:_quant?.onCount??null,
+    qAgainstCount:_quant?.againstCount??null,
+    qSignals:_quant?.signals??null,
     qPrices:QuantEngine.getPrices().slice(-128),
   };
 }
@@ -2728,7 +2728,7 @@ async function onSpotUpdate(s){
   updateForecastUI(_dailyF);
   drawTickChart(QuantEngine.getPrices());
   {const fp=$('fxSpotPrice');if(fp){fp.classList.remove('pricePulse');void fp.offsetWidth;fp.classList.add('pricePulse');}}
-  const fullState=buildFullState(step,tx,proj,pb3,arch,s,recentStates,cm,ba,sa,_bus,_projSt,ProjTracker.getLog());
+  const fullState=buildFullState(step,tx,proj,pb3,arch,s,recentStates,cm,ba,sa,_bus,_projSt,ProjTracker.getLog(),_q);
   // ── Inject signal stats BEFORE applyFullStateToUI so sigEquity is available ─
   const sigStats=ProjTracker.getSignalPerf(s.price,30);
   injectSignalStats(fullState,sigStats);
