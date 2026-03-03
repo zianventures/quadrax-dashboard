@@ -1979,9 +1979,14 @@ const FirebaseSync=(()=>{
   // Numbers/strings/booleans/null stored natively. Everything else → JSON string.
   // _hydrate reverses this on the Reader's onSnapshot callback.
   function _sanitise(payload){
+    // Firestore rules:
+    //   • undefined → MUST become null (Firestore rejects undefined)
+    //   • null/number/boolean/string → stored natively
+    //   • everything else (arrays, objects) → JSON.stringify to avoid nested-array rejection
     const safe={};
     for(const[k,v]of Object.entries(payload)){
-      if(v===null||v===undefined||typeof v==="number"||typeof v==="boolean"){safe[k]=v;continue;}
+      if(v===undefined){safe[k]=null;continue;}          // ← KEY: undefined → null
+      if(v===null||typeof v==="number"||typeof v==="boolean"){safe[k]=v;continue;}
       if(typeof v==="string"){safe[k]=v;continue;}
       try{safe[k]=JSON.stringify(v);}catch{safe[k]=null;}
     }
@@ -2088,7 +2093,7 @@ function drawCone(spot,r1,r4,r1d,bias,calibMult){
   if(Math.abs(cm-1)>0.01){ctx.font="11px ui-monospace,monospace";ctx.fillStyle="rgba(255,176,32,.80)";ctx.fillText("calib x"+cm.toFixed(2),16,40);}
 }
 function drawEquity(arr){const canvas=$("equityCanvas");if(!canvas||arr.length<2)return;const{ctx,w,h}=setupCanvas(canvas);const mn=Math.min(...arr),mx=Math.max(...arr),range=mx-mn||.0001;const isPos=arr.at(-1)>=0;ctx.clearRect(0,0,w,h);ctx.beginPath();arr.forEach((v,i)=>{const x=(i/(arr.length-1))*w,y=h-((v-mn)/range)*(h-4)-2;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.strokeStyle=isPos?"rgba(0,214,143,.85)":"rgba(255,77,77,.75)";ctx.lineWidth=2;ctx.stroke();ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fillStyle=isPos?"rgba(0,214,143,.08)":"rgba(255,77,77,.08)";ctx.fill();if(mn<0&&mx>0){const zy=h-((0-mn)/range)*(h-4)-2;ctx.strokeStyle="rgba(232,239,255,.22)";ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(0,zy);ctx.lineTo(w,zy);ctx.stroke();ctx.setLineDash([]);}}
-function drawTM(matrix){const body=$("tmBody");if(!body)return;const rows=[];for(let i=0;i<8;i++){const row=matrix[i],total=row.reduce((a,b)=>a+b,0),norm=total>0?row.map(v=>v/total):new Array(8).fill(0);const cells=norm.map((v,j)=>{const alpha=clamp(v*4,0,.85);const col=v>.3?STATES[j].color.replace(/[\d.]+\)$/,alpha+")"):"rgba(255,255,255,"+(alpha*.5)+")";const txt=v>.01?Math.round(v*100)+"%":"";return"<td style='background:"+col+";color:rgba(255,255,255,"+Math.max(v*3,.6)+");font-size:9px'>"+txt+"</td>";}).join("");rows.push("<tr><td class='rl'>S"+(i+1)+"</td>"+cells+"</tr>");}body.innerHTML=rows.join("");}
+function drawTM(matrix){const body=$("tmBody");if(!body||!matrix)return;const rows=[];for(let i=0;i<8;i++){const row=Array.isArray(matrix[i])?matrix[i]:new Array(8).fill(0.125);const total=row.reduce((a,b)=>a+b,0),norm=total>0?row.map(v=>v/total):new Array(8).fill(0);const cells=norm.map((v,j)=>{const alpha=clamp(v*4,0,.85);const col=v>.3?STATES[j].color.replace(/[\d.]+\)$/,alpha+")"):"rgba(255,255,255,"+(alpha*.5)+")";const txt=v>.01?Math.round(v*100)+"%":"";return"<td style='background:"+col+";color:rgba(255,255,255,"+Math.max(v*3,.6)+");font-size:9px'>"+txt+"</td>";}).join("");rows.push("<tr><td class='rl'>S"+(i+1)+"</td>"+cells+"</tr>");}body.innerHTML=rows.join("");}
 
 function drawTickChart(prices){
   const canvas=$("tickChart");if(!canvas||prices.length<2)return;
@@ -2169,7 +2174,7 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba,sa,signalBus,
     archetype:arch.archetype,archConf:arch.confidence,archBias:arch.eurusdBias,archNote:arch.note,archAnalog:arch.analog,
     txScore:tx.score,txIntensity:tx.intensity,txBias:tx.bias,
     oilInt:tx.components.oilInt,usdInt:tx.components.usdInt,fearInt:tx.components.fearInt,eventInt:tx.components.eventInt,
-    oilChg:MacroFeed.get("OIL")?.changePct,goldChg:MacroFeed.get("GOLD")?.changePct,usdChg:MacroFeed.get("USD")?.changePct,
+    oilChg:MacroFeed.get("OIL")?.changePct??null,goldChg:MacroFeed.get("GOLD")?.changePct??null,usdChg:MacroFeed.get("USD")?.changePct??null,
     gbpChg:tx.gbpChg,audChg:tx.audChg,nzdChg:tx.nzdChg,fxConf:tx.fxConf,fxInt:tx.fxInt,
     ts:Date.now(),
     busDir:SignalBus.get()?.consensus?.dir??null,
@@ -2177,22 +2182,22 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba,sa,signalBus,
     busRiskPct:SignalBus.get()?.risk?.pct??null,
     busCoherence:SignalBus.get()?.coherence??null,    busForecast1h:SignalBus.get()?.forecasts?.["1h"]??null,
     busForecast4h:SignalBus.get()?.forecasts?.["4h"]??null,
-    qH:typeof _q!=='undefined'?_q?.H:null,
-    qAC1:typeof _q!=='undefined'?_q?.ac1:null,
+    qH:typeof _q!=='undefined'?(_q?.H??null):null,
+    qAC1:typeof _q!=='undefined'?(_q?.ac1??null):null,
     qVR:typeof _q!=='undefined'?_q?.volRegime?.regime:null,
     qVRratio:typeof _q!=='undefined'?_q?.volRegime?.ratio:null,
-    qKelly:typeof _q!=='undefined'?_q?.kelly?.f:null,
-    qConviction:typeof _q!=='undefined'?_q?.conviction:null,
-    qOnCount:typeof _q!=='undefined'?_q?.onCount:null,
-    qAgainstCount:typeof _q!=='undefined'?_q?.againstCount:null,
+    qKelly:typeof _q!=='undefined'?(_q?.kelly?.f??null):null,
+    qConviction:typeof _q!=='undefined'?(_q?.conviction??null):null,
+    qOnCount:typeof _q!=='undefined'?(_q?.onCount??null):null,
+    qAgainstCount:typeof _q!=='undefined'?(_q?.againstCount??null):null,
     qSignals:typeof _q!=='undefined'?_q?.signals:null,
   };
 }
 // Inject signal stats + projection data into state for READER rendering
 function injectSignalStats(state,sigStats){
-  state.sigSharpe=sigStats.sharpe;
-  state.sigWinRate=sigStats.winRate;
-  state.sigOpenPL=sigStats.openPL;
+  state.sigSharpe=sigStats.sharpe??null;
+  state.sigWinRate=sigStats.winRate??null;
+  state.sigOpenPL=sigStats.openPL??null;
   state.sigTotalSignals=sigStats.totalSignals||sigStats.closedN||0;
   state.sigTotalPips=sigStats.totalPips||sigStats.closedPips||0;
   state.sigOpenBias=sigStats.openBias||null;
