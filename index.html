@@ -1405,6 +1405,8 @@ The <b>Cost Gate</b> is the entry gatekeeper. It computes a real-time <i>edge sc
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script>
 /* ── V28 LEGENDARY VISUALS (no external libs) ───────────────────────────── */
+// clamp is defined in the main IIFE — redeclare here so V28 block is self-contained
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 let __v28Ready=false;
 const V28=(()=> {
   const bg=document.getElementById("bgFX");
@@ -2105,7 +2107,12 @@ const MacroFeed=(()=>{
 const EventsFeed=(()=>{
   let cache=[],lastFetch=0;const TTL=5*60*1000;
   const FF_URL="https://nfs.faireconomy.media/ff_calendar_thisweek.json";
-  const mkProxies=u=>["https://api.allorigins.win/raw?url="+encodeURIComponent(u),"https://corsproxy.io/?"+encodeURIComponent(u),"https://api.codetabs.com/v1/proxy?quest="+encodeURIComponent(u)];
+  const mkProxies=u=>[
+    "https://corsproxy.io/?"+encodeURIComponent(u),
+    "https://api.allorigins.win/raw?url="+encodeURIComponent(u),
+    "https://api.codetabs.com/v1/proxy?quest="+encodeURIComponent(u),
+    "https://thingproxy.freeboard.io/fetch/"+u,
+  ];
   async function tryFetch(url,ms=10000){for(const prox of mkProxies(url)){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(t);if(!res.ok)continue;const txt=await res.text();let parsed;try{parsed=JSON.parse(txt);}catch{const m=txt.match(/^\s*[\[{]/);if(!m)continue;}parsed=parsed||JSON.parse(txt);if(Array.isArray(parsed))return parsed;if(parsed?.data){try{const d=JSON.parse(parsed.data);if(Array.isArray(d))return d;}catch{}}continue;}catch{clearTimeout(t);}}return null;}
   async function tick(){const now=Date.now();if(now-lastFetch<TTL&&cache.length>0)return;const cb=$("calBadge"),cl=$("calLastFetch");
     try{const json=await tryFetch(FF_URL,12000);if(!json||!json.length)throw new Error("no data");
@@ -2117,9 +2124,78 @@ const EventsFeed=(()=>{
 })();
 
 const HeadlinesFeed=(()=>{
-  const SOURCES=[{url:"https://www.forexlive.com/feed/news",name:"ForexLive"},{url:"https://www.fxstreet.com/rss/news",name:"FXStreet"}];
+  const RSS2J="https://api.rss2json.com/v1/api.json?rss_url=";
+  const SOURCES=[
+    {url:"https://www.forexlive.com/feed/news",name:"ForexLive"},
+    {url:"https://www.fxstreet.com/rss/news",name:"FXStreet"},
+    {url:"https://www.investing.com/rss/news_301.rss",name:"Investing.com"},
+  ];
+  const RAW_PROXIES=u=>[
+    "https://corsproxy.io/?"+encodeURIComponent(u),
+    "https://api.allorigins.win/raw?url="+encodeURIComponent(u),
+    "https://thingproxy.freeboard.io/fetch/"+u,
+  ];
   let cache=[],lastFetch=0;const TTL=5*60*1000;
-  async function tick(){const now=Date.now();if(now-lastFetch<TTL&&cache.length>0)return;const results=await Promise.allSettled(SOURCES.map(async src=>{const proxUrls=["https://api.allorigins.win/raw?url="+encodeURIComponent(src.url),"https://corsproxy.io/?"+encodeURIComponent(src.url)];let res=null,usedTimer=null;for(const prox of proxUrls){const c2=new AbortController();usedTimer=setTimeout(()=>c2.abort(),10000);try{const r=await fetch(prox,{method:"GET",cache:"no-store",signal:c2.signal});clearTimeout(usedTimer);if(r.ok){res=r;break;}}catch{clearTimeout(usedTimer);}}try{if(!res||!res.ok)throw new Error();const text=await res.text();const doc=new DOMParser().parseFromString(text,"application/xml");return[...doc.querySelectorAll("item")].slice(0,6).map(item=>{const rawPub=item.querySelector("pubDate")?.textContent||"";let ts="--";try{const d=new Date(rawPub);if(!isNaN(d))ts=fmtTS(d);}catch{}const title=(item.querySelector("title")?.textContent||"").replace(/<!\[CDATA\[|\]\]>/g,"").trim();const link=(item.querySelector("link")?.textContent||item.querySelector("guid")?.textContent||"#").trim();return{time:ts,source:src.name,title,url:link};}).filter(h=>h.title);}catch(e){clearTimeout(timer);return[];}}));const all=[];results.forEach(r=>{if(r.status==="fulfilled")all.push(...r.value);});if(all.length>0){cache=all.slice(0,12);lastFetch=now;const hb=$("headBadge");if(hb){hb.className="liveBadge live";hb.textContent="LIVE";}const hl=$("headLastFetch");if(hl)hl.textContent="Updated "+fmtTime(now);}else{const hb=$("headBadge");if(hb){hb.className="liveBadge stale";hb.textContent="RETRY";}const hl=$("headLastFetch");if(hl)hl.textContent="RSS fetch failed.";}renderHeadlines();}
+
+  async function fetchViaRSS2JSON(src){
+    // rss2json.com converts RSS→JSON with no CORS issues
+    const url=RSS2J+encodeURIComponent(src.url)+"&count=12";
+    const c=new AbortController();const t=setTimeout(()=>c.abort(),10000);
+    try{
+      const r=await fetch(url,{cache:"no-store",signal:c.signal});
+      clearTimeout(t);if(!r.ok)return null;
+      const j=await r.json();if(j.status!=="ok"||!j.items?.length)return null;
+      return j.items.slice(0,6).map(item=>{
+        const d=new Date(item.pubDate||Date.now());
+        return{time:isNaN(d)?"--":fmtTS(d),source:src.name,
+          title:(item.title||"").replace(/<[^>]+>/g,"").trim(),
+          url:item.link||item.url||"#"};
+      }).filter(h=>h.title);
+    }catch{clearTimeout(t);return null;}
+  }
+
+  async function fetchViaRawProxy(src){
+    // Fallback: parse RSS XML via CORS proxies
+    for(const prox of RAW_PROXIES(src.url)){
+      const c=new AbortController();const t=setTimeout(()=>c.abort(),9000);
+      try{
+        const r=await fetch(prox,{cache:"no-store",signal:c.signal});
+        clearTimeout(t);if(!r.ok)continue;
+        const text=await r.text();
+        const doc=new DOMParser().parseFromString(text,"application/xml");
+        const items=[...doc.querySelectorAll("item")].slice(0,6).map(item=>{
+          const rawPub=item.querySelector("pubDate")?.textContent||"";
+          let ts="--";try{const d=new Date(rawPub);if(!isNaN(d))ts=fmtTS(d);}catch{}
+          const title=(item.querySelector("title")?.textContent||"").replace(/<!\[CDATA\[|\]\]>/g,"").trim();
+          const link=(item.querySelector("link")?.textContent||item.querySelector("guid")?.textContent||"#").trim();
+          return{time:ts,source:src.name,title,url:link};
+        }).filter(h=>h.title);
+        if(items.length>0)return items;
+      }catch{clearTimeout(t);}
+    }
+    return null;
+  }
+
+  async function tick(){
+    const now=Date.now();
+    if(now-lastFetch<TTL&&cache.length>0)return;
+    const hb=$("headBadge"),hl=$("headLastFetch");
+    const all=[];
+    await Promise.allSettled(SOURCES.map(async src=>{
+      let items=await fetchViaRSS2JSON(src);
+      if(!items||!items.length) items=await fetchViaRawProxy(src);
+      if(items&&items.length) all.push(...items);
+    }));
+    if(all.length>0){
+      cache=all.slice(0,12);lastFetch=now;
+      if(hb){hb.className="liveBadge live";hb.textContent="LIVE";}
+      if(hl)hl.textContent="Updated "+fmtTime(now);
+    } else {
+      if(hb){hb.className="liveBadge stale";hb.textContent="RETRY";}
+      if(hl)hl.textContent="RSS fetch failed — will retry.";
+    }
+    renderHeadlines();
+  }
   return{tick,get:()=>cache};
 })();
 
