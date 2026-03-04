@@ -904,11 +904,11 @@ button:focus-visible,select:focus-visible{
   </div></div>
 
   <div class="card"><div class="inner">
-    <div class="card-title"><h2>Projection Accuracy &middot; Adaptive Learning</h2><div class="hint">Every LONG/SHORT call is scored daily (+24h). Range hit rate drives cone calibration. Stop rate tracks discipline. R/R ratio measures setup quality.</div></div>
+    <div class="card-title"><h2>Projection Accuracy &middot; Adaptive Learning</h2><div class="hint">Every LONG/SHORT call is scored daily (+24h). Range hit rate drives cone calibration. Target hit rate tracks forecast accuracye. R/R ratio measures setup quality.</div></div>
     <div class="paGrid" style="grid-template-columns:repeat(5,1fr)">
       <div class="paBox"><div class="k">Daily Range Hit</div><div class="v" id="pa1dRng">--</div><div class="meta" id="pa1dRngMeta">n=0 scored</div></div>
       <div class="paBox"><div class="k">Avg R/R Ratio</div><div class="v" id="paRR">--</div><div class="meta" id="paRRMeta">1d range ÷ stop</div></div>
-      <div class="paBox"><div class="k">Daily Stop Hit</div><div class="v" id="pa1dStop">--</div><div class="meta" id="pa1dStopMeta">Stop trigger rate</div></div>
+      <div class="paBox"><div class="k">Daily Target Hit</div><div class="v" id="pa1dStop">--</div><div class="meta" id="pa1dStopMeta">Stop trigger rate</div></div>
       <div class="paBox"><div class="k">Calibration Mult</div><div class="v" id="paCalibMult">1.00x</div><div class="meta" id="paCalibMeta">Cone width factor</div></div>
       <div class="paBox"><div class="k">Logged / Resolved</div><div class="v" id="paTotalN">0</div><div class="meta" id="paTotalMeta">0 resolved, 0 pending</div></div>
     </div>
@@ -918,10 +918,10 @@ button:focus-visible,select:focus-visible{
       <div><div class="ck">Bias Adaptation</div><div class="cv" id="paBiasAdj">Neutral</div></div>
     </div>
     <div class="paLog">
-      <div class="paLogLabel">Recent projection log &mdash; last 100 calls</div>
-      <div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Date</th><th>Entry</th><th>Stop</th><th>Exit 1d</th><th>Bias</th><th>1d Range</th><th>1d Result</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
+      <div class="paLogLabel">Recent projection log &mdash; full history (synced)</div>
+      <div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Date</th><th>Entry</th><th>Daily Target</th><th>Bias</th><th>1d Range</th><th>Target Hit</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
     </div>
-    <div class="smallNote" style="margin-top:6px">Scores resolve automatically. Daily outcomes scored at +1440min (24h). Cone width and bias confidence adapt from daily hit rates. Need 10+ resolved.</div>
+    <div class="smallNote" style="margin-top:6px">Signals logged once/hour. Daily target scored at +1440min (24h). Target Hit = price reached the forecasted daily level. Cone adapts from range hit rates. Need 10+ resolved.</div>
 
     <!-- Enhanced Adaptive Learning Breakdown -->
     <div style="margin-top:14px;border-top:1px solid rgba(180,220,255,.08);padding-top:12px">
@@ -1162,10 +1162,10 @@ button:focus-visible,select:focus-visible{
             Single source of truth. 6 signals vote direction. Bus outputs: Consensus dir, Conviction %, Coherence %, Risk Throttle %, and 3-TF forecast (1h/4h/1d). Weekly removed — daily cadence only.</div>
 
             <div style="margin-bottom:7px"><span style="color:rgba(100,200,255,.90);font-weight:500">Forward Projection · Cone</span><br>
-            Cone now shows <b>three horizons</b>: 1h (bright inner), 4h (mid zone), 1d (faded outer, dashed boundary). New boxes: <b>Move Range 1D</b>, <b>Stop Distance</b> (r1×0.75, min 8p), <b>R/R Daily</b> (1d÷stop — green ≥3:1, red &lt;1.5:1).</div>
+            Cone now shows <b>three horizons</b>: 1h (bright inner), 4h (mid zone), 1d (faded outer, dashed boundary). New boxes: <b>Move Range 1D</b>, <b>Stop Distance</b> (r1×0.75, min 8p), <b>R/R Daily</b> (1d range÷entry distance — green ≥3:1, red &lt;1.5:1).</div>
 
             <div style="margin-bottom:7px"><span style="color:rgba(100,200,255,.90);font-weight:500">Projection Accuracy · Adaptive Learning</span><br>
-            Every LONG/SHORT call scored at <b>+24h</b>. Panel: Daily Range Hit (target 60–80%), Daily Stop Hit, <b>Avg R/R</b> across resolved calls. Direction Hit removed — Range Hit is the reliable calibration metric. Adaptive learning activates at 10+ daily resolved.</div>
+            Every LONG/SHORT call scored at <b>+24h</b>. Panel: Daily Range Hit (target 60–80%), Daily Target Hit, <b>Avg R/R</b> across resolved calls. Direction Hit removed — Range Hit is the reliable calibration metric. Adaptive learning activates at 10+ daily resolved.</div>
 
             <div style="margin-bottom:7px"><span style="color:rgba(100,200,255,.90);font-weight:500">Signal Calibration Summary (was Direction Learning)</span><br>
             Now shows: Bias Weight, <b>Sharpe Adjustment</b> (new — Sharpe quality multiplier), <b>Avg R/R</b>, and <b>Recent Streak</b> (e.g. "IN 4 of last 10"). Cone width and bias confidence both adapt from daily rates.</div>
@@ -1194,7 +1194,7 @@ button:focus-visible,select:focus-visible{
           </div>
           <div style="background:rgba(21,101,192,.12);border:1px solid rgba(41,121,255,.25);border-radius:6px;padding:10px;text-align:center">
             <div style="font-weight:500;color:rgba(100,180,255,.95);margin-bottom:4px">④ R/R FILTER</div>
-            <div style="color:rgba(255,255,255,.60)">R/R Daily ≥3:1 + Stop ≤20p.<br>Below 1.5:1 → pass setup.</div>
+            <div style="color:rgba(255,255,255,.60)">R/R Daily ≥3:1. High target hit rate = well-calibrated forecasts.</div>
           </div>
           <div style="background:rgba(21,101,192,.12);border:1px solid rgba(41,121,255,.25);border-radius:6px;padding:10px;text-align:center">
             <div style="font-weight:500;color:rgba(100,180,255,.95);margin-bottom:4px">⑤ CALIBRATION</div>
@@ -1330,14 +1330,23 @@ const MacroFeed=(()=>{
     {key:"AUD",sym:"AUDUSD=X",label:"AUD/USD",pxEl:"audPx",metaEl:"audMeta",tagEl:"audTag",sparkEl:"audSpark"},
     {key:"NZD",sym:"NZD=X",label:"NZD/USD",pxEl:"nzdPx",metaEl:"nzdMeta",tagEl:"nzdTag",sparkEl:"nzdSpark"}];
   let cache={};const bo={};
-  async function fetchYahoo(sym){const t0=performance.now();const prox="https://api.allorigins.win/raw?url="+encodeURIComponent("https://query1.finance.yahoo.com/v8/finance/chart/"+encodeURIComponent(sym)+"?interval=1d&range=2mo");const c=new AbortController();const timer=setTimeout(()=>c.abort(),12000);try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(timer);if(res.status===429)throw Object.assign(new Error("429"),{is429:true});if(!res.ok)throw new Error();const json=await res.json();const result=json?.chart?.result?.[0];if(!result)throw new Error();const meta=result.meta;const rawCloses=(result.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null&&Number.isFinite(v));if(rawCloses.length<2)throw new Error();
-    // Use closes array directly - meta.previousClose is stale for futures (contract roll gives false 15-25% swings)
-    const close=rawCloses.at(-1);
-    const prevClose=rawCloses.at(-2);
+  async function fetchYahoo(sym){const t0=performance.now();
+    const targetUrl="https://query1.finance.yahoo.com/v8/finance/chart/"+encodeURIComponent(sym)+"?interval=1d&range=2mo";
+    const proxies=[
+      "https://corsproxy.io/?"+encodeURIComponent(targetUrl),
+      "https://api.allorigins.win/raw?url="+encodeURIComponent(targetUrl),
+      "https://api.codetabs.com/v1/proxy?quest="+encodeURIComponent(targetUrl),
+      "https://thingproxy.freeboard.io/fetch/"+encodeURIComponent(targetUrl),
+    ];
+    async function tryProxy(prox){const c=new AbortController();const timer=setTimeout(()=>c.abort(),10000);try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(timer);if(res.status===429)throw Object.assign(new Error("429"),{is429:true});if(!res.ok)throw new Error();return await res.json();}catch(e){clearTimeout(timer);throw e;}}
+    let json=null;let is429=false;
+    for(const prox of proxies){try{json=await tryProxy(prox);if(json?.chart?.result?.[0])break;}catch(e){if(e?.is429)is429=true;json=null;}}
+    if(!json){return{ok:false,is429};}
+    try{const result=json.chart.result[0];const rawCloses=(result.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null&&Number.isFinite(v));if(rawCloses.length<2)return{ok:false};
+    const close=rawCloses.at(-1);const prevClose=rawCloses.at(-2);
     const rawChg=prevClose?(close/prevClose-1)*100:0;
-    // Sanity cap: >8% daily move on a macro instrument = almost certainly a data artefact
     const changePct=Math.abs(rawChg)>8?0:rawChg;
-    return{ok:true,close,prevClose,changePct,closes:rawCloses.slice(-20),latencyMs:Math.round(performance.now()-t0)};}catch(e){clearTimeout(timer);return{ok:false,is429:e?.is429};}}
+    return{ok:true,close,prevClose,changePct,closes:rawCloses.slice(-20),latencyMs:Math.round(performance.now()-t0)};}catch{return{ok:false};}}
   const fmtPx=x=>!Number.isFinite(x)?"--":x<10?x.toFixed(4):x.toFixed(2);
   const fmtPct=x=>!Number.isFinite(x)?"--":(x>=0?"+":"")+x.toFixed(2)+"%";
   function paintOne(item){const rec=cache[item.key],pEl=$(item.pxEl),mEl=$(item.metaEl),tEl=$(item.tagEl),sEl=$(item.sparkEl);if(!rec){if(pEl)pEl.textContent="--";if(mEl)mEl.textContent="No data";if(tEl){tEl.textContent=item.label;tEl.className="liveBadge error";}return;}if(pEl)pEl.textContent=fmtPx(rec.close);const ma=minsAgo(rec.ts);if(mEl)mEl.textContent=fmtPct(rec.changePct)+" Prev "+fmtPx(rec.prevClose)+(ma!=null?" "+ma+"m ago":"");if(tEl){tEl.textContent=item.label;tEl.className="liveBadge "+(ma!=null&&ma<120?"live":"stale");}if(pEl){pEl.classList.remove("pos","neg");if(rec.changePct>0.05)pEl.classList.add("pos");if(rec.changePct<-0.05)pEl.classList.add("neg");}if(sEl&&rec.closes?.length>1)drawSparkline(sEl,rec.closes,rec.changePct);}
@@ -1438,17 +1447,17 @@ const ProjTracker=(()=>{
   const MIN_N=5;
   let log=loadArr(KEY.proj,[]).slice(-200).map(p=>{
     // normalize/migrate older entries so new UI fields populate
-    const o={outcome1h:null,outcome4h:null,outcome1d:null,stopSpot:null,r1d:null,...p};
+    const o={outcome1h:null,outcome4h:null,outcome1d:null,targetSpot:null,targetHit:false,r1d:null,...p};
     const spotN=Number(o.spot);
     const r1N=Number(o.r1);
     const r4N=Number(o.r4);
     if(o.r1d==null && Number.isFinite(r4N)) o.r1d=Math.max(10, Math.round(r4N*2.5));
-    // Backfill stopSpot if missing. Uses r1 * 0.75 with an 8 pip floor (same as new logging).
-    if(o.stopSpot==null && Number.isFinite(spotN)){
-      const stopPips = Math.max(8, Math.round((Number.isFinite(r1N)?r1N:0)*0.75));
-      const stopSpot = (o.bias==="LONG") ? (spotN - stopPips/10000) : (o.bias==="SHORT") ? (spotN + stopPips/10000) : null;
-      if(stopSpot!=null) o.stopSpot=stopSpot;
+    // Migrate old entries: backfill targetSpot from r1d if missing
+    if(!o.targetSpot && Number.isFinite(spotN) && o.bias && o.r1d){
+      o.targetSpot = o.bias==="LONG" ? (spotN + o.r1d/10000) : (spotN - o.r1d/10000);
     }
+    // Remove legacy stop fields
+    delete o.stopSpot; delete o.stopHit; delete o.stopHitTs; delete o.stopHitSpot;
     return o;
   }); // normalize older entries so newer UI fields populate
   let calibMult=Number(settings.calibMult)||1.0;
@@ -1508,9 +1517,9 @@ const ProjTracker=(()=>{
     const last=log.length?log.at(-1):null;
     if(last&&(Date.now()-last.ts)<60*60*1000)return;
     const r1d = _r1dArg||Math.max(10, Math.round((r4||0)*2.5));
-    const stopPips = Math.max(8, Math.round((r1||0)*0.75));
-    const stopSpot = bias==="LONG" ? (spot - stopPips/10000) : (spot + stopPips/10000);
-    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,r1d,stopSpot,policy,outcome1h:null,outcome4h:null,outcome1d:null});
+    // Daily target: entry ± r1d pips in direction of bias
+    const targetSpot = bias==="LONG" ? (spot + r1d/10000) : (spot - r1d/10000);
+    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,r1d,targetSpot,targetHit:false,targetHitTs:null,policy,outcome1h:null,outcome4h:null,outcome1d:null});
     if(log.length>200)log=log.slice(-200);
     _persist();
   }
@@ -1524,10 +1533,15 @@ const ProjTracker=(()=>{
       const movePips=(currentSpot-p.spot)*10000;
       const dirOk=p.bias==="LONG"?movePips>0:p.bias==="SHORT"?movePips<0:false;
 
-      // Stop trigger detection (best-effort using spot updates; true intrabar sweeps are not observable here)
-      if(!p.stopHit && Number.isFinite(Number(p.stopSpot))){
-        if(p.bias==="LONG" && currentSpot<=p.stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
-        if(p.bias==="SHORT" && currentSpot>=p.stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
+      // Daily target hit detection — check if price touched the forecasted target
+      if(!p.targetHit && Number.isFinite(Number(p.targetSpot))){
+        const tgt=Number(p.targetSpot);
+        if(p.bias==="LONG" && currentSpot>=tgt){p.targetHit=true;p.targetHitTs=now;changed=true;}
+        if(p.bias==="SHORT" && currentSpot<=tgt){p.targetHit=true;p.targetHitTs=now;changed=true;}
+      }
+      // Back-compat: migrate old stopSpot entries to targetSpot format
+      if(!p.targetSpot && p.spot && p.bias && p.r1d){
+        p.targetSpot=p.bias==="LONG"?(p.spot+p.r1d/10000):(p.spot-p.r1d/10000);
       }
 
       if(p.outcome1h===null&&ageMins>=60){
@@ -1560,7 +1574,7 @@ const ProjTracker=(()=>{
       n1d:r1d.length,
       dir1dRate:r1d.length?r1d.filter(p=>p.outcome1d.dirHit).length/r1d.length:null,
       rng1dRate:r1d.length?r1d.filter(p=>p.outcome1d.rngHit).length/r1d.length:null,
-      stopRate1d:r1d.length?r1d.filter(p=>p.stopHit===true).length/r1d.length:null,
+      stopRate1d:r1d.length?r1d.filter(p=>p.targetHit===true).length/r1d.length:null,
       total:log.length,
       pending:log.filter(p=>p.outcome4h===null).length, // 4h-resolution tracking
     };
@@ -2412,7 +2426,7 @@ function injectSignalStats(state,sigStats){
   state.projBiasAdj=ProjTracker.getBiasConfAdj();
   state.projSharpeAdj=ProjTracker.getSharpeAdj();
   // Send last 30 log entries so READERs can render the projection log table identically
-  state.projLogEntries=ProjTracker.getLog().slice(-100);
+  state.projLogEntries=ProjTracker.getLog(); // send full history (up to 200) for Reader sync
   // Correlation matrix — computed live on MASTER, sent to all Readers via Firestore
   state.corrData=CorrEngine.getCorrelations();
   return state;
@@ -2424,7 +2438,7 @@ function injectSignalStats(state,sigStats){
 // _sanitise/_hydrate handle correctly. Arrays are JSON strings in Firestore, parsed back by _hydrate.
 function busFromState(st){
   if(!st||!st.busDir)return null;
-  if(FirebaseSync.isReader)console.log("[QuadraX] busFromState fields:",{busConvPct:st.busConvPct,busCoherence:st.busCoherence,busEventRisk:st.busEventRisk,busVolRegime:st.busVolRegime,busForecast1h:!!st.busForecast1h,busSignalSources:Array.isArray(st.busSignalSources)?st.busSignalSources.length:typeof st.busSignalSources});
+  // busFromState debug removed
   // Safe array parser: returns [] if field is a string (not yet parsed) or null
   const safeArr=v=>{
     if(!v)return [];
@@ -2570,7 +2584,7 @@ function applyFullStateToUI(st){
     const setV=(id,v,ok,bad)=>{const el=$(id);if(!el)return;el.textContent=v;el.classList.remove("pos","neg");if(ok)el.classList.add("pos");else if(bad)el.classList.add("neg");};
     // DAILY-only metrics
     setV("pa1dRng",fmt(st.projRng1d),(st.projRng1d||0)>=0.60&&(st.projRng1d||0)<=0.82,(st.projRng1d!=null)&&(st.projRng1d<0.45||st.projRng1d>0.88));
-    setV("pa1dStop",fmt(st.projStop1d),(st.projStop1d!=null)&&st.projStop1d<0.25,(st.projStop1d||0)>0.45);
+    setV("pa1dStop",fmt(st.projStop1d),(st.projStop1d!=null)&&st.projStop1d<0.35,(st.projStop1d||0)>0.45);
     {const rEntries=(st.projLogEntries||[]).filter(p=>p.outcome1d!==null&&p.r1d);
      const avgRR=rEntries.length?rEntries.reduce((acc,p)=>{const r1d=p.r1d||Math.max(10,Math.round((p.r4||0)*2.5));const sp=Math.max(8,Math.round((p.r1||0)*0.75));return acc+r1d/sp;},0)/rEntries.length:null;
      setV("paRR",avgRR?avgRR.toFixed(1)+":1":"--",avgRR!=null&&avgRR>=3.0,avgRR!=null&&avgRR<1.5);
@@ -2581,7 +2595,7 @@ function applyFullStateToUI(st){
     if(ptm)ptm.textContent=((st.projTotal||0)-(st.projPending||0))+" resolved, "+(st.projPending||0)+" pending";
     const mr=$("pa1dRngMeta"),ms=$("pa1dStopMeta");
     if(mr)mr.textContent="n="+(st.projN1d||0)+" scored";
-    if(ms)ms.textContent=(st.projN1d||0)>0?Math.round((st.projStop1d||0)*(st.projN1d||0))+" of "+(st.projN1d||0)+" stopped":"No daily data";
+    if(ms)ms.textContent=(st.projN1d||0)>0?Math.round((st.projStop1d||0)*(st.projN1d||0))+" of "+(st.projN1d||0)+" targets hit":"No daily data";
     const ready=(st.projN1d||0)>=10;
     const ps=$("paStatus");if(ps)ps.textContent=ready?"Active — "+(st.projN1d)+" daily resolved":"Collecting on MASTER ("+(st.projN1d||0)+"/10)";
     const pca=$("paConeAdj"),cm=st.projCalibMult||1;
@@ -2590,23 +2604,26 @@ function applyFullStateToUI(st){
     if(st.projLogEntries?.length){
       const plb=$("paLogBody");
       if(plb){
-        plb.innerHTML=st.projLogEntries.slice(-100).reverse().map(p=>{
+        plb.innerHTML=st.projLogEntries.slice().reverse().map(p=>{
+          // Daily target: show forecasted price and whether it was reached
+          const tgt=p.targetSpot!=null&&Number.isFinite(Number(p.targetSpot))?Number(p.targetSpot):
+            (p.spot&&p.bias&&p.r1d)?(p.bias==="LONG"?p.spot+p.r1d/10000:p.spot-p.r1d/10000):null;
+          const tgtStr=tgt?tgt.toFixed(5):"--";
+          // Target hit status — check targetHit flag OR check if outcome1d exit passed target
           const d1d=p.outcome1d;
-          const cls=v=>v===null?"pending":v?"hit":"miss";
-          const rtxt=o=>o===null?"...":o.rngHit?"IN":"OUT";
+          const tgtHit=p.targetHit===true||(d1d&&tgt&&(p.bias==="LONG"?d1d.exitSpot>=tgt:d1d.exitSpot<=tgt));
+          const isPend=!d1d&&!p.targetHit;
+          const hitCls=isPend?"pending":tgtHit?"hit":"miss";
+          const hitTxt=isPend?"pend":tgtHit?"✓ HIT":"✗ MISS";
           const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
-          const stopBase=(p.stopSpot!=null&&Number.isFinite(Number(p.stopSpot)))?Number(p.stopSpot).toFixed(5):"--";
-          const stop=p.stopHit?(stopBase+" ▸"):stopBase;
-          const e1d=p.stopHit&&p.stopHitSpot?p.stopHitSpot.toFixed(5)+" STP":(d1d?.exitSpot!=null&&Number.isFinite(d1d.exitSpot))?d1d.exitSpot.toFixed(5):"pend";
           const r1d=p.r1d||Math.max(10,Math.round((p.r4||0)*2.5));
           return"<tr>"
             +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
             +"<td style='font-family:var(--mono);font-size:10px'>"+(p.spot?p.spot.toFixed(5):"--")+"</td>"
-            +"<td style='font-family:var(--mono);font-size:10px;color:"+(p.stopHit?"var(--red)":"var(--text3)")+"'>"+stop+"</td>"
-            +"<td style='font-family:var(--mono);font-size:10px;color:"+(p.stopHit&&!d1d?"var(--red)":"var(--text3)")+"'>"+e1d+"</td>"
+            +"<td style='font-family:var(--mono);font-size:10px;color:"+(tgtHit?"var(--green)":"var(--text3)")+"'>"+tgtStr+(p.targetHit?" ✓":"")+"</td>"
             +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
             +"<td style='font-family:var(--mono)'>"+fmtSignedPips(p.bias,r1d,"p")+"</td>"
-            +"<td class='"+cls(d1d?.rngHit??null)+"'>"+rtxt(d1d)+"</td>"
+            +"<td class='"+hitCls+"'>"+hitTxt+"</td>"
             +"</tr>";
         }).join("");
       }
@@ -2834,7 +2851,7 @@ function updateProjAccuracyUI(){
   const setV=(id,v,ok,bad)=>{const el=$(id);if(!el)return;el.textContent=v;el.classList.remove("pos","neg");if(ok)el.classList.add("pos");else if(bad)el.classList.add("neg");};
   // DAILY-only metrics
   setV("pa1dRng",fmt(s.rng1dRate),(s.rng1dRate||0)>=0.60&&(s.rng1dRate||0)<=0.82,(s.rng1dRate!=null)&&(s.rng1dRate<0.45||s.rng1dRate>0.88));
-  setV("pa1dStop",fmt(s.stopRate1d),(s.stopRate1d!=null)&&s.stopRate1d<0.25,(s.stopRate1d||0)>0.45);
+  setV("pa1dStop",fmt(s.stopRate1d),(s.stopRate1d!=null)&&s.stopRate1d<0.35,(s.stopRate1d||0)>0.60);
   {const log=ProjTracker.getLog(),resolved=log.filter(p=>p.outcome1d!==null&&p.r1d);
    const avgRR=resolved.length?resolved.reduce((acc,p)=>{const r1d=p.r1d||Math.max(10,Math.round((p.r4||0)*2.5));const sp=Math.max(8,Math.round((p.r1||0)*0.75));return acc+r1d/sp;},0)/resolved.length:null;
    setV("paRR",avgRR?avgRR.toFixed(1)+":1":"--",avgRR!=null&&avgRR>=3.0,avgRR!=null&&avgRR<1.5);
@@ -2844,7 +2861,7 @@ function updateProjAccuracyUI(){
   const ptn=$("paTotalN"),ptm=$("paTotalMeta");if(ptn)ptn.textContent=String(s.total);if(ptm)ptm.textContent=(s.total-s.pending)+" resolved, "+s.pending+" pending";
   const mr=$("pa1dRngMeta"),ms=$("pa1dStopMeta");
   if(mr)mr.textContent="n="+(s.n1d||0)+" scored";
-  if(ms)ms.textContent=(s.n1d||0)>0?Math.round((s.stopRate1d||0)*(s.n1d||0))+" of "+(s.n1d||0)+" stopped":"No daily data";
+  if(ms)ms.textContent=(s.n1d||0)>0?Math.round((s.stopRate1d||0)*(s.n1d||0))+" of "+(s.n1d||0)+" targets hit":"No daily data";
   const ready=(s.n1d||0)>=10;
   const ps=$("paStatus"),pca=$("paConeAdj"),pba=$("paBiasAdj");
   if(ps)ps.textContent=ready?"Active — "+(s.n1d)+" daily resolved":"Collecting (need 10 daily, have "+(s.n1d||0)+")";
@@ -2862,15 +2879,14 @@ function updateProjAccuracyUI(){
     const cls=v=>v===null?"pending":v?"hit":"miss";
     const rtxt=o=>o===null?"...":o.rngHit?"IN":"OUT";
     const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
-    const stopBase=(p.stopSpot!=null&&Number.isFinite(Number(p.stopSpot)))?Number(p.stopSpot).toFixed(5):"--";
-    const stop=p.stopHit?(stopBase+" ▸"):stopBase;
-    const e1d=p.stopHit&&p.stopHitSpot?p.stopHitSpot.toFixed(5)+" STP":(d1d?.exitSpot!=null&&Number.isFinite(d1d.exitSpot))?d1d.exitSpot.toFixed(5):"pend";
+    const tgtBase=(p.targetSpot!=null&&Number.isFinite(Number(p.targetSpot)))?Number(p.targetSpot).toFixed(5):"--";
+    const e1d=(d1d?.exitSpot!=null&&Number.isFinite(d1d.exitSpot))?d1d.exitSpot.toFixed(5):"pend";
     const r1d=p.r1d||Math.max(10,Math.round((p.r4||0)*2.5));
     return"<tr>"
       +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
       +"<td style='font-family:var(--mono);font-size:10px'>"+(p.spot?p.spot.toFixed(5):"--")+"</td>"
-      +"<td style='font-family:var(--mono);font-size:10px;color:"+(p.stopHit?"var(--red)":"var(--text3)")+"'>"+stop+"</td>"
-      +"<td style='font-family:var(--mono);font-size:10px;color:"+(p.stopHit&&!d1d?"var(--red)":"var(--text3)")+"'>"+e1d+"</td>"
+      +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+tgtBase+"</td>"
+      +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e1d+"</td>"
       +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
       +"<td style='font-family:var(--mono)'>"+fmtSignedPips(p.bias,r1d,"p")+"</td>"
       +"<td class='"+cls(d1d?.rngHit??null)+"'>"+rtxt(d1d)+"</td>"
@@ -3195,12 +3211,12 @@ async function start(){
     wAttempts++;
     const spot=SpotFeed.getLast();
     // Wait for SpotFeed to have a valid price (no busy-spin without data)
-    if(!spot.price||(Date.now()-spot.ts)>300000)return;
+    if(!spot.price||(Date.now()-spot.ts)>86400000)return;
     // Engine needs 3 prices before it returns a valid step (first 2 calls return null)
     const step=Engine.step(spot.price);
+    updateWarmupBadge(Engine.getTickN(),Engine.getTickN()>=Engine.WARMUP);
     if(!step)return;
     pushState(step.policy);
-    updateWarmupBadge(step.tickN,step.warmed);
     // Update spot display and last-update timestamp on every warmup tick
     const lu=$("lastUpdate");if(lu)lu.textContent=fmtTime(spot.ts)+" (warming)";
     const fp=$('fxSpotPrice');if(fp)fp.textContent=spot.price.toFixed(5);
