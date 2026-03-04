@@ -1308,6 +1308,70 @@ body::after{
 </div>
 </div></div>
 </div>
+<!-- Session Playbook section -->
+<div style="margin-top:14px;border-top:1px solid rgba(180,220,255,.07);padding-top:12px">
+<div class="bk" style="margin-bottom:8px">Session Playbook &amp; Cost Gate — how it works</div>
+<div style="font-size:12px;line-height:1.75;color:rgba(255,255,255,.82);margin-bottom:10px">
+The <b>Session Playbook</b> is a session-aware decision layer that runs every second. It identifies which FX trading session is currently active (Asia Drift, Asia Core, London Open, London Core, NY Overlap, NY PM, Post-Fix Decay), prints the session's operational character, and generates a ranked set of trade recommendations — each labelled WAIT / BUY / SELL / HOLD / RISK / HC / VR — calibrated to that session's real-world liquidity and spread environment.
+<br/><br/>
+The <b>Cost Gate</b> is the entry gatekeeper. It computes a real-time <i>edge score</i> from conviction level (0–100%) and vol regime, then compares it against a session-specific threshold. Day sessions (London / NY) use a low threshold — they have tight spreads and deep liquidity. Night sessions (Asia, Post-Fix) use a strict threshold because thin books mean your edge is eaten by spread and slippage.
+</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:11px;margin-bottom:10px">
+  <div style="background:rgba(0,100,50,.14);border:1px solid rgba(0,214,143,.20);border-radius:6px;padding:9px;text-align:center">
+    <div style="font-weight:700;color:rgba(0,214,143,.90);margin-bottom:3px">LONDON OPEN<br/>06:00–09:00 UTC</div>
+    <div style="color:rgba(255,255,255,.55)">Best breakout window. Low cost gate threshold. Conviction ≥30% passes.</div>
+  </div>
+  <div style="background:rgba(0,100,50,.14);border:1px solid rgba(0,214,143,.20);border-radius:6px;padding:9px;text-align:center">
+    <div style="font-weight:700;color:rgba(0,214,143,.90);margin-bottom:3px">NY OVERLAP<br/>12:00–16:00 UTC</div>
+    <div style="color:rgba(255,255,255,.55)">Highest volume. Great edge — also the sharpest whipsaws. Best for structured entries.</div>
+  </div>
+  <div style="background:rgba(100,80,0,.14);border:1px solid rgba(255,176,32,.20);border-radius:6px;padding:9px;text-align:center">
+    <div style="font-weight:700;color:rgba(255,176,32,.90);margin-bottom:3px">ASIA CORE<br/>01:00–06:00 UTC</div>
+    <div style="color:rgba(255,255,255,.55)">Strict cost gate. Fades and mean-reversions only. Requires ≥55% conviction to pass.</div>
+  </div>
+  <div style="background:rgba(100,20,20,.14);border:1px solid rgba(255,71,87,.20);border-radius:6px;padding:9px;text-align:center">
+    <div style="font-weight:700;color:rgba(255,71,87,.90);margin-bottom:3px">POST-FIX / WEEKEND</div>
+    <div style="color:rgba(255,255,255,.55)">Cost gate always fails. Spreads widen, liquidity dries up. Protect existing positions only.</div>
+  </div>
+</div>
+<div style="font-size:11px;color:rgba(255,255,255,.50);line-height:1.6;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:6px">
+  <b style="color:rgba(180,220,255,.70)">Cost Gate PASS</b> means edge &#62; session threshold. Recommendations will show directional setups (BUY / SELL).<br/>
+  <b style="color:rgba(255,176,32,.70)">Cost Gate FAIL</b> means cost eats your edge at current conviction. Recommendations show WAIT / HOLD / RISK advisory set instead. Build conviction by waiting for more signal alignment, or wait for a more liquid session window.
+</div>
+</div>
+
+<!-- Signal Intelligence section -->
+<div style="margin-top:14px;border-top:1px solid rgba(180,220,255,.07);padding-top:12px">
+<div class="bk" style="margin-bottom:8px">Signal Intelligence · Command Layer — what the orb and radar show</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px;line-height:1.70;color:rgba(255,255,255,.82);margin-bottom:10px">
+  <div style="background:rgba(21,101,192,.08);border:1px solid rgba(61,142,255,.18);border-radius:8px;padding:12px">
+    <div style="font-weight:700;color:rgba(100,180,255,.95);margin-bottom:6px">🔵 REGIME ORB</div>
+    A live animated sphere whose colour and energy directly encode the market's current state:
+    <ul style="margin:6px 0 0 14px;padding:0;color:rgba(255,255,255,.65)">
+      <li><b style="color:rgba(0,214,143,.90)">Blue / calm</b> — Conviction low, vol normal. Market is structured. Size conservatively.</li>
+      <li><b style="color:rgba(245,166,35,.90)">Amber / pulsing</b> — Conviction building, vol elevated. Active transition. Stay alert.</li>
+      <li><b style="color:rgba(255,71,87,.90)">Red / hot</b> — High conviction + high vol. Fragile state. Full risk discipline required.</li>
+    </ul>
+    <div style="margin-top:8px;color:rgba(255,255,255,.45);font-size:11px">The rotating equatorial band speeds up with energy. The label below the orb gives the plain-English state: CALM / ACTIVE / HOT.</div>
+  </div>
+  <div style="background:rgba(21,101,192,.08);border:1px solid rgba(61,142,255,.18);border-radius:8px;padding:12px">
+    <div style="font-weight:700;color:rgba(100,180,255,.95);margin-bottom:6px">📡 SIGNAL RADAR</div>
+    A 5-axis spider chart mapping the five independent signal dimensions simultaneously:
+    <ul style="margin:6px 0 0 14px;padding:0;color:rgba(255,255,255,.65)">
+      <li><b>REGIME</b> — HMM Hurst coherence (how trend-persistent the current regime is)</li>
+      <li><b>EDGE</b> — Kelly criterion sizing confidence (statistical edge quality)</li>
+      <li><b>RISK</b> — Vol regime intensity (higher = more caution)</li>
+      <li><b>FLOW</b> — Signal bus conviction (% of signals aligned)</li>
+      <li><b>CALIB</b> — Mean-reversion half-life proxy (how fast edges decay)</li>
+    </ul>
+    <div style="margin-top:8px;color:rgba(255,255,255,.45);font-size:11px">A large polygon = broad-based alignment. A collapsed polygon = conflicting signals. Colour: green = low risk, amber = transitional, red = fragile.</div>
+  </div>
+</div>
+<div style="font-size:11px;color:rgba(255,255,255,.50);line-height:1.6;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:6px">
+  Both panels animate continuously at 60fps. They are driven by the live QuantEngine output — during warmup (first 20 ticks) they display a neutral default state. The Coherence % label under the radar is the average of all five axes and gives a single-number summary of overall system alignment.
+</div>
+</div>
+
 <!-- Workflow steps -->
 <div style="margin-top:14px;border-top:1px solid rgba(180,220,255,.07);padding-top:12px">
 <div class="bk" style="margin-bottom:8px">Operator Workflow — read in order</div>
@@ -1637,6 +1701,10 @@ const V28=(()=> {
     })();
     (function loop(){
       drawBG();
+      // Drive orb + radar from cached q so they animate continuously
+      const lq = (typeof window !== "undefined" && window.__qxLastQ) || null;
+      try{ drawOrb(lq); }catch(e){}
+      try{ drawRadar(lq); }catch(e){}
       requestAnimationFrame(loop);
     })();
   }
@@ -1694,12 +1762,19 @@ const V28=(()=> {
   function clamp01(x){ return Math.max(0, Math.min(1, x)); }
 
   function costGate(session, conviction, vr){
-    // Cost model proxy: higher spread sessions need higher conviction.
-    const cost = session.spread; // "pips-ish" proxy
-    const edge = (0.35 + conviction*0.95) * (0.85 + clamp01((vr-1)/2)*0.30) * session.liq;
-    // gate: edge must clear cost with buffer
-    const clears = edge > (0.85 + cost*0.18);
-    return {clears, cost, edge};
+    // Edge model: conviction drives core edge, scaled by session liquidity
+    // Vol > 1.2x penalises edge (wider real spreads / slippage)
+    const volPenalty = clamp01((vr - 1.2) / 2.0) * 0.35;
+    const edge = (conviction * 0.75 + 0.08) * session.liq * (1.0 - volPenalty);
+    // Threshold by session type:
+    //   DAY   (London/NY)  — lower bar; good liquidity, tight spreads
+    //   NIGHT (Asia/Fix)   — strict; thin book, cost eats edge
+    //   OFF   (weekend)    — never trade
+    const threshold = session.bucket === "DAY"  ? 0.28
+                    : session.bucket === "OFF"   ? 1.00
+                    :                              0.38; // NIGHT
+    const clears = edge > threshold;
+    return {clears, cost: session.spread, edge: +edge.toFixed(3), threshold};
   }
 
   function makeReco({side, title, meta, score, badge}){
@@ -1754,7 +1829,7 @@ const V28=(()=> {
       recos.push(makeReco({
         side:"WAIT",
         title:"No Trade (Cost Gate / Low Edge)",
-        meta:`Edge ${gate.edge.toFixed(2)} vs Cost ${gate.cost.toFixed(2)}. Wait for cleaner 15m setup or higher conviction regime.`,
+        meta:`Edge ${gate.edge.toFixed(2)} vs Threshold ${gate.threshold.toFixed(2)} (${sess.bucket==="DAY"?"Day session":"Night — strict"}). Build conviction or wait for London/NY open.`,
         score: Math.min(score, 55),
         badge:"WAIT"
       }));
@@ -1777,7 +1852,7 @@ const V28=(()=> {
       const dirTxt = call==="BUY"?"Long bias":"Short bias";
       const volTxt = vr>=1.35?"high vol":"normal vol";
       const primary = sess.key==="LON_OPEN"||sess.key==="NY_OVER" ? "Breakout / Continuation" : "Pullback / Fade";
-      const secondary = sess.key.startswith?.("ASIA") ? "Range Mean-Revert" : "Trend Add-on";
+      const secondary = sess.key.startsWith("ASIA") ? "Range Mean-Revert" : "Trend Add-on";
 
       recos.push(makeReco({
         side:call,
@@ -2001,14 +2076,23 @@ const MacroFeed=(()=>{
     {key:"AUD",sym:"AUDUSD=X",label:"AUD/USD",pxEl:"audPx",metaEl:"audMeta",tagEl:"audTag",sparkEl:"audSpark"},
     {key:"NZD",sym:"NZD=X",label:"NZD/USD",pxEl:"nzdPx",metaEl:"nzdMeta",tagEl:"nzdTag",sparkEl:"nzdSpark"}];
   let cache={};const bo={};
-  async function fetchYahoo(sym){const t0=performance.now();const prox="https://api.allorigins.win/raw?url="+encodeURIComponent("https://query1.finance.yahoo.com/v8/finance/chart/"+encodeURIComponent(sym)+"?interval=1d&range=2mo");const c=new AbortController();const timer=setTimeout(()=>c.abort(),12000);try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(timer);if(res.status===429)throw Object.assign(new Error("429"),{is429:true});if(!res.ok)throw new Error();const json=await res.json();const result=json?.chart?.result?.[0];if(!result)throw new Error();const meta=result.meta;const rawCloses=(result.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null&&Number.isFinite(v));if(rawCloses.length<2)throw new Error();
+  const YAHOO_PROXIES=[
+    u=>"https://corsproxy.io/?"+encodeURIComponent(u),
+    u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u),
+    u=>"https://api.codetabs.com/v1/proxy?quest="+encodeURIComponent(u),
+    u=>"https://thingproxy.freeboard.io/fetch/"+u,
+  ];
+  async function fetchYahoo(sym){const t0=performance.now();
+    const yUrl="https://query1.finance.yahoo.com/v8/finance/chart/"+encodeURIComponent(sym)+"?interval=1d&range=2mo";
+    for(const mkP of YAHOO_PROXIES){const prox=mkP(yUrl);const c=new AbortController();const timer=setTimeout(()=>c.abort(),10000);try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(timer);if(res.status===429)throw Object.assign(new Error("429"),{is429:true});if(!res.ok)continue;const json=await res.json();const result=json?.chart?.result?.[0];if(!result)continue;const rawCloses=(result.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null&&Number.isFinite(v));if(rawCloses.length<2)continue;
     // Use closes array directly - meta.previousClose is stale for futures (contract roll gives false 15-25% swings)
     const close=rawCloses.at(-1);
     const prevClose=rawCloses.at(-2);
     const rawChg=prevClose?(close/prevClose-1)*100:0;
     // Sanity cap: >8% daily move on a macro instrument = almost certainly a data artefact
     const changePct=Math.abs(rawChg)>8?0:rawChg;
-    return{ok:true,close,prevClose,changePct,closes:rawCloses.slice(-20),latencyMs:Math.round(performance.now()-t0)};}catch(e){clearTimeout(timer);return{ok:false,is429:e?.is429};}}
+    return{ok:true,close:rawCloses.at(-1),prevClose:rawCloses.at(-2),changePct:(()=>{const cl=rawCloses.at(-1),pr=rawCloses.at(-2);const r=pr?(cl/pr-1)*100:0;return Math.abs(r)>8?0:r;})(),closes:rawCloses.slice(-20),latencyMs:Math.round(performance.now()-t0)};}catch(e){clearTimeout(timer);}}// end proxy loop
+    return{ok:false};}
   const fmtPx=x=>!Number.isFinite(x)?"--":x<10?x.toFixed(4):x.toFixed(2);
   const fmtPct=x=>!Number.isFinite(x)?"--":(x>=0?"+":"")+x.toFixed(2)+"%";
   function paintOne(item){const rec=cache[item.key],pEl=$(item.pxEl),mEl=$(item.metaEl),tEl=$(item.tagEl),sEl=$(item.sparkEl);if(!rec){if(pEl)pEl.textContent="--";if(mEl)mEl.textContent="No data";if(tEl){tEl.textContent=item.label;tEl.className="liveBadge error";}return;}if(pEl)pEl.textContent=fmtPx(rec.close);const ma=minsAgo(rec.ts);if(mEl)mEl.textContent=fmtPct(rec.changePct)+" Prev "+fmtPx(rec.prevClose)+(ma!=null?" "+ma+"m ago":"");if(tEl){tEl.textContent=item.label;tEl.className="liveBadge "+(ma!=null&&ma<120?"live":"stale");}if(pEl){pEl.classList.remove("pos","neg");if(rec.changePct>0.05)pEl.classList.add("pos");if(rec.changePct<-0.05)pEl.classList.add("neg");}if(sEl&&rec.closes?.length>1)drawSparkline(sEl,rec.closes,rec.changePct);}
