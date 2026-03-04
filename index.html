@@ -699,6 +699,31 @@ body::after{
 .bootBar i{display:block;height:100%;width:0%;background:linear-gradient(90deg, rgba(41,121,255,.9), rgba(0,214,143,.9));border-radius:999px;transition:width .4s var(--ease)}
 .bootMeta{display:flex;justify-content:space-between;margin-top:10px;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.45)}
 
+
+/* ── SESSION PLAYBOOK ─────────────────────────────────── */
+.sessGrid{display:grid;grid-template-columns:1fr 1.15fr;gap:12px;margin-top:10px}
+@media(max-width:900px){.sessGrid{grid-template-columns:1fr}}
+.sessName{font-size:18px;font-weight:700;letter-spacing:-.2px}
+.recoList{display:grid;gap:8px}
+.recoItem{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+  padding:10px 12px;border-radius:14px;
+  background:rgba(255,255,255,.025);
+  border:1px solid rgba(255,255,255,.06);
+}
+.recoItem.ghost{opacity:.7}
+.recoMain{display:grid;gap:3px}
+.recoTitle{font-weight:650;font-size:12.5px;letter-spacing:.1px}
+.recoMeta{font-size:11px;color:var(--text3);line-height:1.4}
+.recoSide{display:grid;gap:6px;min-width:130px;justify-items:end}
+.recoBadge{
+  font-family:var(--mono);font-size:10.5px;padding:5px 10px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.18);color:var(--text2)
+}
+.recoBadge.buy{border-color:rgba(0,214,143,.35);color:rgba(0,214,143,.95)}
+.recoBadge.sell{border-color:rgba(255,71,87,.35);color:rgba(255,71,87,.95)}
+.recoBadge.wait{border-color:rgba(245,166,35,.35);color:rgba(245,166,35,.95)}
+.recoScore{font-family:var(--mono);font-size:11px;color:var(--text2)}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1095,6 +1120,34 @@ body::after{
   </div>
 </div>
 <div class="stack">
+  <div class="card"><div class="inner">
+    <div class="card-title">
+      <h2>Session Playbook &middot; 15m Decision Clock</h2>
+      <div class="hint">Regime (1H) + Edge (15m) + Structure (4H) fused by the Unified Signal Bus. Recommendations are session-aware (liquidity, spreads, event risk) and only print when edge clears costs.</div>
+    </div>
+    <div class="sessGrid">
+      <div class="sessLeft">
+        <div class="sessName" id="sessName">--</div>
+        <div class="muted" id="sessDesc">Session classifier online. Waiting for clock...</div>
+        <div class="chipRow" style="margin-top:10px">
+          <div class="chip">Decision <b id="decisionClock">--</b></div>
+          <div class="chip">Next in <b id="nextDecision">--</b></div>
+          <div class="chip">Trades <b id="tradeCount">0</b></div>
+          <div class="chip">Cost Gate <b id="costGate">--</b></div>
+        </div>
+      </div>
+      <div class="sessRight">
+        <div class="bk" style="margin-bottom:8px">Top Recommendations</div>
+        <div class="recoList" id="recoList">
+          <div class="recoItem ghost">No recommendations yet. Need enough ticks to form 15m bars.</div>
+        </div>
+      </div>
+    </div>
+    <div class="smallNote" id="sessFooter" style="margin-top:10px;line-height:1.65">
+      Session logic: Asia drift, London open break, NY continuation, overlap volatility, post-fix decay. Bus cadence: 15m.
+    </div>
+  </div></div>
+
   <div class="card"><div class="inner riskLevel"><div class="rlabel">Risk Level</div><div class="rbig" id="riskBig">--</div><div class="rrule" id="riskRule">Policy: state-aware sizing and entry gating</div></div></div>
 
 
@@ -1632,6 +1685,9 @@ const V28=(()=> {
       resizeCanvas(orb); resizeCanvas(radar);
     }, {passive:true});
     __v28Ready=true;
+    // Session clock + playbook should run even with zero data.
+    try{ window.__qxLastQ = window.__qxLastQ || {}; }catch(e){}
+    setInterval(()=>{ try{ buildRecommendations(window.__qxLastQ||{}); }catch(e){} }, 1000);
     // Ensure FS READER never gets stuck on the boot splash if live data isn't flowing yet.
     (function bootLoop(){
       bootProgress(0,20);
@@ -1643,11 +1699,202 @@ const V28=(()=> {
     })();
   }
 
-  function update(q, warmCount){
+  
+  // ── SESSION + CLOCK + RECOMMENDATIONS (RenTech-inspired operating loop) ─────────
+  function utcNow(){ return new Date(); }
+
+  function ceilTo15m(d){
+    const nd = new Date(d.getTime());
+    const m = nd.getUTCMinutes();
+    const nextM = Math.ceil((m+1e-9)/15)*15;
+    nd.setUTCSeconds(0,0);
+    if(nextM===60){ nd.setUTCHours(nd.getUTCHours()+1); nd.setUTCMinutes(0); }
+    else nd.setUTCMinutes(nextM);
+    return nd;
+  }
+
+  function fmtHhMmUTC(d){
+    const hh=String(d.getUTCHours()).padStart(2,"0");
+    const mm=String(d.getUTCMinutes()).padStart(2,"0");
+    return `${hh}:${mm} UTC`;
+  }
+
+  function getSessionInfo(d){
+    // FX is 24/5, but liquidity and spreads are not.
+    const h=d.getUTCHours();
+    const wd=d.getUTCDay(); // 0 Sun ... 6 Sat
+    const isWeekend = (wd===0 && h<22) || wd===6; // simplified: market closed most of Sat + early Sun
+    if(isWeekend) return {key:"CLOSED", label:"Market Closed", desc:"Weekend. No session. No trades.", bucket:"OFF", liq:0.2, spread:2.0};
+
+    // UTC blocks (approx). Adjust later if you want venue-specific calibration.
+    if(h>=21 || h<1)  return {key:"ASIA_DRIFT", label:"Asia Drift", desc:"Thin liquidity, mean-reversion prone. Cost gate is strict.", bucket:"NIGHT", liq:0.45, spread:1.35};
+    if(h>=1  && h<6)  return {key:"ASIA_CORE",  label:"Asia Core",  desc:"Range microstructure, fades work. Avoid chasing.", bucket:"NIGHT", liq:0.55, spread:1.20};
+    if(h>=6  && h<9)  return {key:"LON_OPEN",  label:"London Open", desc:"Breakout risk + trend ignition. Best session for clean moves.", bucket:"DAY", liq:0.85, spread:0.85};
+    if(h>=9  && h<12) return {key:"LON_CORE",  label:"London Core", desc:"Trend continuation and pullback entries. Good liquidity.", bucket:"DAY", liq:0.90, spread:0.80};
+    if(h>=12 && h<16) return {key:"NY_OVER",   label:"NY Overlap", desc:"Highest vol window. Great edge, also great whipsaws.", bucket:"DAY", liq:1.00, spread:0.75};
+    if(h>=16 && h<20) return {key:"NY_PM",     label:"NY PM",       desc:"Continuation or unwind. Watch data releases and risk-off jolts.", bucket:"DAY", liq:0.80, spread:0.90};
+    return                {key:"POST_FIX",   label:"Post-Fix Decay", desc:"Liquidity decays, spreads widen. Reduce size, protect PnL.", bucket:"NIGHT", liq:0.55, spread:1.25};
+  }
+
+  function getCallFromUI(){
+    const p = document.getElementById("policyChip");
+    const s = (p?.textContent||"").toUpperCase().trim();
+    if(s.includes("LONG")) return "BUY";
+    if(s.includes("SHORT")) return "SELL";
+    if(s.includes("FLAT")||s.includes("HOLD")||s.includes("NEUTRAL")) return "WAIT";
+    // fallback: try state title
+    const t = (document.getElementById("policyStateTitle")?.textContent||"").toUpperCase();
+    if(t.includes("LONG")) return "BUY";
+    if(t.includes("SHORT")) return "SELL";
+    return "WAIT";
+  }
+
+  function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+
+  function costGate(session, conviction, vr){
+    // Cost model proxy: higher spread sessions need higher conviction.
+    const cost = session.spread; // "pips-ish" proxy
+    const edge = (0.35 + conviction*0.95) * (0.85 + clamp01((vr-1)/2)*0.30) * session.liq;
+    // gate: edge must clear cost with buffer
+    const clears = edge > (0.85 + cost*0.18);
+    return {clears, cost, edge};
+  }
+
+  function makeReco({side, title, meta, score, badge}){
+    return `
+      <div class="recoItem ${side==="BUY"?"":side==="SELL"?"":"ghost"}">
+        <div class="recoMain">
+          <div class="recoTitle">${title}</div>
+          <div class="recoMeta">${meta}</div>
+        </div>
+        <div class="recoSide">
+          <div class="recoBadge ${side==="BUY"?"buy":side==="SELL"?"sell":"wait"}">${badge}</div>
+          <div class="recoScore">Score ${score}</div>
+        </div>
+      </div>`;
+  }
+
+  function buildRecommendations(q){
+    const now = utcNow();
+    const sess = getSessionInfo(now);
+    const call = getCallFromUI();
+    const conviction = clamp01(q?.conviction ?? 0);
+    const vr = (q?.volRegime?.ratio ?? 1);
+
+    // update session UI
+    const sn=document.getElementById("sessName");
+    const sd=document.getElementById("sessDesc");
+    const dc=document.getElementById("decisionClock");
+    const nd=document.getElementById("nextDecision");
+    const tc=document.getElementById("tradeCount");
+    const cg=document.getElementById("costGate");
+    const rf=document.getElementById("recoList");
+
+    const next = ceilTo15m(now);
+    const ms = Math.max(0, next.getTime()-now.getTime());
+    const mins = Math.floor(ms/60000);
+    const secs = Math.floor((ms%60000)/1000);
+
+    if(sn) sn.textContent = `${sess.label}  ·  ${sess.bucket==="DAY"?"Day Session":"Night Session"}`;
+    if(sd) sd.textContent = sess.desc;
+    if(dc) dc.textContent = fmtHhMmUTC(now);
+    if(nd) nd.textContent = `${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}`;
+    const gate = costGate(sess, conviction, vr);
+    if(cg) cg.textContent = gate.clears ? "PASS" : "FAIL";
+    if(cg){ cg.style.color = gate.clears ? "rgba(0,214,143,.95)" : "rgba(245,166,35,.95)"; }
+
+    // if we don't have enough confidence or call is WAIT, print advisory set
+    const scoreBase = Math.round(100* (0.15 + conviction*0.70) * (0.85 + clamp01((vr-1)/2)*0.25) * sess.liq);
+    const score = Math.max(1, Math.min(99, scoreBase));
+
+    let recos=[];
+    if(!gate.clears || call==="WAIT"){
+      recos.push(makeReco({
+        side:"WAIT",
+        title:"No Trade (Cost Gate / Low Edge)",
+        meta:`Edge ${gate.edge.toFixed(2)} vs Cost ${gate.cost.toFixed(2)}. Wait for cleaner 15m setup or higher conviction regime.`,
+        score: Math.min(score, 55),
+        badge:"WAIT"
+      }));
+      recos.push(makeReco({
+        side:"WAIT",
+        title:"Plan: Reduce Sensitivity",
+        meta:`Focus on 15m pullbacks, avoid breakouts in thin liquidity. Re-check next decision tick.`,
+        score: Math.min(score, 58),
+        badge:"HOLD"
+      }));
+      recos.push(makeReco({
+        side:"WAIT",
+        title:"Risk Action",
+        meta:`If already in position: tighten stop, cut size in ${sess.label} spread environment.`,
+        score: Math.min(score, 60),
+        badge:"RISK"
+      }));
+    } else {
+      // 3–5 structured recos per session (not quota based; this is a "top set" list).
+      const dirTxt = call==="BUY"?"Long bias":"Short bias";
+      const volTxt = vr>=1.35?"high vol":"normal vol";
+      const primary = sess.key==="LON_OPEN"||sess.key==="NY_OVER" ? "Breakout / Continuation" : "Pullback / Fade";
+      const secondary = sess.key.startswith?.("ASIA") ? "Range Mean-Revert" : "Trend Add-on";
+
+      recos.push(makeReco({
+        side:call,
+        title:`Primary: ${primary}`,
+        meta:`${dirTxt}. Regime 1H, edge 15m. Prefer entries near VWAP/structure. ${volTxt}.`,
+        score: Math.max(score, 62),
+        badge: call
+      }));
+      recos.push(makeReco({
+        side:call,
+        title:`Secondary: Structured Add-on`,
+        meta:`Only add if next 15m bar confirms. Size is throttled by vol regime (${vr.toFixed(1)}x).`,
+        score: Math.max(score-6, 55),
+        badge:"ADD"
+      }));
+      recos.push(makeReco({
+        side:"WAIT",
+        title:"Fail Condition / Kill Switch",
+        meta:`If spread spikes or regime confidence drops <35%, flatten. This is the bus discipline.`,
+        score: Math.max(score-10, 50),
+        badge:"STOP"
+      }));
+      // optional 4th/5th if conviction strong
+      if(conviction>=0.65){
+        recos.push(makeReco({
+          side:call,
+          title:"High-Conviction Optional",
+          meta:`Conviction ${Math.round(conviction*100)}%. If cost stays stable, allow one extra entry window.`,
+          score: Math.min(99, score+6),
+          badge:"HC"
+        }));
+      }
+      if(vr>=1.6){
+        recos.push(makeReco({
+          side:"WAIT",
+          title:"Volatility Override",
+          meta:`Vol regime elevated (${vr.toFixed(1)}x). Cap leverage, widen stops, reduce frequency.`,
+          score: 58,
+          badge:"VR"
+        }));
+      }
+    }
+
+    if(tc) tc.textContent = String(Math.min(recos.length,5));
+    if(rf) rf.innerHTML = recos.slice(0,5).join("");
+
+    // footer: show the architecture in one line (so customers understand the system).
+    const sf=document.getElementById("sessFooter");
+    if(sf){
+      sf.innerHTML = `Architecture: <b>HMM Regime</b> (1H features, updated every 15m) + <b>Signal Edge</b> (15m) + <b>Structure Filter</b> (4H) → Unified Signal Bus. Session-aware cost gate: <b>${gate.clears?"PASS":"FAIL"}</b>.`;
+    }
+  }
+function update(q, warmCount){
     if(!__v28Ready) init();
     drawOrb(q);
     drawRadar(q);
     bootProgress(warmCount, 20);
+    try{ window.__qxLastQ = q||{}; }catch(e){}
+    buildRecommendations(q);
   }
 
 
