@@ -1274,10 +1274,20 @@ function pushState(s){recentStates.push(s);const d=clamp(settings.histDepth||60,
 
 const SpotFeed=(()=>{
   const free=[
-    {name:"fawazahmed0",url:()=>`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json?_=${Date.now()}`,parse:j=>j?.eur?.usd},
+    // Mirror 1: fawazahmed0 jsdelivr CDN
+    {name:"fawaz-cdn",url:()=>`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json?_=${Date.now()}`,parse:j=>j?.eur?.usd},
+    // Mirror 2: fawazahmed0 Cloudflare Pages (more reliable, different CDN)
+    {name:"fawaz-cf",url:()=>`https://currency-api.pages.dev/v1/currencies/eur.json?_=${Date.now()}`,parse:j=>j?.eur?.usd},
+    // Frankfurter (ECB data, very stable)
     {name:"frankfurter",url:()=>`https://api.frankfurter.app/latest?from=EUR&to=USD&_=${Date.now()}`,parse:j=>j?.rates?.USD},
+    // Open Exchange Rates free tier
     {name:"open.er-api",url:()=>`https://open.er-api.com/v6/latest/EUR?_=${Date.now()}`,parse:j=>j?.rates?.USD},
-    {name:"fxratesapi",url:()=>`https://api.fxratesapi.com/latest?base=EUR&currencies=USD&_=${Date.now()}`,parse:j=>j?.rates?.USD}
+    // ExchangeRate-API (no key required for this endpoint)
+    {name:"exchangerate-api",url:()=>`https://api.exchangerate-api.com/v4/latest/EUR?_=${Date.now()}`,parse:j=>j?.rates?.USD},
+    // FXRates API
+    {name:"fxratesapi",url:()=>`https://api.fxratesapi.com/latest?base=EUR&currencies=USD&_=${Date.now()}`,parse:j=>j?.rates?.USD},
+    // Wise public rates (unofficial but stable)
+    {name:"wise",url:()=>`https://wise.com/rates/live?source=EUR&target=USD&_=${Date.now()}`,parse:j=>Number(j?.value)>0?Number(j?.value):null},
   ];
   let last={price:null,ts:0,source:null,provider:null,latencyMs:null,staleCount:0,lastChangeTs:0,lastDelta:0};
   const STALE=60000,MIN=0.000001;let failRetryT=null;const bo={};
@@ -1301,8 +1311,10 @@ const SpotFeed=(()=>{
     if(!r.ok){
       last.staleCount++;
       const el=$("fxSpotStatus");if(el&&last.staleCount>2)el.title="Feed failing. Add TwelveData key in Settings for reliable data.";
-      cb?.({ok:false,...last,...status(now)});
-      failRetryT=setTimeout(()=>tick(cb),4000);// retry in 4s instead of waiting full poll
+      // If we have a cached price, propagate it so warmup can continue
+      if(last.price){cb?.({ok:true,...last,...status(now),source:last.source+" (cached)",stale:true});}
+      else{cb?.({ok:false,...last,...status(now)});}
+      failRetryT=setTimeout(()=>tick(cb),4000);
       return;
     }
     const prev=last.price,moved=prev==null||Math.abs(r.price-prev)>MIN;
@@ -2357,7 +2369,7 @@ function buildFullState(step,tx,proj,pb3,arch,spot,recentSts,cm,ba,sa,signalBus,
     busForecast4h:SignalBus.get()?.forecasts?.["4h"]??null,
     busForecast1d:SignalBus.get()?.forecasts?.["1d"]??null,
     busEventRisk:SignalBus.get()?.eventRisk??null,
-    busVolRegime:SignalBus.get()?.volRegime??null,
+    busVolRegime:SignalBus.get()?.volRegime??"NORMAL",
     busCalibMult2:SignalBus.get()?.calibMult??null,
     busAgreement:SignalBus.get()?.consensus?.agreement??null,
     busSources:SignalBus.get()?.consensus?.sources??null,
@@ -2769,7 +2781,10 @@ function updateSignalBusUI(bus){
   });
 
   // Push 1h/4h/1d into Forward Projection card
-  const f1h=forecasts["1h"], f4h=forecasts["4h"], f1d=forecasts["1d"];
+  const f1h=forecasts["1h"], f4h=forecasts["4h"];
+  // 1d fallback: if null (pre-warmup), estimate from 4h * 2.5
+  const _f4hRange=f4h?.range||0;
+  const f1d=forecasts["1d"]||(f4h?{dir:f4h.dir,range:Math.round(_f4hRange*2.5),target:f4h.target,confidence:f4h.confidence}:null);
   const r1h=$("rng1hFp"), r4h=$("rng4hFp"), r1d=$("rng1dFp");
   const r1hm=$("rng1hFpMeta"), r4hm=$("rng4hFpMeta"), r1dm=$("rng1dFpMeta");
   if(r1h&&f1h) r1h.textContent=(f1h.dir==="LONG"?"▲ ":f1h.dir==="SHORT"?"▼ ":"")+fmtSignedPips(f1h.dir,f1h.range,"p");
