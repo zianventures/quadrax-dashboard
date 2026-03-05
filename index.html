@@ -2375,135 +2375,56 @@ const ProjTracker=(()=>{
     _persist();
   }
 
-  
-function scoreOutcomes(currentSpot){
-    // IMPORTANT: This must never be allowed to crash the dashboard.
-    try{
-      if(!Number.isFinite(currentSpot))return;
-      const now=Date.now();
-      let changed=false;
+  function scoreOutcomes(currentSpot){
+    if(!Number.isFinite(currentSpot))return;
+    const now=Date.now();let changed=false;
+    log.forEach(p=>{
+      if(!p||!Number.isFinite(Number(p.spot)))return;
+      const ageMins=(now-p.ts)/60000;
+      const movePips=(currentSpot-p.spot)*10000;
+      const dirOk=p.bias==="LONG"?movePips>0:p.bias==="SHORT"?movePips<0:false;
 
-      // deadband so we don’t declare “direction correct” on micro-noise
-      const MIN_DIR_PIPS = 2;
+      // Stop trigger detection (best-effort using spot updates; true intrabar sweeps are not observable here)
+      if(!p.stopHit && Number.isFinite(Number(p.stopSpot))){
+        if(p.bias==="LONG" && currentSpot<=p.stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
+        if(p.bias==="SHORT" && currentSpot>=p.stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
+      }
 
-      log.forEach(p=>{
-        if(!p||!Number.isFinite(Number(p.spot)))return;
-
-        const entry = Number(p.spot);
-        const ageMins=(now-p.ts)/60000;
-
-        // Track observed path since the call was logged (best-effort; we only see polled spots).
-        if(!Number.isFinite(p.hiSpot)) p.hiSpot = entry;
-        if(!Number.isFinite(p.loSpot)) p.loSpot = entry;
-        if(currentSpot > p.hiSpot){ p.hiSpot = currentSpot; changed=true; }
-        if(currentSpot < p.loSpot){ p.loSpot = currentSpot; changed=true; }
-
-        // Signed move from entry at the current observation
-        const movePips=(currentSpot-entry)*10000;
-
-        // Direction check with a deadband
-        const dirOk = (p.bias==="LONG") ? (movePips >= MIN_DIR_PIPS) :
-                      (p.bias==="SHORT") ? (movePips <= -MIN_DIR_PIPS) : false;
-
-        // Stop detection (best-effort using observed spots; intrabar sweeps aren’t observable)
-        if(!p.stopHit && Number.isFinite(Number(p.stopSpot))){
-          const stopSpot = Number(p.stopSpot);
-          if(p.bias==="LONG" && currentSpot<=stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
-          if(p.bias==="SHORT" && currentSpot>=stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
-        }
-
-        // Target detection (4H horizon): detect first observed touch to the projected range target.
-        // We use abs(r4) so it works regardless of sign conventions.
-        if(p.tgtHit4h!==true && Number.isFinite(Number(p.r4))){
-          const r4 = Math.abs(Number(p.r4));
-          const tgtSpot = (p.bias==="LONG") ? (entry + r4/10000) :
-                          (p.bias==="SHORT") ? (entry - r4/10000) : null;
-          if(Number.isFinite(tgtSpot)){
-            p.tgtSpot4h = tgtSpot;
-            if(p.bias==="LONG" && currentSpot>=tgtSpot){p.tgtHit4h=true;p.tgtHit4hTs=now;p.tgtHit4hSpot=currentSpot;changed=true;}
-            if(p.bias==="SHORT" && currentSpot<=tgtSpot){p.tgtHit4h=true;p.tgtHit4hTs=now;p.tgtHit4hSpot=currentSpot;changed=true;}
-          }
-        }
-
-        // 1H scoring: keep legacy semantics but ensure we don’t explode
-        if(p.outcome1h===null && ageMins>=60){
-          p.outcome1h={dirHit:dirOk,rngHit:Math.abs(movePips)<=Math.abs(Number(p.r1||0)),movePips,exitSpot:currentSpot};
-          changed=true;
-        }
-
-        // 4H scoring: FIRST-TOUCH semantics (approx via observation timestamps)
-        if(p.outcome4h===null && ageMins>=240){
-          const stopTs = p.stopHitTs;
-          const tgtTs  = p.tgtHit4hTs;
-
-          let result="TIMEOUT";
-          if(Number.isFinite(stopTs) && (!Number.isFinite(tgtTs) || stopTs<=tgtTs)) result="OUT";
-          else if(Number.isFinite(tgtTs)) result="IN";
-
-          // Realized move pips for diagnostics: use first-touch spots when available, else current spot.
-          let exitSpot = currentSpot;
-          if(result==="OUT" && Number.isFinite(p.stopHitSpot)) exitSpot = Number(p.stopHitSpot);
-          if(result==="IN"  && Number.isFinite(p.tgtHit4hSpot)) exitSpot = Number(p.tgtHit4hSpot);
-
-          const realizedMovePips = (exitSpot-entry)*10000;
-
-          p.outcome4h={
-            result,
-            dirHit:dirOk,
-            rngHit:(result==="IN"),
-            movePips:realizedMovePips,
-            exitSpot,
-            hiSpot:p.hiSpot,
-            loSpot:p.loSpot
-          };
-          changed=true;
-        }
-
-        // 1D scoring: keep legacy window logic; still safe
-        if(p.outcome1d===null && ageMins>=1440){
-          const r1d=(p.r1d||Math.max(10,Math.round((p.r4||0)*2.5)));
-          p.outcome1d={dirHit:dirOk,rngHit:Math.abs(movePips)<=Math.abs(Number(r1d)||0),movePips,exitSpot:currentSpot};
-          changed=true;
-        }
-      });
-
-      if(changed){_adapt(currentSpot);_persist();}
-    }catch(e){
-      // swallow to keep UI alive
-      console.warn("Projection scoring error:", e);
-    }
+      if(p.outcome1h===null&&ageMins>=60){
+        p.outcome1h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r1,movePips,exitSpot:currentSpot};
+        changed=true;
+      }
+      if(p.outcome4h===null&&ageMins>=240){
+        p.outcome4h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r4,movePips,exitSpot:currentSpot};
+        changed=true;
+      }
+      if(p.outcome1d===null&&ageMins>=1440){
+        const r1d=(p.r1d||Math.max(10,Math.round((p.r4||0)*2.5)));
+        p.outcome1d={dirHit:dirOk,rngHit:Math.abs(movePips)<=r1d,movePips,exitSpot:currentSpot};
+        changed=true;
+      }
+    });
+    if(changed){_adapt(currentSpot);_persist();}
   }
 
 
-
-function _stats(){
-  const r1=log.filter(p=>p.outcome1h!==null), r4=log.filter(p=>p.outcome4h!==null), r1d=log.filter(p=>p.outcome1d!==null);
-  const n4h=r4.length;
-
-  const in4h = n4h ? r4.filter(p=>p.outcome4h?.result==="IN").length : 0;
-  const out4h = n4h ? r4.filter(p=>p.outcome4h?.result==="OUT").length : 0;
-  const to4h = n4h ? r4.filter(p=>p.outcome4h?.result==="TIMEOUT").length : 0;
-
-  return{
-    n1h:r1.length,
-    dir1hRate:r1.length?r1.filter(p=>p.outcome1h.dirHit).length/r1.length:null,
-    rng1hRate:r1.length?r1.filter(p=>p.outcome1h.rngHit).length/r1.length:null,
-
-    // 4H rates are now mutually exclusive and sum to 100% (IN/OUT/TIMEOUT).
-    n4h:n4h,
-    dir4hRate:n4h?r4.filter(p=>p.outcome4h.dirHit).length/n4h:null,
-    rng4hRate:n4h?in4h/n4h:null,            // IN rate (range hit before stop)
-    out4hRate:n4h?out4h/n4h:null,           // OUT rate (stop hit before range)
-    timeout4hRate:n4h?to4h/n4h:null,        // TIMEOUT rate
-    stopRate4h:n4h?out4h/n4h:null,          // synonymous with OUT in first-touch semantics
-
-    n1d:r1d.length,
-    dir1dRate:r1d.length?r1d.filter(p=>p.outcome1d.dirHit).length/r1d.length:null,
-    rng1dRate:r1d.length?r1d.filter(p=>p.outcome1d.rngHit).length/r1d.length:null,
-    total:log.length,
-    pending:log.filter(p=>p.outcome4h===null).length, // 4H-resolution tracking
-  };
-}
+  function _stats(){
+    const r1=log.filter(p=>p.outcome1h!==null), r4=log.filter(p=>p.outcome4h!==null), r1d=log.filter(p=>p.outcome1d!==null);
+    return{
+      n1h:r1.length,
+      dir1hRate:r1.length?r1.filter(p=>p.outcome1h.dirHit).length/r1.length:null,
+      rng1hRate:r1.length?r1.filter(p=>p.outcome1h.rngHit).length/r1.length:null,
+      n4h:r4.length,
+      dir4hRate:r4.length?r4.filter(p=>p.outcome4h.dirHit).length/r4.length:null,
+      rng4hRate:r4.length?r4.filter(p=>p.outcome4h.rngHit).length/r4.length:null,
+      n1d:r1d.length,
+      dir1dRate:r1d.length?r1d.filter(p=>p.outcome1d.dirHit).length/r1d.length:null,
+      rng1dRate:r1d.length?r1d.filter(p=>p.outcome1d.rngHit).length/r1d.length:null,
+      stopRate4h:r4.length?r4.filter(p=>p.stopHit===true).length/r4.length:null,
+      total:log.length,
+      pending:log.filter(p=>p.outcome4h===null).length, // 4H-resolution tracking
+    };
+  }
 
 function _adapt(currentSpot){
     const s=_stats();
