@@ -2428,32 +2428,98 @@ const ProjTracker=(()=>{
   function scoreOutcomes(currentSpot){
     if(!Number.isFinite(currentSpot))return;
     const now=Date.now();let changed=false;
+
+    function firstHitInCandle(c, side, stopSpot, targetSpot){
+      if(!c||!Number.isFinite(stopSpot)||!Number.isFinite(targetSpot))return null;
+      if(side==="LONG"){
+        const hitStop=(c.l<=stopSpot);
+        const hitTarget=(c.h>=targetSpot);
+        if(hitStop&&hitTarget)return "BOTH";
+        if(hitStop)return "STOP";
+        if(hitTarget)return "TARGET";
+      }else if(side==="SHORT"){
+        const hitStop=(c.h>=stopSpot);
+        const hitTarget=(c.l<=targetSpot);
+        if(hitStop&&hitTarget)return "BOTH";
+        if(hitStop)return "STOP";
+        if(hitTarget)return "TARGET";
+      }
+      return null;
+    }
+
+    function resolveHorizon(p, horizonMins, targetPips, key){
+      if(p[key]!==null)return;
+      const horizonMs=horizonMins*60*1000;
+      const ageMins=(now-p.ts)/60000;
+      const side=p.bias;
+      if(side!=="LONG"&&side!=="SHORT")return;
+
+      const spot0=Number(p.spot);
+      if(!Number.isFinite(spot0))return;
+
+      const stopSpot=Number.isFinite(Number(p.stopSpot))?Number(p.stopSpot):null;
+      const tgtSpot=(side==="LONG")?(spot0+targetPips/10000):(spot0-targetPips/10000);
+
+      let event=null;
+      let exitSpot=null;
+      const endScanTs=Math.min(now, p.ts+horizonMs);
+
+      try{
+        const candles=(typeof CandleStore!=="undefined"&&CandleStore.scan)?CandleStore.scan(p.ts,endScanTs):[];
+        for(const c of candles){
+          if(stopSpot==null)break;
+          const hit=firstHitInCandle(c,side,stopSpot,tgtSpot);
+          if(hit){
+            const resolved=(hit==="BOTH")?"STOP":hit;
+            event=resolved;
+            exitSpot=(resolved==="STOP")?stopSpot:tgtSpot;
+            break;
+          }
+        }
+      }catch(e){}
+
+      if(!event && p.stopHit===true && stopSpot!=null){
+        event="STOP";
+        exitSpot=stopSpot;
+      }
+
+      if(event && exitSpot!=null){
+        const movePips=(exitSpot-spot0)*10000;
+        const signed=(side==="LONG"?1:-1)*movePips;
+        const dirOk=signed>0;
+        p[key]={dirHit:dirOk,rngHit:Math.abs(movePips)<=targetPips,movePips,exitSpot,stopHit:(event==="STOP"),targetHit:(event==="TARGET"),event};
+        if(event==="STOP" && p.stopHit!==true){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=exitSpot;}
+        if(event==="TARGET" && p.targetHit!==true){p.targetHit=true;p.targetHitTs=now;p.targetHitSpot=exitSpot;}
+        changed=true;
+        return;
+      }
+
+      if(ageMins>=horizonMins){
+        const movePips=(currentSpot-spot0)*10000;
+        const signed=(side==="LONG"?1:-1)*movePips;
+        const dirOk=signed>0;
+        p[key]={dirHit:dirOk,rngHit:Math.abs(movePips)<=targetPips,movePips,exitSpot:currentSpot,stopHit:false,targetHit:false,event:"TIME"};
+        changed=true;
+      }
+    }
+
     log.forEach(p=>{
       if(!p||!Number.isFinite(Number(p.spot)))return;
       const ageMins=(now-p.ts)/60000;
-      const movePips=(currentSpot-p.spot)*10000;
-      const dirOk=p.bias==="LONG"?movePips>0:p.bias==="SHORT"?movePips<0:false;
 
-      // Stop trigger detection (best-effort using spot updates; true intrabar sweeps are not observable here)
       if(!p.stopHit && Number.isFinite(Number(p.stopSpot))){
         if(p.bias==="LONG" && currentSpot<=p.stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
         if(p.bias==="SHORT" && currentSpot>=p.stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
       }
 
-      if(p.outcome1h===null&&ageMins>=60){
-        p.outcome1h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r1,movePips,exitSpot:currentSpot};
-        changed=true;
-      }
-      if(p.outcome4h===null&&ageMins>=240){
-        p.outcome4h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r4,movePips,exitSpot:currentSpot};
-        changed=true;
-      }
-      if(p.outcome1d===null&&ageMins>=1440){
+      if(ageMins>=1){
+        resolveHorizon(p,60,Number(p.r1)||0,"outcome1h");
+        resolveHorizon(p,240,Number(p.r4)||0,"outcome4h");
         const r1d=(p.r1d||Math.max(10,Math.round((p.r4||0)*2.5)));
-        p.outcome1d={dirHit:dirOk,rngHit:Math.abs(movePips)<=r1d,movePips,exitSpot:currentSpot};
-        changed=true;
+        resolveHorizon(p,1440,Number(r1d)||0,"outcome1d");
       }
     });
+
     if(changed){_adapt(currentSpot);_persist();}
   }
 
@@ -3979,6 +4045,35 @@ function exportSnapshot(){const url=URL.createObjectURL(new Blob([JSON.stringify
 
 let lastSpot=null,lastFullState=null,paused=false,syncing=false;
 
+// 25002500 LOCAL 15M CANDLE AGGREGATION (for stop/target ordering without external OHLC) 25002500
+const CandleStore=(()=>{
+  const TF_MS=15*60*1000;
+  const MAX=14*24*4; // ~14 days of 15m candles
+  let cur=null;
+  let arr=[];
+  function push(price, ts=Date.now()){
+    const p=Number(price);
+    if(!Number.isFinite(p)||p<=0)return;
+    const bucket=Math.floor(ts/TF_MS)*TF_MS;
+    if(!cur||cur.t!==bucket){
+      if(cur)arr.push(cur);
+      cur={t:bucket,o:p,h:p,l:p,c:p};
+      if(arr.length>MAX)arr=arr.slice(-MAX);
+    }else{
+      cur.h=Math.max(cur.h,p);
+      cur.l=Math.min(cur.l,p);
+      cur.c=p;
+    }
+  }
+  function getCandles(){return cur?arr.concat([cur]):arr.slice();}
+  function scan(startTs,endTs){
+    const cs=getCandles();
+    return cs.filter(c=>(c.t+TF_MS)>startTs && c.t<endTs);
+  }
+  return {TF_MS,push,getCandles,scan};
+})();
+
+
 // ── MASTER COMPUTE TICK ───────────────────────────────────────────────────
 async function onSpotUpdate(s){
   // Only MASTER runs local compute. Readers receive state via onSnapshot.
@@ -3993,6 +4088,7 @@ async function onSpotUpdate(s){
   setFxStatus(s.status);
   CorrEngine.pushEur(s.lastDelta);
   QuantEngine.push(s.price);
+  try{CandleStore.push(s.price, now);}catch(e){};
   if(paused)return;
   const step=Engine.step(s.price);if(!step)return;
   pushState(step.policy);
