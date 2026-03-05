@@ -754,30 +754,6 @@ body::after{
 .recoBadge.wait{border-color:rgba(245,166,35,.35);color:rgba(245,166,35,.95)}
 .recoScore{font-family:var(--mono);font-size:10.5px;color:var(--text2)}
 
-/* ===== Diagnostics modal ===== */
-.diagGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.diagCard{background:rgba(8,16,34,.55);border:1px solid rgba(180,220,255,.10);border-radius:14px;padding:12px 12px 10px;box-shadow:0 10px 34px rgba(0,0,0,.35) inset}
-.diagTitle{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.60);margin-bottom:8px}
-.diagRow{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid rgba(180,220,255,.06)}
-.diagRow:last-of-type{border-bottom:none}
-.dk{font-size:11px;color:rgba(255,255,255,.52)}
-.dv{font-size:12px;color:rgba(255,255,255,.86);font-weight:600}
-.diagNote{margin-top:8px;font-size:11px;color:rgba(255,255,255,.45);line-height:1.35}
-.diagWide{grid-column:1 / -1}
-.diagSplit{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.diagSub{font-size:11px;font-weight:700;color:rgba(120,200,255,.80);margin-bottom:6px}
-.diagText{font-size:12px;color:rgba(255,255,255,.68);line-height:1.4;margin-bottom:10px}
-.diagMiniGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.mini{background:rgba(255,255,255,.03);border:1px solid rgba(180,220,255,.08);border-radius:10px;padding:8px}
-.mk{font-size:10px;color:rgba(255,255,255,.48);text-transform:uppercase;letter-spacing:.6px}
-.mv{margin-top:2px;font-size:12px;font-weight:700;color:rgba(255,255,255,.86)}
-.diagFooter{margin-top:10px;font-size:11px;color:rgba(255,255,255,.45);border-top:1px solid rgba(180,220,255,.08);padding-top:10px}
-@media (max-width: 980px){
-  .diagGrid{grid-template-columns:1fr}
-  .diagSplit{grid-template-columns:1fr}
-  .diagMiniGrid{grid-template-columns:repeat(2,1fr)}
-}
-
 </style>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -818,7 +794,6 @@ body::after{
 <button class="btn" id="nightBtn">Night</button>
 <button class="btn primary" id="exportBtn">Export</button>
 <button class="btn" id="settingsBtn">Settings</button>
-<button class="btn" id="diagBtn">Diagnostics</button>
 <button class="btn" id="guideBtn">Guide</button>
 </div>
 </div>
@@ -1314,75 +1289,6 @@ body::after{
 </div>
 </div>
 </div>
-<div class="mBack" id="diagBack" style="display:none">
-  <div class="modal" style="max-width:1040px">
-    <div class="mHead">
-      <h3>System Diagnostics — Trading Infrastructure Health</h3>
-      <button class="btn" id="closeDiagBtn">Close</button>
-    </div>
-    <div class="mBody">
-      <div class="diagGrid">
-        <div class="diagCard">
-          <div class="diagTitle">Data Feed Health</div>
-          <div class="diagRow"><span class="dk">Mode</span><span class="dv" id="dMode">--</span></div>
-          <div class="diagRow"><span class="dk">Provider</span><span class="dv" id="dProv">--</span></div>
-          <div class="diagRow"><span class="dk">Status</span><span class="dv" id="dStatus">--</span></div>
-          <div class="diagRow"><span class="dk">Latency</span><span class="dv" id="dLat">--</span></div>
-          <div class="diagRow"><span class="dk">Tick cadence</span><span class="dv" id="dCad">--</span></div>
-          <div class="diagNote">Stand‑alone and MASTER compute locally. READER listens to the signal bus.</div>
-        </div>
-
-        <div class="diagCard">
-          <div class="diagTitle">Risk Snapshot (rolling)</div>
-          <div class="diagRow"><span class="dk">Vol (pips)</span><span class="dv" id="dVol">--</span></div>
-          <div class="diagRow"><span class="dk">VaR 95% (pips)</span><span class="dv" id="dVaR">--</span></div>
-          <div class="diagRow"><span class="dk">CVaR 95% (pips)</span><span class="dv" id="dCVaR">--</span></div>
-          <div class="diagRow"><span class="dk">Max drawdown</span><span class="dv" id="dDD">--</span></div>
-          <div class="diagRow"><span class="dk">Tail flag</span><span class="dv" id="dTail">--</span></div>
-          <div class="diagNote">Computed from the last ~120 deltas this page has observed. This is a health check, not gospel.</div>
-        </div>
-
-        <div class="diagCard">
-          <div class="diagTitle">Projection Discipline (4H scoring)</div>
-          <div class="diagRow"><span class="dk">Resolved</span><span class="dv" id="dRes">--</span></div>
-          <div class="diagRow"><span class="dk">Range hit</span><span class="dv" id="dRngHit">--</span></div>
-          <div class="diagRow"><span class="dk">Stop hit</span><span class="dv" id="dStopHit">--</span></div>
-          <div class="diagRow"><span class="dk">Avg R/R</span><span class="dv" id="dRR">--</span></div>
-          <div class="diagRow"><span class="dk">Avg stop (pips)</span><span class="dv" id="dStopP">--</span></div>
-          <div class="diagNote">Stops are derived from the logged stopSpot vs entry spot (direction‑aware).</div>
-        </div>
-
-        <div class="diagCard diagWide">
-          <div class="diagTitle">System Monitors</div>
-          <div class="diagSplit">
-            <div>
-              <div class="diagSub">Regime Stability</div>
-              <div class="diagText" id="dRegimeTxt">--</div>
-              <div class="diagMiniGrid">
-                <div class="mini"><div class="mk">State</div><div class="mv" id="dState">--</div></div>
-                <div class="mini"><div class="mk">Confidence</div><div class="mv" id="dConf">--</div></div>
-                <div class="mini"><div class="mk">Age</div><div class="mv" id="dAge">--</div></div>
-                <div class="mini"><div class="mk">Stability</div><div class="mv" id="dStab">--</div></div>
-              </div>
-            </div>
-            <div>
-              <div class="diagSub">Bus + Mode</div>
-              <div class="diagText" id="dBusTxt">--</div>
-              <div class="diagMiniGrid">
-                <div class="mini"><div class="mk">Role</div><div class="mv" id="dRole">--</div></div>
-                <div class="mini"><div class="mk">Sync</div><div class="mv" id="dSync">--</div></div>
-                <div class="mini"><div class="mk">Last UI tick</div><div class="mv" id="dUiTick">--</div></div>
-                <div class="mini"><div class="mk">Alerts</div><div class="mv" id="dAlerts">--</div></div>
-              </div>
-            </div>
-          </div>
-          <div class="diagFooter">If anything here looks wrong, it usually means data is stale, warmup is still running, or you are in READER mode without an active MASTER.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="mBack" id="guideBack" style="display:none">
 <div class="modal" style="max-width:980px">
 <div class="mHead">
@@ -2469,56 +2375,135 @@ const ProjTracker=(()=>{
     _persist();
   }
 
-  function scoreOutcomes(currentSpot){
-    if(!Number.isFinite(currentSpot))return;
-    const now=Date.now();let changed=false;
-    log.forEach(p=>{
-      if(!p||!Number.isFinite(Number(p.spot)))return;
-      const ageMins=(now-p.ts)/60000;
-      const movePips=(currentSpot-p.spot)*10000;
-      const dirOk=p.bias==="LONG"?movePips>0:p.bias==="SHORT"?movePips<0:false;
+  
+function scoreOutcomes(currentSpot){
+    // IMPORTANT: This must never be allowed to crash the dashboard.
+    try{
+      if(!Number.isFinite(currentSpot))return;
+      const now=Date.now();
+      let changed=false;
 
-      // Stop trigger detection (best-effort using spot updates; true intrabar sweeps are not observable here)
-      if(!p.stopHit && Number.isFinite(Number(p.stopSpot))){
-        if(p.bias==="LONG" && currentSpot<=p.stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
-        if(p.bias==="SHORT" && currentSpot>=p.stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
-      }
+      // deadband so we don’t declare “direction correct” on micro-noise
+      const MIN_DIR_PIPS = 2;
 
-      if(p.outcome1h===null&&ageMins>=60){
-        p.outcome1h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r1,movePips,exitSpot:currentSpot};
-        changed=true;
-      }
-      if(p.outcome4h===null&&ageMins>=240){
-        p.outcome4h={dirHit:dirOk,rngHit:Math.abs(movePips)<=p.r4,movePips,exitSpot:currentSpot};
-        changed=true;
-      }
-      if(p.outcome1d===null&&ageMins>=1440){
-        const r1d=(p.r1d||Math.max(10,Math.round((p.r4||0)*2.5)));
-        p.outcome1d={dirHit:dirOk,rngHit:Math.abs(movePips)<=r1d,movePips,exitSpot:currentSpot};
-        changed=true;
-      }
-    });
-    if(changed){_adapt(currentSpot);_persist();}
+      log.forEach(p=>{
+        if(!p||!Number.isFinite(Number(p.spot)))return;
+
+        const entry = Number(p.spot);
+        const ageMins=(now-p.ts)/60000;
+
+        // Track observed path since the call was logged (best-effort; we only see polled spots).
+        if(!Number.isFinite(p.hiSpot)) p.hiSpot = entry;
+        if(!Number.isFinite(p.loSpot)) p.loSpot = entry;
+        if(currentSpot > p.hiSpot){ p.hiSpot = currentSpot; changed=true; }
+        if(currentSpot < p.loSpot){ p.loSpot = currentSpot; changed=true; }
+
+        // Signed move from entry at the current observation
+        const movePips=(currentSpot-entry)*10000;
+
+        // Direction check with a deadband
+        const dirOk = (p.bias==="LONG") ? (movePips >= MIN_DIR_PIPS) :
+                      (p.bias==="SHORT") ? (movePips <= -MIN_DIR_PIPS) : false;
+
+        // Stop detection (best-effort using observed spots; intrabar sweeps aren’t observable)
+        if(!p.stopHit && Number.isFinite(Number(p.stopSpot))){
+          const stopSpot = Number(p.stopSpot);
+          if(p.bias==="LONG" && currentSpot<=stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
+          if(p.bias==="SHORT" && currentSpot>=stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
+        }
+
+        // Target detection (4H horizon): detect first observed touch to the projected range target.
+        // We use abs(r4) so it works regardless of sign conventions.
+        if(p.tgtHit4h!==true && Number.isFinite(Number(p.r4))){
+          const r4 = Math.abs(Number(p.r4));
+          const tgtSpot = (p.bias==="LONG") ? (entry + r4/10000) :
+                          (p.bias==="SHORT") ? (entry - r4/10000) : null;
+          if(Number.isFinite(tgtSpot)){
+            p.tgtSpot4h = tgtSpot;
+            if(p.bias==="LONG" && currentSpot>=tgtSpot){p.tgtHit4h=true;p.tgtHit4hTs=now;p.tgtHit4hSpot=currentSpot;changed=true;}
+            if(p.bias==="SHORT" && currentSpot<=tgtSpot){p.tgtHit4h=true;p.tgtHit4hTs=now;p.tgtHit4hSpot=currentSpot;changed=true;}
+          }
+        }
+
+        // 1H scoring: keep legacy semantics but ensure we don’t explode
+        if(p.outcome1h===null && ageMins>=60){
+          p.outcome1h={dirHit:dirOk,rngHit:Math.abs(movePips)<=Math.abs(Number(p.r1||0)),movePips,exitSpot:currentSpot};
+          changed=true;
+        }
+
+        // 4H scoring: FIRST-TOUCH semantics (approx via observation timestamps)
+        if(p.outcome4h===null && ageMins>=240){
+          const stopTs = p.stopHitTs;
+          const tgtTs  = p.tgtHit4hTs;
+
+          let result="TIMEOUT";
+          if(Number.isFinite(stopTs) && (!Number.isFinite(tgtTs) || stopTs<=tgtTs)) result="OUT";
+          else if(Number.isFinite(tgtTs)) result="IN";
+
+          // Realized move pips for diagnostics: use first-touch spots when available, else current spot.
+          let exitSpot = currentSpot;
+          if(result==="OUT" && Number.isFinite(p.stopHitSpot)) exitSpot = Number(p.stopHitSpot);
+          if(result==="IN"  && Number.isFinite(p.tgtHit4hSpot)) exitSpot = Number(p.tgtHit4hSpot);
+
+          const realizedMovePips = (exitSpot-entry)*10000;
+
+          p.outcome4h={
+            result,
+            dirHit:dirOk,
+            rngHit:(result==="IN"),
+            movePips:realizedMovePips,
+            exitSpot,
+            hiSpot:p.hiSpot,
+            loSpot:p.loSpot
+          };
+          changed=true;
+        }
+
+        // 1D scoring: keep legacy window logic; still safe
+        if(p.outcome1d===null && ageMins>=1440){
+          const r1d=(p.r1d||Math.max(10,Math.round((p.r4||0)*2.5)));
+          p.outcome1d={dirHit:dirOk,rngHit:Math.abs(movePips)<=Math.abs(Number(r1d)||0),movePips,exitSpot:currentSpot};
+          changed=true;
+        }
+      });
+
+      if(changed){_adapt(currentSpot);_persist();}
+    }catch(e){
+      // swallow to keep UI alive
+      console.warn("Projection scoring error:", e);
+    }
   }
 
 
-  function _stats(){
-    const r1=log.filter(p=>p.outcome1h!==null), r4=log.filter(p=>p.outcome4h!==null), r1d=log.filter(p=>p.outcome1d!==null);
-    return{
-      n1h:r1.length,
-      dir1hRate:r1.length?r1.filter(p=>p.outcome1h.dirHit).length/r1.length:null,
-      rng1hRate:r1.length?r1.filter(p=>p.outcome1h.rngHit).length/r1.length:null,
-      n4h:r4.length,
-      dir4hRate:r4.length?r4.filter(p=>p.outcome4h.dirHit).length/r4.length:null,
-      rng4hRate:r4.length?r4.filter(p=>p.outcome4h.rngHit).length/r4.length:null,
-      n1d:r1d.length,
-      dir1dRate:r1d.length?r1d.filter(p=>p.outcome1d.dirHit).length/r1d.length:null,
-      rng1dRate:r1d.length?r1d.filter(p=>p.outcome1d.rngHit).length/r1d.length:null,
-      stopRate4h:r4.length?r4.filter(p=>p.stopHit===true).length/r4.length:null,
-      total:log.length,
-      pending:log.filter(p=>p.outcome4h===null).length, // 4H-resolution tracking
-    };
-  }
+
+function _stats(){
+  const r1=log.filter(p=>p.outcome1h!==null), r4=log.filter(p=>p.outcome4h!==null), r1d=log.filter(p=>p.outcome1d!==null);
+  const n4h=r4.length;
+
+  const in4h = n4h ? r4.filter(p=>p.outcome4h?.result==="IN").length : 0;
+  const out4h = n4h ? r4.filter(p=>p.outcome4h?.result==="OUT").length : 0;
+  const to4h = n4h ? r4.filter(p=>p.outcome4h?.result==="TIMEOUT").length : 0;
+
+  return{
+    n1h:r1.length,
+    dir1hRate:r1.length?r1.filter(p=>p.outcome1h.dirHit).length/r1.length:null,
+    rng1hRate:r1.length?r1.filter(p=>p.outcome1h.rngHit).length/r1.length:null,
+
+    // 4H rates are now mutually exclusive and sum to 100% (IN/OUT/TIMEOUT).
+    n4h:n4h,
+    dir4hRate:n4h?r4.filter(p=>p.outcome4h.dirHit).length/n4h:null,
+    rng4hRate:n4h?in4h/n4h:null,            // IN rate (range hit before stop)
+    out4hRate:n4h?out4h/n4h:null,           // OUT rate (stop hit before range)
+    timeout4hRate:n4h?to4h/n4h:null,        // TIMEOUT rate
+    stopRate4h:n4h?out4h/n4h:null,          // synonymous with OUT in first-touch semantics
+
+    n1d:r1d.length,
+    dir1dRate:r1d.length?r1d.filter(p=>p.outcome1d.dirHit).length/r1d.length:null,
+    rng1dRate:r1d.length?r1d.filter(p=>p.outcome1d.rngHit).length/r1d.length:null,
+    total:log.length,
+    pending:log.filter(p=>p.outcome4h===null).length, // 4H-resolution tracking
+  };
+}
 
 function _adapt(currentSpot){
     const s=_stats();
@@ -3377,7 +3362,6 @@ function injectSignalStats(state,sigStats){
 // ── APPLY FULL STATE TO UI: works for MASTER (local) and READER (from Firebase) ──
 function applyFullStateToUI(st){
   if(!st)return;
-  markUiTick();
   // Regime
   $("policyStateTitle").textContent="Policy State: S"+st.policy+" "+st.stateName;
   $("policyStateDesc").textContent=st.stateDesc+(FirebaseSync.isReader&&st.masterId?" [FS MASTER "+st.masterId.slice(0,6)+"]":"");
@@ -3971,130 +3955,6 @@ const gBtn=$("guideBtn"),gClose=$("closeGuideBtn"),gBack=$("guideBack");
 if(gBtn)gBtn.addEventListener("click",openGuide);
 if(gClose)gClose.addEventListener("click",closeGuide);
 if(gBack)gBack.addEventListener("click",e=>{if(e.target===gBack)closeGuide();});
-// ── Diagnostics modal ───────────────────────────────────────────────────────
-let lastUiTickTs=0;
-function markUiTick(){ lastUiTickTs=Date.now(); }
-function pct(x){return (x*100).toFixed(0)+"%";}
-function fmtPips(x){ if(!Number.isFinite(x)) return "--"; const s=Math.abs(x)>=100?x.toFixed(0):x.toFixed(1); return s+"p"; }
-function computeRiskFromReturns(rh){
-  const a=(rh||[]).slice(-120).filter(v=>Number.isFinite(v));
-  if(a.length<30) return null;
-  const mean=a.reduce((p,c)=>p+c,0)/a.length;
-  const sd=Math.sqrt(a.reduce((p,c)=>p+(c-mean)**2,0)/a.length);
-  // VaR/CVaR on losses: sort ascending
-  const sorted=[...a].sort((x,y)=>x-y);
-  const qIdx=Math.floor(0.05*(sorted.length-1));
-  const var95=sorted[qIdx]; // 5th percentile (can be negative)
-  const tail=sorted.slice(0, qIdx+1);
-  const cvar95=tail.reduce((p,c)=>p+c,0)/tail.length;
-  // max drawdown on cumulative pips
-  let cum=0, peak=0, mdd=0;
-  for(const v of a){
-    cum+=v;
-    if(cum>peak) peak=cum;
-    const dd=peak-cum;
-    if(dd>mdd) mdd=dd;
-  }
-  return {n:a.length, mean, sd, var95, cvar95, mdd};
-}
-function stabilityProxy(conf, age){
-  const c=Number(conf); const a=Number(age);
-  if(!Number.isFinite(c) || !Number.isFinite(a)) return null;
-  // confidence (0..1) × diminishing returns on age
-  const ageTerm = 1 - Math.exp(-a/120); // ~2 hours @ 1m ticks, just a proxy
-  return clamp(c*ageTerm,0,1);
-}
-function computeStopPipsFromLog(log){
-  const arr=(log||[]).slice(-200);
-  const p=[];
-  for(const o of arr){
-    const spot=Number(o.spot), stop=Number(o.stopSpot);
-    if(!Number.isFinite(spot)||!Number.isFinite(stop)) continue;
-    p.push(Math.abs(stop-spot)*10000);
-  }
-  if(p.length<3) return null;
-  p.sort((a,b)=>a-b);
-  const med=p[Math.floor(p.length/2)];
-  const avg=p.reduce((x,y)=>x+y,0)/p.length;
-  return {n:p.length, avg, med};
-}
-function populateDiagnostics(){
-  try{
-    const role = FirebaseSync?.isReader ? "FS READER" : (FirebaseSync?.isMaster ? "FS MASTER" : "Stand‑alone");
-    const sync = FirebaseSync?.isReader ? "Listening" : (FirebaseSync?.isMaster ? "Publishing" : "Local");
-    const mode = settings?.twelvedataKey ? "LIVE" : "FREE";
-    const provEl=$("quoteProvider"); const prov=(provEl && provEl.textContent) ? provEl.textContent.replace("Provider:","").trim() : "--";
-    const statusEl=$("fxStatus"); const stat = statusEl ? statusEl.textContent : "--";
-    const latEl=$("fxLatencyTag"); const lat = latEl ? latEl.textContent : "--";
-
-    const lastUp=$("lastUpdate")?.textContent || "--";
-    const cad = (lastSpot?.latencyMs!=null) ? "≈"+Math.max(1, Math.round((settings.pollMs||120000)/1000))+"s poll" : "--";
-
-    const dMode=$("dMode"); if(dMode) dMode.textContent = mode;
-    const dProv=$("dProv"); if(dProv) dProv.textContent = prov;
-    const dStatus=$("dStatus"); if(dStatus) dStatus.textContent = stat;
-    const dLat=$("dLat"); if(dLat) dLat.textContent = lat;
-    const dCad=$("dCad"); if(dCad) dCad.textContent = cad;
-
-    // Risk snapshot
-    const risk = computeRiskFromReturns(QuantEngine?.getReturns?.());
-    const dVol=$("dVol"), dVaR=$("dVaR"), dCVaR=$("dCVaR"), dDD=$("dDD"), dTail=$("dTail");
-    if(!risk){
-      if(dVol) dVol.textContent="--";
-      if(dVaR) dVaR.textContent="--";
-      if(dCVaR) dCVaR.textContent="--";
-      if(dDD) dDD.textContent="--";
-      if(dTail) dTail.textContent="Need 30+ ticks";
-    }else{
-      if(dVol) dVol.textContent = fmtPips(risk.sd);
-      if(dVaR) dVaR.textContent = fmtPips(risk.var95);
-      if(dCVaR) dCVaR.textContent = fmtPips(risk.cvar95);
-      if(dDD) dDD.textContent = fmtPips(risk.mdd);
-      const tailFlag = (risk.cvar95 < -25 || risk.sd>18) ? "Elevated tail risk" : "Normal";
-      if(dTail) dTail.textContent = tailFlag;
-    }
-
-    // Projection discipline
-    const ps=ProjTracker?.getStats?.()||{};
-    const stopAgg = computeStopPipsFromLog(ProjTracker?.getLog?.());
-    const dRes=$("dRes"), dRngHit=$("dRngHit"), dStopHit=$("dStopHit"), dRR=$("dRR"), dStopP=$("dStopP");
-    if(dRes) dRes.textContent = (ps.resolvedN!=null? ps.resolvedN : (ps.n||0))+"";
-    if(dRngHit) dRngHit.textContent = (ps.rangeHitPct!=null? (ps.rangeHitPct+"%") : (ps.rngHitPct!=null? (ps.rngHitPct+"%") : "--"));
-    if(dStopHit) dStopHit.textContent = (ps.stopHitPct!=null? (ps.stopHitPct+"%") : (ps.stopPct!=null? (ps.stopPct+"%") : "--"));
-    if(dRR) dRR.textContent = (ps.avgRR!=null? ps.avgRR.toFixed(2)+":1" : (ps.rr!=null? ps.rr.toFixed(2)+":1":"--"));
-    if(dStopP) dStopP.textContent = stopAgg? (stopAgg.avg.toFixed(1)+"p (n="+stopAgg.n+")") : "--";
-
-    // Regime stability proxy from current UI chips if available
-    const stTxt=$("policyState")?.textContent || "--";
-    const conf = lastFullState?.policy?.confidence ?? lastFullState?.policy?.conf ?? null;
-    const age = lastFullState?.policy?.age ?? lastFullState?.policy?.ageN ?? null;
-    const stab = stabilityProxy(conf, age);
-
-    if($("dState")) $("dState").textContent = lastFullState?.policy?.state || "--";
-    if($("dConf")) $("dConf").textContent = (Number.isFinite(conf)? Math.round(conf*100)+"%" : "--");
-    if($("dAge")) $("dAge").textContent = (Number.isFinite(age)? age+"":"--");
-    if($("dStab")) $("dStab").textContent = (stab==null? "--" : Math.round(stab*100)+"%");
-
-    if($("dRegimeTxt")) $("dRegimeTxt").textContent = (stab==null)
-      ? "Waiting for state payload. Warmup needs ~20 ticks."
-      : (stab<0.35 ? "Fragile regime. Expect churn. Cut size, demand better edge." : stab<0.65 ? "Moderate stability. Trade smaller and stay selective." : "Persistent regime. More comfortable holding exposure.");
-    if($("dBusTxt")) $("dBusTxt").textContent = "Role determines compute path. MASTER/stand‑alone run HMM + signals locally, then (optionally) publish to Firebase. READER only renders the published state.";
-    if($("dRole")) $("dRole").textContent = role;
-    if($("dSync")) $("dSync").textContent = sync;
-    if($("dUiTick")) $("dUiTick").textContent = (lastUiTickTs? fmtTime(lastUiTickTs) : lastUp);
-    if($("dAlerts")) $("dAlerts").textContent = (Number(settings?.alertThreshPips||0)>0 ? "On ("+settings.alertThreshPips+"p)" : "Off");
-  }catch(e){
-    console.warn("[QuadraX] Diagnostics populate error:", e);
-  }
-}
-function openDiag(){populateDiagnostics();const db=$("diagBack");if(db)db.style.display="flex";}
-function closeDiag(){const db=$("diagBack");if(db)db.style.display="none";}
-const dBtn=$("diagBtn"),dClose=$("closeDiagBtn"),dBack=$("diagBack");
-if(dBtn)dBtn.addEventListener("click",openDiag);
-if(dClose)dClose.addEventListener("click",closeDiag);
-if(dBack)dBack.addEventListener("click",e=>{if(e.target===dBack)closeDiag();});
-// Refresh diagnostics while open
-setInterval(()=>{const db=$("diagBack");if(db && db.style.display!=="none") populateDiagnostics();},1500);
 if(rBtn)rBtn.addEventListener("click",()=>{if(!confirm("Reset all settings? Firebase credentials will be cleared."))return;settings={twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbConfig:null,fbEmail:"",fbPassword:"",calibMult:1.0,biasConfAdj:1.0,sharpeAdj:1.0};save(KEY.s,settings);openSettings();});
 if(rpBtn)rpBtn.addEventListener("click",()=>{if(confirm("Reset all projection logs and calibration multiplier to 1.00?"))ProjTracker.reset();});
 if(saveBtn)saveBtn.addEventListener("click",async()=>{
