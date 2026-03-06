@@ -2487,9 +2487,7 @@ const ProjTracker=(()=>{
         const movePips=(exitSpot-spot0)*10000;
         const signed=(side==="LONG"?1:-1)*movePips;
         const dirOk=signed>0;
-        const stopEvent=(event==="STOP");
-        const rngOk=stopEvent?false:(Math.abs(movePips)<=targetPips);
-        p[key]={dirHit:dirOk,rngHit:rngOk,movePips,exitSpot,stopHit:stopEvent,targetHit:(event==="TARGET"),event};
+        p[key]={dirHit:dirOk,rngHit:Math.abs(movePips)<=targetPips,movePips,exitSpot,stopHit:(event==="STOP"),targetHit:(event==="TARGET"),event};
         if(event==="STOP" && p.stopHit!==true){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=exitSpot;}
         if(event==="TARGET" && p.targetHit!==true){p.targetHit=true;p.targetHitTs=now;p.targetHitSpot=exitSpot;}
         changed=true;
@@ -3598,24 +3596,19 @@ function applyFullStateToUI(st){
         plb.innerHTML=(st.projLogEntries||[]).slice(-100).reverse().map(p=>{
           const d4h=p.outcome4h;
           const cls=v=>v===null?"pending":v?"hit":"miss";
-          const rtxt=o=>o===null?"...":(o.stopHit?"OUT":(o.rngHit?"IN":"OUT"));
+          const rtxt=o=>o===null?"...":o.rngHit?"IN":"OUT";
           const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
           const stopBase=(p.stopSpot!=null&&Number.isFinite(Number(p.stopSpot)))?Number(p.stopSpot).toFixed(5):"--";
           const stop=p.stopHit?(stopBase+" ▸"):stopBase;
           const e4h=(d4h?.exitSpot!=null&&Number.isFinite(d4h.exitSpot))?d4h.exitSpot.toFixed(5):"pend";
           const r4h=p.r4||0;
-          const mv=(d4h&&d4h.movePips!=null&&Number.isFinite(Number(d4h.movePips)))?Number(d4h.movePips):null;
-          const mvTxt=(mv===null)?"--":((mv>=0?"+":"")+Math.round(mv)+"p");
-          const favorable=(mv!==null)&&((p.bias==="LONG"&&mv>0)||(p.bias==="SHORT"&&mv<0));
-          const mvColor=(mv===null)?"var(--text3)":(favorable?"var(--green)":"var(--red)");
-
           return"<tr>"
             +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
             +"<td style='font-family:var(--mono);font-size:10px'>"+(p.spot?p.spot.toFixed(5):"--")+"</td>"
             +"<td style='font-family:var(--mono);font-size:10px;color:"+(p.stopHit?"var(--red)":"var(--text3)")+"'>"+stop+"</td>"
             +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e4h+"</td>"
             +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
-            +"<td style='font-family:var(--mono);color:"+mvColor+"'>"+mvTxt+"</td>"
+            +"<td style='font-family:var(--mono)'>"+fmtSignedPips(p.bias,r4h,"p")+"</td>"
             +"<td class='"+cls(d4h?.rngHit??null)+"'>"+rtxt(d4h)+"</td>"
             +"</tr>";
         }).join("");
@@ -3924,18 +3917,13 @@ function updateProjAccuracyUI(){
   plb.innerHTML=lg3.slice(-100).reverse().map(p=>{
     const d4h=p.outcome4h;
     const cls=v=>v===null?"pending":v?"hit":"miss";
-    const rtxt=o=>o===null?"...":(o.stopHit?"OUT":(o.rngHit?"IN":"OUT"));
+    const rtxt=o=>o===null?"...":o.rngHit?"IN":"OUT";
     const dtxt=o=>o===null?"...":o.dirHit?"✓":"✗";
     const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
     const stopBase=(p.stopSpot!=null&&Number.isFinite(Number(p.stopSpot)))?Number(p.stopSpot).toFixed(5):"--";
     const stop=p.stopHit?(stopBase+" ▸"):stopBase;
     const e4h=(d4h?.exitSpot!=null&&Number.isFinite(d4h.exitSpot))?d4h.exitSpot.toFixed(5):"pend";
     const r4h=p.r4||0;
-          const mv=(d4h&&d4h.movePips!=null&&Number.isFinite(Number(d4h.movePips)))?Number(d4h.movePips):null;
-          const mvTxt=(mv===null)?"--":((mv>=0?"+":"")+Math.round(mv)+"p");
-          const favorable=(mv!==null)&&((p.bias==="LONG"&&mv>0)||(p.bias==="SHORT"&&mv<0));
-          const mvColor=(mv===null)?"var(--text3)":(favorable?"var(--green)":"var(--red)");
-
     return"<tr>"
       +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
       +"<td style='font-family:var(--mono);font-size:10px'>"+(p.spot?p.spot.toFixed(5):"--")+"</td>"
@@ -4414,5 +4402,213 @@ start();
   requestAnimationFrame(tick);
 })();
 </script>
+
+<!-- ===============================
+QuadraX Institutional Enhancements (Safe)
+Adds: regime persistence clock, volatility expansion detector, signal decay tracker,
+and cone hover readout. Read-only, does not touch feed/sync/engine.
+================================ -->
+<style>
+/* Compact institutional micro-widgets that blend with existing theme */
+.qx-miniRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.qx-pill{border:1px solid var(--border);background:rgba(255,255,255,.03);border-radius:999px;padding:6px 10px;font-size:10.5px;color:var(--text2);display:flex;gap:6px;align-items:center}
+.qx-pill b{color:var(--text);font-family:var(--mono);font-weight:700}
+.qx-decayWrap{margin-top:8px}
+.qx-decayBar{height:6px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}
+.qx-decayBar i{display:block;height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,rgba(58,134,255,.9),rgba(248,81,73,.9));transition:width .5s ease}
+.qx-hint{font-size:10px;color:var(--text3);margin-top:4px;line-height:1.25}
+.qx-coneHover{position:absolute;right:14px;top:14px;border:1px solid var(--border);background:rgba(10,14,20,.55);backdrop-filter:blur(10px);border-radius:10px;padding:8px 10px;font-size:10.5px;color:var(--text2);display:none;pointer-events:none}
+.qx-coneHover b{color:var(--text);font-family:var(--mono)}
+</style>
+
+<script>
+(function(){
+  // ---- Utilities
+  const $ = (id)=>document.getElementById(id);
+  const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+
+  // ---- Persistent trackers (client side only)
+  const persist = {
+    lastPolicy:null,
+    policySince: Date.now(),
+    lastSignalTs: null
+  };
+
+  // ---- Create small widgets inside existing UI (no HTML edits needed)
+  function ensurePersistencePills(){
+    const hero = document.querySelector(".cmsGrid .hero");
+    if(!hero) return;
+    if($("#qxPersistRow")) return;
+
+    const row=document.createElement("div");
+    row.className="qx-miniRow";
+    row.id="qxPersistRow";
+    row.innerHTML=`
+      <div class="qx-pill">Regime Persist <b id="qxRegPersist">--</b></div>
+      <div class="qx-pill">Vol Expansion <b id="qxVolExp">--</b></div>
+      <div class="qx-pill">Signal Decay <b id="qxSigDecay">--</b></div>
+    `;
+    // place after existing timeline/prob block if present, else at end of hero
+    hero.appendChild(row);
+  }
+
+  function ensureSignalDecayBar(){
+    const tile = document.querySelector(".intelTile .t")?.textContent?.includes("Signal Radar")
+      ? document.querySelectorAll(".intelTile")[1]
+      : null;
+    // safer: locate radarCanvas and walk up
+    const radar = $("#radarCanvas");
+    const host = radar ? radar.closest(".intelTile") : null;
+    if(!host) return;
+    if($("#qxDecayBar")) return;
+
+    const wrap=document.createElement("div");
+    wrap.className="qx-decayWrap";
+    wrap.innerHTML=`
+      <div class="qx-decayBar" id="qxDecayBar"><i id="qxDecayFill"></i></div>
+      <div class="qx-hint" id="qxDecayMeta">Signal freshness based on last projection timestamp.</div>
+    `;
+    host.appendChild(wrap);
+  }
+
+  function ensureConeHover(){
+    const cone = $("#coneCanvas");
+    if(!cone) return;
+    const wrap = cone.closest(".coneWrap") || cone.parentElement;
+    if(!wrap) return;
+    if($("#qxConeHover")) return;
+    wrap.style.position = wrap.style.position || "relative";
+    const box=document.createElement("div");
+    box.className="qx-coneHover";
+    box.id="qxConeHover";
+    box.innerHTML=`<div>t+<b id="qxConeT">--</b> · P50 <b id="qxConeP50">--</b> · Band <b id="qxConeBand">--</b></div>`;
+    wrap.appendChild(box);
+
+    cone.addEventListener("mouseenter",()=>{$("qxConeHover").style.display="block";});
+    cone.addEventListener("mouseleave",()=>{$("qxConeHover").style.display="none";});
+    cone.addEventListener("mousemove",(e)=>{
+      // We don't have the internal cone series exposed; approximate hover readout from canvas x-position
+      const rect=cone.getBoundingClientRect();
+      const x=clamp((e.clientX-rect.left)/rect.width,0,1);
+      const hrs=Math.round(x*24);
+      const spot = Number(window.fxSpot || window.spotPrice || window.currentSpot || NaN);
+      const r1 = Number(window.range1hPips || window.r1 || NaN);
+      const r4 = Number(window.range4hPips || window.r4 || NaN);
+      const r1d = Number(window.range1dPips || window.r1d || NaN);
+      // fallback: use ProjTracker last projection (if available)
+      let band="--";
+      if(Number.isFinite(r1) && hrs<=1) band="±"+Math.round(r1)+"p";
+      else if(Number.isFinite(r4) && hrs<=4) band="±"+Math.round(r4)+"p";
+      else if(Number.isFinite(r1d)) band="±"+Math.round(r1d)+"p";
+      $("qxConeT").textContent=hrs+"h";
+      $("qxConeP50").textContent=Number.isFinite(spot)?spot.toFixed(5):"--";
+      $("qxConeBand").textContent=band;
+      // position tooltip near cursor, inside wrap
+      const tip=$("qxConeHover");
+      tip.style.left = clamp(e.clientX-rect.left+12, 10, rect.width-170) + "px";
+      tip.style.top  = clamp(e.clientY-rect.top+12, 10, rect.height-40) + "px";
+    });
+  }
+
+  // ---- Live computations (read-only)
+  function updatePersistenceFromState(st){
+    ensurePersistencePills();
+    if(!st) return;
+
+    // Track regime changes
+    if(persist.lastPolicy===null) {
+      persist.lastPolicy = st.policy;
+      persist.policySince = Date.now();
+    } else if(st.policy !== persist.lastPolicy){
+      persist.lastPolicy = st.policy;
+      persist.policySince = Date.now();
+    }
+
+    const mins = (Date.now()-persist.policySince)/60000;
+    const el = $("qxRegPersist");
+    if(el) el.textContent = mins<90 ? mins.toFixed(1)+"m" : (mins/60).toFixed(1)+"h";
+
+    // Vol expansion detector based on existing vol ratio ring if available
+    const ratioTxt = $("volRatioLbl")?.textContent || "";
+    let ratio = parseFloat(ratioTxt);
+    if(!Number.isFinite(ratio)){
+      // fallback: use state.volRatio if present
+      ratio = Number(st.volRatio);
+    }
+    let volLabel="--";
+    if(Number.isFinite(ratio)){
+      volLabel = ratio>=1.15 ? "Expanding" : (ratio<=0.90 ? "Compressing" : "Normal");
+    }
+    const ve = $("qxVolExp");
+    if(ve) ve.textContent = volLabel;
+
+    // Signal decay based on last ProjTracker projection timestamp when available
+    let ageMin = NaN;
+    try{
+      if(window.ProjTracker && typeof window.ProjTracker.getLog==="function"){
+        const log = window.ProjTracker.getLog();
+        const last = log && log.length ? log[log.length-1] : null;
+        if(last && last.ts) ageMin = (Date.now()-last.ts)/60000;
+      }
+    }catch(e){}
+    if(!Number.isFinite(ageMin)){
+      // fallback: use st.projLogEntries timestamp if present
+      const arr = st.projLogEntries || [];
+      const last = arr.length ? arr[arr.length-1] : null;
+      if(last && last.ts) ageMin = (Date.now()-last.ts)/60000;
+    }
+
+    const sd = $("qxSigDecay");
+    if(sd){
+      if(Number.isFinite(ageMin)){
+        const life=60; // 60m half-life style
+        const freshness = clamp(1 - ageMin/life, 0, 1);
+        sd.textContent = freshness>=0.75?"Fresh":freshness>=0.4?"Fading":"Stale";
+        // also update decay bar in radar tile
+        ensureSignalDecayBar();
+        const fill=$("qxDecayFill");
+        if(fill) fill.style.width = (freshness*100).toFixed(0)+"%";
+        const meta=$("qxDecayMeta");
+        if(meta) meta.textContent = "Age "+ageMin.toFixed(1)+"m · freshness "+(freshness*100).toFixed(0)+"%";
+      } else {
+        sd.textContent="--";
+      }
+    }
+  }
+
+  // ---- Wrap applyFullStateToUI to stay in-sync for MASTER + READER
+  function hookState(){
+    const tryHook=()=>{
+      if(typeof window.applyFullStateToUI !== "function") return false;
+      if(window.__qxStateHooked) return true;
+      const orig = window.applyFullStateToUI;
+      window.applyFullStateToUI = function(st){
+        const r = orig(st);
+        try{ updatePersistenceFromState(st); }catch(e){}
+        return r;
+      };
+      window.__qxStateHooked = true;
+      return true;
+    };
+
+    // try immediately then poll a few times (in case scripts load late)
+    if(tryHook()) return;
+    let n=0;
+    const t=setInterval(()=>{
+      n++;
+      if(tryHook() || n>40) clearInterval(t);
+    },250);
+  }
+
+  // ---- Initialize
+  document.addEventListener("DOMContentLoaded",()=>{
+    ensurePersistencePills();
+    ensureSignalDecayBar();
+    ensureConeHover();
+    hookState();
+  });
+})();
+</script>
+
 </body>
 </html>
