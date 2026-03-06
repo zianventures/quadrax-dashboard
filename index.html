@@ -4379,7 +4379,7 @@ async function start(){
   const __authCfg = window.__qxAuthOverride || null;
   const __fbConfig = (__authCfg&&__authCfg.fbConfig) ? __authCfg.fbConfig : settings.fbConfig;
   const __fbEmail  = (__authCfg&&__authCfg.fbEmail)  ? __authCfg.fbEmail  : settings.fbEmail;
-  const __fbPass   = (__authCfg&&__authCfg.fbPassword)? __authCfg.fbPassword : settings.fbPassword;
+  const __fbPass   = (__authCfg&&__authCfg.fbPassword) ? __authCfg.fbPassword : settings.fbPassword;
   if(__fbConfig&&__fbEmail&&__fbPass){
     await FirebaseSync.init(__fbConfig,__fbEmail,__fbPass);
   }else{
@@ -4539,6 +4539,285 @@ window.__qxStart=start;
 })();
 </script>
 
+<!-- ===============================
+QuadraX V32 Tight Layout + Micro-Intelligence Skin
+Visual-only layer: tighter spacing, reduced negative space, added edge meter,
+signal lights, and price ladder. No analytics/engine logic changed.
+================================ -->
+<style id="qx-tight-skin">
+.wrap{padding:14px 14px 44px!important;max-width:1580px!important}
+.grid{gap:12px!important;margin-top:12px!important}
+.stack{gap:10px!important}
+.topbar{padding:12px 16px!important}
+.brand{gap:10px!important;min-width:220px!important}
+.brand .sub{font-size:9px!important}
+.top-actions{gap:6px!important}
+.card .inner{padding:12px!important}
+.card-title{margin-bottom:8px!important}
+.card-title .hint{font-size:10px!important;line-height:1.35!important}
+.hero,.quoteCard,.sessLeft,.sessRight,.busBox,.fpBox,.fpTfBox,.qeBox,.paBox,.riskItem,.macroBox,.tmBox,.pb3Box,.intelTile,.fcastBox,.sharpeBox{padding:10px 12px!important}
+.probBlock{margin-top:10px!important;padding-top:8px!important}
+.probRow{padding:3px 0!important;grid-template-columns:160px 1fr 40px!important}
+.pbar,.tmBar,.pb3Bar,.sparkBar,.hurstBar,.kellyBar,.alMiniBar,.stkBar{height:3px!important}
+.riskStrip{gap:8px!important;margin-top:8px!important;padding:8px!important}
+.riskItem{padding:8px!important}
+.stateBig{font-size:20px!important}
+.quotePx{font-size:34px!important}
+.quoteCard{gap:8px!important}
+.quoteBadges{gap:4px!important}
+.tfGrid{gap:4px!important}
+.tfBox{padding:8px!important}
+.fpTfGrid{gap:8px!important;margin:8px 0!important}
+.qeGrid,.intelGrid,.pb3Grid,.macroGrid,.tmGrid,.sharpeGrid,.paGrid,.busGrid{gap:8px!important}
+.sessionGrid{gap:8px!important;margin-bottom:8px!important}
+.dayRow{padding:10px!important}
+.convicRow{padding:10px 12px!important;margin-bottom:8px!important}
+#coneCanvas{height:210px!important}
+#equityCanvas{height:96px!important}
+.tableWrap table tbody td,.paLogTable td{padding:6px 9px!important}
+thead th,.paLogTable th{padding:7px 9px!important}
+.sec-label,.tlLabel,.eqLabel,.paLogLabel,.rlabel,.bk,.qk,.k,.fk,.ck,.rk,.al,.dl,.fpTfLabel{font-size:8.5px!important;letter-spacing:1px!important}
+.smallNote,.muted,.qm,.meta,.bm,.fm,.rm,.aNote,.aAnalog,.teNewsTitle{font-size:10px!important;line-height:1.45!important}
+.foot{margin-top:8px!important;font-size:9px!important}
+
+.card{position:relative;overflow:hidden}
+.card::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,0) 18%),
+    linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,255,255,.02) 1px, transparent 1px);
+  background-size:auto, 34px 34px, 34px 34px;
+  opacity:.05;
+}
+.hero::before,.sessLeft::before{opacity:.45!important}
+
+.qx-edgeMeter{
+  min-width:110px;padding:8px 10px;border-radius:12px;
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 6px 16px rgba(0,0,0,.22);
+}
+.qx-edgeMeter .l{font-size:8px;letter-spacing:1.1px;color:var(--text4);font-family:var(--mono);text-transform:uppercase}
+.qx-edgeMeter .v{font-size:20px;font-family:var(--mono);font-weight:700;line-height:1.05;margin-top:2px}
+.qx-edgeMeter .b{height:4px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:6px}
+.qx-edgeMeter .b i{display:block;height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg, rgba(255,71,87,.88), rgba(245,166,35,.88), rgba(0,214,143,.92));transition:width .35s ease}
+
+.qx-siglights{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:8px}
+.qx-siglight{border-radius:10px;padding:7px 8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);min-width:0}
+.qx-siglight .k{display:flex;align-items:center;gap:6px;font-size:8px;letter-spacing:.9px;text-transform:uppercase;color:var(--text4);font-family:var(--mono)}
+.qx-siglight .dot{width:6px;height:6px;border-radius:50%;box-shadow:none!important}
+.qx-siglight .v{margin-top:4px;font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:900px){.qx-siglights{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.qx-quoteDense{display:grid;grid-template-columns:88px 1fr;gap:10px;align-items:stretch}
+.qx-ladder{border-radius:12px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);padding:8px 6px;display:grid;gap:4px;align-content:center}
+.qx-ladderRow{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--text3)}
+.qx-ladderRow.spot{color:var(--text);font-weight:700}
+.qx-ladderRow span:first-child{opacity:.8}
+.qx-ladderLine{height:1px;flex:1;margin:0 5px;background:linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,.18), rgba(255,255,255,.06))}
+.qx-statRail{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.qx-stat{border-radius:10px;padding:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+.qx-stat .k{font-size:8px;letter-spacing:.9px;text-transform:uppercase;color:var(--text4);font-family:var(--mono)}
+.qx-stat .v{margin-top:3px;font-size:12px;font-family:var(--mono);font-weight:700;color:var(--text)}
+.qx-stat .m{margin-top:2px;font-size:9px;color:var(--text3)}
+</style>
+
+<script id="qx-tight-script">
+(function(){
+  const $ = (id)=>document.getElementById(id);
+  const txt = (id)=>($(id)?.textContent||"").trim();
+
+  function ensureEdgeMeter(){
+    const actions = document.querySelector(".top-actions");
+    if(!actions || $("qxEdgeMeter")) return;
+    const node = document.createElement("div");
+    node.className = "qx-edgeMeter";
+    node.id = "qxEdgeMeter";
+    node.innerHTML = '<div class="l">Edge Score</div><div class="v" id="qxEdgeVal">--</div><div class="b"><i id="qxEdgeFill"></i></div>';
+    const riskPulse = document.querySelector(".riskPulse");
+    if(riskPulse && riskPulse.nextSibling) actions.insertBefore(node, riskPulse.nextSibling);
+    else actions.prepend(node);
+  }
+
+  function ensureSignalLights(){
+    const host = document.querySelector(".hero");
+    if(!host || $("qxSigLights")) return;
+    const wrap = document.createElement("div");
+    wrap.id = "qxSigLights";
+    wrap.className = "qx-siglights";
+    wrap.innerHTML = [
+      ['HMM','qxSigHMM'],
+      ['Bias','qxSigBias'],
+      ['Momentum','qxSigMom'],
+      ['Event','qxSigEvent'],
+      ['Vol','qxSigVol']
+    ].map(([k,id])=>(
+      '<div class="qx-siglight"><div class="k"><span class="dot" id="'+id+'Dot"></span>'+k+
+      '</div><div class="v" id="'+id+'Val">--</div></div>'
+    )).join('');
+    const probBlock = document.querySelector(".probBlock");
+    if(probBlock) host.insertBefore(wrap, probBlock);
+    else host.appendChild(wrap);
+  }
+
+  function ensureQuoteDense(){
+    const q = document.querySelector(".quoteCard");
+    if(!q || $("qxLadder")) return;
+    const tickChart = $("tickChart");
+    if(!tickChart) return;
+
+    const ladder = document.createElement("div");
+    ladder.id = "qxLadder";
+    ladder.className = "qx-ladder";
+    ladder.innerHTML = [
+      '<div class="qx-ladderRow" id="qxL1"><span>+R</span><div class="qx-ladderLine"></div><span>--</span></div>',
+      '<div class="qx-ladderRow" id="qxL2"><span>+½</span><div class="qx-ladderLine"></div><span>--</span></div>',
+      '<div class="qx-ladderRow spot" id="qxL3"><span>SPOT</span><div class="qx-ladderLine"></div><span>--</span></div>',
+      '<div class="qx-ladderRow" id="qxL4"><span>-½</span><div class="qx-ladderLine"></div><span>--</span></div>',
+      '<div class="qx-ladderRow" id="qxL5"><span>-R</span><div class="qx-ladderLine"></div><span>--</span></div>'
+    ].join('');
+
+    const chartWrap = document.createElement("div");
+    chartWrap.className = "qx-quoteDense";
+    tickChart.parentNode.insertBefore(chartWrap, tickChart);
+    chartWrap.appendChild(ladder);
+
+    const right = document.createElement("div");
+    while(tickChart.nextSibling){
+      right.appendChild(tickChart.nextSibling);
+    }
+    right.prepend(tickChart);
+    chartWrap.appendChild(right);
+
+    const stats = document.createElement("div");
+    stats.className = "qx-statRail";
+    stats.id = "qxStatRail";
+    stats.innerHTML = `
+      <div class="qx-stat"><div class="k">Latency</div><div class="v" id="qxLatency">--</div><div class="m">feed</div></div>
+      <div class="qx-stat"><div class="k">Change</div><div class="v" id="qxChange">--</div><div class="m">since update</div></div>
+      <div class="qx-stat"><div class="k">Staleness</div><div class="v" id="qxStale">--</div><div class="m">data age</div></div>
+    `;
+    q.appendChild(stats);
+  }
+
+  function parsePct(s){
+    const m = String(s||"").match(/-?\d+(\.\d+)?/);
+    return m ? Number(m[0]) : NaN;
+  }
+  function parsePrice(s){
+    const m = String(s||"").match(/-?\d+\.\d+/);
+    return m ? Number(m[0]) : NaN;
+  }
+  function parsePipsFromText(s){
+    const m = String(s||"").match(/-?\d+(\.\d+)?\s*p/i);
+    if(m) return Math.abs(Number(m[0].replace(/[^\d.-]/g,'')));
+    const m2 = String(s||"").match(/-?\d+(\.\d+)?/);
+    return m2 ? Math.abs(Number(m2[0])) : NaN;
+  }
+
+  function setSig(id, label, tone){
+    const v = $(id+'Val'), d=$(id+'Dot');
+    if(v) v.textContent = label || '--';
+    if(d){
+      d.style.background = tone==='good' ? 'rgba(0,214,143,.95)' :
+                           tone==='warn' ? 'rgba(245,166,35,.95)' :
+                           tone==='bad'  ? 'rgba(255,71,87,.95)' :
+                                            'rgba(180,220,255,.70)';
+    }
+  }
+
+  function updateEdgeMeter(){
+    ensureEdgeMeter();
+    const conv = parsePct(txt('busConvPct'))/100;
+    const coh  = parsePct(txt('busCoherence'))/100;
+    const risk = parsePct(txt('busRisk'))/100;
+    const fallbackConv = parsePct(txt('convicPct'))/100;
+    const c = Number.isFinite(conv) ? conv : (Number.isFinite(fallbackConv)?fallbackConv:0);
+    const h = Number.isFinite(coh) ? coh : c;
+    const r = Number.isFinite(risk) ? risk : 0.5;
+    const edge = Math.max(0, Math.min(1, (c*0.55 + h*0.45) * (1-r*0.55)));
+    const val = $('qxEdgeVal'), fill = $('qxEdgeFill');
+    if(val) val.textContent = Math.round(edge*100) + '%';
+    if(fill) fill.style.width = (edge*100).toFixed(0) + '%';
+  }
+
+  function updateSignalLights(){
+    ensureSignalLights();
+    const detector = txt('detectorChip');
+    const bias = txt('macroBiasChip');
+    const mom = txt('momChip');
+    const ev = txt('eventRiskChip');
+    const vol = txt('volRegimeLbl');
+
+    setSig('qxSigHMM', detector || '--', detector && detector !== '--' ? 'good' : 'neutral');
+
+    let biasTone = 'neutral';
+    if(/LONG|SHORT/i.test(bias)) biasTone = 'good';
+    else if(/OFF|NEUTRAL/i.test(bias)) biasTone = 'warn';
+    setSig('qxSigBias', bias || '--', biasTone);
+
+    const momVal = parsePct(mom);
+    setSig('qxSigMom', mom || '--', Number.isFinite(momVal) ? (momVal>=55?'good':momVal>=35?'warn':'bad') : 'neutral');
+
+    let evTone = 'neutral';
+    if(/LOW/i.test(ev)) evTone='good';
+    else if(/MED|MID|NORMAL/i.test(ev)) evTone='warn';
+    else if(/HIGH|ELEVATED|SEVERE/i.test(ev)) evTone='bad';
+    setSig('qxSigEvent', ev || '--', evTone);
+
+    let volTone='neutral';
+    if(/NORMAL|LOW/i.test(vol)) volTone='good';
+    else if(/ELEVATED|MID/i.test(vol)) volTone='warn';
+    else if(/HIGH|HOT|EXTREME/i.test(vol)) volTone='bad';
+    setSig('qxSigVol', vol || '--', volTone);
+  }
+
+  function updateQuoteDense(){
+    ensureQuoteDense();
+    const spot = parsePrice(txt('fxSpotPrice'));
+    const r1 = parsePipsFromText(txt('rng1hFp')) || parsePipsFromText(txt('tf1hRng')) || 20;
+    const half = r1/2;
+    const q = 0.0001;
+    const f = (x)=>Number.isFinite(x)?x.toFixed(5):'--';
+
+    const rows = [
+      ['qxL1', spot + r1*q],
+      ['qxL2', spot + half*q],
+      ['qxL3', spot],
+      ['qxL4', spot - half*q],
+      ['qxL5', spot - r1*q]
+    ];
+    rows.forEach(([id,px])=>{
+      const row = $(id);
+      if(row) row.lastElementChild.textContent = f(px);
+    });
+
+    const latRaw = txt('fxLatencyTag');
+    const latMatch = latRaw.match(/(\d+ms)/i);
+    const chg = txt('fxSpotDelta');
+    const last = txt('fxLastTag');
+    if($('qxLatency')) $('qxLatency').textContent = latMatch ? latMatch[1] : '--';
+    if($('qxChange')) $('qxChange').textContent = chg && chg !== '--' ? chg : '--';
+    if($('qxStale')) $('qxStale').textContent = /Last:/i.test(last) ? 'live' : '--';
+  }
+
+  function run(){
+    updateEdgeMeter();
+    updateSignalLights();
+    updateQuoteDense();
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    ensureEdgeMeter();
+    ensureSignalLights();
+    ensureQuoteDense();
+    run();
+    setInterval(run, 1500);
+  });
+})();
+</script>
+
+
 <script id="qx-auth-gate-script">
 (function(){
   const $ = (id)=>document.getElementById(id);
@@ -4549,8 +4828,7 @@ window.__qxStart=start;
     try{
       const raw = localStorage.getItem(KEY);
       if(!raw) return {};
-      const s = JSON.parse(raw)||{};
-      return s;
+      return JSON.parse(raw)||{};
     }catch(e){ return {}; }
   }
 
@@ -4583,7 +4861,7 @@ window.__qxStart=start;
     }
 
     if(!fbConfig){
-      setMsg('No Firebase config found. Paste the firebaseConfig JSON or store it in Settings first.', 'err');
+      setMsg('No Firebase config found. Paste the firebaseConfig JSON or save it in Settings first.', 'err');
       return;
     }
     if(!email || !password){
@@ -4591,10 +4869,8 @@ window.__qxStart=start;
       return;
     }
 
-    // Persist for the in-page starter logic
     window.__qxAuthOverride = { fbConfig, fbEmail: email, fbPassword: password };
 
-    // Pre-fill settings modal fields for consistency
     try{
       if(document.getElementById('fbConfigInput') && !document.getElementById('fbConfigInput').value){
         document.getElementById('fbConfigInput').value = JSON.stringify(fbConfig);
@@ -4624,10 +4900,6 @@ window.__qxStart=start;
   }
 
   document.addEventListener('DOMContentLoaded', ()=>{
-    const saved = readSaved();
-    const em = $('qxAuthEmail');
-    if(em && saved.fbEmail) em.value = saved.fbEmail;
-
     $('qxAuthLogin')?.addEventListener('click', login);
     $('qxAuthPassword')?.addEventListener('keydown', (e)=>{
       if(e.key === 'Enter') login();
@@ -4653,7 +4925,7 @@ window.__qxStart=start;
       }
     });
 
-    // Keep dashboard locked until explicit auth succeeds
+    // Intentionally do NOT prefill email for privacy.
     document.body.classList.add('qx-auth-locked');
     setMsg('Enter Firebase email and password to unlock the dashboard.', '');
   });
