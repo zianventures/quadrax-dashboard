@@ -3465,6 +3465,9 @@ function injectSignalStats(state,sigStats){
 // ── APPLY FULL STATE TO UI: works for MASTER (local) and READER (from Firebase) ──
 function applyFullStateToUI(st){
   if(!st)return;
+  // Unified Signal Bus: render from state for ALL modes (MASTER/READER/STANDALONE)
+  // This fixes READER parity where some bus cards were not populated.
+  if(st.signalBus){ try{ updateSignalBusUI(st.signalBus);}catch(e){ console.warn('[QuadraX] updateSignalBusUI failed',e);} }
   // Regime
   $("policyStateTitle").textContent="Policy State: S"+st.policy+" "+st.stateName;
   $("policyStateDesc").textContent=st.stateDesc+(FirebaseSync.isReader&&st.masterId?" [FS MASTER "+st.masterId.slice(0,6)+"]":"");
@@ -3575,6 +3578,8 @@ function applyFullStateToUI(st){
     setV("paDirHit",fmt(st.projDir4h),(st.projDir4h||0)>=0.55,(st.projDir4h!=null)&&st.projDir4h<0.45);
     const pdm=$("paDirHitMeta");if(pdm)pdm.textContent="n="+(st.projN4h||0)+" scored";
     // Range hit
+    setV("pa1dRng",fmt(st.projRng4h),(st.projRng4h||0)>=0.60&&(st.projRng4h||0)<=0.82,(st.projRng4h!=null)&&(st.projRng4h<0.45||st.projRng4h>0.88));
+    // Stop hit
     setV("pa1dStop",fmt(st.projStop4h),(st.projStop4h!=null)&&st.projStop4h<0.25,(st.projStop4h||0)>0.45);
     {const rEntries=(st.projLogEntries||[]).filter(p=>p.outcome4h!==null&&p.r1d);
      const avgRR=rEntries.length?rEntries.reduce((acc,p)=>{const r1d=p.r1d||Math.max(10,Math.round((p.r4||0)*2.5));const sp=Math.max(8,Math.round((p.r1||0)*0.75));return acc+r1d/sp;},0)/rEntries.length:null;
@@ -3942,7 +3947,7 @@ function updateProjAccuracyUI(){
       +"<td style='font-family:var(--mono);font-size:10px;color:"+(p.stopHit?"var(--red)":"var(--text3)")+"'>"+stop+"</td>"
       +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e4h+"</td>"
       +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
-      +"<td class='"+cls(d4h?.dirHit??null)+"'>"+dtxt(d4h)+"</td>"
+      +"<td style='font-family:var(--mono);color:"+mvColor+"'>"+mvTxt+"</td>"
       +"<td class='"+cls(d4h?.rngHit??null)+"'>"+rtxt(d4h)+"</td>"
       +"</tr>";
   }).join("");
