@@ -2487,7 +2487,9 @@ const ProjTracker=(()=>{
         const movePips=(exitSpot-spot0)*10000;
         const signed=(side==="LONG"?1:-1)*movePips;
         const dirOk=signed>0;
-        p[key]={dirHit:dirOk,rngHit:Math.abs(movePips)<=targetPips,movePips,exitSpot,stopHit:(event==="STOP"),targetHit:(event==="TARGET"),event};
+        const stopEvent=(event==="STOP");
+        const rngOk=stopEvent?false:(Math.abs(movePips)<=targetPips);
+        p[key]={dirHit:dirOk,rngHit:rngOk,movePips,exitSpot,stopHit:stopEvent,targetHit:(event==="TARGET"),event};
         if(event==="STOP" && p.stopHit!==true){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=exitSpot;}
         if(event==="TARGET" && p.targetHit!==true){p.targetHit=true;p.targetHitTs=now;p.targetHitSpot=exitSpot;}
         changed=true;
@@ -3596,19 +3598,24 @@ function applyFullStateToUI(st){
         plb.innerHTML=(st.projLogEntries||[]).slice(-100).reverse().map(p=>{
           const d4h=p.outcome4h;
           const cls=v=>v===null?"pending":v?"hit":"miss";
-          const rtxt=o=>o===null?"...":o.rngHit?"IN":"OUT";
+          const rtxt=o=>o===null?"...":(o.stopHit?"OUT":(o.rngHit?"IN":"OUT"));
           const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
           const stopBase=(p.stopSpot!=null&&Number.isFinite(Number(p.stopSpot)))?Number(p.stopSpot).toFixed(5):"--";
           const stop=p.stopHit?(stopBase+" ▸"):stopBase;
           const e4h=(d4h?.exitSpot!=null&&Number.isFinite(d4h.exitSpot))?d4h.exitSpot.toFixed(5):"pend";
           const r4h=p.r4||0;
+          const mv=(d4h&&d4h.movePips!=null&&Number.isFinite(Number(d4h.movePips)))?Number(d4h.movePips):null;
+          const mvTxt=(mv===null)?"--":((mv>=0?"+":"")+Math.round(mv)+"p");
+          const favorable=(mv!==null)&&((p.bias==="LONG"&&mv>0)||(p.bias==="SHORT"&&mv<0));
+          const mvColor=(mv===null)?"var(--text3)":(favorable?"var(--green)":"var(--red)");
+
           return"<tr>"
             +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
             +"<td style='font-family:var(--mono);font-size:10px'>"+(p.spot?p.spot.toFixed(5):"--")+"</td>"
             +"<td style='font-family:var(--mono);font-size:10px;color:"+(p.stopHit?"var(--red)":"var(--text3)")+"'>"+stop+"</td>"
             +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e4h+"</td>"
             +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
-            +"<td style='font-family:var(--mono)'>"+fmtSignedPips(p.bias,r4h,"p")+"</td>"
+            +"<td style='font-family:var(--mono);color:"+mvColor+"'>"+mvTxt+"</td>"
             +"<td class='"+cls(d4h?.rngHit??null)+"'>"+rtxt(d4h)+"</td>"
             +"</tr>";
         }).join("");
@@ -3917,13 +3924,18 @@ function updateProjAccuracyUI(){
   plb.innerHTML=lg3.slice(-100).reverse().map(p=>{
     const d4h=p.outcome4h;
     const cls=v=>v===null?"pending":v?"hit":"miss";
-    const rtxt=o=>o===null?"...":o.rngHit?"IN":"OUT";
+    const rtxt=o=>o===null?"...":(o.stopHit?"OUT":(o.rngHit?"IN":"OUT"));
     const dtxt=o=>o===null?"...":o.dirHit?"✓":"✗";
     const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
     const stopBase=(p.stopSpot!=null&&Number.isFinite(Number(p.stopSpot)))?Number(p.stopSpot).toFixed(5):"--";
     const stop=p.stopHit?(stopBase+" ▸"):stopBase;
     const e4h=(d4h?.exitSpot!=null&&Number.isFinite(d4h.exitSpot))?d4h.exitSpot.toFixed(5):"pend";
     const r4h=p.r4||0;
+          const mv=(d4h&&d4h.movePips!=null&&Number.isFinite(Number(d4h.movePips)))?Number(d4h.movePips):null;
+          const mvTxt=(mv===null)?"--":((mv>=0?"+":"")+Math.round(mv)+"p");
+          const favorable=(mv!==null)&&((p.bias==="LONG"&&mv>0)||(p.bias==="SHORT"&&mv<0));
+          const mvColor=(mv===null)?"var(--text3)":(favorable?"var(--green)":"var(--red)");
+
     return"<tr>"
       +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
       +"<td style='font-family:var(--mono);font-size:10px'>"+(p.spot?p.spot.toFixed(5):"--")+"</td>"
