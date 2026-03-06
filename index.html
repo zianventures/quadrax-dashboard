@@ -771,8 +771,119 @@ body::after{
 </style>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+
+<style id="qx-auth-gate-style">
+body.qx-auth-locked .wrap{display:none!important}
+#qxAuthGate{
+  position:fixed; inset:0; z-index:10000;
+  display:flex; align-items:center; justify-content:center;
+  background:
+    radial-gradient(900px 500px at 20% 10%, rgba(41,121,255,.14), transparent 60%),
+    radial-gradient(700px 420px at 85% 20%, rgba(0,214,143,.10), transparent 60%),
+    linear-gradient(180deg,#03050b,#060a14 55%,#050814);
+  padding:20px;
+}
+#qxAuthGate[hidden]{display:none!important}
+.qx-auth-shell{
+  width:min(520px,96vw);
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(180deg, rgba(14,20,38,.92), rgba(10,14,28,.94));
+  box-shadow:0 28px 90px rgba(0,0,0,.68);
+  padding:22px 22px 18px;
+  backdrop-filter:blur(18px) saturate(1.2);
+  color:#e8eaf0;
+  font-family:'Space Grotesk',system-ui,sans-serif;
+}
+.qx-auth-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.qx-auth-mark{
+  width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+  font-weight:700;font-family:'JetBrains Mono',monospace;font-size:12px;
+  background:linear-gradient(135deg,rgba(41,121,255,.28),rgba(0,214,143,.18));
+  border:1px solid rgba(255,255,255,.10);
+}
+.qx-auth-title{font-size:18px;font-weight:700;letter-spacing:-.3px}
+.qx-auth-sub{font-size:11px;color:rgba(232,234,240,.60);line-height:1.45;margin-top:2px}
+.qx-auth-grid{display:grid;gap:12px;margin-top:14px}
+.qx-auth-field{display:grid;gap:6px}
+.qx-auth-field label{
+  font-size:10px;letter-spacing:1px;text-transform:uppercase;
+  color:rgba(232,234,240,.55);font-family:'JetBrains Mono',monospace;
+}
+.qx-auth-field input,.qx-auth-field textarea{
+  width:100%;padding:11px 12px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);
+  color:#e8eaf0;outline:none;font-size:12px;
+  font-family:'JetBrains Mono',monospace;box-sizing:border-box;
+}
+.qx-auth-field textarea{min-height:88px;resize:vertical}
+.qx-auth-actions{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:14px;flex-wrap:wrap}
+.qx-auth-btn{
+  cursor:pointer;border:1px solid rgba(41,121,255,.35);
+  background:linear-gradient(135deg,rgba(41,121,255,.28),rgba(0,214,143,.18));
+  color:#eef7ff;border-radius:999px;padding:10px 16px;
+  font-size:12px;font-weight:600;
+}
+.qx-auth-btn.secondary{
+  border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:rgba(232,234,240,.80)
+}
+.qx-auth-msg{font-size:11px;line-height:1.45;color:rgba(232,234,240,.68);min-height:18px}
+.qx-auth-msg.err{color:#ff8b95}
+.qx-auth-msg.ok{color:#7ef4be}
+.qx-auth-toggle{font-size:11px;color:rgba(180,220,255,.74);cursor:pointer;text-decoration:none}
+.qx-auth-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.qx-auth-pill{
+  font-size:10px;font-family:'JetBrains Mono',monospace;
+  padding:5px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);color:rgba(232,234,240,.66)
+}
+</style>
+
 </head>
-<body>
+<body class="qx-auth-locked">
+
+<div id="qxAuthGate">
+  <div class="qx-auth-shell">
+    <div class="qx-auth-head">
+      <div class="qx-auth-mark">4X</div>
+      <div>
+        <div class="qx-auth-title">QuadraX Secure Access</div>
+        <div class="qx-auth-sub">Email and Firebase password required. The dashboard stays hidden until authentication succeeds.</div>
+      </div>
+    </div>
+
+    <div class="qx-auth-badges">
+      <div class="qx-auth-pill">Auth gate</div>
+      <div class="qx-auth-pill">Firestore role-aware</div>
+      <div class="qx-auth-pill">MASTER / READER supported</div>
+    </div>
+
+    <div class="qx-auth-grid">
+      <div class="qx-auth-field">
+        <label>Email</label>
+        <input id="qxAuthEmail" type="email" autocomplete="username" placeholder="your@email.com" />
+      </div>
+      <div class="qx-auth-field">
+        <label>Firebase Password</label>
+        <input id="qxAuthPassword" type="password" autocomplete="current-password" placeholder="Enter password" />
+      </div>
+      <div class="qx-auth-field" id="qxAuthConfigWrap" hidden>
+        <label>Firebase Config JSON</label>
+        <textarea id="qxAuthConfig" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","appId":"..."}'></textarea>
+      </div>
+    </div>
+
+    <div class="qx-auth-actions">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <button class="qx-auth-btn" id="qxAuthLogin">Unlock Dashboard</button>
+        <button class="qx-auth-btn secondary" id="qxAuthUseSaved" type="button">Use Saved Config</button>
+      </div>
+      <a class="qx-auth-toggle" id="qxAuthToggleConfig">Show config field</a>
+    </div>
+    <div class="qx-auth-msg" id="qxAuthMsg"></div>
+  </div>
+</div>
+
 <canvas id="bgFX"></canvas>
 <div aria-hidden="false" id="bootSplash">
 <div class="bootBox">
@@ -4264,11 +4375,19 @@ async function start(){
   updateCorrUI(CorrEngine.getCorrelations());
   updateSharpeUI({sharpe:null,winRate:null,openPL:null,totalSignals:0,totalPips:0,openBias:null,equity:[0]});
 
-  // ── Firestore auth (async — uses stored credentials if present) ───────────
-  if(settings.fbConfig&&settings.fbEmail&&settings.fbPassword){
-    await FirebaseSync.init(settings.fbConfig,settings.fbEmail,settings.fbPassword);
+  // ── Firestore auth (async — uses stored credentials if present or secure gate override) ───────────
+  const __authCfg = window.__qxAuthOverride || null;
+  const __fbConfig = (__authCfg&&__authCfg.fbConfig) ? __authCfg.fbConfig : settings.fbConfig;
+  const __fbEmail  = (__authCfg&&__authCfg.fbEmail)  ? __authCfg.fbEmail  : settings.fbEmail;
+  const __fbPass   = (__authCfg&&__authCfg.fbPassword)? __authCfg.fbPassword : settings.fbPassword;
+  if(__fbConfig&&__fbEmail&&__fbPass){
+    await FirebaseSync.init(__fbConfig,__fbEmail,__fbPass);
   }else{
     FirebaseSync.updateBadge("STANDALONE");
+  }
+  window.__qxAuthConfigured = FirebaseSync.configured;
+  if(window.__qxSecureMode && !FirebaseSync.configured){
+    return;
   }
 
   // ── Common background feeds (all roles) ───────────────────────────────────
@@ -4343,7 +4462,7 @@ async function start(){
     if(step.warmed){clearInterval(warmLoop);SpotFeed.tick(onSpotUpdate);}
   },2000);
 }
-start();
+window.__qxStart=start;
 })();
 </script>
 <script>
@@ -4420,280 +4539,123 @@ start();
 })();
 </script>
 
-<!-- ===============================
-QuadraX V32 Tight Layout + Micro-Intelligence Skin
-Visual-only layer: tighter spacing, reduced negative space, added edge meter,
-signal lights, and price ladder. No analytics/engine logic changed.
-================================ -->
-<style id="qx-tight-skin">
-.wrap{padding:14px 14px 44px!important;max-width:1580px!important}
-.grid{gap:12px!important;margin-top:12px!important}
-.stack{gap:10px!important}
-.topbar{padding:12px 16px!important}
-.brand{gap:10px!important;min-width:220px!important}
-.brand .sub{font-size:9px!important}
-.top-actions{gap:6px!important}
-.card .inner{padding:12px!important}
-.card-title{margin-bottom:8px!important}
-.card-title .hint{font-size:10px!important;line-height:1.35!important}
-.hero,.quoteCard,.sessLeft,.sessRight,.busBox,.fpBox,.fpTfBox,.qeBox,.paBox,.riskItem,.macroBox,.tmBox,.pb3Box,.intelTile,.fcastBox,.sharpeBox{padding:10px 12px!important}
-.probBlock{margin-top:10px!important;padding-top:8px!important}
-.probRow{padding:3px 0!important;grid-template-columns:160px 1fr 40px!important}
-.pbar,.tmBar,.pb3Bar,.sparkBar,.hurstBar,.kellyBar,.alMiniBar,.stkBar{height:3px!important}
-.riskStrip{gap:8px!important;margin-top:8px!important;padding:8px!important}
-.riskItem{padding:8px!important}
-.stateBig{font-size:20px!important}
-.quotePx{font-size:34px!important}
-.quoteCard{gap:8px!important}
-.quoteBadges{gap:4px!important}
-.tfGrid{gap:4px!important}
-.tfBox{padding:8px!important}
-.fpTfGrid{gap:8px!important;margin:8px 0!important}
-.qeGrid,.intelGrid,.pb3Grid,.macroGrid,.tmGrid,.sharpeGrid,.paGrid,.busGrid{gap:8px!important}
-.sessionGrid{gap:8px!important;margin-bottom:8px!important}
-.dayRow{padding:10px!important}
-.convicRow{padding:10px 12px!important;margin-bottom:8px!important}
-#coneCanvas{height:210px!important}
-#equityCanvas{height:96px!important}
-.tableWrap table tbody td,.paLogTable td{padding:6px 9px!important}
-thead th,.paLogTable th{padding:7px 9px!important}
-.sec-label,.tlLabel,.eqLabel,.paLogLabel,.rlabel,.bk,.qk,.k,.fk,.ck,.rk,.al,.dl,.fpTfLabel{font-size:8.5px!important;letter-spacing:1px!important}
-.smallNote,.muted,.qm,.meta,.bm,.fm,.rm,.aNote,.aAnalog,.teNewsTitle{font-size:10px!important;line-height:1.45!important}
-.foot{margin-top:8px!important;font-size:9px!important}
-
-.card{position:relative;overflow:hidden}
-.card::after{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,0) 18%),
-    linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(255,255,255,.02) 1px, transparent 1px);
-  background-size:auto, 34px 34px, 34px 34px;
-  opacity:.05;
-}
-.hero::before,.sessLeft::before{opacity:.45!important}
-
-.qx-edgeMeter{
-  min-width:110px;padding:8px 10px;border-radius:12px;
-  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);
-  box-shadow:0 6px 16px rgba(0,0,0,.22);
-}
-.qx-edgeMeter .l{font-size:8px;letter-spacing:1.1px;color:var(--text4);font-family:var(--mono);text-transform:uppercase}
-.qx-edgeMeter .v{font-size:20px;font-family:var(--mono);font-weight:700;line-height:1.05;margin-top:2px}
-.qx-edgeMeter .b{height:4px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:6px}
-.qx-edgeMeter .b i{display:block;height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg, rgba(255,71,87,.88), rgba(245,166,35,.88), rgba(0,214,143,.92));transition:width .35s ease}
-
-.qx-siglights{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:8px}
-.qx-siglight{border-radius:10px;padding:7px 8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);min-width:0}
-.qx-siglight .k{display:flex;align-items:center;gap:6px;font-size:8px;letter-spacing:.9px;text-transform:uppercase;color:var(--text4);font-family:var(--mono)}
-.qx-siglight .dot{width:6px;height:6px;border-radius:50%;box-shadow:none!important}
-.qx-siglight .v{margin-top:4px;font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media(max-width:900px){.qx-siglights{grid-template-columns:repeat(2,minmax(0,1fr))}}
-
-.qx-quoteDense{display:grid;grid-template-columns:88px 1fr;gap:10px;align-items:stretch}
-.qx-ladder{border-radius:12px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);padding:8px 6px;display:grid;gap:4px;align-content:center}
-.qx-ladderRow{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--text3)}
-.qx-ladderRow.spot{color:var(--text);font-weight:700}
-.qx-ladderRow span:first-child{opacity:.8}
-.qx-ladderLine{height:1px;flex:1;margin:0 5px;background:linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,.18), rgba(255,255,255,.06))}
-.qx-statRail{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
-.qx-stat{border-radius:10px;padding:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
-.qx-stat .k{font-size:8px;letter-spacing:.9px;text-transform:uppercase;color:var(--text4);font-family:var(--mono)}
-.qx-stat .v{margin-top:3px;font-size:12px;font-family:var(--mono);font-weight:700;color:var(--text)}
-.qx-stat .m{margin-top:2px;font-size:9px;color:var(--text3)}
-</style>
-
-<script id="qx-tight-script">
+<script id="qx-auth-gate-script">
 (function(){
   const $ = (id)=>document.getElementById(id);
-  const txt = (id)=>($(id)?.textContent||"").trim();
+  const KEY = 'qx_s_v5';
+  window.__qxSecureMode = true;
 
-  function ensureEdgeMeter(){
-    const actions = document.querySelector(".top-actions");
-    if(!actions || $("qxEdgeMeter")) return;
-    const node = document.createElement("div");
-    node.className = "qx-edgeMeter";
-    node.id = "qxEdgeMeter";
-    node.innerHTML = '<div class="l">Edge Score</div><div class="v" id="qxEdgeVal">--</div><div class="b"><i id="qxEdgeFill"></i></div>';
-    const riskPulse = document.querySelector(".riskPulse");
-    if(riskPulse && riskPulse.nextSibling) actions.insertBefore(node, riskPulse.nextSibling);
-    else actions.prepend(node);
+  function readSaved(){
+    try{
+      const raw = localStorage.getItem(KEY);
+      if(!raw) return {};
+      const s = JSON.parse(raw)||{};
+      return s;
+    }catch(e){ return {}; }
   }
 
-  function ensureSignalLights(){
-    const host = document.querySelector(".hero");
-    if(!host || $("qxSigLights")) return;
-    const wrap = document.createElement("div");
-    wrap.id = "qxSigLights";
-    wrap.className = "qx-siglights";
-    wrap.innerHTML = [
-      ['HMM','qxSigHMM'],
-      ['Bias','qxSigBias'],
-      ['Momentum','qxSigMom'],
-      ['Event','qxSigEvent'],
-      ['Vol','qxSigVol']
-    ].map(([k,id])=>(
-      '<div class="qx-siglight"><div class="k"><span class="dot" id="'+id+'Dot"></span>'+k+
-      '</div><div class="v" id="'+id+'Val">--</div></div>'
-    )).join('');
-    const probBlock = document.querySelector(".probBlock");
-    if(probBlock) host.insertBefore(wrap, probBlock);
-    else host.appendChild(wrap);
+  function setMsg(msg, cls){
+    const el = $('qxAuthMsg');
+    if(!el) return;
+    el.className = 'qx-auth-msg' + (cls ? ' ' + cls : '');
+    el.textContent = msg || '';
   }
 
-  function ensureQuoteDense(){
-    const q = document.querySelector(".quoteCard");
-    if(!q || $("qxLadder")) return;
-    const tickChart = $("tickChart");
-    if(!tickChart) return;
+  function unlockUI(){
+    document.body.classList.remove('qx-auth-locked');
+    const gate = $('qxAuthGate');
+    if(gate) gate.hidden = true;
+  }
 
-    const ladder = document.createElement("div");
-    ladder.id = "qxLadder";
-    ladder.className = "qx-ladder";
-    ladder.innerHTML = [
-      '<div class="qx-ladderRow" id="qxL1"><span>+R</span><div class="qx-ladderLine"></div><span>--</span></div>',
-      '<div class="qx-ladderRow" id="qxL2"><span>+½</span><div class="qx-ladderLine"></div><span>--</span></div>',
-      '<div class="qx-ladderRow spot" id="qxL3"><span>SPOT</span><div class="qx-ladderLine"></div><span>--</span></div>',
-      '<div class="qx-ladderRow" id="qxL4"><span>-½</span><div class="qx-ladderLine"></div><span>--</span></div>',
-      '<div class="qx-ladderRow" id="qxL5"><span>-R</span><div class="qx-ladderLine"></div><span>--</span></div>'
-    ].join('');
+  async function login(){
+    const saved = readSaved();
+    const email = (($('qxAuthEmail')?.value)||'').trim();
+    const password = (($('qxAuthPassword')?.value)||'').trim();
+    const cfgRaw = (($('qxAuthConfig')?.value)||'').trim();
+    let fbConfig = saved.fbConfig || null;
 
-    const chartWrap = document.createElement("div");
-    chartWrap.className = "qx-quoteDense";
-    tickChart.parentNode.insertBefore(chartWrap, tickChart);
-    chartWrap.appendChild(ladder);
-
-    const right = document.createElement("div");
-    while(tickChart.nextSibling){
-      right.appendChild(tickChart.nextSibling);
+    if(cfgRaw){
+      try{ fbConfig = JSON.parse(cfgRaw); }
+      catch(e){
+        setMsg('Firebase config JSON is invalid.', 'err');
+        return;
+      }
     }
-    right.prepend(tickChart);
-    chartWrap.appendChild(right);
 
-    const stats = document.createElement("div");
-    stats.className = "qx-statRail";
-    stats.id = "qxStatRail";
-    stats.innerHTML = `
-      <div class="qx-stat"><div class="k">Latency</div><div class="v" id="qxLatency">--</div><div class="m">feed</div></div>
-      <div class="qx-stat"><div class="k">Change</div><div class="v" id="qxChange">--</div><div class="m">since update</div></div>
-      <div class="qx-stat"><div class="k">Staleness</div><div class="v" id="qxStale">--</div><div class="m">data age</div></div>
-    `;
-    q.appendChild(stats);
-  }
-
-  function parsePct(s){
-    const m = String(s||"").match(/-?\d+(\.\d+)?/);
-    return m ? Number(m[0]) : NaN;
-  }
-  function parsePrice(s){
-    const m = String(s||"").match(/-?\d+\.\d+/);
-    return m ? Number(m[0]) : NaN;
-  }
-  function parsePipsFromText(s){
-    const m = String(s||"").match(/-?\d+(\.\d+)?\s*p/i);
-    if(m) return Math.abs(Number(m[0].replace(/[^\d.-]/g,'')));
-    const m2 = String(s||"").match(/-?\d+(\.\d+)?/);
-    return m2 ? Math.abs(Number(m2[0])) : NaN;
-  }
-
-  function setSig(id, label, tone){
-    const v = $(id+'Val'), d=$(id+'Dot');
-    if(v) v.textContent = label || '--';
-    if(d){
-      d.style.background = tone==='good' ? 'rgba(0,214,143,.95)' :
-                           tone==='warn' ? 'rgba(245,166,35,.95)' :
-                           tone==='bad'  ? 'rgba(255,71,87,.95)' :
-                                            'rgba(180,220,255,.70)';
+    if(!fbConfig){
+      setMsg('No Firebase config found. Paste the firebaseConfig JSON or store it in Settings first.', 'err');
+      return;
     }
-  }
+    if(!email || !password){
+      setMsg('Email and Firebase password are required.', 'err');
+      return;
+    }
 
-  function updateEdgeMeter(){
-    ensureEdgeMeter();
-    const conv = parsePct(txt('busConvPct'))/100;
-    const coh  = parsePct(txt('busCoherence'))/100;
-    const risk = parsePct(txt('busRisk'))/100;
-    const fallbackConv = parsePct(txt('convicPct'))/100;
-    const c = Number.isFinite(conv) ? conv : (Number.isFinite(fallbackConv)?fallbackConv:0);
-    const h = Number.isFinite(coh) ? coh : c;
-    const r = Number.isFinite(risk) ? risk : 0.5;
-    const edge = Math.max(0, Math.min(1, (c*0.55 + h*0.45) * (1-r*0.55)));
-    const val = $('qxEdgeVal'), fill = $('qxEdgeFill');
-    if(val) val.textContent = Math.round(edge*100) + '%';
-    if(fill) fill.style.width = (edge*100).toFixed(0) + '%';
-  }
+    // Persist for the in-page starter logic
+    window.__qxAuthOverride = { fbConfig, fbEmail: email, fbPassword: password };
 
-  function updateSignalLights(){
-    ensureSignalLights();
-    const detector = txt('detectorChip');
-    const bias = txt('macroBiasChip');
-    const mom = txt('momChip');
-    const ev = txt('eventRiskChip');
-    const vol = txt('volRegimeLbl');
+    // Pre-fill settings modal fields for consistency
+    try{
+      if(document.getElementById('fbConfigInput') && !document.getElementById('fbConfigInput').value){
+        document.getElementById('fbConfigInput').value = JSON.stringify(fbConfig);
+      }
+      if(document.getElementById('fbEmailInput')) document.getElementById('fbEmailInput').value = email;
+      if(document.getElementById('fbPasswordInput')) document.getElementById('fbPasswordInput').value = password;
+    }catch(e){}
 
-    setSig('qxSigHMM', detector || '--', detector && detector !== '--' ? 'good' : 'neutral');
+    setMsg('Authenticating…', '');
 
-    let biasTone = 'neutral';
-    if(/LONG|SHORT/i.test(bias)) biasTone = 'good';
-    else if(/OFF|NEUTRAL/i.test(bias)) biasTone = 'warn';
-    setSig('qxSigBias', bias || '--', biasTone);
-
-    const momVal = parsePct(mom);
-    setSig('qxSigMom', mom || '--', Number.isFinite(momVal) ? (momVal>=55?'good':momVal>=35?'warn':'bad') : 'neutral');
-
-    let evTone = 'neutral';
-    if(/LOW/i.test(ev)) evTone='good';
-    else if(/MED|MID|NORMAL/i.test(ev)) evTone='warn';
-    else if(/HIGH|ELEVATED|SEVERE/i.test(ev)) evTone='bad';
-    setSig('qxSigEvent', ev || '--', evTone);
-
-    let volTone='neutral';
-    if(/NORMAL|LOW/i.test(vol)) volTone='good';
-    else if(/ELEVATED|MID/i.test(vol)) volTone='warn';
-    else if(/HIGH|HOT|EXTREME/i.test(vol)) volTone='bad';
-    setSig('qxSigVol', vol || '--', volTone);
-  }
-
-  function updateQuoteDense(){
-    ensureQuoteDense();
-    const spot = parsePrice(txt('fxSpotPrice'));
-    const r1 = parsePipsFromText(txt('rng1hFp')) || parsePipsFromText(txt('tf1hRng')) || 20;
-    const half = r1/2;
-    const q = 0.0001;
-    const f = (x)=>Number.isFinite(x)?x.toFixed(5):'--';
-
-    const rows = [
-      ['qxL1', spot + r1*q],
-      ['qxL2', spot + half*q],
-      ['qxL3', spot],
-      ['qxL4', spot - half*q],
-      ['qxL5', spot - r1*q]
-    ];
-    rows.forEach(([id,px])=>{
-      const row = $(id);
-      if(row) row.lastElementChild.textContent = f(px);
-    });
-
-    const latRaw = txt('fxLatencyTag');
-    const latMatch = latRaw.match(/(\d+ms)/i);
-    const chg = txt('fxSpotDelta');
-    const last = txt('fxLastTag');
-    if($('qxLatency')) $('qxLatency').textContent = latMatch ? latMatch[1] : '--';
-    if($('qxChange')) $('qxChange').textContent = chg && chg !== '--' ? chg : '--';
-    if($('qxStale')) $('qxStale').textContent = /Last:/i.test(last) ? 'live' : '--';
-  }
-
-  function run(){
-    updateEdgeMeter();
-    updateSignalLights();
-    updateQuoteDense();
+    try{
+      if(typeof window.__qxStart !== 'function'){
+        setMsg('Starter not available. File structure is wrong.', 'err');
+        return;
+      }
+      await window.__qxStart();
+      if(window.__qxAuthConfigured){
+        setMsg('Access granted.', 'ok');
+        unlockUI();
+      }else{
+        setMsg('Authentication failed. Check email, password, and Firebase config.', 'err');
+      }
+    }catch(e){
+      console.error('[QuadraX Secure Gate] start/login error:', e);
+      setMsg('Authentication failed. Check credentials and Firebase setup.', 'err');
+    }
   }
 
   document.addEventListener('DOMContentLoaded', ()=>{
-    ensureEdgeMeter();
-    ensureSignalLights();
-    ensureQuoteDense();
-    run();
-    setInterval(run, 1500);
+    const saved = readSaved();
+    const em = $('qxAuthEmail');
+    if(em && saved.fbEmail) em.value = saved.fbEmail;
+
+    $('qxAuthLogin')?.addEventListener('click', login);
+    $('qxAuthPassword')?.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') login();
+    });
+    $('qxAuthUseSaved')?.addEventListener('click', ()=>{
+      const saved = readSaved();
+      if(saved.fbConfig){
+        setMsg('Using Firebase config stored in Settings/localStorage.', '');
+      }else{
+        setMsg('No saved Firebase config found. Paste it manually.', 'err');
+      }
+    });
+    $('qxAuthToggleConfig')?.addEventListener('click', ()=>{
+      const wrap = $('qxAuthConfigWrap');
+      if(!wrap) return;
+      wrap.hidden = !wrap.hidden;
+      $('qxAuthToggleConfig').textContent = wrap.hidden ? 'Show config field' : 'Hide config field';
+      if(!wrap.hidden){
+        const saved = readSaved();
+        if(saved.fbConfig && !$('qxAuthConfig').value){
+          try{ $('qxAuthConfig').value = JSON.stringify(saved.fbConfig, null, 2); }catch(e){}
+        }
+      }
+    });
+
+    // Keep dashboard locked until explicit auth succeeds
+    document.body.classList.add('qx-auth-locked');
+    setMsg('Enter Firebase email and password to unlock the dashboard.', '');
   });
 })();
 </script>
