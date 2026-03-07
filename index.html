@@ -847,15 +847,15 @@ body.qx-auth-locked .wrap{display:none!important}
     <div class="qx-auth-head">
       <div class="qx-auth-mark">4X</div>
       <div>
-        <div class="qx-auth-title">QuadraX Secure Access</div>
-        <div class="qx-auth-sub">Email and Firebase password required. The dashboard stays hidden until authentication succeeds.</div>
+        <div class="qx-auth-title">QuadraX</div>
+        <div class="qx-auth-sub">Enter your email and password to access the dashboard.</div>
       </div>
     </div>
 
     <div class="qx-auth-badges">
-      <div class="qx-auth-pill">Auth gate</div>
-      <div class="qx-auth-pill">Firestore role-aware</div>
-      <div class="qx-auth-pill">MASTER / READER supported</div>
+      <div class="qx-auth-pill">Secure access</div>
+      <div class="qx-auth-pill">Role-aware</div>
+      <div class="qx-auth-pill">MASTER / READER</div>
     </div>
 
     <div class="qx-auth-grid">
@@ -864,21 +864,13 @@ body.qx-auth-locked .wrap{display:none!important}
         <input id="qxAuthEmail" type="email" autocomplete="username" placeholder="your@email.com" />
       </div>
       <div class="qx-auth-field">
-        <label>Firebase Password</label>
-        <input id="qxAuthPassword" type="password" autocomplete="current-password" placeholder="Enter password" />
-      </div>
-      <div class="qx-auth-field" id="qxAuthConfigWrap" hidden>
-        <label>Firebase Config JSON</label>
-        <textarea id="qxAuthConfig" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","appId":"..."}'></textarea>
+        <label>Password</label>
+        <input id="qxAuthPassword" type="password" autocomplete="current-password" placeholder="Password" />
       </div>
     </div>
 
     <div class="qx-auth-actions">
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <button class="qx-auth-btn" id="qxAuthLogin">Unlock Dashboard</button>
-        <button class="qx-auth-btn secondary" id="qxAuthUseSaved" type="button">Use Saved Config</button>
-      </div>
-      <a class="qx-auth-toggle" id="qxAuthToggleConfig">Show config field</a>
+      <button class="qx-auth-btn" id="qxAuthLogin">Sign In</button>
     </div>
     <div class="qx-auth-msg" id="qxAuthMsg"></div>
   </div>
@@ -1420,10 +1412,10 @@ body.qx-auth-locked .wrap{display:none!important}
 </div>
 <div class="syncPanel">
 <div class="sh">🔒 Team Sync — Firestore + Auth</div>
-<div class="sd" style="line-height:1.65"><b>How it works:</b> MASTER computes state and writes to Firestore every tick. All Readers receive an instant push (onSnapshot) the moment MASTER writes — no polling, no missed ticks, identical data guaranteed.<br/><br/><b>Setup:</b> Firebase console → Create project → Enable Firestore (Native mode) + Authentication → Email/Password. Create accounts per team member. Run the one-time Admin SDK script to set <code>role:'MASTER'</code> claim on your UID. Paste the project's <code>firebaseConfig</code> JSON below.<br/><br/><b>Security rules</b> (paste in Firestore console):<br/><code>match /quadrax/state { allow read: if request.auth != null; allow write: if request.auth.token.role == 'MASTER'; }</code></div>
-<div class="field" style="margin-top:10px"><label>Firebase Config JSON <span class="vTag" id="fbConfigValidTag"></span></label>
-<textarea id="fbConfigInput" placeholder='{"apiKey":"AIza...","authDomain":"proj.firebaseapp.com","projectId":"proj","storageBucket":"proj.appspot.com","messagingSenderId":"...","appId":"1:..."}' rows="5" style="width:100%;font-family:monospace;font-size:11px;background:rgba(0,0,0,.35);border:1px solid rgba(180,220,255,.15);border-radius:5px;color:#e2f0ff;padding:8px;resize:vertical;box-sizing:border-box"></textarea>
-<div class="smallNote" style="margin-top:3px">Copy the <code>firebaseConfig</code> object from Firebase console → Project Settings → Your apps. Paste as JSON (use double quotes).</div>
+<div class="sd" style="line-height:1.65"><b>How it works:</b> MASTER computes state and writes to Firestore every tick. All Readers receive an instant push (onSnapshot) the moment MASTER writes — no polling, no missed ticks, identical data guaranteed.<br/><br/><b>Roles:</b> Run the one-time Admin SDK script to set <code>role:'MASTER'</code> on your Firebase Auth UID. All other accounts auto-become Readers.<br/><br/><b>Firestore security rules:</b><br/><code>match /quadrax/state { allow read: if request.auth != null; allow write: if request.auth.token.role == 'MASTER'; }</code></div>
+<div class="field" style="margin-top:10px"><label>Firebase Project <span class="vTag" style="background:rgba(0,214,143,.12);color:rgba(0,214,143,.90);border:1px solid rgba(0,214,143,.25);padding:2px 7px;border-radius:999px;font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase">Configured</span></label>
+<input id="fbConfigInput" type="text" readonly value="quadrax-personal-prod" style="width:100%;font-family:monospace;font-size:11px;background:rgba(0,0,0,.25);border:1px solid rgba(180,220,255,.10);border-radius:5px;color:rgba(180,220,255,.55);padding:8px;box-sizing:border-box;cursor:default" />
+<div class="smallNote" style="margin-top:3px">Firebase project is hardcoded in this build. Only email and password are required to connect.</div>
 </div>
 <div class="fieldRow" style="margin-top:8px">
 <div class="field"><label>Email</label><input autocomplete="username" id="fbEmailInput" placeholder="your@email.com" type="email"/></div>
@@ -4313,21 +4305,15 @@ if(saveBtn)saveBtn.addEventListener("click",async()=>{
     const valid=await validateTDKey(key);
     if(tv){tv.textContent=valid?" Valid":" Invalid";tv.className="vTag "+(valid?"ok":"fail");}
     if(valid===false&&!confirm("API key appears invalid. Save anyway?"))return;}
-  // ── Parse Firebase config JSON ───────────────────────────────────────────
-  const rawConfig=($("fbConfigInput")?.value||"").trim();
-  let fbConfig=null;
-  if(rawConfig){
-    const cv=$("fbConfigValidTag");
-    try{
-      fbConfig=JSON.parse(rawConfig);
-      if(!fbConfig.apiKey||!fbConfig.projectId)throw new Error("Missing apiKey or projectId");
-      if(cv){cv.textContent=" Valid";cv.className="vTag ok";}
-    }catch(e){
-      if(cv){cv.textContent=" Invalid JSON";cv.className="vTag fail";}
-      alert("Firebase config JSON is invalid: "+e.message+". Use double quotes, ensure apiKey and projectId are present.");
-      return;
-    }
-  }
+  // ── Firebase config: hardcoded in this build — no user input needed ──────
+  const fbConfig = {
+    apiKey:            "AIzaSyC3iv5WcVeXPWGnkci4FbScRO0YJPieGSU",
+    authDomain:        "quadrax-personal-prod.firebaseapp.com",
+    projectId:         "quadrax-personal-prod",
+    storageBucket:     "quadrax-personal-prod.firebasestorage.app",
+    messagingSenderId: "231279443536",
+    appId:             "1:231279443536:web:908d321616568939ec1b55"
+  };
   // ── Save all settings ────────────────────────────────────────────────────
   const poll=Number($("pollInput")?.value||12000),thresh=Number($("alertThreshInput")?.value||0),depth=Number($("histDepthInput")?.value||60);
   settings.twelvedataKey=key;
@@ -4376,8 +4362,22 @@ async function start(){
   updateSharpeUI({sharpe:null,winRate:null,openPL:null,totalSignals:0,totalPips:0,openBias:null,equity:[0]});
 
   // ── Firestore auth (async — uses stored credentials if present or secure gate override) ───────────
+  // FIREBASE_CONFIG is also defined in qx-auth-gate-script; use it here as a hardcoded fallback
+  // so that if a user re-connects from Settings the config is always available.
+  const __BAKED_CONFIG = (()=>{
+    try{
+      return {
+        apiKey:            "AIzaSyC3iv5WcVeXPWGnkci4FbScRO0YJPieGSU",
+        authDomain:        "quadrax-personal-prod.firebaseapp.com",
+        projectId:         "quadrax-personal-prod",
+        storageBucket:     "quadrax-personal-prod.firebasestorage.app",
+        messagingSenderId: "231279443536",
+        appId:             "1:231279443536:web:908d321616568939ec1b55"
+      };
+    }catch(e){ return null; }
+  })();
   const __authCfg = window.__qxAuthOverride || null;
-  const __fbConfig = (__authCfg&&__authCfg.fbConfig) ? __authCfg.fbConfig : settings.fbConfig;
+  const __fbConfig = (__authCfg&&__authCfg.fbConfig) ? __authCfg.fbConfig : (settings.fbConfig || __BAKED_CONFIG);
   const __fbEmail  = (__authCfg&&__authCfg.fbEmail)  ? __authCfg.fbEmail  : settings.fbEmail;
   const __fbPass   = (__authCfg&&__authCfg.fbPassword) ? __authCfg.fbPassword : settings.fbPassword;
   if(__fbConfig&&__fbEmail&&__fbPass){
@@ -4821,16 +4821,22 @@ thead th,.paLogTable th{padding:7px 9px!important}
 <script id="qx-auth-gate-script">
 (function(){
   const $ = (id)=>document.getElementById(id);
-  const KEY = 'qx_s_v5';
-  window.__qxSecureMode = true;
 
-  function readSaved(){
-    try{
-      const raw = localStorage.getItem(KEY);
-      if(!raw) return {};
-      return JSON.parse(raw)||{};
-    }catch(e){ return {}; }
-  }
+  // ── Hardcoded Firebase project config ──────────────────────────────────────
+  // No longer needs to be pasted by users — it is embedded here.
+  // Firebase security is enforced by Auth (email/password) + Firestore security rules,
+  // not by keeping the config secret. This is standard Firebase practice.
+  const FIREBASE_CONFIG = {
+    apiKey:            "AIzaSyC3iv5WcVeXPWGnkci4FbScRO0YJPieGSU",
+    authDomain:        "quadrax-personal-prod.firebaseapp.com",
+    projectId:         "quadrax-personal-prod",
+    storageBucket:     "quadrax-personal-prod.firebasestorage.app",
+    messagingSenderId: "231279443536",
+    appId:             "1:231279443536:web:908d321616568939ec1b55"
+  };
+  // ───────────────────────────────────────────────────────────────────────────
+
+  window.__qxSecureMode = true;
 
   function setMsg(msg, cls){
     const el = $('qxAuthMsg');
@@ -4846,44 +4852,32 @@ thead th,.paLogTable th{padding:7px 9px!important}
   }
 
   async function login(){
-    const saved = readSaved();
-    const email = (($('qxAuthEmail')?.value)||'').trim();
+    const email    = (($('qxAuthEmail')?.value)   ||'').trim();
     const password = (($('qxAuthPassword')?.value)||'').trim();
-    const cfgRaw = (($('qxAuthConfig')?.value)||'').trim();
-    let fbConfig = saved.fbConfig || null;
 
-    if(cfgRaw){
-      try{ fbConfig = JSON.parse(cfgRaw); }
-      catch(e){
-        setMsg('Firebase config JSON is invalid.', 'err');
-        return;
-      }
-    }
-
-    if(!fbConfig){
-      setMsg('No Firebase config found. Paste the firebaseConfig JSON or save it in Settings first.', 'err');
-      return;
-    }
     if(!email || !password){
-      setMsg('Email and Firebase password are required.', 'err');
+      setMsg('Email and password are required.', 'err');
       return;
     }
 
-    window.__qxAuthOverride = { fbConfig, fbEmail: email, fbPassword: password };
+    // Pass the hardcoded config + user credentials to the main start sequence
+    window.__qxAuthOverride = { fbConfig: FIREBASE_CONFIG, fbEmail: email, fbPassword: password };
 
+    // Pre-fill hidden settings inputs so the Settings panel reflects the active connection
     try{
-      if(document.getElementById('fbConfigInput') && !document.getElementById('fbConfigInput').value){
-        document.getElementById('fbConfigInput').value = JSON.stringify(fbConfig);
-      }
-      if(document.getElementById('fbEmailInput')) document.getElementById('fbEmailInput').value = email;
-      if(document.getElementById('fbPasswordInput')) document.getElementById('fbPasswordInput').value = password;
+      const cfgEl = document.getElementById('fbConfigInput');
+      if(cfgEl && !cfgEl.value) cfgEl.value = JSON.stringify(FIREBASE_CONFIG);
+      const emailEl = document.getElementById('fbEmailInput');
+      if(emailEl) emailEl.value = email;
+      const passEl = document.getElementById('fbPasswordInput');
+      if(passEl) passEl.value = password;
     }catch(e){}
 
-    setMsg('Authenticating…', '');
+    setMsg('Signing in…', '');
 
     try{
       if(typeof window.__qxStart !== 'function'){
-        setMsg('Starter not available. File structure is wrong.', 'err');
+        setMsg('Dashboard not ready. Reload the page.', 'err');
         return;
       }
       await window.__qxStart();
@@ -4891,43 +4885,22 @@ thead th,.paLogTable th{padding:7px 9px!important}
         setMsg('Access granted.', 'ok');
         unlockUI();
       }else{
-        setMsg('Authentication failed. Check email, password, and Firebase config.', 'err');
+        setMsg('Incorrect email or password.', 'err');
       }
     }catch(e){
-      console.error('[QuadraX Secure Gate] start/login error:', e);
-      setMsg('Authentication failed. Check credentials and Firebase setup.', 'err');
+      console.error('[QuadraX] login error:', e);
+      setMsg('Sign-in failed. Check your credentials.', 'err');
     }
   }
 
   document.addEventListener('DOMContentLoaded', ()=>{
     $('qxAuthLogin')?.addEventListener('click', login);
-    $('qxAuthPassword')?.addEventListener('keydown', (e)=>{
-      if(e.key === 'Enter') login();
+    // Allow Enter key from either field
+    ['qxAuthEmail','qxAuthPassword'].forEach(id=>{
+      $(id)?.addEventListener('keydown', e=>{ if(e.key==='Enter') login(); });
     });
-    $('qxAuthUseSaved')?.addEventListener('click', ()=>{
-      const saved = readSaved();
-      if(saved.fbConfig){
-        setMsg('Using Firebase config stored in Settings/localStorage.', '');
-      }else{
-        setMsg('No saved Firebase config found. Paste it manually.', 'err');
-      }
-    });
-    $('qxAuthToggleConfig')?.addEventListener('click', ()=>{
-      const wrap = $('qxAuthConfigWrap');
-      if(!wrap) return;
-      wrap.hidden = !wrap.hidden;
-      $('qxAuthToggleConfig').textContent = wrap.hidden ? 'Show config field' : 'Hide config field';
-      if(!wrap.hidden){
-        const saved = readSaved();
-        if(saved.fbConfig && !$('qxAuthConfig').value){
-          try{ $('qxAuthConfig').value = JSON.stringify(saved.fbConfig, null, 2); }catch(e){}
-        }
-      }
-    });
-
-    // Intentionally do NOT prefill email for privacy.
     document.body.classList.add('qx-auth-locked');
-    setMsg('Enter Firebase email and password to unlock the dashboard.', '');
+    setMsg('Enter your email and password to continue.', '');
   });
 })();
 </script>
