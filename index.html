@@ -1129,8 +1129,8 @@ body.qx-auth-locked .wrap{display:none!important}
 <div class="fpGrid" style="grid-template-columns:repeat(4,1fr)">
 <div class="fpBox"><div class="k">Trade Bias</div><div class="v" id="tradeBias">--</div><div class="meta" id="tradeBiasMeta">--</div></div>
 <div class="fpBox"><div class="k">Decision Conf</div><div class="v" id="decConf">--</div><div class="meta" id="decConfMeta">Low agreement</div></div>
-<div class="fpBox"><div class="k">Stop Distance</div><div class="v" id="stopDist">--</div><div class="meta" id="stopDistMeta">Risk per entry</div></div>
-<div class="fpBox"><div class="k">R/R Daily</div><div class="v" id="rrRatio">--</div><div class="meta" id="rrRatioMeta">1d target ÷ stop</div></div>
+<div class="fpBox"><div class="k">Momentum</div><div class="v" id="momScoreBox">--</div><div class="meta" id="momScoreMeta">Direction alignment</div></div>
+<div class="fpBox"><div class="k">Regime Age</div><div class="v" id="regimeAgeBox">--</div><div class="meta" id="regimeAgeMeta">Ticks in current state</div></div>
 </div>
 <div class="fpTfGrid">
 <div class="fpTfBox" id="fpTfBox1h">
@@ -1175,12 +1175,11 @@ body.qx-auth-locked .wrap{display:none!important}
 </div>
 </div></div>
 <div class="card"><div class="inner">
-<div class="card-title"><h2>Projection Accuracy · Adaptive Learning</h2><div class="hint">Every LONG/SHORT call is scored at +4H. Range hit rate drives cone calibration. Stop rate tracks discipline. R/R ratio measures setup quality.</div></div>
-<div class="paGrid" style="grid-template-columns:repeat(5,1fr)">
+<div class="card-title"><h2>Projection Accuracy · Adaptive Learning</h2><div class="hint">Every BUY/SELL call is scored at +4H. Direction hit drives bias calibration. Range hit drives cone width. Avg Exit Move tracks pips in the predicted direction at the 4H mark.</div></div>
+<div class="paGrid" style="grid-template-columns:repeat(4,1fr)">
 <div class="paBox hero"><div class="k">4H Dir Hit</div><div class="v" id="paDirHit">--</div><div class="meta" id="paDirHitMeta">n=0 scored</div></div>
 <div class="paBox"><div class="k">4H Range Hit</div><div class="v" id="pa1dRng">--</div><div class="meta" id="pa1dRngMeta">n=0 scored</div></div>
-<div class="paBox"><div class="k">Avg R/R</div><div class="v" id="paRR">--</div><div class="meta" id="paRRMeta">4H range ÷ stop</div></div>
-<div class="paBox"><div class="k">Stop Hit Rate</div><div class="v" id="pa1dStop">--</div><div class="meta" id="pa1dStopMeta">Stop trigger rate</div></div>
+<div class="paBox"><div class="k">Avg Exit Move</div><div class="v" id="paRR">--</div><div class="meta" id="paRRMeta">pips in predicted dir</div></div>
 <div class="paBox"><div class="k">Logged / Resolved</div><div class="v" id="paTotalN">0</div><div class="meta" id="paTotalMeta">0 resolved, 0 pending</div></div>
 </div>
 <div class="paCalibRow" id="paCalibRow" style="background:rgba(8,20,52,.28);border:1px solid rgba(180,220,255,.10)">
@@ -1191,7 +1190,7 @@ body.qx-auth-locked .wrap{display:none!important}
 </div>
 <div class="paLog">
 <div class="paLogLabel">Projection log — last 100 · scored at +4H</div>
-<div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Date</th><th>Entry</th><th>Stop</th><th>Exit 4H</th><th>Bias</th><th>Dir</th><th>4H Rng</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
+<div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Date</th><th>Entry</th><th>Exit 4H</th><th>Bias</th><th>Dir</th><th>Move</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
 </div>
 <div class="smallNote" style="margin-top:6px">Direction hit = called direction correctly at +4H. Range hit = price stayed inside projected ±pip cone. Need 5+ resolved for adaptive learning, 10+ for full calibration.</div>
 <div style="margin-top:14px;border-top:1px solid rgba(180,220,255,.08);padding-top:12px">
@@ -1467,7 +1466,7 @@ body.qx-auth-locked .wrap{display:none!important}
 <div style="margin-bottom:7px"><span style="color:rgba(100,200,255,.90);font-weight:700">Forward Projection · Cone</span><br/>
             Cone now shows <b>three horizons</b>: 1h (bright inner), 4h (mid zone), 1d (faded outer, dashed boundary). New boxes: <b>Move Range 1D</b>, <b>Stop Distance</b> (r1×0.75, min 8p), <b>R/R Daily</b> (1d÷stop — green ≥3:1, red &lt;1.5:1).</div>
 <div style="margin-bottom:7px"><span style="color:rgba(100,200,255,.90);font-weight:700">Projection Accuracy · Adaptive Learning</span><br/>
-            Every LONG/SHORT call scored at <b>+4H</b>. Panel: Daily Range Hit (target 60–80%), Daily Stop Hit, <b>Avg R/R</b> across resolved calls. Direction Hit removed — Range Hit is the reliable calibration metric. Adaptive learning activates at 5+ 4H resolved.</div>
+            Every BUY/SELL call scored at <b>+4H</b>. Panel: Daily Range Hit (target 60–80%), Daily Stop Hit, <b>Avg R/R</b> across resolved calls. Direction Hit removed — Range Hit is the reliable calibration metric. Adaptive learning activates at 5+ 4H resolved.</div>
 <div style="margin-bottom:7px"><span style="color:rgba(100,200,255,.90);font-weight:700">Signal Calibration Summary (was Direction Learning)</span><br/>
             Now shows: Bias Weight, <b>Sharpe Adjustment</b> (new — Sharpe quality multiplier), <b>Avg R/R</b>, and <b>Recent Streak</b> (e.g. "IN 4 of last 10"). Cone width and bias confidence both adapt from daily rates.</div>
 <div><span style="color:rgba(100,200,255,.90);font-weight:700">Signal Performance · Rolling Sharpe</span><br/>
@@ -1556,8 +1555,8 @@ The <b>Cost Gate</b> is the entry gatekeeper. It computes a real-time <i>edge sc
 <div style="color:rgba(255,255,255,.60)">Bus consensus + conviction.<br/>Below 40% = no trade.</div>
 </div>
 <div style="background:rgba(21,101,192,.12);border:1px solid rgba(41,121,255,.25);border-radius:6px;padding:10px;text-align:center">
-<div style="font-weight:700;color:rgba(100,180,255,.95);margin-bottom:4px">④ R/R FILTER</div>
-<div style="color:rgba(255,255,255,.60)">R/R Daily ≥3:1 + Stop ≤20p.<br/>Below 1.5:1 → pass setup.</div>
+<div style="font-weight:700;color:rgba(100,180,255,.95);margin-bottom:4px">④ CONVICTION FILTER</div>
+<div style="color:rgba(255,255,255,.60)">Dir Hit ≥55% + Range Hit 60–80%.<br/>Momentum score rising → enter.</div>
 </div>
 <div style="background:rgba(21,101,192,.12);border:1px solid rgba(41,121,255,.25);border-radius:6px;padding:10px;text-align:center">
 <div style="font-weight:700;color:rgba(100,180,255,.95);margin-bottom:4px">⑤ CALIBRATION</div>
@@ -2012,13 +2011,13 @@ const V28=(()=> {
       recos.push(makeReco({
         side:"WAIT",
         title:"Risk Action",
-        meta:`If already in position: tighten stop, cut size in ${sess.label} spread environment.`,
+        meta:`If already in position: reduce size, protect gains in ${sess.label} spread environment.`,
         score: Math.min(score, 60),
         badge:"RISK"
       }));
     } else {
       // 3–5 structured recos per session (not quota based; this is a "top set" list).
-      const dirTxt = call==="BUY"?"Long bias":"Short bias";
+      const dirTxt = call==="BUY"?"Buy signal":"Sell signal";
       const volTxt = vr>=1.35?"high vol":"normal vol";
       const primary = sess.key==="LON_OPEN"||sess.key==="NY_OVER" ? "Breakout / Continuation" : "Pullback / Fade";
       const secondary = sess.key.startsWith("ASIA") ? "Range Mean-Revert" : "Trend Add-on";
@@ -2042,7 +2041,7 @@ const V28=(()=> {
         title:"Fail Condition / Kill Switch",
         meta:`If spread spikes or regime confidence drops <35%, flatten. This is the bus discipline.`,
         score: Math.max(score-10, 50),
-        badge:"STOP"
+        badge:"EXIT"
       }));
       // optional 4th/5th if conviction strong
       if(conviction>=0.65){
@@ -2058,7 +2057,7 @@ const V28=(()=> {
         recos.push(makeReco({
           side:"WAIT",
           title:"Volatility Override",
-          meta:`Vol regime elevated (${vr.toFixed(1)}x). Cap leverage, widen stops, reduce frequency.`,
+          meta:`Vol regime elevated (${vr.toFixed(1)}x). Cap leverage, cut size, reduce frequency.`,
           score: 58,
           badge:"VR"
         }));
@@ -2103,6 +2102,8 @@ function updateLegendaryVisuals(q){
 <script>
 (function(){"use strict";
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+  // Display translation — maps engine values (LONG/SHORT) to user-facing (BUY/SELL)
+  function dispBias(b){ return b==='LONG'?'BUY':b==='SHORT'?'SELL':b||'--'; }
 const fmtTime=ms=>new Date(ms).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"});
 const fmtTS=ms=>new Date(ms).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
 const bp=x=>x*10000;
@@ -2367,16 +2368,37 @@ const HeadlinesFeed=(()=>{
 })();
 
 const Engine=(()=>{
-  const HN=80,MW=8,VW=18,HT=4,PT=1.35,MSW=10,WARMUP=20;
-  let tickN=0,regAge=0,lastPol=null;let prices=[],returns=[];let polState=null,hold=0;
-  // Seed TM with weak priors so it renders on first tick (self-transitions most likely)
-  let TM=Array.from({length:8},(_,i)=>new Array(8).fill(0).map((_,j)=>i===j?2:0.1));let prevPol=null;
+  const HN=80,MW=8,VW=18,HT=2,PT=1.35,MSW=10,WARMUP=20;
+  let tickN=0,regAge=0,lastPol=null;let prices=[],returns=[];let polState=null,pendingState=null,hold=0;
+  // TM: flat uniform priors — real observed transitions build it up from scratch
+  let TM=Array.from({length:8},()=>new Array(8).fill(0.25));let prevPol=null;
   const softmax=lg=>{const m=Math.max(...lg),e=lg.map(v=>Math.exp((v-m)/PT)),s=e.reduce((a,b)=>a+b,0)||1;return e.map(v=>v/s);};
   function feats(){if(prices.length<3)return null;const p=prices.at(-1),pp=prices.at(-2),r=pp?p-pp:0;const mb=prices[Math.max(0,prices.length-1-MW)],mom=mb?p-mb:0;const rr=returns.slice(-VW),avg=rr.length?rr.reduce((a,b)=>a+Math.abs(b),0)/rr.length:0;const volx=clamp(avg/0.00015,0,5),shock=Math.abs(r)>0.0007?1:0;const rrm=returns.slice(-MSW),md=Math.sign(mom);const momScore=rrm.length>0?rrm.filter(v=>Math.sign(v)===md).length/rrm.length:0.5;return{p,r,mom,volx,shock,momScore};}
-  function scoreStates(f){const mb=Math.abs(bp(f.mom)),rb=Math.abs(bp(f.r)),v=f.volx;const sc=returns.slice(-10);const sig=sc.length<6?0:sc.reduce((c,_,i)=>i>0&&Math.sign(sc[i])!==Math.sign(sc[i-1])?c+1:c,0);return softmax([2.4-.7*v-.04*mb,1.1+.55*v-.03*mb,1.6-.25*v-.02*mb,.9+.25*v+.045*mb,-.2+.55*v+.02*mb+.04*rb,-.4+(f.shock?3:0)+.2*v,.3+.18*v+.35*clamp(sig/6,0,1)-.02*mb,-.8+.95*Math.max(0,v-2.2)+.04*rb+(f.shock?.6:0)]);}
+  function scoreStates(f){
+    const mb=Math.abs(bp(f.mom)),rb=Math.abs(bp(f.r)),v=f.volx,ms=f.momScore;
+    const sc=returns.slice(-10);
+    const sig=sc.length<6?0:sc.reduce((c,_,i)=>i>0&&Math.sign(sc[i])!==Math.sign(sc[i-1])?c+1:c,0);
+    return softmax([
+      0.6+1.2*clamp(sig/7,0,1)-0.4*v-0.03*mb-0.30*ms,  // S1 Mean-Rev: only when sign-changes high + vol low
+      0.4-0.5*v-0.04*mb,                                  // S2 Liq Vacuum: only in extremely quiet markets
+      1.1+0.30*ms-0.15*v-0.025*mb,                       // S3 Slow Drift: default active-session state
+      0.4+0.40*v+0.060*mb+0.30*ms,                       // S4 Strong Trend: vol + momentum aligned
+      -0.6+0.65*v+0.03*mb+0.05*rb,                       // S5 Stop Cascade: high vol + return impulse
+      -0.6+(f.shock?4.0:0)+0.30*v,                       // S6 News Shock: shock events only
+      -0.3+0.25*v+0.35*clamp(sig/6,0,1)-0.25*ms,        // S7 Dealer Unwind: chop + moderate vol
+      -1.8+1.2*Math.max(0,v-2)+0.05*rb+(f.shock?0.8:0)  // S8 Panic/Forced: extreme vol only
+    ]);
+  }
   const pick=probs=>{let b=0;for(let i=1;i<probs.length;i++)if(probs[i]>probs[b])b=i;return b+1;};
   const conf=(probs,s)=>{const sorted=[...probs].sort((a,b)=>b-a);return clamp(probs[s-1]*.7+(sorted[0]-(sorted[1]||0))*.3,0,1);};
-  function updatePol(det){if(polState==null){polState=det;hold=0;return{policy:polState,hold};}if(det===polState){hold=0;return{policy:polState,hold};}hold++;if(hold>=HT){polState=det;hold=0;return{policy:polState,hold};}return{policy:polState,hold};}
+  function updatePol(det){
+    if(polState==null){polState=det;pendingState=det;hold=0;return{policy:polState,hold};}
+    if(det===polState){hold=0;pendingState=polState;return{policy:polState,hold};}
+    // Accumulate hold only for the same candidate; a different candidate resets the counter
+    if(det===pendingState){hold++;}else{pendingState=det;hold=1;}
+    if(hold>=HT){polState=det;pendingState=det;hold=0;}
+    return{policy:polState,hold};
+  }
   const transRow=si=>{const row=TM[si],total=row.reduce((a,b)=>a+b,0);return total>0?row.map(v=>v/total):new Array(8).fill(.125);};
   function predictNext(pol){const row=transRow(pol-1);let bi=0;for(let i=1;i<row.length;i++)if(row[i]>row[bi])bi=i;return{state:bi+1,prob:row[bi]};}
   function step(price){tickN++;const p=Number(price);if(!Number.isFinite(p)||p<=0)return null;const prev=prices.length?prices.at(-1):null;prices.push(p);if(prices.length>HN)prices.shift();if(prev!=null){returns.push(p-prev);if(returns.length>HN)returns.shift();}const f=feats();if(!f)return null;const probs=scoreStates(f),det=pick(probs),pr=updatePol(det),pol=pr.policy;if(prevPol!=null&&prevPol!==pol)TM[prevPol-1][pol-1]++;if(prevPol!==pol)prevPol=pol;regAge=(lastPol===pol)?regAge+1:0;lastPol=pol;return{tickN,features:f,probs,detector:det,policy:pol,hold:pr.hold,conf:conf(probs,pol),regimeAge:regAge,momScore:f.momScore,predictedNext:predictNext(pol),TM,warmed:tickN>=WARMUP};}
@@ -2436,17 +2458,11 @@ const ProjTracker=(()=>{
   const MIN_N=5;
   let log=loadArr(KEY.proj,[]).slice(-200).map(p=>{
     // normalize/migrate older entries so new UI fields populate
-    const o={outcome1h:null,outcome4h:null,outcome1d:null,stopSpot:null,r1d:null,...p};
+    const o={outcome1h:null,outcome4h:null,outcome1d:null,r1d:null,...p};
     const spotN=Number(o.spot);
     const r1N=Number(o.r1);
     const r4N=Number(o.r4);
     if(o.r1d==null && Number.isFinite(r4N)) o.r1d=Math.max(10, Math.round(r4N*2.5));
-    // Backfill stopSpot if missing. Uses r1 * 0.75 with an 8 pip floor (same as new logging).
-    if(o.stopSpot==null && Number.isFinite(spotN)){
-      const stopPips = Math.max(8, Math.round((Number.isFinite(r1N)?r1N:0)*0.75));
-      const stopSpot = (o.bias==="LONG") ? (spotN - stopPips/10000) : (o.bias==="SHORT") ? (spotN + stopPips/10000) : null;
-      if(stopSpot!=null) o.stopSpot=stopSpot;
-    }
     return o;
   }); // normalize older entries so newer UI fields populate
   let calibMult=Number(settings.calibMult)||1.0;
@@ -2521,9 +2537,7 @@ const ProjTracker=(()=>{
     const last=log.length?log.at(-1):null;
     if(last&&(Date.now()-last.ts)<60*60*1000)return;
     const r1d = _r1dArg||Math.max(10, Math.round((r4||0)*2.5));
-    const stopPips = Math.max(8, Math.round((r1||0)*0.75));
-    const stopSpot = bias==="LONG" ? (spot - stopPips/10000) : (spot + stopPips/10000);
-    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,r1d,stopSpot,policy,outcome1h:null,outcome4h:null,outcome1d:null});
+    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,r1d,policy,outcome1h:null,outcome4h:null,outcome1d:null});
     if(log.length>200)log=log.slice(-200);
     _persist();
   }
@@ -2532,90 +2546,25 @@ const ProjTracker=(()=>{
     if(!Number.isFinite(currentSpot))return;
     const now=Date.now();let changed=false;
 
-    function firstHitInCandle(c, side, stopSpot, targetSpot){
-      if(!c||!Number.isFinite(stopSpot)||!Number.isFinite(targetSpot))return null;
-      if(side==="LONG"){
-        const hitStop=(c.l<=stopSpot);
-        const hitTarget=(c.h>=targetSpot);
-        if(hitStop&&hitTarget)return "BOTH";
-        if(hitStop)return "STOP";
-        if(hitTarget)return "TARGET";
-      }else if(side==="SHORT"){
-        const hitStop=(c.h>=stopSpot);
-        const hitTarget=(c.l<=targetSpot);
-        if(hitStop&&hitTarget)return "BOTH";
-        if(hitStop)return "STOP";
-        if(hitTarget)return "TARGET";
-      }
-      return null;
-    }
-
-    function resolveHorizon(p, horizonMins, targetPips, key){
+    function resolveHorizon(p,horizonMins,targetPips,key){
+      // Pure time-based exit: evaluate forecast at horizon, no stop logic
       if(p[key]!==null)return;
-      const horizonMs=horizonMins*60*1000;
       const ageMins=(now-p.ts)/60000;
+      if(ageMins<horizonMins)return;
       const side=p.bias;
       if(side!=="LONG"&&side!=="SHORT")return;
-
       const spot0=Number(p.spot);
       if(!Number.isFinite(spot0))return;
-
-      const stopSpot=Number.isFinite(Number(p.stopSpot))?Number(p.stopSpot):null;
-      const tgtSpot=(side==="LONG")?(spot0+targetPips/10000):(spot0-targetPips/10000);
-
-      let event=null;
-      let exitSpot=null;
-      const endScanTs=Math.min(now, p.ts+horizonMs);
-
-      try{
-        const candles=(typeof CandleStore!=="undefined"&&CandleStore.scan)?CandleStore.scan(p.ts,endScanTs):[];
-        for(const c of candles){
-          if(stopSpot==null)break;
-          const hit=firstHitInCandle(c,side,stopSpot,tgtSpot);
-          if(hit){
-            const resolved=(hit==="BOTH")?"STOP":hit;
-            event=resolved;
-            exitSpot=(resolved==="STOP")?stopSpot:tgtSpot;
-            break;
-          }
-        }
-      }catch(e){}
-
-      if(!event && p.stopHit===true && stopSpot!=null){
-        event="STOP";
-        exitSpot=stopSpot;
-      }
-
-      if(event && exitSpot!=null){
-        const movePips=(exitSpot-spot0)*10000;
-        const signed=(side==="LONG"?1:-1)*movePips;
-        const dirOk=signed>0;
-        const stopEvent=(event==="STOP");
-        const rngOk=stopEvent?false:(Math.abs(movePips)<=targetPips);
-        p[key]={dirHit:dirOk,rngHit:rngOk,movePips,exitSpot,stopHit:stopEvent,targetHit:(event==="TARGET"),event};
-        if(event==="STOP" && p.stopHit!==true){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=exitSpot;}
-        if(event==="TARGET" && p.targetHit!==true){p.targetHit=true;p.targetHitTs=now;p.targetHitSpot=exitSpot;}
-        changed=true;
-        return;
-      }
-
-      if(ageMins>=horizonMins){
-        const movePips=(currentSpot-spot0)*10000;
-        const signed=(side==="LONG"?1:-1)*movePips;
-        const dirOk=signed>0;
-        p[key]={dirHit:dirOk,rngHit:Math.abs(movePips)<=targetPips,movePips,exitSpot:currentSpot,stopHit:false,targetHit:false,event:"TIME"};
-        changed=true;
-      }
+      const movePips=(currentSpot-spot0)*10000;
+      const signed=(side==="LONG"?1:-1)*movePips;
+      const dirOk=signed>0;
+      p[key]={dirHit:dirOk,rngHit:Math.abs(movePips)<=targetPips,movePips,exitSpot:currentSpot,event:"TIME"};
+      changed=true;
     }
 
     log.forEach(p=>{
       if(!p||!Number.isFinite(Number(p.spot)))return;
       const ageMins=(now-p.ts)/60000;
-
-      if(!p.stopHit && Number.isFinite(Number(p.stopSpot))){
-        if(p.bias==="LONG" && currentSpot<=p.stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
-        if(p.bias==="SHORT" && currentSpot>=p.stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
-      }
 
       if(ageMins>=1){
         resolveHorizon(p,60,Number(p.r1)||0,"outcome1h");
@@ -2641,7 +2590,6 @@ const ProjTracker=(()=>{
       n1d:r1d.length,
       dir1dRate:r1d.length?r1d.filter(p=>p.outcome1d.dirHit).length/r1d.length:null,
       rng1dRate:r1d.length?r1d.filter(p=>p.outcome1d.rngHit).length/r1d.length:null,
-      stopRate4h:r4.length?r4.filter(p=>p.stopHit===true).length/r4.length:null,
       total:log.length,
       pending:log.filter(p=>p.outcome4h===null).length, // 4H-resolution tracking
     };
@@ -3553,7 +3501,7 @@ function injectSignalStats(state,sigStats){
   // Full projection stats — 1h/4h/1d only
   const projS=ProjTracker.getStats();  state.projDir1h=projS.dir1hRate;state.projRng1h=projS.rng1hRate;state.projN1h=projS.n1h;
   state.projDir4h=projS.dir4hRate;state.projRng4h=projS.rng4hRate;state.projN4h=projS.n4h;
-  state.projDir1d=projS.dir1dRate;state.projRng1d=projS.rng1dRate;state.projN1d=projS.n1d||0;state.projStop4h=projS.stopRate4h;
+  state.projDir1d=projS.dir1dRate;state.projRng1d=projS.rng1dRate;state.projN1d=projS.n1d||0;
   state.projTotal=projS.total;state.projPending=projS.pending;
   state.projCalibMult=ProjTracker.getCalibMult();
   state.projBiasAdj=ProjTracker.getBiasConfAdj();
@@ -3624,11 +3572,10 @@ function applyFullStateToUI(st){
   if(ab)ab.innerHTML="EUR/USD Bias: <b class='"+(st.archBias==="BEARISH"?"neg":st.archBias==="BULLISH"?"pos":"")+"'>"+st.archBias+"</b>";
   if(an)an.textContent=st.archNote||"";if(aa)aa.textContent=st.archAnalog||"";
   // Projection
-  const tb=$("tradeBias");if(tb){tb.textContent=st.bias;tb.classList.remove("pos","neg");if(st.bias==="LONG")tb.classList.add("pos");if(st.bias==="SHORT")tb.classList.add("neg");}
+  const tb=$("tradeBias");if(tb){tb.textContent=dispBias(st.bias);tb.classList.remove("pos","neg");if(st.bias==="LONG")tb.classList.add("pos");if(st.bias==="SHORT")tb.classList.add("neg");}
   const tbm=$("tradeBiasMeta");if(tbm)tbm.textContent=(st.txBias||"--")+" | Event "+Math.round((st.eRisk??0)*100)+"%";
   // Target prices for FP TF boxes
   const _r1d=st.r1d||Math.round((st.r4||0)*2.5);
-  const sdEl=$("stopDist"),sdm=$("stopDistMeta"),rrEl=$("rrRatio"),rrm=$("rrRatioMeta");
   {const isL=st.bias==="LONG",isS=st.bias==="SHORT";
    const tgt1h=st.spotPrice&&st.r1?((isL?st.spotPrice+st.r1/10000:isS?st.spotPrice-st.r1/10000:st.spotPrice)).toFixed(5):"--";
    const tgt4h=st.spotPrice&&st.r4?((isL?st.spotPrice+st.r4/10000:isS?st.spotPrice-st.r4/10000:st.spotPrice)).toFixed(5):"--";
@@ -3637,15 +3584,16 @@ function applyFullStateToUI(st){
    if(r1el)r1el.textContent="Target: "+tgt1h;
    if(r4el)r4el.textContent="Target: "+tgt4h;
    if(r1del)r1del.textContent="Target: "+tgtDay;
-   // Update TF box classes for visual state
    ["fpTfBox1h","fpTfBox4h","fpTfBox1d"].forEach(id=>{const b=$(id);if(!b)return;b.classList.remove("long","short");if(isL)b.classList.add("long");else if(isS)b.classList.add("short");});
   }
-  const _stopPips=Math.max(8,Math.round((st.r1||0)*0.75));
-  if(sdEl){sdEl.textContent=_stopPips+"p";sdEl.classList.remove("pos","neg");if(_stopPips<=12)sdEl.classList.add("pos");else if(_stopPips>=25)sdEl.classList.add("neg");}
-  if(sdm){let _sl="--";if(st.spotPrice&&_stopPips){if(st.bias==="LONG")_sl=(st.spotPrice-_stopPips/10000).toFixed(5);else if(st.bias==="SHORT")_sl=(st.spotPrice+_stopPips/10000).toFixed(5);}sdm.textContent=_sl+" level";}
-  const _rr=_stopPips>0?(_r1d/_stopPips):null;
-  if(rrEl){rrEl.textContent=_rr?_rr.toFixed(1)+":1":"--";rrEl.classList.remove("pos","neg");if(_rr>=3.0)rrEl.classList.add("pos");else if(_rr<1.5)rrEl.classList.add("neg");}
-  if(rrm)rrm.textContent=_rr>=3.0?"Favorable setup":_rr>=2.0?"Acceptable":_rr<1.5?"Poor — size down":"--";
+  // Momentum score (replaces Stop Distance)
+  const msb=$("momScoreBox"),msbm=$("momScoreMeta");
+  if(msb){const ms=st.momScore!=null?Math.round(st.momScore*100)+"%":"--";msb.textContent=ms;msb.classList.remove("pos","neg");if((st.momScore||0)>=0.65)msb.classList.add("pos");else if((st.momScore||0)<0.40)msb.classList.add("neg");}
+  if(msbm)msbm.textContent=st.bias&&st.momScore!=null?(Math.round(st.momScore*100)+"% aligned "+dispBias(st.bias)):"Awaiting data";
+  // Regime Age (replaces R/R Daily)
+  const rab=$("regimeAgeBox"),rabm=$("regimeAgeMeta");
+  if(rab){rab.textContent=(st.regimeAge!=null?st.regimeAge:"--")+" tks";rab.classList.remove("pos","neg");if((st.regimeAge||0)>=15)rab.classList.add("pos");}
+  if(rabm)rabm.textContent=st.stateName?("S"+st.policy+" "+st.stateName):"Warming up";
   const dc=$("decConf"),dcm=$("decConfMeta");if(dc){dc.textContent=(st.decPct??0)+"%";dc.classList.remove("pos","neg");if(st.decPct>=55)dc.classList.add("pos");if(st.decPct<=30)dc.classList.add("neg");}
   if(dcm)dcm.textContent=(st.decPct??0)>=55?"Higher agreement":(st.decPct??0)>=40?"Mixed signals":"Caution";
   const cm=$("calibMult");if(cm)cm.textContent=(st.calibMult||1).toFixed(2);
@@ -3682,19 +3630,15 @@ function applyFullStateToUI(st){
     const pdm=$("paDirHitMeta");if(pdm)pdm.textContent="n="+(st.projN4h||0)+" scored";
     // Range hit
     setV("pa1dRng",fmt(st.projRng4h),(st.projRng4h||0)>=0.60&&(st.projRng4h||0)<=0.82,(st.projRng4h!=null)&&(st.projRng4h<0.45||st.projRng4h>0.88));
-    // Stop hit
-    setV("pa1dStop",fmt(st.projStop4h),(st.projStop4h!=null)&&st.projStop4h<0.25,(st.projStop4h||0)>0.45);
-    {const rEntries=(st.projLogEntries||[]).filter(p=>p.outcome4h!==null&&p.r1d);
-     const avgRR=rEntries.length?rEntries.reduce((acc,p)=>{const r1d=p.r1d||Math.max(10,Math.round((p.r4||0)*2.5));const sp=Math.max(8,Math.round((p.r1||0)*0.75));return acc+r1d/sp;},0)/rEntries.length:null;
-     setV("paRR",avgRR?avgRR.toFixed(1)+":1":"--",avgRR!=null&&avgRR>=3.0,avgRR!=null&&avgRR<1.5);
-     const prrm=$("paRRMeta");if(prrm)prrm.textContent=avgRR?"avg over "+rEntries.length+" calls":"No 4H data";}
+    {const rEntries=(st.projLogEntries||[]).filter(p=>p.outcome4h!==null);
+     const avgMove=rEntries.length?rEntries.reduce((acc,p)=>{const mv=p.outcome4h?.movePips;const fav=(p.bias==="LONG"?mv>0:mv<0);return acc+(fav?Math.abs(mv):0);},0)/rEntries.length:null;
+     setV("paRR",avgMove!=null?Math.round(avgMove)+"p":"--",avgMove!=null&&avgMove>=8,false);
+     const prrm=$("paRRMeta");if(prrm)prrm.textContent=avgMove!=null?"avg over "+rEntries.length+" calls":"No 4H data";}
     setV("paCalibMult",(st.projCalibMult||1).toFixed(3)+"x",Math.abs((st.projCalibMult||1)-1)<0.05,false);
     const ptn=$("paTotalN"),ptm=$("paTotalMeta");
     if(ptn)ptn.textContent=String(st.projTotal||0);
     if(ptm)ptm.textContent=((st.projTotal||0)-(st.projPending||0))+" resolved, "+(st.projPending||0)+" pending";
-    const mr=$("pa1dRngMeta"),ms=$("pa1dStopMeta");
-    if(mr)mr.textContent="n="+(st.projN4h||0)+" scored";
-    if(ms)ms.textContent=(st.projN4h||0)>0?Math.round((st.projStop4h||0)*(st.projN4h||0))+" of "+(st.projN4h||0)+" stopped":"No 4H data";
+    const mr=$("pa1dRngMeta");if(mr)mr.textContent="n="+(st.projN4h||0)+" scored";
     const ready=(st.projN1d||0)>=10;
     const ps=$("paStatus");if(ps)ps.textContent=ready?"Active — "+(st.projN4h)+" 4H resolved":"Collecting on MASTER ("+(st.projN4h||0)+"/10)";
     const pca=$("paConeAdj"),cm=st.projCalibMult||1;
@@ -3706,10 +3650,8 @@ function applyFullStateToUI(st){
         plb.innerHTML=(st.projLogEntries||[]).slice(-100).reverse().map(p=>{
           const d4h=p.outcome4h;
           const cls=v=>v===null?"pending":v?"hit":"miss";
-          const rtxt=o=>o===null?"...":(o.stopHit?"OUT":(o.rngHit?"IN":"OUT"));
+          const rtxt=o=>o===null?"...":(o.rngHit?"IN":"OUT");
           const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
-          const stopBase=(p.stopSpot!=null&&Number.isFinite(Number(p.stopSpot)))?Number(p.stopSpot).toFixed(5):"--";
-          const stop=p.stopHit?(stopBase+" ▸"):stopBase;
           const e4h=(d4h?.exitSpot!=null&&Number.isFinite(d4h.exitSpot))?d4h.exitSpot.toFixed(5):"pend";
           const r4h=p.r4||0;
           const mv=(d4h&&d4h.movePips!=null&&Number.isFinite(Number(d4h.movePips)))?Number(d4h.movePips):null;
@@ -3720,9 +3662,8 @@ function applyFullStateToUI(st){
           return"<tr>"
             +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
             +"<td style='font-family:var(--mono);font-size:10px'>"+(p.spot?p.spot.toFixed(5):"--")+"</td>"
-            +"<td style='font-family:var(--mono);font-size:10px;color:"+(p.stopHit?"var(--red)":"var(--text3)")+"'>"+stop+"</td>"
             +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e4h+"</td>"
-            +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
+            +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+dispBias(p.bias)+"</td>"
             +"<td style='font-family:var(--mono);color:"+mvColor+"'>"+mvTxt+"</td>"
             +"<td class='"+cls(d4h?.rngHit??null)+"'>"+rtxt(d4h)+"</td>"
             +"</tr>";
@@ -3749,7 +3690,7 @@ function applyFullStateToUI(st){
   }
   // Signal Bus for READER
   if(st.busDir){
-    const bd=$("busDir");if(bd){bd.textContent=st.busDir;bd.style.color=st.busDir==="LONG"?"rgba(0,214,143,.95)":st.busDir==="SHORT"?"rgba(255,71,87,.90)":"rgba(180,220,255,.65)";}
+    const bd=$("busDir");if(bd){bd.textContent=dispBias(st.busDir);bd.style.color=st.busDir==="LONG"?"rgba(0,214,143,.95)":st.busDir==="SHORT"?"rgba(255,71,87,.90)":"rgba(180,220,255,.65)";}
     const br=$("busRisk");if(br){br.textContent=(st.busRiskPct??'--')+"%";br.style.color=(st.busRiskPct??0)>=75?"rgba(0,214,143,.90)":(st.busRiskPct??0)>=40?"rgba(255,176,32,.85)":"rgba(255,71,87,.80)";}
     const bc=$("busConvPct");if(bc)bc.textContent=(st.busConvPct??'--')+"%";
     // Populate tf boxes from bus forecasts
@@ -3960,7 +3901,7 @@ function updateForecastUI(daily){
   // Daily
   setT("dailyFcastPrice",daily.target);
   const dbEl=$("dailyFcastBias");
-  if(dbEl){dbEl.className="fcastBias "+(daily.bias==="LONG"?"long":daily.bias==="SHORT"?"short":"neutral");dbEl.innerHTML=(daily.bias==="LONG"?"&#9650; LONG 4H":daily.bias==="SHORT"?"&#9660; SHORT 4H":"&#9644; NEUTRAL 4H");}
+  if(dbEl){dbEl.className="fcastBias "+(daily.bias==="LONG"?"long":daily.bias==="SHORT"?"short":"neutral");dbEl.innerHTML=(daily.bias==="LONG"?"&#9650; BUY 4H":daily.bias==="SHORT"?"&#9660; SELL 4H":"&#9644; NEUTRAL 4H");}
   const dBar=$("dailyFcastBar");if(dBar){dBar.style.width=daily.confidence+"%";dBar.style.background=daily.bias==="LONG"?"rgba(0,214,143,.82)":daily.bias==="SHORT"?"rgba(255,71,87,.82)":"rgba(180,220,255,.35)";}
   setT("dailyFcastConf",daily.confidence+"% confidence");
   setT("dailyFcastRange",fmtSignedPips(daily.dir||daily.bias||daily.direction,daily.range));
@@ -3991,14 +3932,11 @@ function updateProjAccuracyUI(){
   // Range hit
   setV("pa1dRng",fmt(s.rng4hRate),(s.rng4hRate||0)>=0.60&&(s.rng4hRate||0)<=0.82,(s.rng4hRate!=null)&&(s.rng4hRate<0.45||s.rng4hRate>0.88));
   const mr=$("pa1dRngMeta");if(mr)mr.textContent="n="+(s.n4h||0)+" scored";
-  // Stop hit
-  setV("pa1dStop",fmt(s.stopRate4h),(s.stopRate4h!=null)&&s.stopRate4h<0.25,(s.stopRate4h||0)>0.45);
-  const ms=$("pa1dStopMeta");if(ms)ms.textContent=(s.n4h||0)>0?Math.round((s.stopRate4h||0)*(s.n4h||0))+" of "+(s.n4h||0)+" stopped":"No 4H data";
-  // R/R — from 4H resolved entries
-  {const lg=ProjTracker.getLog(),resolved=lg.filter(p=>p.outcome4h!==null&&p.r4);
-   const avgRR=resolved.length?resolved.reduce((acc,p)=>{const r4=p.r4||10;const sp=Math.max(8,Math.round((p.r1||0)*0.75)||8);return acc+r4/sp;},0)/resolved.length:null;
-   setV("paRR",avgRR?avgRR.toFixed(1)+":1":"--",avgRR!=null&&avgRR>=2.5,avgRR!=null&&avgRR<1.5);
-   const prrm=$("paRRMeta");if(prrm)prrm.textContent=avgRR?"avg over "+resolved.length+" calls":"No 4H data";}
+  // Avg Exit Move (replaces R/R which depended on stop distance)
+  {const lg=ProjTracker.getLog(),resolved=lg.filter(p=>p.outcome4h!==null);
+   const avgMove=resolved.length?resolved.reduce((acc,p)=>{const mv=p.outcome4h?.movePips;const fav=(p.bias==="LONG"?mv>0:mv<0);return acc+(fav?Math.abs(mv):0);},0)/resolved.length:null;
+   setV("paRR",avgMove!=null?Math.round(avgMove)+"p":"--",avgMove!=null&&avgMove>=8,false);
+   const prrm=$("paRRMeta");if(prrm)prrm.textContent=avgMove!=null?"avg over "+resolved.length+" calls":"No 4H data";}
   // Calib mult
   setV("paCalibMult",cm.toFixed(3)+"x",Math.abs(cm-1)<0.05,false);
   const pcm=$("paCalibMeta");if(pcm)pcm.textContent=cm>1.05?"Widening cone":cm<0.95?"Tightening cone":"Well-calibrated";
@@ -4028,15 +3966,13 @@ function updateProjAccuracyUI(){
   // Log table — 7 cols with direction hit column
   const plb=$("paLogBody");if(!plb)return;
   const lg3=ProjTracker.getLog();
-  if(!lg3.length){plb.innerHTML="<tr><td colspan='7' class='pending'>No projections logged yet.</td></tr>";return;}
+  if(!lg3.length){plb.innerHTML="<tr><td colspan='6' class='pending'>No projections logged yet.</td></tr>";return;}
   plb.innerHTML=lg3.slice(-100).reverse().map(p=>{
     const d4h=p.outcome4h;
     const cls=v=>v===null?"pending":v?"hit":"miss";
-    const rtxt=o=>o===null?"...":(o.stopHit?"OUT":(o.rngHit?"IN":"OUT"));
+    const rtxt=o=>o===null?"...":(o.rngHit?"IN":"OUT");
     const dtxt=o=>o===null?"...":o.dirHit?"✓":"✗";
     const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
-    const stopBase=(p.stopSpot!=null&&Number.isFinite(Number(p.stopSpot)))?Number(p.stopSpot).toFixed(5):"--";
-    const stop=p.stopHit?(stopBase+" ▸"):stopBase;
     const e4h=(d4h?.exitSpot!=null&&Number.isFinite(d4h.exitSpot))?d4h.exitSpot.toFixed(5):"pend";
     const r4h=p.r4||0;
           const mv=(d4h&&d4h.movePips!=null&&Number.isFinite(Number(d4h.movePips)))?Number(d4h.movePips):null;
@@ -4047,9 +3983,8 @@ function updateProjAccuracyUI(){
     return"<tr>"
       +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
       +"<td style='font-family:var(--mono);font-size:10px'>"+(p.spot?p.spot.toFixed(5):"--")+"</td>"
-      +"<td style='font-family:var(--mono);font-size:10px;color:"+(p.stopHit?"var(--red)":"var(--text3)")+"'>"+stop+"</td>"
       +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e4h+"</td>"
-      +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
+      +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+dispBias(p.bias)+"</td>"
       +"<td style='font-family:var(--mono);color:"+mvColor+"'>"+mvTxt+"</td>"
       +"<td class='"+cls(d4h?.rngHit??null)+"'>"+rtxt(d4h)+"</td>"
       +"</tr>";
@@ -4307,12 +4242,12 @@ if(saveBtn)saveBtn.addEventListener("click",async()=>{
     if(valid===false&&!confirm("API key appears invalid. Save anyway?"))return;}
   // ── Firebase config: hardcoded in this build — no user input needed ──────
   const fbConfig = {
-    apiKey:            "%%FB_API_KEY%%",
-    authDomain:        "%%FB_AUTH_DOMAIN%%",
-    projectId:         "%%FB_PROJECT_ID%%",
-    storageBucket:     "%%FB_STORAGE_BUCKET%%",
-    messagingSenderId: "%%FB_MESSAGING_SENDER_ID%%",
-    appId:             "%%FB_APP_ID%%"
+    apiKey:            "AIzaSyC3iv5WcVeXPWGnkci4FbScRO0YJPieGSU",
+    authDomain:        "quadrax-personal-prod.firebaseapp.com",
+    projectId:         "quadrax-personal-prod",
+    storageBucket:     "quadrax-personal-prod.firebasestorage.app",
+    messagingSenderId: "231279443536",
+    appId:             "1:231279443536:web:908d321616568939ec1b55"
   };
   // ── Save all settings ────────────────────────────────────────────────────
   const poll=Number($("pollInput")?.value||12000),thresh=Number($("alertThreshInput")?.value||0),depth=Number($("histDepthInput")?.value||60);
@@ -4367,12 +4302,12 @@ async function start(){
   const __BAKED_CONFIG = (()=>{
     try{
       return {
-        apiKey:            "%%FB_API_KEY%%",
-        authDomain:        "%%FB_AUTH_DOMAIN%%",
-        projectId:         "%%FB_PROJECT_ID%%",
-        storageBucket:     "%%FB_STORAGE_BUCKET%%",
-        messagingSenderId: "%%FB_MESSAGING_SENDER_ID%%",
-        appId:             "%%FB_APP_ID%%"
+        apiKey:            "AIzaSyC3iv5WcVeXPWGnkci4FbScRO0YJPieGSU",
+        authDomain:        "quadrax-personal-prod.firebaseapp.com",
+        projectId:         "quadrax-personal-prod",
+        storageBucket:     "quadrax-personal-prod.firebasestorage.app",
+        messagingSenderId: "231279443536",
+        appId:             "1:231279443536:web:908d321616568939ec1b55"
       };
     }catch(e){ return null; }
   })();
@@ -4827,12 +4762,12 @@ thead th,.paLogTable th{padding:7px 9px!important}
   // Firebase security is enforced by Auth (email/password) + Firestore security rules,
   // not by keeping the config secret. This is standard Firebase practice.
   const FIREBASE_CONFIG = {
-    apiKey:            "%%FB_API_KEY%%",
-    authDomain:        "%%FB_AUTH_DOMAIN%%",
-    projectId:         "%%FB_PROJECT_ID%%",
-    storageBucket:     "%%FB_STORAGE_BUCKET%%",
-    messagingSenderId: "%%FB_MESSAGING_SENDER_ID%%",
-    appId:             "%%FB_APP_ID%%"
+    apiKey:            "AIzaSyC3iv5WcVeXPWGnkci4FbScRO0YJPieGSU",
+    authDomain:        "quadrax-personal-prod.firebaseapp.com",
+    projectId:         "quadrax-personal-prod",
+    storageBucket:     "quadrax-personal-prod.firebasestorage.app",
+    messagingSenderId: "231279443536",
+    appId:             "1:231279443536:web:908d321616568939ec1b55"
   };
   // ───────────────────────────────────────────────────────────────────────────
 
