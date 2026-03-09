@@ -715,6 +715,49 @@ body::after{
 .bootMeta{display:flex;justify-content:space-between;margin-top:10px;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.45)}
 
 
+
+/* ── HMM diagnostics ─────────────────────────────────── */
+.hmmDiagWrap{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06)}
+.hmmDiagHead{font-size:9px;color:var(--text4);text-transform:uppercase;letter-spacing:1.3px;font-weight:700;font-family:var(--mono);margin-bottom:8px}
+.hmmDiagGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+@media(max-width:1100px){.hmmDiagGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.hmmDiagGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.hmmDiagBox{padding:10px 11px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
+.hmmDiagBox .dk{font-size:8.5px;color:var(--text4);text-transform:uppercase;letter-spacing:.9px;font-weight:700;margin-bottom:4px}
+.hmmDiagBox .dv{font-size:13px;font-weight:700;font-family:var(--mono);color:var(--text);line-height:1.2}
+
+/* ── Launch refresh visual pass ──────────────────────── */
+.topbar,.card,.hero,.quoteCard,.sessLeft,.sessRight,.fpTfBox,.paBox,.intelTile,.busBanner,.riskStrip,.tmBox,.macroBox{
+  position:relative; overflow:hidden;
+}
+.card::before,.hero::before,.quoteCard::before,.sessLeft::after,.sessRight::before,.intelTile::before,.fpTfBox::before,.paBox::before{
+  content:""; position:absolute; left:0; right:0; top:0; height:1px;
+  background:linear-gradient(90deg, rgba(41,121,255,.00), rgba(110,170,255,.28), rgba(0,214,143,.18), rgba(41,121,255,.00));
+  pointer-events:none;
+}
+.card .inner{padding:17px 17px 16px !important}
+.card-title h2{color:rgba(232,234,240,.50)!important}
+.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip{
+  background:linear-gradient(180deg, rgba(20,29,53,.72), rgba(10,15,28,.80))!important;
+  border-color:rgba(255,255,255,.08)!important;
+  box-shadow:0 20px 46px rgba(0,0,0,.34)!important;
+}
+.card:hover{transform:translateY(-2px)!important}
+.stateBig{font-size:23px!important}
+.quotePx{font-size:46px!important}
+.rbig{letter-spacing:-.8px}
+.pb3Dom,.archMain,.convicRow,.paCalibRow{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04), 0 12px 26px rgba(0,0,0,.18);
+}
+.recoItem{
+  background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015))!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+.recoItem:hover{border-color:rgba(255,255,255,.12)!important}
+.tableWrap,.paLog,.eqWrap,.coneWrap,.tvWrap{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 12px 26px rgba(0,0,0,.16);
+}
+
 /* ── SESSION PLAYBOOK ─────────────────────────────────── */
 .sessGrid{
   display:grid;
@@ -952,6 +995,16 @@ body.qx-auth-locked .wrap{display:none!important}
 </div>
 <div class="tlWrap"><div class="tlLabel">Regime history · <span id="timelineDepth">0</span> ticks</div><canvas class="tlCanvas" id="timelineCanvas"></canvas></div>
 <div class="probBlock"><div class="muted" style="margin-bottom:7px;font-size:11px">P(state|features) — HMM emission probs. Softmax T=1.35.</div><div id="probList"></div></div>
+<div class="hmmDiagWrap">
+  <div class="hmmDiagHead">HMM Diagnostics</div>
+  <div class="hmmDiagGrid">
+    <div class="hmmDiagBox"><div class="dk">Current Regime</div><div class="dv" id="hmmDiagCurrent">--</div></div>
+    <div class="hmmDiagBox"><div class="dk">Confidence</div><div class="dv" id="hmmDiagConf">--</div></div>
+    <div class="hmmDiagBox"><div class="dk">Predicted Next</div><div class="dv" id="hmmDiagNext">--</div></div>
+    <div class="hmmDiagBox"><div class="dk">Transition Prob</div><div class="dv" id="hmmDiagProb">--</div></div>
+    <div class="hmmDiagBox"><div class="dk">Dwell Time</div><div class="dv" id="hmmDiagDwell">--</div></div>
+  </div>
+</div>
 </div>
 <div class="quoteCard">
 <div class="quoteTop">
@@ -1437,7 +1490,7 @@ body.qx-auth-locked .wrap{display:none!important}
 <b>QuadraX</b> is a single-decision system built around a daily cadence.
         Six independent signal layers (HMM regime, Quant engine, PB3, FX confluence, Macro transmission, Archetype classifier) are synthesised into one direction, conviction score and risk throttle by the Unified Signal Bus.
         All timeframe forecast cards show the same directional call — disagreement is a system error, not a signal.
-        Projection accuracy, adaptive learning, signal performance, and R/R are all scored and tracked at <b>+4H resolution</b>. Projection cadence is daily.
+        Projection accuracy, adaptive learning, and signal performance are all scored and tracked at <b>+4H resolution</b>. Projection cadence is daily.
       </div>
 <div class="grid" style="grid-template-columns:1.1fr .9fr;gap:14px">
 <!-- Left: regime table -->
@@ -1464,13 +1517,13 @@ body.qx-auth-locked .wrap{display:none!important}
 <div style="margin-bottom:7px"><span style="color:rgba(100,200,255,.90);font-weight:700">Unified Signal Bus</span><br/>
             Single source of truth. 6 signals vote direction. Bus outputs: Consensus dir, Conviction %, Coherence %, Risk Throttle %, and 3-TF forecast (1h/4h/1d). Weekly removed — daily cadence only.</div>
 <div style="margin-bottom:7px"><span style="color:rgba(100,200,255,.90);font-weight:700">Forward Projection · Cone</span><br/>
-            Cone now shows <b>three horizons</b>: 1h (bright inner), 4h (mid zone), 1d (faded outer, dashed boundary). New boxes: <b>Move Range 1D</b>, <b>Stop Distance</b> (r1×0.75, min 8p), <b>R/R Daily</b> (1d÷stop — green ≥3:1, red &lt;1.5:1).</div>
+            Cone now shows <b>three horizons</b>: 1h (bright inner), 4h (mid zone), 1d (faded outer, dashed boundary). Boxes now summarise <b>Trade Bias</b>, <b>Decision Confidence</b>, <b>Momentum</b>, and <b>Regime Age</b>. Targets are evaluated against the <b>4H exit price</b>, not stop-loss triggers.</div>
 <div style="margin-bottom:7px"><span style="color:rgba(100,200,255,.90);font-weight:700">Projection Accuracy · Adaptive Learning</span><br/>
-            Every BUY/SELL call scored at <b>+4H</b>. Panel: Daily Range Hit (target 60–80%), Daily Stop Hit, <b>Avg R/R</b> across resolved calls. Direction Hit removed — Range Hit is the reliable calibration metric. Adaptive learning activates at 5+ 4H resolved.</div>
+            Every BUY/SELL call is scored at <b>+4H</b>. Panel: <b>4H Direction Hit</b>, <b>4H Range Hit</b> (target 60–80%), and <b>Avg Exit Move</b> in the predicted direction. Adaptive learning activates at 5+ resolved 4H outcomes.</div>
 <div style="margin-bottom:7px"><span style="color:rgba(100,200,255,.90);font-weight:700">Signal Calibration Summary (was Direction Learning)</span><br/>
-            Now shows: Bias Weight, <b>Sharpe Adjustment</b> (new — Sharpe quality multiplier), <b>Avg R/R</b>, and <b>Recent Streak</b> (e.g. "IN 4 of last 10"). Cone width and bias confidence both adapt from daily rates.</div>
+            Now shows: Bias Weight, <b>Sharpe Adjustment</b>, <b>Avg Exit Move</b>, and <b>Recent Streak</b>. Cone width and bias confidence adapt from 4H direction/range outcomes — no stop-loss analytics in this build.</div>
 <div><span style="color:rgba(100,200,255,.90);font-weight:700">Signal Performance · Rolling Sharpe</span><br/>
-            Sharpe annualized to <b>252 daily periods</b>. Win rate, P&amp;L, equity curve all from 1D outcomes. Target ≥2.5. Needs 20+ closed calls.</div>
+            Sharpe annualized to <b>252 daily periods</b>. Win rate, P&amp;L, equity curve and exit-move quality all derive from resolved 4H forecast outcomes. Target ≥2.5. Needs 20+ closed calls.</div>
 </div>
 </div></div>
 </div>
@@ -2104,6 +2157,15 @@ function updateLegendaryVisuals(q){
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
   // Display translation — maps engine values (LONG/SHORT) to user-facing (BUY/SELL)
   function dispBias(b){ return b==='LONG'?'BUY':b==='SHORT'?'SELL':b||'--'; }
+  function currentHMMDiagnostics(){
+    return {
+      currentRegime: ($('hmmDiagCurrent')?.textContent||'--'),
+      regimeConfidence: ($('hmmDiagConf')?.textContent||'--'),
+      predictedNextRegime: ($('hmmDiagNext')?.textContent||'--'),
+      transitionProbability: ($('hmmDiagProb')?.textContent||'--'),
+      dwellTime: ($('hmmDiagDwell')?.textContent||'--')
+    };
+  }
 const fmtTime=ms=>new Date(ms).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"});
 const fmtTS=ms=>new Date(ms).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
 const bp=x=>x*10000;
@@ -3527,6 +3589,11 @@ function applyFullStateToUI(st){
   $("ageChip").textContent=String(st.regimeAge);$("tickChip").textContent=st.tickN+"/"+Engine.WARMUP;
   $("momChip").textContent=Math.round(st.momScore*100)+"%";
   $("nextStateChip").textContent=st.predictedNext?"S"+st.predictedNext.state+" ("+Math.round(st.predictedNext.prob*100)+"%)": "--";
+  if($("hmmDiagCurrent")) $("hmmDiagCurrent").textContent="S"+st.policy+" "+(st.stateName||"--");
+  if($("hmmDiagConf")) $("hmmDiagConf").textContent=st.conf!=null?Math.round(st.conf*100)+"%":"--";
+  if($("hmmDiagNext")) $("hmmDiagNext").textContent=st.predictedNext?"S"+st.predictedNext.state:"--";
+  if($("hmmDiagProb")) $("hmmDiagProb").textContent=st.predictedNext&&st.predictedNext.prob!=null?Math.round(st.predictedNext.prob*100)+"%":"--";
+  if($("hmmDiagDwell")) $("hmmDiagDwell").textContent=(st.regimeAge!=null?String(st.regimeAge):"--")+" ticks";
   if(probEls.length===8&&st.probs?.length===8)
     st.probs.forEach((p,i)=>{probEls[i].bar.style.width=clamp(p*100,0,100)+"%";probEls[i].bar.style.background=STATES[i].color;probEls[i].val.textContent=(p*100).toFixed(1)+"%";});
   if(st.recentStates?.length){drawTimeline($("timelineCanvas"),st.recentStates);const td=$("timelineDepth");if(td)td.textContent=st.recentStates.length;}
