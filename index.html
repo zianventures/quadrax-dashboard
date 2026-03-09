@@ -5156,5 +5156,302 @@ body::before{
 })();
 </script>
 
+
+<!-- Final premium pass: remove separate TV reference card, add RSI + compact TV link to quote card,
+     strengthen premium visual language. No core sync/HMM/projection contract changes. -->
+<style id="qx-final-premium-pass">
+:root{
+  --qx-fina: rgba(88,153,255,.34);
+  --qx-finb: rgba(0,214,143,.22);
+  --qx-finc: rgba(130,110,255,.18);
+}
+body::after{
+  content:"";
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(1200px 420px at 8% 0%, var(--qx-fina), transparent 60%),
+    radial-gradient(900px 320px at 92% 8%, var(--qx-finb), transparent 58%),
+    radial-gradient(900px 360px at 50% 100%, var(--qx-finc), transparent 60%);
+  opacity:.70;
+}
+.topbar,.card,.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip{
+  box-shadow:0 24px 64px rgba(0,0,0,.36)!important;
+}
+.card-title .hint{max-width:520px!important}
+.quoteCard{
+  background:
+    linear-gradient(180deg, rgba(17,28,53,.92), rgba(8,13,25,.94))!important;
+}
+.quoteTop{margin-bottom:4px!important}
+.quoteSym .sym{
+  letter-spacing:-.8px;
+  text-shadow:0 0 24px rgba(88,153,255,.12);
+}
+.quoteMetaRow{margin-bottom:2px!important}
+.tickChart{margin:8px 0 2px!important}
+.quoteBadges{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  flex-wrap:wrap!important;
+}
+.qx-quoteLeft,.qx-quoteRight{
+  display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+}
+.qx-miniLink{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:6px 10px; border-radius:999px;
+  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(135deg, rgba(41,121,255,.18), rgba(0,214,143,.12));
+  color:#eef7ff!important; font-size:10px; font-weight:700; text-decoration:none!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.18);
+}
+.qx-miniLink:hover{border-color:rgba(255,255,255,.18)!important}
+.qx-rsiTag{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; border-radius:999px;
+  border:1px solid rgba(255,255,255,.09);
+  background:rgba(255,255,255,.04);
+  color:rgba(232,239,255,.90);
+  font-size:10px; font-weight:700; font-family:var(--mono);
+}
+.qx-rsiTag b{font-weight:700}
+.qx-rsiTag em{font-style:normal; opacity:.66; font-weight:600}
+.qx-neoSub{
+  color:rgba(232,234,240,.42)!important;
+  text-transform:none!important;
+}
+.brand .sub{
+  color:rgba(232,234,240,.42)!important;
+  letter-spacing:.2px!important;
+}
+.qx-premTag{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:6px 11px; border-radius:999px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.035);
+  font-size:8.5px; font-family:var(--mono); letter-spacing:1px; text-transform:uppercase;
+  color:rgba(232,234,240,.54); font-weight:700;
+}
+.qx-premTag i{
+  display:inline-block; width:6px; height:6px; border-radius:50%;
+  background:linear-gradient(135deg, rgba(88,153,255,.98), rgba(0,214,143,.95));
+  box-shadow:0 0 12px rgba(88,153,255,.35);
+}
+.qx-premGlow{
+  position:relative;
+}
+.qx-premGlow::after{
+  content:""; position:absolute; inset:auto 14px 0 14px; height:1px; pointer-events:none;
+  background:linear-gradient(90deg, rgba(255,255,255,0), rgba(140,190,255,.30), rgba(0,214,143,.20), rgba(255,255,255,0));
+}
+.qx-hideCard{display:none!important}
+.qx-market .card-title h2,
+.qx-signal .card-title h2,
+.qx-bus .card-title h2,
+.qx-forecast .card-title h2{
+  color:rgba(232,234,240,.60)!important;
+}
+.qx-market .card-title .hint,
+.qx-signal .card-title .hint,
+.qx-bus .card-title .hint,
+.qx-forecast .card-title .hint{
+  color:rgba(232,234,240,.44)!important;
+}
+</style>
+
+<script id="qx-final-premium-pass-script">
+(function(){
+  var rsiState = { lastFetch:0, value:null, source:'--', history:[] };
+
+  function getSettings(){
+    try{
+      return JSON.parse(localStorage.getItem('qx_s_v5') || '{}') || {};
+    }catch(e){ return {}; }
+  }
+
+  function findCardContains(txt){
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+    return cards.find(function(c){
+      var h2 = c.querySelector('.card-title h2');
+      return h2 && h2.textContent.toLowerCase().indexOf(txt.toLowerCase()) !== -1;
+    });
+  }
+
+  function addPremiumTag(card, label){
+    if(!card || card.querySelector('.qx-premTag')) return;
+    var inner = card.querySelector('.inner');
+    var title = card.querySelector('.card-title');
+    if(!inner || !title) return;
+    var tag = document.createElement('div');
+    tag.className = 'qx-premTag';
+    tag.innerHTML = '<i></i><span>'+label+'</span>';
+    inner.insertBefore(tag, title);
+    card.classList.add('qx-premGlow');
+  }
+
+  function hideDailyReferenceCard(){
+    var daily = findCardContains('Daily EUR/USD Trend');
+    if(daily) daily.classList.add('qx-hideCard');
+  }
+
+  function decorateCards(){
+    var market = findCardContains('Current Market State');
+    var signal = findCardContains('Quantitative Edge');
+    var bus = findCardContains('Unified Signal Bus');
+    var forecast = findCardContains('Forward Projection');
+    [market, signal, bus, forecast].forEach(function(c){ if(c) c.classList.add('qx-market'); });
+    if(signal) signal.classList.add('qx-signal');
+    if(bus) bus.classList.add('qx-bus');
+    if(forecast) forecast.classList.add('qx-forecast');
+
+    addPremiumTag(market, '1 · State Intelligence');
+    addPremiumTag(findCardContains('Macro Drivers'), '2 · Macro Intelligence');
+    addPremiumTag(findCardContains('HMM Transition Matrix'), '3 · Transition Intelligence');
+    addPremiumTag(signal, '4 · Signal Intelligence');
+    addPremiumTag(bus, '5 · Consensus Intelligence');
+    addPremiumTag(forecast, '6 · Forecast Intelligence');
+    addPremiumTag(findCardContains('Projection Accuracy'), '7 · Performance Intelligence');
+  }
+
+  function strengthenBrandLanguage(){
+    var sub = document.querySelector('.brand .sub');
+    if(sub){
+      sub.textContent = 'Adaptive Macro Intelligence Platform · HMM · PB3 · Signal Bus · Team Sync';
+    }
+    var hints = document.querySelectorAll('.card-title .hint');
+    hints.forEach(function(h){
+      if(h.textContent.indexOf('Unified Signal Bus') !== -1){
+        h.textContent = 'Regime intelligence (1H) + Signal Edge (15m) + Structure (4H) fused by the Unified Signal Bus. Recommendations are execution-aware and only print when edge clears cost.';
+      }
+      if(h.textContent.indexOf('8-state HMM') !== -1){
+        h.textContent = '8-state probabilistic regime intelligence. Same EUR/USD feed = identical state across devices after warmup. Built for partner-grade decision clarity.';
+      }
+    });
+  }
+
+  function ensureQuoteExtras(){
+    var badges = document.querySelector('.quoteCard .quoteBadges');
+    if(!badges) return;
+
+    if(!document.getElementById('qxQuoteLeft')){
+      var left = document.createElement('div');
+      left.className = 'qx-quoteLeft';
+      left.id = 'qxQuoteLeft';
+      while(badges.firstChild){
+        left.appendChild(badges.firstChild);
+      }
+      badges.appendChild(left);
+    }
+    if(!document.getElementById('qxQuoteRight')){
+      var right = document.createElement('div');
+      right.className = 'qx-quoteRight';
+      right.id = 'qxQuoteRight';
+      right.innerHTML = '<span class="qx-rsiTag" id="qxRsiTag">RSI 14 <b id="qxRsiVal">--</b> <em id="qxRsiState">--</em></span><a class="qx-miniLink" id="qxTvMini" href="https://www.tradingview.com/chart/?symbol=FX%3AEURUSD" target="_blank" rel="noopener noreferrer">TradingView ↗</a>';
+      badges.appendChild(right);
+    }
+  }
+
+  function calcLocalRSI(vals, period){
+    if(!vals || vals.length < period + 1) return null;
+    var gains = 0, losses = 0;
+    for(var i = vals.length - period; i < vals.length; i++){
+      var diff = vals[i] - vals[i-1];
+      if(diff > 0) gains += diff;
+      else losses += Math.abs(diff);
+    }
+    var avgGain = gains / period, avgLoss = losses / period;
+    if(avgLoss === 0) return 100;
+    var rs = avgGain / avgLoss;
+    return 100 - (100 / (1 + rs));
+  }
+
+  async function fetchTwelveDataRSI(){
+    var settings = getSettings();
+    var key = (settings.twelvedataKey || '').trim();
+    if(!key) return false;
+    if(Date.now() - rsiState.lastFetch < 60000) return true;
+    try{
+      var url = 'https://api.twelvedata.com/rsi?symbol=EUR/USD&interval=15min&time_period=14&series_type=close&apikey=' + encodeURIComponent(key) + '&outputsize=1';
+      var res = await fetch(url, { cache:'no-store' });
+      if(!res.ok) return false;
+      var json = await res.json();
+      var v = null;
+      if(json && Array.isArray(json.values) && json.values[0] && json.values[0].rsi != null){
+        v = Number(json.values[0].rsi);
+      } else if(json && json.value != null){
+        v = Number(json.value);
+      }
+      if(!Number.isFinite(v)) return false;
+      rsiState.value = v;
+      rsiState.source = 'TwelveData';
+      rsiState.lastFetch = Date.now();
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  function updateRSILocalHistory(){
+    var pxEl = document.getElementById('fxSpotPrice');
+    if(!pxEl) return;
+    var v = Number((pxEl.textContent || '').replace(/[^0-9.\\-]/g,''));
+    if(!Number.isFinite(v) || v <= 0) return;
+    var h = rsiState.history;
+    if(!h.length || Math.abs(h[h.length-1] - v) > 0){
+      h.push(v);
+      if(h.length > 120) h.shift();
+    }
+    if(rsiState.value == null){
+      var r = calcLocalRSI(h, 14);
+      if(Number.isFinite(r)){
+        rsiState.value = r;
+        rsiState.source = 'Local';
+      }
+    }
+  }
+
+  function updateRSIVisual(){
+    var valEl = document.getElementById('qxRsiVal');
+    var stEl = document.getElementById('qxRsiState');
+    if(!valEl || !stEl) return;
+    var v = rsiState.value;
+    if(!Number.isFinite(v)){
+      valEl.textContent = '--';
+      stEl.textContent = '--';
+      return;
+    }
+    valEl.textContent = v.toFixed(1);
+    var state = v >= 70 ? 'HOT' : v <= 30 ? 'WASHOUT' : v >= 55 ? 'BULLISH' : v <= 45 ? 'BEARISH' : 'BALANCED';
+    stEl.textContent = state;
+  }
+
+  function checkMatrixCoherence(){
+    var current = (document.getElementById('policyChip')?.textContent || '').trim();
+    var next = (document.getElementById('nextStateChip')?.textContent || '').trim();
+    // No mutation; this is just here so the rendered state is observed together in one place
+    return { current: current, next: next };
+  }
+
+  async function loop(){
+    ensureQuoteExtras();
+    updateRSILocalHistory();
+    await fetchTwelveDataRSI();
+    updateRSIVisual();
+    checkMatrixCoherence();
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    hideDailyReferenceCard();
+    decorateCards();
+    strengthenBrandLanguage();
+    ensureQuoteExtras();
+    updateRSIVisual();
+    setInterval(loop, 1500);
+  });
+})();
+</script>
+
 </body>
 </html>
