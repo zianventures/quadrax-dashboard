@@ -4908,498 +4908,250 @@ thead th,.paLogTable th{padding:7px 9px!important}
 </script>
 
 
-<!-- Client-launch polish pass: spacing, hierarchy, collapsible secondary panels.
-     Visual-only layer, no engine or sync logic changes. -->
-<style id="qx-client-launch-polish">
+<!-- Vertus-style client launch refinement: hierarchy, reordering, premium visuals, guide cleanup.
+     Visual/layout-only. No engine, sync, or model logic changes. -->
+<style id="qx-vertus-premium-refine">
 :root{
-  --qx-panel-bg: linear-gradient(180deg, rgba(18,27,49,.88), rgba(9,14,26,.90));
-  --qx-panel-border: rgba(255,255,255,.08);
-  --qx-panel-shadow: 0 18px 44px rgba(0,0,0,.30);
-  --qx-subtle: rgba(232,234,240,.56);
-  --qx-accentA: rgba(110,170,255,.28);
-  --qx-accentB: rgba(0,214,143,.20);
+  --qx-prem-a: rgba(104,170,255,.34);
+  --qx-prem-b: rgba(0,214,143,.24);
+  --qx-prem-c: rgba(36,92,255,.18);
 }
 
-/* Higher-level hierarchy + tighter rhythm */
-.wrap{max-width:1620px!important;padding:16px 16px 50px!important}
-.grid{gap:14px!important}
-.stack{gap:14px!important}
-.card .inner{padding:16px 16px 15px!important}
-.card-title{margin-bottom:11px!important;align-items:flex-end!important}
-.card-title h2{
-  font-size:10px!important;
-  letter-spacing:1.7px!important;
-  color:rgba(232,234,240,.48)!important;
-}
-.card-title .hint{
-  font-size:10px!important;
-  line-height:1.42!important;
-  color:rgba(232,234,240,.42)!important;
-  max-width:420px!important;
-}
-.hero,.quoteCard,.sessLeft,.sessRight,.convicRow,.busBanner,.fpBox,.fpTfBox,.paBox,.riskItem,.intelTile,.tmBox,.macroBox,.fcastBox,.sharpeBox{
-  border-radius:16px!important;
-}
-.card,.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip,.fcastBox,.sharpeBox{
-  background:var(--qx-panel-bg)!important;
-  border-color:var(--qx-panel-border)!important;
-  box-shadow:var(--qx-panel-shadow)!important;
-}
-.card::after{
-  content:"";
-  position:absolute; inset:0; pointer-events:none;
-  background:
-   linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 18%),
-   radial-gradient(560px 160px at 5% -20%, var(--qx-accentA), transparent 70%),
-   radial-gradient(480px 140px at 95% -20%, var(--qx-accentB), transparent 72%);
-  opacity:.9;
-}
-.card:hover{transform:translateY(-2px); transition:transform .18s ease}
-.stateBig{font-size:24px!important; letter-spacing:-.4px}
-.quotePx{font-size:48px!important; letter-spacing:-1.1px}
-.sessName,.rbig,.convicPct{letter-spacing:-.6px}
-.tfBox,.fpTfBox,.riskItem,.paBox,.hmmDiagBox{padding:11px 12px!important}
-.tableWrap table tbody td,.paLogTable td{padding:6px 9px!important}
-thead th,.paLogTable th{padding:7px 9px!important}
-.smallNote,.muted,.meta,.bm,.fm,.rm,.aNote,.aAnalog,.teNewsTitle{line-height:1.42!important}
-
-/* Make hero/quote/decision modules more dominant */
-.grid > .stack:first-child > .card:first-child{order:1}
-.grid > .stack:first-child > .card:nth-child(2){order:2}
-.grid > .stack:first-child > .card:nth-child(3){order:3}
-
-/* Cleaner topbar */
-.topbar{
-  padding:12px 16px!important;
-  border-radius:18px!important;
-  background:linear-gradient(180deg, rgba(16,24,42,.90), rgba(9,14,26,.90))!important;
-  border:1px solid rgba(255,255,255,.08)!important;
-  box-shadow:0 16px 40px rgba(0,0,0,.28)!important;
-}
-.brand .name{font-size:15px!important; letter-spacing:-.3px}
-.brand .sub{font-size:9px!important; color:rgba(232,234,240,.46)!important}
-.btn{border-radius:999px!important}
-
-/* Better section labeling */
-.qxSectionTag{
-  display:inline-flex; align-items:center; gap:6px;
-  margin:0 0 10px 0; padding:5px 9px;
-  border-radius:999px; border:1px solid rgba(255,255,255,.08);
-  background:rgba(255,255,255,.035);
-  font-size:8.5px; letter-spacing:1px; text-transform:uppercase;
-  color:rgba(232,234,240,.55); font-family:var(--mono); font-weight:700;
-}
-.qxSectionTag i{
-  display:inline-block; width:6px; height:6px; border-radius:50%;
-  background:linear-gradient(135deg, rgba(110,170,255,.95), rgba(0,214,143,.92));
-  box-shadow:0 0 10px rgba(110,170,255,.35);
-}
-
-/* Collapsible secondary/research cards */
-.qx-collapsible .card-title{
-  cursor:pointer;
-  user-select:none;
-}
-.qx-collapsible .card-title::after{
-  content:"Collapse";
-  margin-left:auto;
-  font-size:8px;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  color:rgba(232,234,240,.38);
-  font-family:var(--mono);
-}
-.qx-collapsible.qx-collapsed .card-title::after{content:"Expand"}
-.qx-collapsible .qx-collapse-target{
-  overflow:hidden;
-  transition:max-height .28s ease, opacity .22s ease, margin-top .2s ease;
-  max-height:1200px;
-  opacity:1;
-}
-.qx-collapsible.qx-collapsed .qx-collapse-target{
-  max-height:0!important;
-  opacity:0;
-  margin-top:0!important;
-}
-.qx-collapsible.qx-collapsed .smallNote:last-child{
-  display:none;
-}
-
-/* Make secondary analytics smaller/less noisy when expanded */
-.qx-secondary .card-title h2{color:rgba(232,234,240,.40)!important}
-.qx-secondary .card-title .hint{color:rgba(232,234,240,.34)!important}
-
-/* Quote card denser */
-.quoteCard{padding:15px 16px!important}
-.qx-statRail{margin-top:10px!important}
-.qx-stat{background:rgba(255,255,255,.028)!important}
-
-/* Session cards tighter */
-.sessionGrid{gap:10px!important}
-.dayRow{padding:10px!important}
-.recoItem{padding:10px!important}
-
-/* Promote key action rows */
-.convicRow,.busBanner,.riskStrip{
-  background:linear-gradient(180deg, rgba(17,28,53,.86), rgba(10,15,29,.88))!important;
-  border-color:rgba(255,255,255,.08)!important;
-}
-
-/* Footer de-emphasis */
-.foot{
-  opacity:.55!important;
-  font-size:9px!important;
-}
-</style>
-
-<script id="qx-client-launch-script">
-(function(){
-  function byTitleContains(txt){
-    var matches = [];
-    document.querySelectorAll('.card').forEach(function(card){
-      var h2 = card.querySelector('.card-title h2');
-      if(h2 && h2.textContent && h2.textContent.toLowerCase().indexOf(txt.toLowerCase()) !== -1){
-        matches.push(card);
-      }
-    });
-    return matches;
-  }
-
-  function addSectionTag(card, label){
-    if(!card || card.querySelector('.qxSectionTag')) return;
-    var inner = card.querySelector('.inner');
-    var title = card.querySelector('.card-title');
-    if(!inner || !title) return;
-    var tag = document.createElement('div');
-    tag.className = 'qxSectionTag';
-    tag.innerHTML = '<i></i><span>'+label+'</span>';
-    inner.insertBefore(tag, title);
-  }
-
-  function makeCollapsible(card, collapsed){
-    if(!card || card.classList.contains('qx-collapsible')) return;
-    var inner = card.querySelector('.inner');
-    var title = card.querySelector('.card-title');
-    if(!inner || !title) return;
-
-    var nodes = Array.prototype.slice.call(inner.children).filter(function(n){ return n !== title && !n.classList.contains('qxSectionTag'); });
-    if(!nodes.length) return;
-
-    var wrap = document.createElement('div');
-    wrap.className = 'qx-collapse-target';
-    nodes.forEach(function(n){ wrap.appendChild(n); });
-    inner.appendChild(wrap);
-
-    card.classList.add('qx-collapsible','qx-secondary');
-    if(collapsed) card.classList.add('qx-collapsed');
-
-    title.addEventListener('click', function(){
-      card.classList.toggle('qx-collapsed');
-    });
-  }
-
-  function polishTitles(){
-    addSectionTag(byTitleContains('Current Market State')[0], 'Market State');
-    addSectionTag(byTitleContains('EUR/USD Spot')[0] || byTitleContains('EURUSD Spot')[0], 'Live Market');
-    addSectionTag(byTitleContains('Quantitative Edge')[0], 'Signal Engine');
-    addSectionTag(byTitleContains('Session Playbook')[0], 'Decision Layer');
-    addSectionTag(byTitleContains('Unified Signal Bus')[0] || byTitleContains('Signal Bus')[0], 'Execution Summary');
-    addSectionTag(byTitleContains('Forward Projection')[0], 'Forecast');
-    addSectionTag(byTitleContains('Projection Accuracy')[0], 'Calibration');
-    addSectionTag(byTitleContains('HMM Transition Matrix')[0], 'Research');
-    addSectionTag(byTitleContains('Macro Drivers')[0], 'Research');
-    addSectionTag(byTitleContains('Cross-Asset')[0], 'Research');
-    addSectionTag(byTitleContains('Correlation')[0], 'Research');
-    addSectionTag(byTitleContains('Sharpe')[0], 'Research');
-    addSectionTag(byTitleContains('Guide')[0], 'Reference');
-  }
-
-  function collapseSecondaryPanels(){
-    // Collapse lower-priority cards by default while logic continues running
-    [
-      'Macro Drivers',
-      'HMM Transition Matrix',
-      'Correlation',
-      'Sharpe',
-      'Guide'
-    ].forEach(function(name){
-      byTitleContains(name).forEach(function(card){ makeCollapsible(card, true); });
-    });
-
-    // Keep research tools available but visually lighter
-    ['Cross-Asset','Signal Calibration Summary'].forEach(function(name){
-      byTitleContains(name).forEach(function(card){ card.classList.add('qx-secondary'); });
-    });
-  }
-
-  function reorderMinorPanels(){
-    // Hide visual noise from guide button glow by default? no logic changes, only emphasis
-    var guideBtn = document.getElementById('guideBtn');
-    if(guideBtn) guideBtn.classList.remove('primary');
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    polishTitles();
-    collapseSecondaryPanels();
-    reorderMinorPanels();
-  });
-})();
-</script>
-
-
-<!-- Vertus-inspired client launch refinement: hierarchy, card reflow, compact reference surfaces.
-     Visual/layout only. No engine or shared-state logic changes. -->
-<style id="qx-vertus-refine">
-:root{
-  --qx-bg-a: rgba(65,122,255,.14);
-  --qx-bg-b: rgba(0,214,143,.10);
-  --qx-card-top: rgba(255,255,255,.04);
-  --qx-card-edge: rgba(134,179,255,.16);
-  --qx-glow: 0 24px 54px rgba(0,0,0,.34);
-}
-
+/* stronger premium skin */
 body::before{
   content:"";
   position:fixed; inset:0; pointer-events:none; z-index:0;
   background:
-    radial-gradient(900px 420px at 12% -8%, var(--qx-bg-a), transparent 66%),
-    radial-gradient(860px 380px at 88% 2%, var(--qx-bg-b), transparent 68%),
-    radial-gradient(760px 260px at 50% 100%, rgba(65,122,255,.08), transparent 68%);
+    radial-gradient(1100px 480px at 12% -6%, var(--qx-prem-c), transparent 62%),
+    radial-gradient(900px 360px at 100% 8%, var(--qx-prem-b), transparent 58%),
+    radial-gradient(800px 420px at 52% 100%, rgba(0,88,255,.08), transparent 66%);
   opacity:.95;
 }
-.wrap,.topbar,.grid,.stack,.card{position:relative; z-index:1}
-
-.wrap{max-width:1640px!important; padding:14px 16px 42px!important}
-.grid{grid-template-columns:minmax(0,1.12fr) minmax(360px,.88fr)!important; gap:12px!important}
-.stack{gap:12px!important}
-.card .inner{padding:14px 15px 14px!important}
+.wrap{position:relative; z-index:1; max-width:1640px!important; padding:14px 16px 48px!important}
+.grid{gap:14px!important}
+.stack{gap:14px!important}
+.card,.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip,.fcastBox,.sharpeBox{
+  background:linear-gradient(180deg, rgba(16,25,46,.90), rgba(8,13,25,.92))!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 22px 56px rgba(0,0,0,.34)!important;
+}
+.card::before,.hero::before,.quoteCard::before,.sessLeft::before,.sessRight::before,.intelTile::before,.fpTfBox::before,.paBox::before{
+  content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 20%),
+    radial-gradient(600px 160px at 0% -20%, var(--qx-prem-a), transparent 70%),
+    radial-gradient(480px 160px at 100% -20%, var(--qx-prem-b), transparent 70%);
+  opacity:1;
+}
+.topbar{
+  background:linear-gradient(180deg, rgba(15,24,43,.92), rgba(8,13,25,.94))!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 20px 50px rgba(0,0,0,.34)!important;
+}
+.card .inner{padding:16px!important}
 .card-title{margin-bottom:10px!important}
 .card-title h2{
   font-size:10px!important;
-  letter-spacing:1.85px!important;
-  color:rgba(232,234,240,.54)!important;
+  letter-spacing:1.8px!important;
+  color:rgba(232,234,240,.50)!important;
 }
 .card-title .hint{
+  max-width:480px!important;
   font-size:10px!important;
-  color:rgba(232,234,240,.38)!important;
-  line-height:1.4!important;
+  line-height:1.45!important;
+  color:rgba(232,234,240,.40)!important;
 }
-.card,.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip,.fcastBox,.sharpeBox,.tvWrap{
-  box-shadow:var(--qx-glow)!important;
-}
-.card::after{
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 16%),
-    radial-gradient(540px 140px at 0% -16%, rgba(110,170,255,.18), transparent 72%),
-    radial-gradient(420px 120px at 100% -18%, rgba(0,214,143,.14), transparent 72%);
-  opacity:.92!important;
-}
-.card{border-color:rgba(120,160,255,.12)!important}
-.card::before,.hero::before,.quoteCard::before,.sessLeft::after,.sessRight::before,.intelTile::before,.fpTfBox::before,.paBox::before{
-  height:1px!important;
-  background:linear-gradient(90deg, rgba(41,121,255,0), rgba(120,170,255,.42), rgba(0,214,143,.24), rgba(41,121,255,0))!important;
-}
-.stateBig{font-size:25px!important}
-.quotePx{font-size:50px!important}
-.btn{
-  border-color:rgba(255,255,255,.08)!important;
-  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02))!important;
-}
-.btn.primary{
-  background:linear-gradient(135deg, rgba(41,121,255,.34), rgba(0,214,143,.18))!important;
-  border-color:rgba(110,170,255,.24)!important;
-}
-.topbar{
-  background:linear-gradient(180deg, rgba(13,20,37,.92), rgba(8,12,24,.94))!important;
-  border:1px solid rgba(120,160,255,.10)!important;
-  box-shadow:0 20px 44px rgba(0,0,0,.34)!important;
-}
-.brand .name{font-size:15px!important}
-.brand .sub{font-size:9px!important; opacity:.62!important}
+.stateBig{font-size:24px!important; letter-spacing:-.5px}
+.quotePx{font-size:48px!important; letter-spacing:-1px}
 
-.qx-flowTag{
-  display:inline-flex; align-items:center; gap:6px;
-  padding:5px 9px; margin-bottom:8px;
-  border-radius:999px; border:1px solid rgba(255,255,255,.08);
-  background:rgba(255,255,255,.03);
-  font:700 8px var(--mono); letter-spacing:1.2px; text-transform:uppercase;
-  color:rgba(232,234,240,.58);
+/* section tags */
+.qxStage{
+  display:inline-flex; align-items:center; gap:7px;
+  margin:0 0 10px 0; padding:5px 10px;
+  border-radius:999px; background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.08);
+  font-size:8.5px; font-family:var(--mono); text-transform:uppercase;
+  color:rgba(232,234,240,.56); letter-spacing:1px; font-weight:700;
 }
-.qx-flowTag i{
+.qxStage i{
   width:6px;height:6px;border-radius:50%;
-  background:linear-gradient(135deg, rgba(110,170,255,.95), rgba(0,214,143,.92));
-  box-shadow:0 0 10px rgba(110,170,255,.36);
-  display:inline-block;
+  background:linear-gradient(135deg, rgba(104,170,255,.95), rgba(0,214,143,.92));
+  box-shadow:0 0 10px rgba(104,170,255,.38);
 }
 
-/* compact windows / less dead space */
-.riskStrip,.convicRow,.sessionGrid,.qeGrid,.busGrid,.paGrid,.intelGrid,.pb3Grid,.macroGrid,.tmGrid,.sharpeGrid{gap:8px!important}
-.tfBox,.fpTfBox,.riskItem,.paBox,.hmmDiagBox,.qx-stat,.dayRow,.recoItem{padding:10px 11px!important}
-.probRow{padding:3px 0!important}
-.tableWrap table tbody td,.paLogTable td{padding:6px 8px!important}
-thead th,.paLogTable th{padding:7px 8px!important}
-
-/* Put research modules in a more polished compact state */
-.qx-miniRef .card-title::after{
-  content:"Reference";
-  margin-left:auto;
-  font:700 8px var(--mono);
-  letter-spacing:1px; text-transform:uppercase;
-  color:rgba(232,234,240,.36);
+/* compact reference chart card */
+.qx-tv-reference .tvWrap{
+  min-height:96px!important;
+  display:flex!important; align-items:center; justify-content:center;
 }
-.qx-miniRef .inner{padding:12px 13px!important}
-
-/* Daily EUR/USD Trend becomes a compact reference card */
-.qx-tv-min .tvWrap{
-  min-height:unset!important;
-  height:auto!important;
-  padding:14px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:space-between!important;
-  gap:12px!important;
-  background:linear-gradient(180deg, rgba(17,25,43,.72), rgba(9,13,24,.80))!important;
+.qx-tv-reference .tvWrap iframe{display:none!important}
+.qx-tv-reference #tvFallback{
+  display:flex!important; position:static!important; inset:auto!important; background:none!important;
+  flex-direction:column; align-items:center; justify-content:center; gap:8px;
+  min-height:96px!important;
 }
-.qx-tv-min iframe,
-.qx-tv-min #tvFallback > div:first-child{display:none!important}
-.qx-tv-min #tvFallback{
-  display:flex!important;
-  width:100%!important;
-  align-items:center!important;
-  justify-content:space-between!important;
-  gap:12px!important;
-  position:static!important;
+.qx-tv-reference #tvFallback > div:first-child{display:none!important}
+.qx-tv-reference .smallNote,.qx-tv-reference .foot{display:none!important}
+.qx-tv-reference .card-title .hint{max-width:none!important}
+.qx-tv-reference .tvWrap .link{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:12px 18px; border-radius:999px;
+  background:linear-gradient(135deg, rgba(41,121,255,.30), rgba(0,214,143,.18));
+  border:1px solid rgba(255,255,255,.10); color:#eef7ff!important; font-weight:700;
+  text-decoration:none!important; box-shadow:0 16px 34px rgba(0,0,0,.22);
+}
+
+/* reveal macro / matrix prominently */
+.qx-priority .card-title h2{color:rgba(232,234,240,.62)!important}
+.qx-priority .card-title .hint{color:rgba(232,234,240,.46)!important}
+.qx-priority .inner{padding:17px!important}
+
+/* guide modal cleanup */
+#guideBack .modal{max-width:1180px!important; width:min(1180px,94vw)!important}
+#guideBack .mBody > .grid{
+  grid-template-columns:1.12fr .88fr!important;
+  gap:14px!important;
+}
+#guideBack .scroll{
+  max-height:none!important;
+  overflow:visible!important;
+}
+#guideBack .card{height:100%!important}
+#guideBack table.paLogTable{table-layout:fixed; width:100%}
+#guideBack table.paLogTable th,#guideBack table.paLogTable td{font-size:9px!important}
+#guideBack .smallNote{line-height:1.55!important}
+
+/* Collapsed research should still show content when prioritized */
+.qx-force-open.qx-collapsible.qx-collapsed .qx-collapse-target{
+  max-height:1200px!important;
   opacity:1!important;
-  background:transparent!important;
-  border:none!important;
-  padding:0!important;
 }
-.qx-tv-min .tvQuickText{
-  display:block!important;
-  color:rgba(232,234,240,.62);
-  font-size:11px;
-  line-height:1.45;
-}
-.qx-tv-min .link{
-  display:inline-flex!important; align-items:center; justify-content:center;
-  white-space:nowrap;
-  padding:10px 14px; border-radius:999px;
-  border:1px solid rgba(110,170,255,.22);
-  background:linear-gradient(135deg, rgba(41,121,255,.30), rgba(0,214,143,.16));
-  color:#eef7ff!important; text-decoration:none!important; font-weight:700;
-}
+.qx-force-open.qx-collapsible.qx-collapsed .card-title::after{content:"Visible"!important}
 
-/* Guide HMM block use empty space, no internal scroll */
-#guideModal .card{
-  overflow:visible!important;
+/* Better visual flow for hero cards */
+.convicRow,.busBanner,.riskStrip,.fpBox{
+  background:linear-gradient(180deg, rgba(15,26,48,.92), rgba(10,15,29,.92))!important;
+  border-color:rgba(255,255,255,.09)!important;
 }
-#guideModal [style*="max-height:260px"],
-#guideModal [style*="overflow:auto"],
-#guideModal [style*="overflow-y:auto"]{
-  max-height:none!important;
-  overflow:visible!important;
-}
-#guideModal .tableWrap{
-  max-height:none!important;
-  overflow:visible!important;
-}
-#guideModal .smallNote{line-height:1.48!important}
 </style>
 
-<script id="qx-vertus-refine-script">
+<script id="qx-vertus-premium-refine-script">
 (function(){
-  function cardByTitleContains(txt){
-    return Array.from(document.querySelectorAll('.card')).find(function(card){
-      var h2 = card.querySelector('.card-title h2');
-      return h2 && h2.textContent && h2.textContent.toLowerCase().indexOf(txt.toLowerCase()) !== -1;
-    });
+  function cards(){
+    return Array.prototype.slice.call(document.querySelectorAll('.card'));
   }
-  function addFlowTag(card, label){
-    if(!card || card.querySelector('.qx-flowTag')) return;
+  function getTitle(card){
+    var h2 = card && card.querySelector('.card-title h2');
+    return h2 ? h2.textContent.trim() : '';
+  }
+  function findCardContains(txt){
+    return cards().find(function(c){ return getTitle(c).toLowerCase().indexOf(txt.toLowerCase()) !== -1; });
+  }
+  function stage(card, label){
+    if(!card || card.querySelector('.qxStage')) return;
     var inner = card.querySelector('.inner');
     var title = card.querySelector('.card-title');
     if(!inner || !title) return;
-    var tag=document.createElement('div');
-    tag.className='qx-flowTag';
-    tag.innerHTML='<i></i><span>'+label+'</span>';
+    var tag = document.createElement('div');
+    tag.className = 'qxStage';
+    tag.innerHTML = '<i></i><span>'+label+'</span>';
     inner.insertBefore(tag, title);
   }
-  function moveCardBefore(card, beforeCard){
-    if(card && beforeCard && card.parentNode===beforeCard.parentNode){
-      beforeCard.parentNode.insertBefore(card, beforeCard);
+  function stacks(){
+    return Array.prototype.slice.call(document.querySelectorAll('.grid > .stack'));
+  }
+  function moveCardToStack(card, stack, afterTitleContains){
+    if(!card || !stack) return;
+    if(afterTitleContains){
+      var siblings = Array.prototype.slice.call(stack.children);
+      var anchor = siblings.find(function(c){ return getTitle(c).toLowerCase().indexOf(afterTitleContains.toLowerCase()) !== -1; });
+      if(anchor && anchor.nextSibling){
+        stack.insertBefore(card, anchor.nextSibling);
+      }else{
+        stack.appendChild(card);
+      }
+    } else {
+      stack.insertBefore(card, stack.firstChild);
     }
   }
-  function moveCardAfter(card, afterCard){
-    if(card && afterCard && card.parentNode===afterCard.parentNode){
-      afterCard.parentNode.insertBefore(card, afterCard.nextSibling);
+  function uncollapse(card){
+    if(!card) return;
+    card.classList.add('qx-force-open','qx-priority');
+    card.classList.remove('qx-collapsed');
+  }
+  function compactTV(card){
+    if(!card) return;
+    card.classList.add('qx-tv-reference');
+  }
+  function refineGuide(){
+    // nothing dynamic needed besides CSS, but ensure left card gets available height
+    var gb = document.getElementById('guideBack');
+    if(!gb) return;
+    var regimeCard = Array.prototype.slice.call(gb.querySelectorAll('.card')).find(function(c){
+      return c.textContent.indexOf('Hidden Market Regime') !== -1;
+    });
+    if(regimeCard){
+      regimeCard.style.minHeight = '0';
     }
+  }
+
+  function reorder(){
+    var ss = stacks();
+    if(ss.length < 2) return;
+    var left = ss[0], right = ss[1];
+
+    var market = findCardContains('Current Market State');
+    var qedge = findCardContains('Quantitative Edge');
+    var bus = findCardContains('Unified Signal Bus');
+    var forecast = findCardContains('Forward Projection');
+    var sessPlay = findCardContains('Session Playbook');
+    var macro = findCardContains('Macro Drivers');
+    var hmm = findCardContains('HMM Transition Matrix');
+    var daily = findCardContains('Daily EUR/USD Trend');
+    var signalIntel = findCardContains('Signal Intelligence');
+    var projAcc = findCardContains('Projection Accuracy');
+    var sharpe = findCardContains('Signal Performance');
+    var sessIntel = findCardContains('Session Intelligence');
+
+    // Left narrative flow
+    moveCardToStack(market, left, null);
+    moveCardToStack(qedge, left, 'Current Market State');
+    moveCardToStack(bus, left, 'Quantitative Edge');
+    moveCardToStack(forecast, left, 'Unified Signal Bus');
+    moveCardToStack(projAcc, left, 'Forward Projection');
+    moveCardToStack(sharpe, left, 'Projection Accuracy');
+    moveCardToStack(daily, left, 'Signal Performance');
+
+    // Right decision + research flow
+    moveCardToStack(macro, right, null);
+    moveCardToStack(hmm, right, 'Macro Drivers');
+    moveCardToStack(sessPlay, right, 'HMM Transition Matrix');
+    moveCardToStack(signalIntel, right, 'Session Playbook');
+    moveCardToStack(sessIntel, right, 'Signal Intelligence');
+
+    // Tags
+    stage(market, '1 · Regime');
+    stage(macro, '2 · Macro');
+    stage(hmm, '3 · Model');
+    stage(qedge, '4 · Signal');
+    stage(bus, '5 · Consensus');
+    stage(forecast, '6 · Forecast');
+    stage(projAcc, '7 · Validation');
+    stage(sessPlay, 'Decision');
+    stage(signalIntel, 'Execution');
+    stage(daily, 'Reference');
+
+    // Ensure macro / matrix are visible and prioritized
+    uncollapse(macro);
+    uncollapse(hmm);
+
+    // Compact chart reference
+    compactTV(daily);
   }
 
   document.addEventListener('DOMContentLoaded', function(){
-    var market = cardByTitleContains('Current Market State');
-    var quant = cardByTitleContains('Quantitative Edge');
-    var bus = cardByTitleContains('Unified Signal Bus');
-    var proj = cardByTitleContains('Forward Projection');
-    var calib = cardByTitleContains('Projection Accuracy');
-    var sharpe = cardByTitleContains('Signal Performance');
-    var daytrend = cardByTitleContains('Daily EUR/USD Trend');
-
-    var playbook = cardByTitleContains('Session Playbook');
-    var signalIntel = cardByTitleContains('Signal Intelligence');
-    var macro = cardByTitleContains('Macro Drivers');
-    var trans = cardByTitleContains('Transmission Mechanism');
-    var hmmMatrix = cardByTitleContains('HMM Transition Matrix');
-    var corr = cardByTitleContains('Correlation Significance Matrix');
-    var pb3 = cardByTitleContains('PB3 Behavioral Model');
-    var arche = cardByTitleContains('Event Archetype Classifier');
-    var world = cardByTitleContains('World Events Calendar');
-    var te = cardByTitleContains('Trading Economics');
-    var live = cardByTitleContains('Live Headlines');
-
-    // Stage labels that tell the story
-    addFlowTag(market, '1 · Regime');
-    addFlowTag(macro, '2 · Macro');
-    addFlowTag(trans, '3 · Transmission');
-    addFlowTag(hmmMatrix, '4 · Model');
-    addFlowTag(quant, '5 · Signal');
-    addFlowTag(bus, '6 · Consensus');
-    addFlowTag(proj, '7 · Forecast');
-    addFlowTag(calib, '8 · Validation');
-
-    // Reorder stack 2 so the top-right area supports market state instead of burying it
-    moveCardBefore(macro, playbook);
-    moveCardAfter(trans, macro);
-    moveCardAfter(hmmMatrix, trans);
-
-    // Put session / command layer after the market-supporting panels
-    moveCardAfter(playbook, hmmMatrix);
-    moveCardAfter(signalIntel, playbook);
-
-    // Keep behavioral / archetype lower
-    moveCardAfter(pb3, signalIntel);
-    moveCardAfter(arche, pb3);
-
-    // De-emphasize research/news cards
-    [corr, world, te, live].forEach(function(card){
-      if(card) card.classList.add('qx-miniRef');
-    });
-
-    // Daily chart into compact reference card with direct TradingView CTA
-    if(daytrend){
-      daytrend.classList.add('qx-tv-min','qx-miniRef');
-      var fb = daytrend.querySelector('#tvFallback');
-      if(fb && !fb.querySelector('.tvQuickText')){
-        var t = document.createElement('div');
-        t.className='tvQuickText';
-        t.textContent='Open the full daily EUR/USD chart on TradingView for expanded technical study. This compact card keeps launch focus on the QuadraX decision stack.';
-        fb.insertBefore(t, fb.firstChild);
-      }
-    }
-
-    // Keep lower priority analytics visible but tidier
-    [sharpe, corr, world, te, live].forEach(function(card){
-      if(card) card.classList.add('qx-miniRef');
-    });
+    reorder();
+    refineGuide();
   });
 })();
 </script>
