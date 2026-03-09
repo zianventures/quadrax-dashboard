@@ -4907,5 +4907,244 @@ thead th,.paLogTable th{padding:7px 9px!important}
 })();
 </script>
 
+
+<!-- Client-launch polish pass: spacing, hierarchy, collapsible secondary panels.
+     Visual-only layer, no engine or sync logic changes. -->
+<style id="qx-client-launch-polish">
+:root{
+  --qx-panel-bg: linear-gradient(180deg, rgba(18,27,49,.88), rgba(9,14,26,.90));
+  --qx-panel-border: rgba(255,255,255,.08);
+  --qx-panel-shadow: 0 18px 44px rgba(0,0,0,.30);
+  --qx-subtle: rgba(232,234,240,.56);
+  --qx-accentA: rgba(110,170,255,.28);
+  --qx-accentB: rgba(0,214,143,.20);
+}
+
+/* Higher-level hierarchy + tighter rhythm */
+.wrap{max-width:1620px!important;padding:16px 16px 50px!important}
+.grid{gap:14px!important}
+.stack{gap:14px!important}
+.card .inner{padding:16px 16px 15px!important}
+.card-title{margin-bottom:11px!important;align-items:flex-end!important}
+.card-title h2{
+  font-size:10px!important;
+  letter-spacing:1.7px!important;
+  color:rgba(232,234,240,.48)!important;
+}
+.card-title .hint{
+  font-size:10px!important;
+  line-height:1.42!important;
+  color:rgba(232,234,240,.42)!important;
+  max-width:420px!important;
+}
+.hero,.quoteCard,.sessLeft,.sessRight,.convicRow,.busBanner,.fpBox,.fpTfBox,.paBox,.riskItem,.intelTile,.tmBox,.macroBox,.fcastBox,.sharpeBox{
+  border-radius:16px!important;
+}
+.card,.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip,.fcastBox,.sharpeBox{
+  background:var(--qx-panel-bg)!important;
+  border-color:var(--qx-panel-border)!important;
+  box-shadow:var(--qx-panel-shadow)!important;
+}
+.card::after{
+  content:"";
+  position:absolute; inset:0; pointer-events:none;
+  background:
+   linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 18%),
+   radial-gradient(560px 160px at 5% -20%, var(--qx-accentA), transparent 70%),
+   radial-gradient(480px 140px at 95% -20%, var(--qx-accentB), transparent 72%);
+  opacity:.9;
+}
+.card:hover{transform:translateY(-2px); transition:transform .18s ease}
+.stateBig{font-size:24px!important; letter-spacing:-.4px}
+.quotePx{font-size:48px!important; letter-spacing:-1.1px}
+.sessName,.rbig,.convicPct{letter-spacing:-.6px}
+.tfBox,.fpTfBox,.riskItem,.paBox,.hmmDiagBox{padding:11px 12px!important}
+.tableWrap table tbody td,.paLogTable td{padding:6px 9px!important}
+thead th,.paLogTable th{padding:7px 9px!important}
+.smallNote,.muted,.meta,.bm,.fm,.rm,.aNote,.aAnalog,.teNewsTitle{line-height:1.42!important}
+
+/* Make hero/quote/decision modules more dominant */
+.grid > .stack:first-child > .card:first-child{order:1}
+.grid > .stack:first-child > .card:nth-child(2){order:2}
+.grid > .stack:first-child > .card:nth-child(3){order:3}
+
+/* Cleaner topbar */
+.topbar{
+  padding:12px 16px!important;
+  border-radius:18px!important;
+  background:linear-gradient(180deg, rgba(16,24,42,.90), rgba(9,14,26,.90))!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.28)!important;
+}
+.brand .name{font-size:15px!important; letter-spacing:-.3px}
+.brand .sub{font-size:9px!important; color:rgba(232,234,240,.46)!important}
+.btn{border-radius:999px!important}
+
+/* Better section labeling */
+.qxSectionTag{
+  display:inline-flex; align-items:center; gap:6px;
+  margin:0 0 10px 0; padding:5px 9px;
+  border-radius:999px; border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.035);
+  font-size:8.5px; letter-spacing:1px; text-transform:uppercase;
+  color:rgba(232,234,240,.55); font-family:var(--mono); font-weight:700;
+}
+.qxSectionTag i{
+  display:inline-block; width:6px; height:6px; border-radius:50%;
+  background:linear-gradient(135deg, rgba(110,170,255,.95), rgba(0,214,143,.92));
+  box-shadow:0 0 10px rgba(110,170,255,.35);
+}
+
+/* Collapsible secondary/research cards */
+.qx-collapsible .card-title{
+  cursor:pointer;
+  user-select:none;
+}
+.qx-collapsible .card-title::after{
+  content:"Collapse";
+  margin-left:auto;
+  font-size:8px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:rgba(232,234,240,.38);
+  font-family:var(--mono);
+}
+.qx-collapsible.qx-collapsed .card-title::after{content:"Expand"}
+.qx-collapsible .qx-collapse-target{
+  overflow:hidden;
+  transition:max-height .28s ease, opacity .22s ease, margin-top .2s ease;
+  max-height:1200px;
+  opacity:1;
+}
+.qx-collapsible.qx-collapsed .qx-collapse-target{
+  max-height:0!important;
+  opacity:0;
+  margin-top:0!important;
+}
+.qx-collapsible.qx-collapsed .smallNote:last-child{
+  display:none;
+}
+
+/* Make secondary analytics smaller/less noisy when expanded */
+.qx-secondary .card-title h2{color:rgba(232,234,240,.40)!important}
+.qx-secondary .card-title .hint{color:rgba(232,234,240,.34)!important}
+
+/* Quote card denser */
+.quoteCard{padding:15px 16px!important}
+.qx-statRail{margin-top:10px!important}
+.qx-stat{background:rgba(255,255,255,.028)!important}
+
+/* Session cards tighter */
+.sessionGrid{gap:10px!important}
+.dayRow{padding:10px!important}
+.recoItem{padding:10px!important}
+
+/* Promote key action rows */
+.convicRow,.busBanner,.riskStrip{
+  background:linear-gradient(180deg, rgba(17,28,53,.86), rgba(10,15,29,.88))!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+
+/* Footer de-emphasis */
+.foot{
+  opacity:.55!important;
+  font-size:9px!important;
+}
+</style>
+
+<script id="qx-client-launch-script">
+(function(){
+  function byTitleContains(txt){
+    var matches = [];
+    document.querySelectorAll('.card').forEach(function(card){
+      var h2 = card.querySelector('.card-title h2');
+      if(h2 && h2.textContent && h2.textContent.toLowerCase().indexOf(txt.toLowerCase()) !== -1){
+        matches.push(card);
+      }
+    });
+    return matches;
+  }
+
+  function addSectionTag(card, label){
+    if(!card || card.querySelector('.qxSectionTag')) return;
+    var inner = card.querySelector('.inner');
+    var title = card.querySelector('.card-title');
+    if(!inner || !title) return;
+    var tag = document.createElement('div');
+    tag.className = 'qxSectionTag';
+    tag.innerHTML = '<i></i><span>'+label+'</span>';
+    inner.insertBefore(tag, title);
+  }
+
+  function makeCollapsible(card, collapsed){
+    if(!card || card.classList.contains('qx-collapsible')) return;
+    var inner = card.querySelector('.inner');
+    var title = card.querySelector('.card-title');
+    if(!inner || !title) return;
+
+    var nodes = Array.prototype.slice.call(inner.children).filter(function(n){ return n !== title && !n.classList.contains('qxSectionTag'); });
+    if(!nodes.length) return;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'qx-collapse-target';
+    nodes.forEach(function(n){ wrap.appendChild(n); });
+    inner.appendChild(wrap);
+
+    card.classList.add('qx-collapsible','qx-secondary');
+    if(collapsed) card.classList.add('qx-collapsed');
+
+    title.addEventListener('click', function(){
+      card.classList.toggle('qx-collapsed');
+    });
+  }
+
+  function polishTitles(){
+    addSectionTag(byTitleContains('Current Market State')[0], 'Market State');
+    addSectionTag(byTitleContains('EUR/USD Spot')[0] || byTitleContains('EURUSD Spot')[0], 'Live Market');
+    addSectionTag(byTitleContains('Quantitative Edge')[0], 'Signal Engine');
+    addSectionTag(byTitleContains('Session Playbook')[0], 'Decision Layer');
+    addSectionTag(byTitleContains('Unified Signal Bus')[0] || byTitleContains('Signal Bus')[0], 'Execution Summary');
+    addSectionTag(byTitleContains('Forward Projection')[0], 'Forecast');
+    addSectionTag(byTitleContains('Projection Accuracy')[0], 'Calibration');
+    addSectionTag(byTitleContains('HMM Transition Matrix')[0], 'Research');
+    addSectionTag(byTitleContains('Macro Drivers')[0], 'Research');
+    addSectionTag(byTitleContains('Cross-Asset')[0], 'Research');
+    addSectionTag(byTitleContains('Correlation')[0], 'Research');
+    addSectionTag(byTitleContains('Sharpe')[0], 'Research');
+    addSectionTag(byTitleContains('Guide')[0], 'Reference');
+  }
+
+  function collapseSecondaryPanels(){
+    // Collapse lower-priority cards by default while logic continues running
+    [
+      'Macro Drivers',
+      'HMM Transition Matrix',
+      'Correlation',
+      'Sharpe',
+      'Guide'
+    ].forEach(function(name){
+      byTitleContains(name).forEach(function(card){ makeCollapsible(card, true); });
+    });
+
+    // Keep research tools available but visually lighter
+    ['Cross-Asset','Signal Calibration Summary'].forEach(function(name){
+      byTitleContains(name).forEach(function(card){ card.classList.add('qx-secondary'); });
+    });
+  }
+
+  function reorderMinorPanels(){
+    // Hide visual noise from guide button glow by default? no logic changes, only emphasis
+    var guideBtn = document.getElementById('guideBtn');
+    if(guideBtn) guideBtn.classList.remove('primary');
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    polishTitles();
+    collapseSecondaryPanels();
+    reorderMinorPanels();
+  });
+})();
+</script>
+
 </body>
 </html>
