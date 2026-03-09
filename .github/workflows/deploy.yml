@@ -1,74 +1,27 @@
 name: Deploy QuadraX Dashboard
 
-# Runs on every push to main — injects Firebase config from GitHub Secrets,
-# then deploys the result to GitHub Pages. The real config values are NEVER
-# stored in git history; they only exist in the deployed artifact.
-
 on:
   push:
     branches: [main]
-  workflow_dispatch:      # allow manual re-deploy from Actions tab
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      # ── 1. Checkout source ────────────────────────────────────────────────
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # ── 2. Inject Firebase config from GitHub Secrets ─────────────────────
-      # Source file has %%PLACEHOLDER%% tokens. sed replaces them here.
-      # The result is written to a staging directory — never committed to git.
       - name: Inject Firebase config
-        env:
-          FB_API_KEY:            ${{ secrets.FB_API_KEY }}
-          FB_AUTH_DOMAIN:        ${{ secrets.FB_AUTH_DOMAIN }}
-          FB_PROJECT_ID:         ${{ secrets.FB_PROJECT_ID }}
-          FB_STORAGE_BUCKET:     ${{ secrets.FB_STORAGE_BUCKET }}
-          FB_MESSAGING_SENDER_ID: ${{ secrets.FB_MESSAGING_SENDER_ID }}
-          FB_APP_ID:             ${{ secrets.FB_APP_ID }}
         run: |
-          mkdir -p _site
-          cp index.html _site/index.html
+          sed -i "s|%%FB_API_KEY%%|${{ secrets.FB_API_KEY }}|g"                     index.html
+          sed -i "s|%%FB_AUTH_DOMAIN%%|${{ secrets.FB_AUTH_DOMAIN }}|g"             index.html
+          sed -i "s|%%FB_PROJECT_ID%%|${{ secrets.FB_PROJECT_ID }}|g"               index.html
+          sed -i "s|%%FB_STORAGE_BUCKET%%|${{ secrets.FB_STORAGE_BUCKET }}|g"       index.html
+          sed -i "s|%%FB_MESSAGING_SENDER_ID%%|${{ secrets.FB_MESSAGING_SENDER_ID }}|g" index.html
+          sed -i "s|%%FB_APP_ID%%|${{ secrets.FB_APP_ID }}|g"                       index.html
 
-          # Replace each placeholder token with the corresponding secret.
-          # Using | as sed delimiter to avoid conflicts with slashes in URLs.
-          sed -i "s|%%FB_API_KEY%%|${FB_API_KEY}|g"                       _site/index.html
-          sed -i "s|%%FB_AUTH_DOMAIN%%|${FB_AUTH_DOMAIN}|g"               _site/index.html
-          sed -i "s|%%FB_PROJECT_ID%%|${FB_PROJECT_ID}|g"                 _site/index.html
-          sed -i "s|%%FB_STORAGE_BUCKET%%|${FB_STORAGE_BUCKET}|g"         _site/index.html
-          sed -i "s|%%FB_MESSAGING_SENDER_ID%%|${FB_MESSAGING_SENDER_ID}|g" _site/index.html
-          sed -i "s|%%FB_APP_ID%%|${FB_APP_ID}|g"                         _site/index.html
-
-          # Verify — fail the build if any placeholder is still present
-          if grep -q '%%FB_' _site/index.html; then
-            echo "ERROR: unreplaced placeholders found in _site/index.html"
-            grep '%%FB_' _site/index.html
-            exit 1
-          fi
-          echo "Config injection complete. All placeholders replaced."
-
-      # ── 3. Upload artifact ────────────────────────────────────────────────
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-
-      # ── 4. Deploy to GitHub Pages ─────────────────────────────────────────
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
