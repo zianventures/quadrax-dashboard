@@ -4307,12 +4307,12 @@ if(saveBtn)saveBtn.addEventListener("click",async()=>{
     if(valid===false&&!confirm("API key appears invalid. Save anyway?"))return;}
   // ── Firebase config: hardcoded in this build — no user input needed ──────
   const fbConfig = {
-    apiKey:            "AIzaSyC3iv5WcVeXPWGnkci4FbScRO0YJPieGSU",
-    authDomain:        "quadrax-personal-prod.firebaseapp.com",
-    projectId:         "quadrax-personal-prod",
-    storageBucket:     "quadrax-personal-prod.firebasestorage.app",
-    messagingSenderId: "231279443536",
-    appId:             "1:231279443536:web:908d321616568939ec1b55"
+    apiKey:            "%%FB_API_KEY%%",
+    authDomain:        "%%FB_AUTH_DOMAIN%%",
+    projectId:         "%%FB_PROJECT_ID%%",
+    storageBucket:     "%%FB_STORAGE_BUCKET%%",
+    messagingSenderId: "%%FB_MESSAGING_SENDER_ID%%",
+    appId:             "%%FB_APP_ID%%"
   };
   // ── Save all settings ────────────────────────────────────────────────────
   const poll=Number($("pollInput")?.value||12000),thresh=Number($("alertThreshInput")?.value||0),depth=Number($("histDepthInput")?.value||60);
@@ -4367,12 +4367,12 @@ async function start(){
   const __BAKED_CONFIG = (()=>{
     try{
       return {
-        apiKey:            "AIzaSyC3iv5WcVeXPWGnkci4FbScRO0YJPieGSU",
-        authDomain:        "quadrax-personal-prod.firebaseapp.com",
-        projectId:         "quadrax-personal-prod",
-        storageBucket:     "quadrax-personal-prod.firebasestorage.app",
-        messagingSenderId: "231279443536",
-        appId:             "1:231279443536:web:908d321616568939ec1b55"
+        apiKey:            "%%FB_API_KEY%%",
+        authDomain:        "%%FB_AUTH_DOMAIN%%",
+        projectId:         "%%FB_PROJECT_ID%%",
+        storageBucket:     "%%FB_STORAGE_BUCKET%%",
+        messagingSenderId: "%%FB_MESSAGING_SENDER_ID%%",
+        appId:             "%%FB_APP_ID%%"
       };
     }catch(e){ return null; }
   })();
@@ -4827,12 +4827,12 @@ thead th,.paLogTable th{padding:7px 9px!important}
   // Firebase security is enforced by Auth (email/password) + Firestore security rules,
   // not by keeping the config secret. This is standard Firebase practice.
   const FIREBASE_CONFIG = {
-    apiKey:            "AIzaSyC3iv5WcVeXPWGnkci4FbScRO0YJPieGSU",
-    authDomain:        "quadrax-personal-prod.firebaseapp.com",
-    projectId:         "quadrax-personal-prod",
-    storageBucket:     "quadrax-personal-prod.firebasestorage.app",
-    messagingSenderId: "231279443536",
-    appId:             "1:231279443536:web:908d321616568939ec1b55"
+    apiKey:            "%%FB_API_KEY%%",
+    authDomain:        "%%FB_AUTH_DOMAIN%%",
+    projectId:         "%%FB_PROJECT_ID%%",
+    storageBucket:     "%%FB_STORAGE_BUCKET%%",
+    messagingSenderId: "%%FB_MESSAGING_SENDER_ID%%",
+    appId:             "%%FB_APP_ID%%"
   };
   // ───────────────────────────────────────────────────────────────────────────
 
