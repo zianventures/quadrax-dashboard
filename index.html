@@ -5146,5 +5146,263 @@ thead th,.paLogTable th{padding:7px 9px!important}
 })();
 </script>
 
+
+<!-- Vertus-inspired client launch refinement: hierarchy, card reflow, compact reference surfaces.
+     Visual/layout only. No engine or shared-state logic changes. -->
+<style id="qx-vertus-refine">
+:root{
+  --qx-bg-a: rgba(65,122,255,.14);
+  --qx-bg-b: rgba(0,214,143,.10);
+  --qx-card-top: rgba(255,255,255,.04);
+  --qx-card-edge: rgba(134,179,255,.16);
+  --qx-glow: 0 24px 54px rgba(0,0,0,.34);
+}
+
+body::before{
+  content:"";
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(900px 420px at 12% -8%, var(--qx-bg-a), transparent 66%),
+    radial-gradient(860px 380px at 88% 2%, var(--qx-bg-b), transparent 68%),
+    radial-gradient(760px 260px at 50% 100%, rgba(65,122,255,.08), transparent 68%);
+  opacity:.95;
+}
+.wrap,.topbar,.grid,.stack,.card{position:relative; z-index:1}
+
+.wrap{max-width:1640px!important; padding:14px 16px 42px!important}
+.grid{grid-template-columns:minmax(0,1.12fr) minmax(360px,.88fr)!important; gap:12px!important}
+.stack{gap:12px!important}
+.card .inner{padding:14px 15px 14px!important}
+.card-title{margin-bottom:10px!important}
+.card-title h2{
+  font-size:10px!important;
+  letter-spacing:1.85px!important;
+  color:rgba(232,234,240,.54)!important;
+}
+.card-title .hint{
+  font-size:10px!important;
+  color:rgba(232,234,240,.38)!important;
+  line-height:1.4!important;
+}
+.card,.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip,.fcastBox,.sharpeBox,.tvWrap{
+  box-shadow:var(--qx-glow)!important;
+}
+.card::after{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 16%),
+    radial-gradient(540px 140px at 0% -16%, rgba(110,170,255,.18), transparent 72%),
+    radial-gradient(420px 120px at 100% -18%, rgba(0,214,143,.14), transparent 72%);
+  opacity:.92!important;
+}
+.card{border-color:rgba(120,160,255,.12)!important}
+.card::before,.hero::before,.quoteCard::before,.sessLeft::after,.sessRight::before,.intelTile::before,.fpTfBox::before,.paBox::before{
+  height:1px!important;
+  background:linear-gradient(90deg, rgba(41,121,255,0), rgba(120,170,255,.42), rgba(0,214,143,.24), rgba(41,121,255,0))!important;
+}
+.stateBig{font-size:25px!important}
+.quotePx{font-size:50px!important}
+.btn{
+  border-color:rgba(255,255,255,.08)!important;
+  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02))!important;
+}
+.btn.primary{
+  background:linear-gradient(135deg, rgba(41,121,255,.34), rgba(0,214,143,.18))!important;
+  border-color:rgba(110,170,255,.24)!important;
+}
+.topbar{
+  background:linear-gradient(180deg, rgba(13,20,37,.92), rgba(8,12,24,.94))!important;
+  border:1px solid rgba(120,160,255,.10)!important;
+  box-shadow:0 20px 44px rgba(0,0,0,.34)!important;
+}
+.brand .name{font-size:15px!important}
+.brand .sub{font-size:9px!important; opacity:.62!important}
+
+.qx-flowTag{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 9px; margin-bottom:8px;
+  border-radius:999px; border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+  font:700 8px var(--mono); letter-spacing:1.2px; text-transform:uppercase;
+  color:rgba(232,234,240,.58);
+}
+.qx-flowTag i{
+  width:6px;height:6px;border-radius:50%;
+  background:linear-gradient(135deg, rgba(110,170,255,.95), rgba(0,214,143,.92));
+  box-shadow:0 0 10px rgba(110,170,255,.36);
+  display:inline-block;
+}
+
+/* compact windows / less dead space */
+.riskStrip,.convicRow,.sessionGrid,.qeGrid,.busGrid,.paGrid,.intelGrid,.pb3Grid,.macroGrid,.tmGrid,.sharpeGrid{gap:8px!important}
+.tfBox,.fpTfBox,.riskItem,.paBox,.hmmDiagBox,.qx-stat,.dayRow,.recoItem{padding:10px 11px!important}
+.probRow{padding:3px 0!important}
+.tableWrap table tbody td,.paLogTable td{padding:6px 8px!important}
+thead th,.paLogTable th{padding:7px 8px!important}
+
+/* Put research modules in a more polished compact state */
+.qx-miniRef .card-title::after{
+  content:"Reference";
+  margin-left:auto;
+  font:700 8px var(--mono);
+  letter-spacing:1px; text-transform:uppercase;
+  color:rgba(232,234,240,.36);
+}
+.qx-miniRef .inner{padding:12px 13px!important}
+
+/* Daily EUR/USD Trend becomes a compact reference card */
+.qx-tv-min .tvWrap{
+  min-height:unset!important;
+  height:auto!important;
+  padding:14px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  background:linear-gradient(180deg, rgba(17,25,43,.72), rgba(9,13,24,.80))!important;
+}
+.qx-tv-min iframe,
+.qx-tv-min #tvFallback > div:first-child{display:none!important}
+.qx-tv-min #tvFallback{
+  display:flex!important;
+  width:100%!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  position:static!important;
+  opacity:1!important;
+  background:transparent!important;
+  border:none!important;
+  padding:0!important;
+}
+.qx-tv-min .tvQuickText{
+  display:block!important;
+  color:rgba(232,234,240,.62);
+  font-size:11px;
+  line-height:1.45;
+}
+.qx-tv-min .link{
+  display:inline-flex!important; align-items:center; justify-content:center;
+  white-space:nowrap;
+  padding:10px 14px; border-radius:999px;
+  border:1px solid rgba(110,170,255,.22);
+  background:linear-gradient(135deg, rgba(41,121,255,.30), rgba(0,214,143,.16));
+  color:#eef7ff!important; text-decoration:none!important; font-weight:700;
+}
+
+/* Guide HMM block use empty space, no internal scroll */
+#guideModal .card{
+  overflow:visible!important;
+}
+#guideModal [style*="max-height:260px"],
+#guideModal [style*="overflow:auto"],
+#guideModal [style*="overflow-y:auto"]{
+  max-height:none!important;
+  overflow:visible!important;
+}
+#guideModal .tableWrap{
+  max-height:none!important;
+  overflow:visible!important;
+}
+#guideModal .smallNote{line-height:1.48!important}
+</style>
+
+<script id="qx-vertus-refine-script">
+(function(){
+  function cardByTitleContains(txt){
+    return Array.from(document.querySelectorAll('.card')).find(function(card){
+      var h2 = card.querySelector('.card-title h2');
+      return h2 && h2.textContent && h2.textContent.toLowerCase().indexOf(txt.toLowerCase()) !== -1;
+    });
+  }
+  function addFlowTag(card, label){
+    if(!card || card.querySelector('.qx-flowTag')) return;
+    var inner = card.querySelector('.inner');
+    var title = card.querySelector('.card-title');
+    if(!inner || !title) return;
+    var tag=document.createElement('div');
+    tag.className='qx-flowTag';
+    tag.innerHTML='<i></i><span>'+label+'</span>';
+    inner.insertBefore(tag, title);
+  }
+  function moveCardBefore(card, beforeCard){
+    if(card && beforeCard && card.parentNode===beforeCard.parentNode){
+      beforeCard.parentNode.insertBefore(card, beforeCard);
+    }
+  }
+  function moveCardAfter(card, afterCard){
+    if(card && afterCard && card.parentNode===afterCard.parentNode){
+      afterCard.parentNode.insertBefore(card, afterCard.nextSibling);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var market = cardByTitleContains('Current Market State');
+    var quant = cardByTitleContains('Quantitative Edge');
+    var bus = cardByTitleContains('Unified Signal Bus');
+    var proj = cardByTitleContains('Forward Projection');
+    var calib = cardByTitleContains('Projection Accuracy');
+    var sharpe = cardByTitleContains('Signal Performance');
+    var daytrend = cardByTitleContains('Daily EUR/USD Trend');
+
+    var playbook = cardByTitleContains('Session Playbook');
+    var signalIntel = cardByTitleContains('Signal Intelligence');
+    var macro = cardByTitleContains('Macro Drivers');
+    var trans = cardByTitleContains('Transmission Mechanism');
+    var hmmMatrix = cardByTitleContains('HMM Transition Matrix');
+    var corr = cardByTitleContains('Correlation Significance Matrix');
+    var pb3 = cardByTitleContains('PB3 Behavioral Model');
+    var arche = cardByTitleContains('Event Archetype Classifier');
+    var world = cardByTitleContains('World Events Calendar');
+    var te = cardByTitleContains('Trading Economics');
+    var live = cardByTitleContains('Live Headlines');
+
+    // Stage labels that tell the story
+    addFlowTag(market, '1 · Regime');
+    addFlowTag(macro, '2 · Macro');
+    addFlowTag(trans, '3 · Transmission');
+    addFlowTag(hmmMatrix, '4 · Model');
+    addFlowTag(quant, '5 · Signal');
+    addFlowTag(bus, '6 · Consensus');
+    addFlowTag(proj, '7 · Forecast');
+    addFlowTag(calib, '8 · Validation');
+
+    // Reorder stack 2 so the top-right area supports market state instead of burying it
+    moveCardBefore(macro, playbook);
+    moveCardAfter(trans, macro);
+    moveCardAfter(hmmMatrix, trans);
+
+    // Put session / command layer after the market-supporting panels
+    moveCardAfter(playbook, hmmMatrix);
+    moveCardAfter(signalIntel, playbook);
+
+    // Keep behavioral / archetype lower
+    moveCardAfter(pb3, signalIntel);
+    moveCardAfter(arche, pb3);
+
+    // De-emphasize research/news cards
+    [corr, world, te, live].forEach(function(card){
+      if(card) card.classList.add('qx-miniRef');
+    });
+
+    // Daily chart into compact reference card with direct TradingView CTA
+    if(daytrend){
+      daytrend.classList.add('qx-tv-min','qx-miniRef');
+      var fb = daytrend.querySelector('#tvFallback');
+      if(fb && !fb.querySelector('.tvQuickText')){
+        var t = document.createElement('div');
+        t.className='tvQuickText';
+        t.textContent='Open the full daily EUR/USD chart on TradingView for expanded technical study. This compact card keeps launch focus on the QuadraX decision stack.';
+        fb.insertBefore(t, fb.firstChild);
+      }
+    }
+
+    // Keep lower priority analytics visible but tidier
+    [sharpe, corr, world, te, live].forEach(function(card){
+      if(card) card.classList.add('qx-miniRef');
+    });
+  });
+})();
+</script>
+
 </body>
 </html>
