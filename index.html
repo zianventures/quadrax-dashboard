@@ -1042,8 +1042,25 @@ body.qx-auth-locked .wrap{display:none!important}
   <div class="brand-wordmark">
     <span class="brand-q">QUADRA</span><span class="brand-sep"> </span><span class="brand-rx">X</span>
   </div>
-  <div class="sub">EUR/USD · HMM · PB3 · Signal Bus · <span class="sub-si"><span class="sub-si-dot"></span>Market Superintelligence</span></div>
+  <div class="sub">EUR/USD · HMM · PB3 · <span class="sub-si"><span class="sub-si-dot"></span>Superintelligence Architecture</span></div>
 </div>
+</div>
+<!-- CENTER STAGE — fills negative space, balances header -->
+<div class="qx-topbar-center">
+  <div class="qx-center-stat" title="Edge Score (Risk Throttle)">
+    <span class="qx-cs-label">Edge Score</span>
+    <span class="qx-cs-val" id="topbarEdgeScore">--</span>
+  </div>
+  <div class="qx-center-div"></div>
+  <div class="qx-center-stat" title="HMM Regime State">
+    <span class="qx-cs-label">Regime</span>
+    <span class="qx-cs-val" id="topbarRegime">--</span>
+  </div>
+  <div class="qx-center-div"></div>
+  <div class="qx-center-stat" title="Consensus Direction">
+    <span class="qx-cs-label">Consensus</span>
+    <span class="qx-cs-val" id="topbarConsensus">--</span>
+  </div>
 </div>
 <div class="top-actions">
 <!-- STATUS CHIP: Alert + Sync merged -->
@@ -3704,6 +3721,7 @@ function applyFullStateToUI(st){
   if(st.signalBus){ try{ updateSignalBusUI(st.signalBus);}catch(e){ console.warn('[QuadraX] updateSignalBusUI failed',e);} }
   // Regime
   $("policyStateTitle").textContent="Policy State: S"+st.policy+" "+st.stateName;
+  var tbR=$('topbarRegime');if(tbR)tbR.textContent='S'+st.policy+' '+st.stateName;
   $("policyStateDesc").textContent=st.stateDesc;
   $("detectorChip").textContent="S"+st.detector;$("policyChip").textContent="S"+st.policy;
   $("confChip").textContent=st.conf!=null?(st.conf*100).toFixed(1)+"%":"--";$("hystChip").textContent=st.detector===st.policy?"stable":"holding";
@@ -3878,7 +3896,8 @@ function applyFullStateToUI(st){
   }
   // Signal Bus for READER
   if(st.busDir){
-    const bd=$("busDir");if(bd){bd.textContent=dispBias(st.busDir);bd.style.color=st.busDir==="LONG"?"rgba(0,214,143,.95)":st.busDir==="SHORT"?"rgba(255,71,87,.90)":"rgba(180,220,255,.65)";}
+    const bd=$("busDir");if(bd){bd.textContent=dispBias(st.busDir);
+  var tbC=$('topbarConsensus');if(tbC)tbC.textContent=dispBias(st.busDir);bd.style.color=st.busDir==="LONG"?"rgba(0,214,143,.95)":st.busDir==="SHORT"?"rgba(255,71,87,.90)":"rgba(180,220,255,.65)";}
     const br=$("busRisk");if(br){br.textContent=(st.busRiskPct??'--')+"%";br.style.color=(st.busRiskPct??0)>=75?"rgba(0,214,143,.90)":(st.busRiskPct??0)>=40?"rgba(255,176,32,.85)":"rgba(255,71,87,.80)";}
     const bc=$("busConvPct");if(bc)bc.textContent=(st.busConvPct??'--')+"%";
     // Populate tf boxes from bus forecasts
@@ -3959,6 +3978,7 @@ function updateQuantUI(q){
       const pct=Math.round(risk*100);
       if(rpV){
         rpV.textContent=pct+"%";
+        var tbE=$('topbarEdgeScore');if(tbE){tbE.textContent=pct+'%';tbE.style.color=risk>0.66?'rgba(255,140,140,.95)':risk>0.38?'rgba(255,210,140,.95)':'rgba(120,230,190,.90)';}
         rpV.style.color = risk>0.66 ? "rgba(255,120,120,.95)" : risk>0.38 ? "rgba(255,210,140,.95)" : "rgba(180,240,220,.95)";
       }
       if(rpF){
@@ -7048,6 +7068,90 @@ tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
 }
 /* Hide the ⏸ text in pauseBtn tooltip support */
 .alertBadge { display: none !important; } /* legacy — we replaced it */
+</style>
+
+<style id="qx-topbar-center-css">
+/* ── TOPBAR CENTER STAGE ─────────────────────────────────────── */
+/* Makes topbar a 3-zone layout: brand | center | actions */
+.topbar {
+  display: grid !important;
+  grid-template-columns: auto 1fr auto !important;
+  align-items: center !important;
+  gap: 16px !important;
+}
+
+/* Center zone — stretches to fill all negative space */
+.qx-topbar-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 6px 20px;
+  background: rgba(255,255,255,.018);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 6px;
+  height: 36px;
+  box-sizing: border-box;
+}
+
+/* Individual stat */
+.qx-center-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 0 20px;
+  cursor: default;
+}
+.qx-cs-label {
+  font-family: var(--dt-ui, 'IBM Plex Sans', sans-serif);
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(120,145,178,.72);
+  line-height: 1;
+  margin-bottom: 2px;
+}
+.qx-cs-val {
+  font-family: var(--dt-mono, 'JetBrains Mono', monospace);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  color: rgba(200,218,240,.92);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Dividers between stats */
+.qx-center-div {
+  width: 1px;
+  height: 22px;
+  background: rgba(255,255,255,.08);
+  flex-shrink: 0;
+}
+
+/* Ensure top-actions doesn't shrink */
+.top-actions {
+  flex-shrink: 0 !important;
+  justify-content: flex-end !important;
+}
+
+/* Brand doesn't shrink */
+.brand {
+  flex-shrink: 0 !important;
+}
+
+/* Sub-si badge — shortened text fits now */
+.sub-si {
+  white-space: nowrap !important;
+}
+.brand .sub {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: none !important;
+}
 </style>
 
 </body>
