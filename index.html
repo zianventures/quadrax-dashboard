@@ -5,9 +5,9 @@
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>QuadraX Dashboard</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg0:#010205;--bg1:#030610;--bg2:#060a18;--bg3:#090e22;
@@ -940,7 +940,7 @@ body.qx-auth-locked .wrap{display:none!important}
 <div class="topbar">
 <div class="brand">
 <div class="qxlogo">4X</div>
-<div><h1>QuadraX</h1><div class="sub">EUR/USD Intelligence Platform · HMM · PB3 · Signal Bus · Team Sync</div></div>
+<div><h1>QuadraX</h1><div class="sub">EUR/USD Intelligence Platform · HMM · PB3 · Signal Bus</div></div>
 </div>
 <div class="top-actions">
 <div class="alertBadge" id="alertBadge">⚡<span id="alertBadgeText">Alert</span></div>
@@ -3596,7 +3596,7 @@ function applyFullStateToUI(st){
   if(st.signalBus){ try{ updateSignalBusUI(st.signalBus);}catch(e){ console.warn('[QuadraX] updateSignalBusUI failed',e);} }
   // Regime
   $("policyStateTitle").textContent="Policy State: S"+st.policy+" "+st.stateName;
-  $("policyStateDesc").textContent=st.stateDesc+(FirebaseSync.isReader&&st.masterId?" [FS MASTER "+st.masterId.slice(0,6)+"]":"");
+  $("policyStateDesc").textContent=st.stateDesc;
   $("detectorChip").textContent="S"+st.detector;$("policyChip").textContent="S"+st.policy;
   $("confChip").textContent=st.conf!=null?(st.conf*100).toFixed(1)+"%":"--";$("hystChip").textContent=st.detector===st.policy?"stable":"holding";
   $("ageChip").textContent=String(st.regimeAge);$("tickChip").textContent=st.tickN+"/"+Engine.WARMUP;
@@ -5331,7 +5331,7 @@ body::after{
   function strengthenBrandLanguage(){
     var sub = document.querySelector('.brand .sub');
     if(sub){
-      sub.textContent = 'Adaptive Macro Intelligence Platform · HMM · PB3 · Signal Bus · Team Sync';
+      sub.textContent = 'Adaptive Macro Intelligence Platform · HMM · PB3 · Signal Bus';
     }
     var hints = document.querySelectorAll('.card-title .hint');
     hints.forEach(function(h){
@@ -6223,585 +6223,600 @@ body::after{
 
 
 
-<style id="qx-sovereign-intelligence">
+
+
+<style id="qx-terminal-pro">
 /*
-╔═══════════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  SOVEREIGN INTELLIGENCE  ·  v37                                  ║
-║  Design philosophy: Vertus-class restraint × institutional gravitas           ║
-║  The data is the spectacle. The chrome serves it.                             ║
-║  Inspired by: Bloomberg Terminal refinement + Vertus editorial minimalism     ║
-║  + the cold precision of systems that manage billions                         ║
-╚═══════════════════════════════════════════════════════════════════════════════╝
+╔═══════════════════════════════════════════════════════════════╗
+║  QUADRAX  ·  PROFESSIONAL TERMINAL  ·  v37                    ║
+║  Design: Bloomberg-grade fintech precision                    ║
+║  Fonts: IBM Plex Sans (UI) + JetBrains Mono (data)           ║
+║  Color: Deep charcoal void · off-white data · electric blue  ║
+║  Philosophy: The numbers are the design.                     ║
+╚═══════════════════════════════════════════════════════════════╝
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
 
-/* ═══════════════════════════════
-   DESIGN TOKENS
-═══════════════════════════════ */
+/* ───────────────────────────────────────────────
+   TOKENS
+─────────────────────────────────────────────── */
 :root {
-  /* The void */
-  --sq-void:     #000507;
-  --sq-deep:     #010a10;
-  --sq-surface:  #04111a;
-  --sq-panel:    #061520;
-  --sq-raised:   #091d2a;
+  /* Background hierarchy */
+  --t-bg0:     #0d1117;    /* page void */
+  --t-bg1:     #131920;    /* card surface */
+  --t-bg2:     #1a2230;    /* raised element */
+  --t-bg3:     #1f2a38;    /* hover / active */
 
-  /* Singular accent — ice-white blue, used with extreme restraint */
-  --sq-ice:      #c8f0ff;
-  --sq-ice2:     #7dd4f8;
-  --sq-ice3:     #3ab8f0;
-  --sq-live:     #00ffa3;    /* live/positive only */
-  --sq-warn:     #ffb830;    /* warning/amber only */
-  --sq-danger:   #ff3d55;    /* danger/negative only */
-  --sq-gold:     #e8c96a;    /* premium highlights */
+  /* Text hierarchy — off-white, never pure white */
+  --t-tx1:     #e2e8f0;    /* primary data */
+  --t-tx2:     #94a3b8;    /* secondary label */
+  --t-tx3:     #475569;    /* ghost / dim */
+  --t-tx4:     #2d3f52;    /* structural */
 
-  /* Text hierarchy — tight 4-step scale */
-  --sq-t1: rgba(255,255,255,.94);   /* primary data */
-  --sq-t2: rgba(255,255,255,.58);   /* secondary */
-  --sq-t3: rgba(255,255,255,.32);   /* labels */
-  --sq-t4: rgba(200,230,255,.18);   /* ghost */
+  /* Accent system — used with extreme discipline */
+  --t-blue:    #3b82f6;    /* trust / neutral */
+  --t-blue2:   #60a5fa;    /* elevated blue */
+  --t-green:   #10b981;    /* positive / live */
+  --t-green2:  #34d399;    /* elevated green */
+  --t-amber:   #f59e0b;    /* warning / action */
+  --t-amber2:  #fbbf24;    /* elevated amber */
+  --t-red:     #ef4444;    /* danger / negative */
+  --t-red2:    #f87171;    /* elevated red */
+  --t-teal:    #14b8a6;    /* secondary positive */
 
-  /* Borders */
-  --sq-b1: rgba(200,240,255,.10);
-  --sq-b2: rgba(200,240,255,.06);
-  --sq-b3: rgba(200,240,255,.03);
+  /* Borders — barely-there lines */
+  --t-b1:  rgba(148,163,184,.10);
+  --t-b2:  rgba(148,163,184,.06);
+  --t-b3:  rgba(148,163,184,.035);
 
   /* Typography */
-  --sq-display: 'Syne', ui-sans-serif, sans-serif;
-  --sq-body:    'DM Sans', ui-sans-serif, sans-serif;
-  --sq-mono:    'JetBrains Mono', 'Syne Mono', ui-monospace, monospace;
+  --t-ui:   'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --t-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
 
-  /* Shadows */
-  --sq-sh:  0 20px 60px rgba(0,0,0,.85), 0 6px 20px rgba(0,0,0,.60);
-  --sq-sh2: 0 8px 32px rgba(0,0,0,.70);
-  --sq-sh3: 0 2px 10px rgba(0,0,0,.50);
-
-  /* Ice glow — used sparingly */
-  --sq-glow-ice:  0 0 24px rgba(200,240,255,.18), 0 0 60px rgba(58,184,240,.10);
-  --sq-glow-live: 0 0 20px rgba(0,255,163,.22);
-  --sq-glow-warn: 0 0 20px rgba(255,184,48,.20);
-  --sq-glow-danger: 0 0 20px rgba(255,61,85,.22);
+  /* Radius */
+  --t-r1: 6px;
+  --t-r2: 8px;
+  --t-r3: 10px;
 }
 
-/* ═══════════════════════════════
-   BODY — THE VOID
-═══════════════════════════════ */
+/* ───────────────────────────────────────────────
+   GLOBAL RESET OF PREVIOUS THEME VARS
+   So nothing leaks from earlier blocks
+─────────────────────────────────────────────── */
+:root {
+  --sq-display: var(--t-ui) !important;
+  --sq-body:    var(--t-ui) !important;
+  --sq-mono:    var(--t-mono) !important;
+}
+
+/* ───────────────────────────────────────────────
+   BODY — DEEP CHARCOAL VOID
+─────────────────────────────────────────────── */
 body {
-  font-family: var(--sq-body) !important;
-  background:
-    radial-gradient(ellipse 160% 80% at 50% -5%,
-      rgba(0,40,70,.22) 0%, transparent 55%),
-    radial-gradient(ellipse 100% 60% at 0% 60%,
-      rgba(0,20,40,.14) 0%, transparent 50%),
-    radial-gradient(ellipse 100% 60% at 100% 40%,
-      rgba(0,15,35,.10) 0%, transparent 50%),
-    linear-gradient(180deg, #000c15 0%, #000507 30%, #000305 100%) !important;
-  color: var(--sq-t1) !important;
+  font-family: var(--t-ui) !important;
+  background: var(--t-bg0) !important;
+  color: var(--t-tx1) !important;
+  -webkit-font-smoothing: antialiased !important;
+  font-variant-numeric: tabular-nums !important;
 }
 
-/* Subtle hexagonal mesh background — the intelligence grid */
+/* Kill all previous background effects */
 body::before {
-  content: '';
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background-image:
-    linear-gradient(rgba(200,240,255,.020) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(200,240,255,.020) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%,
-    rgba(0,0,0,.40) 0%, transparent 100%);
-}
-
-/* Single slow breathing ambient — not multiple colored orbs */
-body::after {
-  content: '';
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background:
-    radial-gradient(ellipse 900px 600px at 20% 15%,
-      rgba(3,84,148,.065) 0%, transparent 65%),
-    radial-gradient(ellipse 700px 500px at 80% 85%,
-      rgba(0,160,120,.045) 0%, transparent 65%),
-    radial-gradient(ellipse 500px 350px at 85% 10%,
-      rgba(100,60,200,.030) 0%, transparent 60%);
-  animation: sovereignBreathe 18s ease-in-out infinite alternate;
-}
-@keyframes sovereignBreathe {
-  from { opacity: .60; } to { opacity: 1.0; }
-}
-
-/* ═══════════════════════════════
-   TOPBAR — COMMAND BRIDGE
-═══════════════════════════════ */
-.topbar {
-  background: linear-gradient(180deg,
-    rgba(0,12,24,.98) 0%,
-    rgba(0,8,16,.99) 100%) !important;
-  border-bottom: 1px solid var(--sq-b1) !important;
-  box-shadow:
-    0 1px 0 rgba(200,240,255,.04),
-    0 8px 48px rgba(0,0,0,.92),
-    inset 0 1px 0 rgba(255,255,255,.025) !important;
-  backdrop-filter: blur(40px) saturate(1.8) !important;
-  position: relative; z-index: 200;
-}
-/* Ultra-thin spectrum line — one elegant accent, not loud */
-.topbar::after {
-  content: '';
-  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(58,184,240,.55) 25%,
-    rgba(200,240,255,.85) 50%,
-    rgba(0,255,163,.55) 75%,
-    transparent 100%);
-  animation: iceFlow 6s linear infinite;
-  background-size: 300% 100%;
-  opacity: .7;
-}
-@keyframes iceFlow {
-  from { background-position: 100% center; }
-  to   { background-position: -100% center; }
-}
-
-/* Brand — editorial confidence */
-.brand h1 {
-  font-family: var(--sq-display) !important;
-  font-size: 17px !important;
-  font-weight: 800 !important;
-  letter-spacing: 5px !important;
-  text-transform: uppercase !important;
-  color: var(--sq-t1) !important;
-  -webkit-text-fill-color: unset !important;
+  display: none !important;
+  content: '' !important;
   background: none !important;
-  text-shadow: 0 0 40px rgba(200,240,255,.25) !important;
+  background-image: none !important;
+}
+body::after {
+  display: none !important;
   animation: none !important;
+}
+
+/* ───────────────────────────────────────────────
+   TOPBAR — MINIMAL COMMAND LINE
+─────────────────────────────────────────────── */
+.topbar {
+  background: #0a0f16 !important;
+  border-bottom: 1px solid var(--t-b1) !important;
+  box-shadow: 0 1px 0 rgba(0,0,0,.40) !important;
+  backdrop-filter: none !important;
+}
+/* Kill previous spectrum animation */
+.topbar::after { display: none !important; }
+
+/* Brand */
+.brand h1 {
+  font-family: var(--t-ui) !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  letter-spacing: 3px !important;
+  text-transform: uppercase !important;
+  color: var(--t-tx1) !important;
+  -webkit-text-fill-color: var(--t-tx1) !important;
+  background: none !important;
+  text-shadow: none !important;
   filter: none !important;
+  animation: none !important;
 }
 .brand .sub {
-  font-family: var(--sq-body) !important;
-  font-size: 8.5px !important;
-  letter-spacing: 3.5px !important;
+  font-family: var(--t-ui) !important;
+  font-size: 9px !important;
+  letter-spacing: 2.5px !important;
   text-transform: uppercase !important;
-  color: var(--sq-t4) !important;
+  color: var(--t-tx3) !important;
+  font-weight: 400 !important;
 }
 .qxlogo {
-  font-family: var(--sq-display) !important;
-  font-size: 15px !important;
-  font-weight: 800 !important;
-  letter-spacing: 3px !important;
-  color: var(--sq-ice) !important;
-  -webkit-text-fill-color: var(--sq-ice) !important;
+  font-family: var(--t-mono) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1px !important;
+  color: var(--t-blue2) !important;
+  -webkit-text-fill-color: var(--t-blue2) !important;
   background: none !important;
-  text-shadow: var(--sq-glow-ice) !important;
+  text-shadow: none !important;
   filter: none !important;
 }
 
-/* Topbar buttons */
+/* Buttons */
 .btn {
-  font-family: var(--sq-body) !important;
+  font-family: var(--t-ui) !important;
   font-size: 10px !important;
   font-weight: 500 !important;
-  letter-spacing: 1px !important;
-  text-transform: uppercase !important;
-  background: rgba(255,255,255,.03) !important;
-  border: 1px solid var(--sq-b1) !important;
-  color: var(--sq-t3) !important;
-  border-radius: 5px !important;
-  transition: all .18s ease !important;
-  padding: 6px 12px !important;
+  letter-spacing: .5px !important;
+  text-transform: none !important;
+  background: var(--t-bg2) !important;
+  border: 1px solid var(--t-b1) !important;
+  color: var(--t-tx2) !important;
+  border-radius: var(--t-r1) !important;
+  transition: all .15s ease !important;
+  padding: 5px 11px !important;
 }
 .btn:hover {
-  background: rgba(200,240,255,.06) !important;
-  border-color: rgba(200,240,255,.22) !important;
-  color: var(--sq-t1) !important;
+  background: var(--t-bg3) !important;
+  border-color: rgba(59,130,246,.40) !important;
+  color: var(--t-tx1) !important;
 }
 .btn.primary {
-  background: rgba(200,240,255,.06) !important;
-  border-color: rgba(200,240,255,.22) !important;
-  color: var(--sq-ice2) !important;
+  background: rgba(59,130,246,.12) !important;
+  border-color: rgba(59,130,246,.35) !important;
+  color: var(--t-blue2) !important;
 }
 .btn.primary:hover {
-  background: rgba(200,240,255,.12) !important;
-  box-shadow: var(--sq-glow-ice) !important;
+  background: rgba(59,130,246,.20) !important;
+  border-color: rgba(59,130,246,.55) !important;
 }
 
-/* Status pills */
+/* Pills */
 .pill {
-  font-family: var(--sq-body) !important;
-  font-size: 9.5px !important;
-  letter-spacing: 1px !important;
-  background: rgba(255,255,255,.03) !important;
-  border-color: var(--sq-b1) !important;
-  color: var(--sq-t3) !important;
-}
-.dot {
-  background: var(--sq-live) !important;
-  box-shadow: 0 0 0 2px rgba(0,255,163,.10), 0 0 12px rgba(0,255,163,.60) !important;
-  animation: liveDot 2s ease-in-out infinite !important;
-}
-@keyframes liveDot {
-  0%,100% { box-shadow: 0 0 0 2px rgba(0,255,163,.10), 0 0 8px rgba(0,255,163,.50); }
-  50%     { box-shadow: 0 0 0 3px rgba(0,255,163,.18), 0 0 18px rgba(0,255,163,.80); }
-}
-.dot.amber { background: var(--sq-warn) !important;   box-shadow: 0 0 0 2px rgba(255,184,48,.10), 0 0 10px rgba(255,184,48,.55) !important; animation: none !important; }
-.dot.red   { background: var(--sq-danger) !important; box-shadow: 0 0 0 2px rgba(255,61,85,.10),  0 0 10px rgba(255,61,85,.55)  !important; animation: none !important; }
-
-/* 4H BASIS badge */
-.qx-tf-badge {
-  font-family: var(--sq-body) !important;
+  font-family: var(--t-ui) !important;
   font-size: 9px !important;
-  letter-spacing: 2px !important;
-  background: rgba(232,201,106,.06) !important;
-  border: 1px solid rgba(232,201,106,.28) !important;
-  color: var(--sq-gold) !important;
-  box-shadow: none !important;
+  letter-spacing: 1px !important;
+  background: var(--t-bg2) !important;
+  border-color: var(--t-b1) !important;
+  color: var(--t-tx3) !important;
+}
+/* LIVE dot */
+.dot {
+  background: var(--t-green) !important;
+  box-shadow: 0 0 0 2px rgba(16,185,129,.12), 0 0 8px rgba(16,185,129,.50) !important;
+  animation: termLive 2.2s ease-in-out infinite !important;
+}
+@keyframes termLive {
+  0%,100% { box-shadow: 0 0 0 2px rgba(16,185,129,.08), 0 0 6px rgba(16,185,129,.40); }
+  50%     { box-shadow: 0 0 0 3px rgba(16,185,129,.16), 0 0 12px rgba(16,185,129,.65); }
+}
+.dot.amber { background: var(--t-amber) !important; box-shadow: none !important; animation: none !important; }
+.dot.red   { background: var(--t-red) !important;   box-shadow: none !important; animation: none !important; }
+
+/* 4H badge */
+.qx-tf-badge {
+  font-family: var(--t-mono) !important;
+  font-size: 8.5px !important;
+  letter-spacing: 1.5px !important;
+  background: rgba(245,158,11,.06) !important;
+  border: 1px solid rgba(245,158,11,.22) !important;
+  color: var(--t-amber2) !important;
 }
 
 /* Sync badge */
 .syncBadge {
-  font-family: var(--sq-body) !important;
-  font-size: 9px !important;
-  letter-spacing: 1px !important;
-  background: rgba(255,255,255,.02) !important;
-  border: 1px solid rgba(255,184,48,.14) !important;
-  color: var(--sq-t3) !important;
+  font-family: var(--t-mono) !important;
+  font-size: 8.5px !important;
+  background: var(--t-bg2) !important;
+  border: 1px solid rgba(245,158,11,.16) !important;
+  color: var(--t-tx3) !important;
+  letter-spacing: .5px !important;
 }
 
-/* ═══════════════════════════════
+/* ───────────────────────────────────────────────
    INTELLIGENCE LAYER BADGES
-═══════════════════════════════ */
+─────────────────────────────────────────────── */
 .qxStage, .qx-premTag {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 8px !important;
-  padding: 3px 12px 3px 0 !important;
-  margin-bottom: 9px !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  border: none !important;
-  border-left: 2px solid rgba(200,240,255,.45) !important;
-  padding-left: 10px !important;
-  box-shadow: none !important;
-  font-family: var(--sq-body) !important;
-  font-size: 9px !important;
+  gap: 7px !important;
+  padding: 2px 10px 2px 8px !important;
+  margin-bottom: 8px !important;
+  border-radius: 3px !important;
+  background: rgba(59,130,246,.06) !important;
+  border: 1px solid rgba(59,130,246,.18) !important;
+  border-left: 2px solid rgba(59,130,246,.70) !important;
+  font-family: var(--t-ui) !important;
+  font-size: 8px !important;
   font-weight: 600 !important;
-  letter-spacing: 3px !important;
+  letter-spacing: 2.5px !important;
   text-transform: uppercase !important;
-  color: rgba(200,240,255,.50) !important;
+  color: rgba(96,165,250,.70) !important;
+  box-shadow: none !important;
 }
 .qxStage i, .qx-premTag i {
   width: 4px; height: 4px;
   border-radius: 50% !important;
-  background: var(--sq-ice2) !important;
-  box-shadow: 0 0 6px rgba(125,212,248,.80) !important;
-  animation: liveDot 2.5s ease-in-out infinite !important;
-  flex-shrink: 0;
+  background: var(--t-blue) !important;
+  box-shadow: 0 0 5px rgba(59,130,246,.70) !important;
+  animation: termLive 2.5s ease-in-out infinite !important;
 }
-/* Market Superintelligence — slightly elevated */
 .qxSuperPill {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 8px !important;
-  padding: 4px 14px 4px 11px !important;
-  border-radius: 999px !important;
-  background: rgba(200,240,255,.04) !important;
-  border: 1px solid rgba(200,240,255,.16) !important;
-  box-shadow: none !important;
-  font-family: var(--sq-body) !important;
-  font-size: 9px !important;
-  font-weight: 500 !important;
+  gap: 7px !important;
+  padding: 3px 10px !important;
+  border-radius: 3px !important;
+  background: rgba(16,185,129,.06) !important;
+  border: 1px solid rgba(16,185,129,.20) !important;
+  font-family: var(--t-ui) !important;
+  font-size: 8px !important;
+  font-weight: 600 !important;
   letter-spacing: 2.5px !important;
   text-transform: uppercase !important;
-  color: rgba(200,240,255,.55) !important;
+  color: rgba(52,211,153,.75) !important;
+  box-shadow: none !important;
 }
 .qxSuperPill i {
-  width: 5px; height: 5px;
+  width: 4px; height: 4px;
   border-radius: 50% !important;
-  background: var(--sq-ice2) !important;
-  box-shadow: 0 0 8px rgba(125,212,248,.70) !important;
-  animation: liveDot 2s ease-in-out infinite !important;
+  background: var(--t-green) !important;
+  box-shadow: 0 0 5px rgba(16,185,129,.65) !important;
+  animation: termLive 2s ease-in-out infinite !important;
 }
 
-/* ═══════════════════════════════
-   CARDS — INTELLIGENCE PANELS
-   Near-invisible, data floats in void
-═══════════════════════════════ */
+/* ───────────────────────────────────────────────
+   CARDS — FRAMELESS DATA PANELS
+─────────────────────────────────────────────── */
 .card {
-  background: rgba(255,255,255,.022) !important;
-  border: 1px solid var(--sq-b2) !important;
-  border-radius: 10px !important;
-  box-shadow: var(--sq-sh) !important;
+  background: var(--t-bg1) !important;
+  border: 1px solid var(--t-b2) !important;
+  border-radius: var(--t-r3) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,.45), 0 1px 4px rgba(0,0,0,.30) !important;
   position: relative; overflow: hidden;
-  transition: border-color .25s ease, box-shadow .25s ease !important;
+  transition: border-color .15s ease !important;
 }
-/* Whisper-thin top edge light */
+/* Ultra-subtle top line — almost invisible */
 .card::before {
   content: '';
-  position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
   background: linear-gradient(90deg,
-    transparent, rgba(200,240,255,.15) 50%, transparent);
+    transparent 0%,
+    rgba(59,130,246,.14) 30%,
+    rgba(148,163,184,.10) 60%,
+    transparent 100%);
   pointer-events: none;
 }
-.card::after { display: none; }
+.card::after { display: none !important; }
 .card > .inner { position: relative; z-index: 1; }
 .card:hover {
-  border-color: rgba(200,240,255,.14) !important;
-  box-shadow: var(--sq-sh), 0 0 0 1px rgba(200,240,255,.05) !important;
+  border-color: rgba(59,130,246,.16) !important;
 }
 
-/* ═══════════════════════════════
-   CARD TITLE TYPOGRAPHY
-═══════════════════════════════ */
+/* ───────────────────────────────────────────────
+   CARD TITLES
+─────────────────────────────────────────────── */
 .card-title h2 {
-  font-family: var(--sq-body) !important;
-  font-size: 9.5px !important;
-  font-weight: 500 !important;
-  letter-spacing: 3px !important;
+  font-family: var(--t-ui) !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 2px !important;
   text-transform: uppercase !important;
-  color: var(--sq-t3) !important;
+  color: var(--t-tx2) !important;
 }
 .card-title .hint {
-  font-family: var(--sq-body) !important;
-  font-size: 9.5px !important;
-  color: var(--sq-t4) !important;
+  font-family: var(--t-ui) !important;
+  font-size: 10px !important;
+  color: var(--t-tx3) !important;
+  font-weight: 400 !important;
   line-height: 1.5 !important;
 }
 
-/* ═══════════════════════════════
-   DATA HIERARCHY — THE HERO
-═══════════════════════════════ */
-/* Quote price — pure white, massive */
+/* ───────────────────────────────────────────────
+   TYPOGRAPHY — ALL DATA ELEMENTS
+─────────────────────────────────────────────── */
+/* Quote price */
 .quotePx {
-  font-family: var(--sq-mono) !important;
-  font-size: 46px !important;
+  font-family: var(--t-mono) !important;
+  font-size: 44px !important;
   font-weight: 400 !important;
   letter-spacing: -2px !important;
-  color: var(--sq-t1) !important;
-  -webkit-text-fill-color: var(--sq-t1) !important;
+  color: var(--t-tx1) !important;
+  -webkit-text-fill-color: var(--t-tx1) !important;
   background: none !important;
   filter: none !important;
-  text-shadow: 0 0 40px rgba(200,240,255,.12) !important;
+  text-shadow: none !important;
+  font-variant-numeric: tabular-nums !important;
 }
-/* State title */
+
+/* State name */
 .stateBig {
-  font-family: var(--sq-display) !important;
-  font-size: 24px !important;
-  font-weight: 700 !important;
-  letter-spacing: 2px !important;
-  text-shadow: 0 2px 20px rgba(0,0,0,.80) !important;
-}
-/* Bus direction — the loudest single element */
-.busBannerDir {
-  font-family: var(--sq-display) !important;
-  font-size: 46px !important;
-  font-weight: 800 !important;
-  letter-spacing: 6px !important;
-  text-transform: uppercase !important;
-  text-shadow: 0 0 60px currentColor !important;
-  filter: drop-shadow(0 0 20px currentColor) !important;
-}
-/* FP numbers */
-.fpBox .v, .fpTfRange {
-  font-family: var(--sq-mono) !important;
+  font-family: var(--t-ui) !important;
   font-size: 22px !important;
-  letter-spacing: -1px !important;
-  color: var(--sq-t1) !important;
-  -webkit-text-fill-color: var(--sq-t1) !important;
-  background: none !important;
+  font-weight: 600 !important;
+  letter-spacing: .5px !important;
+  text-shadow: none !important;
+  line-height: 1.2 !important;
+}
+
+/* Bus direction */
+.busBannerDir {
+  font-family: var(--t-ui) !important;
+  font-size: 40px !important;
+  font-weight: 700 !important;
+  letter-spacing: 4px !important;
+  text-transform: uppercase !important;
+  text-shadow: none !important;
   filter: none !important;
 }
-/* Large stat values */
-.paBox .v, .qeBox .qv, .sharpeBox .v {
-  font-family: var(--sq-mono) !important;
-  color: var(--sq-t1) !important;
-  -webkit-text-fill-color: var(--sq-t1) !important;
+
+/* Forecast + perf numbers */
+.fpBox .v, .fpTfRange {
+  font-family: var(--t-mono) !important;
+  font-variant-numeric: tabular-nums !important;
+  color: var(--t-tx1) !important;
+  -webkit-text-fill-color: var(--t-tx1) !important;
   background: none !important;
+  filter: none !important;
+  text-shadow: none !important;
 }
-.convicText .cv {
-  font-family: var(--sq-mono) !important;
-  font-size: 32px !important;
-  font-weight: 400 !important;
-}
-.fcastBox .fv {
-  font-family: var(--sq-mono) !important;
-  color: var(--sq-t1) !important;
-  -webkit-text-fill-color: var(--sq-t1) !important;
+.paBox .v, .qeBox .qv, .sharpeBox .v, .fcastBox .fv, .macroBox .v, .convicText .cv {
+  font-family: var(--t-mono) !important;
+  font-variant-numeric: tabular-nums !important;
+  color: var(--t-tx1) !important;
+  -webkit-text-fill-color: var(--t-tx1) !important;
   background: none !important;
+  text-shadow: none !important;
 }
-.macroBox .v {
-  font-family: var(--sq-mono) !important;
-  color: var(--sq-t1) !important;
-  -webkit-text-fill-color: var(--sq-t1) !important;
-  background: none !important;
-}
-/* Labels — tight, dim, tracked */
+
+/* Labels — IBM Plex, tracked, dim */
 .k, .rlabel, .sec-label, .fpTfLabel, .rpLabel, .bk, .dk,
-.rk, .tlLabel, .sName {
-  font-family: var(--sq-body) !important;
+.rk, .tlLabel, .sName, .fpTfHeader .fpTfLabel {
+  font-family: var(--t-ui) !important;
   font-size: 8px !important;
   font-weight: 500 !important;
-  letter-spacing: 2.5px !important;
+  letter-spacing: 2px !important;
   text-transform: uppercase !important;
-  color: var(--sq-t3) !important;
+  color: var(--t-tx3) !important;
+  text-shadow: none !important;
 }
 
-/* ═══════════════════════════════
-   STATE COLORS — PRECISE SIGNAL
-═══════════════════════════════ */
-.pos, .up { color: var(--sq-live) !important;   text-shadow: var(--sq-glow-live) !important; }
-.neg, .dn { color: var(--sq-danger) !important;  text-shadow: var(--sq-glow-danger) !important; }
-.warn      { color: var(--sq-warn) !important;   text-shadow: var(--sq-glow-warn) !important; }
+/* ───────────────────────────────────────────────
+   STATE / BIAS COLORS
+─────────────────────────────────────────────── */
+.pos, .up { color: var(--t-green2) !important; text-shadow: none !important; }
+.neg, .dn { color: var(--t-red2) !important;   text-shadow: none !important; }
+.warn      { color: var(--t-amber2) !important; text-shadow: none !important; }
 
-/* ═══════════════════════════════
-   CHIPS — MICRO-INTELLIGENCE
-═══════════════════════════════ */
+/* ───────────────────────────────────────────────
+   CHIPS + MICROBADGES
+─────────────────────────────────────────────── */
 .chip {
-  font-family: var(--sq-body) !important;
+  font-family: var(--t-ui) !important;
   font-size: 9px !important;
-  letter-spacing: 1px !important;
-  background: rgba(255,255,255,.03) !important;
-  border: 1px solid var(--sq-b1) !important;
+  letter-spacing: .5px !important;
+  background: var(--t-bg2) !important;
+  border: 1px solid var(--t-b1) !important;
   border-radius: 4px !important;
-  color: var(--sq-t2) !important;
+  color: var(--t-tx2) !important;
 }
 .chip b {
-  font-family: var(--sq-mono) !important;
-  color: var(--sq-t1) !important;
+  font-family: var(--t-mono) !important;
+  color: var(--t-tx1) !important;
+  font-variant-numeric: tabular-nums !important;
 }
-.pillTag, .dayBadge, .liveBadge {
-  font-family: var(--sq-body) !important;
+.pillTag, .dayBadge {
+  font-family: var(--t-ui) !important;
   font-size: 8.5px !important;
-  letter-spacing: 2px !important;
-  background: rgba(255,255,255,.03) !important;
-  border-color: var(--sq-b1) !important;
-  color: var(--sq-t3) !important;
+  letter-spacing: 1.5px !important;
+  background: var(--t-bg2) !important;
+  border-color: var(--t-b1) !important;
+  color: var(--t-tx3) !important;
+}
+.liveBadge {
+  font-family: var(--t-mono) !important;
+  font-size: 8px !important;
+  letter-spacing: 1px !important;
+  background: var(--t-bg2) !important;
+  border-color: var(--t-b1) !important;
+  color: var(--t-tx3) !important;
 }
 .liveBadge.live {
-  background: rgba(0,255,163,.06) !important;
-  color: var(--sq-live) !important;
-  border-color: rgba(0,255,163,.25) !important;
+  background: rgba(16,185,129,.07) !important;
+  color: var(--t-green2) !important;
+  border-color: rgba(16,185,129,.22) !important;
 }
 
-/* ═══════════════════════════════
-   HERO PANEL (HMM state widget)
-═══════════════════════════════ */
-.hero {
-  background: rgba(255,255,255,.025) !important;
-  border: 1px solid var(--sq-b1) !important;
-  border-radius: 8px !important;
+/* ───────────────────────────────────────────────
+   DATA PANELS
+─────────────────────────────────────────────── */
+.hero, .busBanner {
+  background: var(--t-bg2) !important;
+  border: 1px solid var(--t-b1) !important;
+  border-radius: var(--t-r2) !important;
 }
-.hero::before { display: none; }
+.hero::before, .hero::after,
+.busBanner::before, .busBanner::after { display: none !important; }
 
-/* ═══════════════════════════════
-   SIGNAL BUS — THE DECISIVE PANEL
-═══════════════════════════════ */
-.busBanner {
-  background: rgba(255,255,255,.025) !important;
-  border: 1px solid var(--sq-b1) !important;
-  border-radius: 8px !important;
+.macroBox, .fpBox, .paBox, .tmBox, .pb3Top, .sharpeBox,
+.qeBox, .busBox, .sessBox, .sessLeft, .sessRight, .intelTile {
+  background: var(--t-bg2) !important;
+  border: 1px solid var(--t-b2) !important;
+  border-radius: var(--t-r2) !important;
 }
-.busBanner::after { display: none; }
+.intelTile::before { display: none !important; }
 
-/* ═══════════════════════════════
-   DATA BOXES
-═══════════════════════════════ */
-.macroBox, .fpBox, .paBox, .tmBox, .pb3Top, .sharpeBox, .qeBox, .busBox {
-  background: rgba(255,255,255,.025) !important;
-  border: 1px solid var(--sq-b2) !important;
-  border-radius: 7px !important;
-}
-.sessBox, .sessLeft, .sessRight {
-  background: rgba(255,255,255,.020) !important;
-  border: 1px solid var(--sq-b2) !important;
-  border-radius: 7px !important;
-}
-.intelTile {
-  background: rgba(255,255,255,.022) !important;
-  border: 1px solid var(--sq-b2) !important;
-  border-radius: 7px !important;
-}
-.intelTile::before { display: none; }
-
-/* ═══════════════════════════════
-   TABLES
-═══════════════════════════════ */
+/* ───────────────────────────────────────────────
+   TABLES — DENSE, TABULAR
+─────────────────────────────────────────────── */
 thead th {
-  font-family: var(--sq-body) !important;
+  font-family: var(--t-ui) !important;
   font-size: 8px !important;
-  letter-spacing: 2.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 2px !important;
   text-transform: uppercase !important;
-  color: var(--sq-t3) !important;
-  background: rgba(0,0,0,.20) !important;
-  border-bottom: 1px solid var(--sq-b2) !important;
+  color: var(--t-tx3) !important;
+  background: rgba(0,0,0,.25) !important;
+  border-bottom: 1px solid var(--t-b1) !important;
 }
 td {
-  font-family: var(--sq-mono) !important;
+  font-family: var(--t-mono) !important;
   font-size: 10px !important;
-  color: var(--sq-t2) !important;
-  border-color: var(--sq-b3) !important;
+  font-weight: 400 !important;
+  color: var(--t-tx2) !important;
+  border-color: var(--t-b3) !important;
+  font-variant-numeric: tabular-nums !important;
 }
 tbody tr:hover td {
-  background: rgba(200,240,255,.03) !important;
+  background: rgba(59,130,246,.04) !important;
 }
 
 /* TM matrix */
 .txMx .rl {
-  font-family: var(--sq-body) !important;
+  font-family: var(--t-ui) !important;
   font-size: 8px !important;
   letter-spacing: 1px !important;
-  color: var(--sq-t3) !important;
+  color: var(--t-tx3) !important;
 }
 .txMx th {
-  font-family: var(--sq-body) !important;
-  letter-spacing: 2px !important;
-  color: var(--sq-t3) !important;
-  background: rgba(0,0,0,.25) !important;
+  font-family: var(--t-ui) !important;
+  letter-spacing: 1.5px !important;
+  color: var(--t-tx3) !important;
+  background: rgba(0,0,0,.20) !important;
 }
 
-/* ═══════════════════════════════
+/* ───────────────────────────────────────────────
    RISK PULSE
-═══════════════════════════════ */
+─────────────────────────────────────────────── */
 .riskPulse {
-  background: rgba(255,255,255,.025) !important;
-  border: 1px solid var(--sq-b1) !important;
-  border-radius: 7px !important;
+  background: var(--t-bg2) !important;
+  border: 1px solid var(--t-b1) !important;
+  border-radius: var(--t-r2) !important;
 }
 
-/* ═══════════════════════════════
+/* ───────────────────────────────────────────────
    NEWSFEED
-═══════════════════════════════ */
-.teNewsItem { border-bottom: 1px solid var(--sq-b3) !important; }
-.teNewsItem:hover { background: rgba(200,240,255,.025) !important; }
+─────────────────────────────────────────────── */
+.teNewsItem { border-bottom: 1px solid var(--t-b3) !important; }
+.teNewsItem:hover { background: rgba(59,130,246,.035) !important; }
 .teNewsTime {
-  font-family: var(--sq-body) !important;
+  font-family: var(--t-mono) !important;
   font-size: 8px !important;
-  letter-spacing: 2px !important;
-  color: var(--sq-t4) !important;
+  letter-spacing: 1px !important;
+  color: var(--t-tx3) !important;
   text-transform: uppercase !important;
 }
 .teNewsTitle {
-  font-family: var(--sq-body) !important;
+  font-family: var(--t-ui) !important;
   font-size: 11px !important;
-  color: var(--sq-t2) !important;
+  font-weight: 400 !important;
+  color: var(--t-tx2) !important;
   line-height: 1.5 !important;
 }
 .teNewsCategory.USD {
-  background: rgba(58,184,240,.10) !important;
-  color: var(--sq-ice2) !important;
-  border: 1px solid rgba(58,184,240,.22) !important;
-  font-family: var(--sq-body) !important;
+  background: rgba(59,130,246,.10) !important;
+  color: var(--t-blue2) !important;
+  border: 1px solid rgba(59,130,246,.22) !important;
+  font-family: var(--t-ui) !important;
   font-size: 7.5px !important;
   letter-spacing: 1.5px !important;
+  font-weight: 600 !important;
 }
 .teNewsCategory.EUR {
-  background: rgba(0,255,163,.07) !important;
-  color: var(--sq-live) !important;
-  border: 1px solid rgba(0,255,163,.18) !important;
+  background: rgba(16,185,129,.07) !important;
+  color: var(--t-green2) !important;
+  border: 1px solid rgba(16,185,129,.20) !important;
 }
 
-/* ═══════════════════════════════
-   GRID LAYOUT
-═══════════════════════════════ */
+/* ───────────────────────────────────────────────
+   PROBABILITY BARS
+─────────────────────────────────────────────── */
+.probBar > div {
+  border-radius: 2px !important;
+  filter: none !important;
+  box-shadow: none !important;
+}
+
+/* ───────────────────────────────────────────────
+   RISK STRIP
+─────────────────────────────────────────────── */
+.riskItem { border-color: var(--t-b3) !important; }
+.rv {
+  font-family: var(--t-mono) !important;
+  color: var(--t-tx1) !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+/* ───────────────────────────────────────────────
+   QX CONTEXT BOXES
+─────────────────────────────────────────────── */
+.qxMxCell {
+  background: var(--t-bg2) !important;
+  border: 1px solid var(--t-b2) !important;
+}
+.qxMxCell .lab {
+  font-family: var(--t-ui) !important;
+  font-size: 8px !important;
+  letter-spacing: 1.5px !important;
+  color: var(--t-tx3) !important;
+}
+.qxMxCell .val {
+  font-family: var(--t-mono) !important;
+  color: var(--t-tx1) !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+/* ───────────────────────────────────────────────
+   MISC
+─────────────────────────────────────────────── */
+.smallNote, .muted, .meta, .rm, .fm, .bm {
+  font-family: var(--t-ui) !important;
+  color: var(--t-tx3) !important;
+}
+.foot {
+  font-family: var(--t-ui) !important;
+  color: var(--t-tx4) !important;
+}
+.alertBadge {
+  font-family: var(--t-mono) !important;
+  font-size: 9px !important;
+  letter-spacing: 1px !important;
+}
+.staleWarning, #staleWarn {
+  background: rgba(239,68,68,.08) !important;
+  border: 1px solid rgba(239,68,68,.25) !important;
+  animation: termStale 2s ease-in-out infinite !important;
+}
+@keyframes termStale { 0%,100% { opacity: 1; } 50% { opacity: .65; } }
+
+/* Timeline */
+.tlLabel {
+  font-family: var(--t-mono) !important;
+  font-size: 8px !important;
+  letter-spacing: 1px !important;
+  color: var(--t-tx3) !important;
+}
+
+/* ───────────────────────────────────────────────
+   GRID
+─────────────────────────────────────────────── */
 .grid {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
@@ -6809,99 +6824,28 @@ tbody tr:hover td {
   padding: 12px !important;
   align-items: start !important;
 }
-.stack { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
+.stack { display: flex; flex-direction: column; gap: 10px; }
 .stack .card { flex-shrink: 0; margin: 0 !important; }
 
-/* ═══════════════════════════════
-   QXMX CONTEXT BOXES
-═══════════════════════════════ */
-.qxMxCell {
-  background: rgba(255,255,255,.025) !important;
-  border: 1px solid var(--sq-b2) !important;
-}
-.qxMxCell .lab {
-  font-family: var(--sq-body) !important;
-  font-size: 8px !important;
-  letter-spacing: 2px !important;
-  color: var(--sq-t3) !important;
-}
-.qxMxCell .val {
-  font-family: var(--sq-mono) !important;
-  color: var(--sq-t1) !important;
-}
-
-/* ═══════════════════════════════
-   MUTED / SMALL NOTES
-═══════════════════════════════ */
-.smallNote, .muted, .meta, .rm, .fm, .bm {
-  color: var(--sq-t3) !important;
-  font-family: var(--sq-body) !important;
-}
-.foot { color: var(--sq-t4) !important; }
-
-/* ═══════════════════════════════
-   SCROLLBARS
-═══════════════════════════════ */
+/* ───────────────────────────────────────────────
+   SCROLLBARS — INVISIBLE UNTIL HOVER
+─────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(200,240,255,.20);
+  background: rgba(148,163,184,.18);
   border-radius: 3px;
 }
-::-webkit-scrollbar-thumb:hover { background: rgba(200,240,255,.45); }
+::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,.38); }
 
-/* ═══════════════════════════════
-   SELECTION
-═══════════════════════════════ */
-::selection { background: rgba(200,240,255,.18); color: #fff; }
+/* Selection */
+::selection { background: rgba(59,130,246,.25); color: var(--t-tx1); }
 
-/* ═══════════════════════════════
-   STALE WARNING
-═══════════════════════════════ */
-.staleWarning, #staleWarn {
-  background: rgba(255,61,85,.08) !important;
-  border: 1px solid rgba(255,61,85,.25) !important;
-  animation: sqStale 2s ease-in-out infinite !important;
+/* Tabular nums globally for all numeric-looking elements */
+.v, .fv, .qv, .cv, .rv, td, .fpBox, .paBox, .macroBox,
+.sharpeBox, .qeBox, .quotePx, .fcastBox {
+  font-variant-numeric: tabular-nums !important;
 }
-@keyframes sqStale { 0%,100% { opacity: 1; } 50% { opacity: .65; } }
-
-/* Probability bars — faint glow */
-.probBar > div {
-  border-radius: 2px !important;
-  filter: brightness(1.1) !important;
-}
-
-/* Alert badge */
-.alertBadge {
-  font-family: var(--sq-body) !important;
-  font-size: 9px !important;
-  letter-spacing: 1.5px !important;
-}
-
-/* QEdge / FP header numbers */
-.fpTfHeader .fpTfLabel {
-  font-family: var(--sq-body) !important;
-  font-size: 8px !important;
-  letter-spacing: 2px !important;
-  color: var(--sq-t3) !important;
-}
-
-/* Risk strip */
-.riskStrip { border-color: var(--sq-b2) !important; }
-.riskItem   { border-color: var(--sq-b3) !important; }
-.rv { font-family: var(--sq-mono) !important; color: var(--sq-t1) !important; }
-
-/* Timeline */
-.tlLabel {
-  font-family: var(--sq-body) !important;
-  font-size: 8px !important;
-  letter-spacing: 2px !important;
-  color: var(--sq-t4) !important;
-}
-.tlCanvas { filter: drop-shadow(0 0 4px rgba(200,240,255,.20)) !important; }
-
-/* Compact card override */
-.qx-ultra-compact .card-title .hint { opacity: .7 !important; }
 
 </style>
 
