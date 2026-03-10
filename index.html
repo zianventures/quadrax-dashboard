@@ -6194,5 +6194,189 @@ body::after{
 })();
 </script>
 
+
+<!-- Final symmetry + cinematic luxe pass. Visual/layout only. -->
+<style id="qx-cinematic-balance-pass">
+:root{
+  --qx-cine-blue: rgba(80,140,255,.34);
+  --qx-cine-teal: rgba(0,224,180,.22);
+  --qx-cine-violet: rgba(132,82,255,.20);
+  --qx-cine-gold: rgba(255,184,76,.14);
+}
+
+/* stronger cinematic atmosphere */
+body::before{
+  content:"";
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(1400px 520px at 4% -8%, var(--qx-cine-violet), transparent 56%),
+    radial-gradient(1200px 420px at 100% 0%, var(--qx-cine-teal), transparent 52%),
+    radial-gradient(900px 340px at 50% 100%, var(--qx-cine-blue), transparent 58%),
+    radial-gradient(680px 240px at 48% 14%, var(--qx-cine-gold), transparent 65%);
+  opacity:.98;
+}
+body::after{
+  content:"";
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.022), rgba(255,255,255,0) 18%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,.016) 0 1px, transparent 1px 18px);
+  opacity:.12;
+  mix-blend-mode:screen;
+}
+
+.wrap{max-width:1680px!important; padding:12px 16px 40px!important}
+.grid{gap:12px!important}
+.stack{gap:12px!important}
+
+.card,.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip,.fcastBox,.sharpeBox{
+  background:
+    linear-gradient(180deg, rgba(13,22,42,.92), rgba(6,10,22,.96))!important;
+  border:1px solid rgba(255,255,255,.085)!important;
+  box-shadow:
+    0 30px 70px rgba(0,0,0,.38),
+    0 8px 24px rgba(0,0,0,.14),
+    inset 0 1px 0 rgba(255,255,255,.03)!important;
+}
+.card::before,.hero::before,.quoteCard::before,.sessLeft::before,.sessRight::before,.intelTile::before,.tmBox::before,.macroBox::before,.fpTfBox::before,.paBox::before{
+  content:"";
+  position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0) 17%),
+    radial-gradient(620px 150px at 0% -12%, var(--qx-cine-blue), transparent 72%),
+    radial-gradient(560px 170px at 100% -12%, var(--qx-cine-teal), transparent 72%);
+  opacity:1;
+}
+.card .inner{padding:13px 14px 12px!important}
+.card-title{margin-bottom:8px!important}
+.card-title h2{
+  font-size:10px!important;
+  letter-spacing:1.8px!important;
+  color:rgba(232,234,240,.55)!important;
+}
+.card-title .hint{
+  font-size:9.8px!important;
+  line-height:1.42!important;
+  color:rgba(232,234,240,.42)!important;
+}
+.stateBig{font-size:23px!important}
+.quotePx{font-size:46px!important; letter-spacing:-1.1px}
+.topbar{box-shadow:0 24px 60px rgba(0,0,0,.35)!important}
+
+/* compact all lower cards harder */
+.qx-dense .inner{padding:11px 12px 11px!important}
+.qx-dense .card-title{margin-bottom:6px!important}
+.qx-dense .card-title h2{font-size:9px!important}
+.qx-dense .card-title .hint{font-size:9px!important}
+.qx-dense .smallNote,.qx-dense .muted,.qx-dense .meta{line-height:1.34!important}
+.qx-dense .tableWrap,.qx-dense .eqWrap,.qx-dense .paLog,.qx-dense .coneWrap{min-height:0!important}
+.qx-dense .tmBox,.qx-dense .macroBox,.qx-dense .intelTile,.qx-dense .paBox,.qx-dense .riskItem,.qx-dense .fpTfBox{padding:9px 10px!important}
+.qx-dense .rbig{font-size:26px!important}
+.qx-dense .tmBar,.qx-dense .pbar{height:3px!important}
+
+/* explicit hide for risk card */
+.qx-kill{display:none!important}
+
+/* make session intelligence a premium dense strip */
+.qx-session-strip .dayRow{padding:9px 10px!important}
+.qx-session-strip .sessGrid,.qx-session-strip .sessionGrid{gap:8px!important}
+.qx-session-strip .sessCard,.qx-session-strip .dayCard{min-height:0!important}
+
+/* make projection/performance more compact if moved */
+.qx-compact-wide .card-title .hint{max-width:none!important}
+.qx-compact-wide .tableWrap,.qx-compact-wide .eqWrap{min-height:0!important}
+</style>
+
+<script id="qx-cinematic-balance-pass-script">
+(function(){
+  function cards(){ return Array.prototype.slice.call(document.querySelectorAll('.card')); }
+  function title(card){
+    var h2 = card && card.querySelector('.card-title h2');
+    return h2 ? h2.textContent.trim() : '';
+  }
+  function findCard(txt){
+    return cards().find(function(c){ return title(c).toLowerCase().indexOf(txt.toLowerCase()) !== -1; });
+  }
+  function stacks(){ return Array.prototype.slice.call(document.querySelectorAll('.grid > .stack')); }
+  function moveAfter(card, stack, anchorTxt){
+    if(!card || !stack) return;
+    var arr = Array.prototype.slice.call(stack.children);
+    var anchor = arr.find(function(c){ return title(c).toLowerCase().indexOf(anchorTxt.toLowerCase()) !== -1; });
+    if(anchor){
+      if(anchor.nextSibling) stack.insertBefore(card, anchor.nextSibling);
+      else stack.appendChild(card);
+    } else {
+      stack.appendChild(card);
+    }
+  }
+  function moveTop(card, stack){
+    if(card && stack) stack.insertBefore(card, stack.firstChild);
+  }
+  function dense(card){ if(card) card.classList.add('qx-dense'); }
+  function compactWide(card){ if(card) card.classList.add('qx-compact-wide'); }
+  function kill(card){ if(card) card.classList.add('qx-kill'); }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var ss = stacks();
+    if(ss.length < 2) return;
+    var left = ss[0], right = ss[1];
+
+    var market = findCard('Current Market State');
+    var qedge = findCard('Quantitative Edge');
+    var bus = findCard('Unified Signal Bus');
+    var forecast = findCard('Forward Projection');
+    var sessionIntel = findCard('Session Intelligence');
+    var projAcc = findCard('Projection Accuracy');
+    var performance = findCard('Signal Performance');
+
+    var trans = findCard('Transmission Mechanism');
+    var matrix = findCard('HMM Transition Matrix');
+    var signalIntel = findCard('Signal Intelligence');
+    var sessionPlay = findCard('Session Playbook');
+    var risk = findCard('Risk Level');
+
+    // Remove risk card no matter where it landed
+    kill(risk);
+
+    // Rebuild balanced left story
+    moveTop(market, left);
+    moveAfter(qedge, left, 'Current Market State');
+    moveAfter(bus, left, 'Quantitative Edge');
+    moveAfter(forecast, left, 'Unified Signal Bus');
+    moveAfter(sessionIntel, left, 'Forward Projection');
+    moveAfter(projAcc, left, 'Session Intelligence');
+    moveAfter(performance, left, 'Projection Accuracy');
+
+    // Dense formatting for left lower modules to eliminate wells of dead space
+    [sessionIntel, projAcc, performance].forEach(function(card){
+      dense(card); compactWide(card);
+    });
+    if(sessionIntel) sessionIntel.classList.add('qx-session-strip');
+
+    // Keep right focused and compact
+    [trans, matrix, signalIntel, sessionPlay].forEach(function(card){
+      dense(card); compactWide(card);
+    });
+
+    // Make sure right still starts with transmission/matrix/signal
+    moveTop(trans, right);
+    moveAfter(matrix, right, 'Transmission Mechanism');
+    moveAfter(signalIntel, right, 'HMM Transition Matrix');
+    moveAfter(sessionPlay, right, 'Signal Intelligence');
+
+    // remove any forced min heights that can create empty wells
+    cards().forEach(function(card){
+      if(card.classList.contains('qx-kill')) return;
+      card.style.minHeight = '0';
+      var inner = card.querySelector('.inner');
+      if(inner) inner.style.minHeight = '0';
+      card.querySelectorAll('.tvWrap,.tableWrap,.eqWrap,.paLog,.coneWrap,.dayRow,.sessGrid,.sessionGrid').forEach(function(el){
+        el.style.minHeight = '0';
+      });
+    });
+  });
+})();
+</script>
+
 </body>
 </html>
