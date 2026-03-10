@@ -5,25 +5,27 @@
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>QuadraX Dashboard</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&amp;family=IBM+Plex+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg0:#03050b;--bg1:#050814;--bg2:#070d1a;--bg3:#0a1224;
+  --bg0:#010205;--bg1:#030610;--bg2:#060a18;--bg3:#090e22;
   --surface:#111827;--surface2:#141e32;--surface3:#1a2540;
   --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.11);--border3:rgba(255,255,255,.16);
-  --green:#00d68f;--green2:#00ff9d;--amber:#f5a623;--red:#ff4757;--blue:#2979ff;--purple:#7c5cfc;--cyan:#00d4ff;--orange:#ff6b35;
+  --green:#00e5a0;--green2:#00ffa8;--amber:#ffc107;--red:#ff3448;--blue:#2196f3;--purple:#9c27ff;--cyan:#00e5ff;--orange:#ff6d00;--gold:#ffd700;--indigo:#5c6bc0;
   --text:#e8eaf0;--text2:rgba(232,234,240,.70);--text3:rgba(232,234,240,.42);--text4:rgba(232,234,240,.25);
-  --mono:'JetBrains Mono',ui-monospace,monospace;--font:'Space Grotesk',ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;--font:'Barlow',ui-sans-serif,system-ui,-apple-system,sans-serif;--font-display:'Bebas Neue','Barlow Condensed',sans-serif;--font-cond:'Barlow Condensed','Barlow',sans-serif;
   --r:16px;--r2:12px;--r3:8px;
-  --sh:0 24px 64px rgba(0,0,0,.70),0 8px 24px rgba(0,0,0,.40);
-  --sh2:0 8px 28px rgba(0,0,0,.45);
-  --sh3:0 2px 8px rgba(0,0,0,.30);
-  --glow-green:0 0 20px rgba(0,214,143,.18);
-  --glow-blue:0 0 20px rgba(41,121,255,.18);
-  --glow-amber:0 0 20px rgba(245,166,35,.18);
-  --glow-red:0 0 20px rgba(255,71,87,.18);
+  --sh:0 32px 80px rgba(0,0,0,.85),0 12px 32px rgba(0,0,0,.60),inset 0 1px 0 rgba(255,255,255,.04);
+  --sh2:0 12px 40px rgba(0,0,0,.65),0 4px 16px rgba(0,0,0,.45);
+  --sh3:0 4px 12px rgba(0,0,0,.40);
+  --glow-green:0 0 32px rgba(0,229,160,.30),0 0 64px rgba(0,229,160,.12);
+  --glow-blue:0 0 32px rgba(33,150,243,.30),0 0 64px rgba(33,150,243,.12);
+  --glow-amber:0 0 32px rgba(255,193,7,.30),0 0 64px rgba(255,193,7,.12);
+  --glow-red:0 0 32px rgba(255,52,72,.30),0 0 64px rgba(255,52,72,.12);
+  --glow-purple:0 0 32px rgba(156,39,255,.30),0 0 64px rgba(156,39,255,.12);
+  --glow-gold:0 0 32px rgba(255,215,0,.25);
 }
 html,body{height:100%;scroll-behavior:smooth}
 body{margin:0;font-family:var(--font);color:var(--text);background:var(--bg0);overflow-x:hidden;
@@ -1332,7 +1334,6 @@ body.qx-auth-locked .wrap{display:none!important}
       Session logic: Asia drift, London open break, NY continuation, overlap volatility, post-fix decay. Bus cadence: 15m.
     </div>
 </div></div>
-<div class="card"><div class="inner riskLevel"><div class="rlabel">Risk Level</div><div class="rbig" id="riskBig">--</div><div class="rrule" id="riskRule">Policy: state-aware sizing and entry gating</div></div></div>
 <div class="card"><div class="inner">
 <div class="card-title">
 <h2>Signal Intelligence · Command Layer</h2>
@@ -6132,14 +6133,7 @@ body::after{
   function hide(card){
     if(card) card.classList.add('qx-hidden-card');
   }
-  function addBrandPill(){
-    var brand = document.querySelector('.brand');
-    if(!brand || brand.querySelector('.qx-brandSuper')) return;
-    var pill = document.createElement('div');
-    pill.className = 'qx-brandSuper';
-    pill.innerHTML = '<i></i><span>Market Superintelligence</span>';
-    brand.appendChild(pill);
-  }
+  // addBrandPill removed — first pill (qxSuperPill) is kept
   function rebalance(){
     var ss = stacks();
     if(ss.length < 2) return;
@@ -6172,12 +6166,17 @@ body::after{
 
     compact(trans); compact(matrix); compact(signalIntel); compact(sessionPlay); compact(projAcc); compact(performance);
 
-    // leave left side focused on market/signal/consensus/forecast, but remove giant bottom gaps
+    // Left side: no gaps — compact everything and remove min-heights aggressively
     if(sessionIntel) moveAfter(sessionIntel, left, 'Forward Projection');
     compact(sessionIntel);
-
-    // compact quote / edge / bus a touch too
     compact(qedge); compact(bus);
+
+    // Eliminate all min-height spacers on left side too
+    Array.prototype.slice.call(left.children).forEach(function(card){
+      card.style.minHeight = '0';
+      card.querySelectorAll('[style*="min-height"]').forEach(function(el){ el.style.minHeight = '0'; });
+      card.querySelectorAll('.tvWrap,.tableWrap,.eqWrap,.paLog,.coneWrap,.minHack').forEach(function(el){ el.style.minHeight='0'; });
+    });
 
     // remove any preserved empty min-heights on right-side panels
     [trans, matrix, signalIntel, sessionPlay, projAcc, performance].forEach(function(card){
@@ -6188,11 +6187,412 @@ body::after{
     });
   }
   document.addEventListener('DOMContentLoaded', function(){
-    addBrandPill();
     rebalance();
   });
 })();
 </script>
+
+
+<style id="qx-hyper-cinematic-8k">
+/* ═══════════════════════════════════════════════════════════════════════════
+   HYPER-CINEMATIC 8K UPGRADE — DARK · MOODY · EPIC · ATMOSPHERIC
+   Dramatic ambient lighting, vivid accents, immersive depth
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Animated noise grain overlay ─────────────────────────────────────── */
+body::before {
+  content:'';
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size:128px 128px;
+  opacity:.028;
+  mix-blend-mode:overlay;
+  animation:grainShift 8s steps(1) infinite;
+}
+@keyframes grainShift {
+  0%{background-position:0 0} 10%{background-position:-20px 30px}
+  20%{background-position:40px -20px} 30%{background-position:-30px 50px}
+  40%{background-position:20px -40px} 50%{background-position:-50px 20px}
+  60%{background-position:30px 40px} 70%{background-position:-10px -30px}
+  80%{background-position:50px 10px} 90%{background-position:-40px -10px}
+  100%{background-position:0 0}
+}
+
+/* ── Ambient light blobs in background ─────────────────────────────────── */
+body::after {
+  content:'';
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 800px 500px at 15% 20%, rgba(33,150,243,.055) 0%, transparent 70%),
+    radial-gradient(ellipse 600px 400px at 85% 75%, rgba(0,229,160,.045) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 300px at 50% 100%, rgba(156,39,255,.035) 0%, transparent 65%),
+    radial-gradient(ellipse 400px 250px at 90% 5%, rgba(255,193,7,.030) 0%, transparent 60%);
+  animation:ambientPulse 12s ease-in-out infinite alternate;
+}
+@keyframes ambientPulse {
+  from{opacity:.7} to{opacity:1.0}
+}
+
+/* ── Body background: deep void with subtle vignette ───────────────────── */
+body {
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 0%, #070d1e 0%, #010205 55%),
+    radial-gradient(ellipse 100% 60% at 50% 100%, #050812 0%, #010205 60%),
+    #010205 !important;
+  font-family:'Barlow',ui-sans-serif,system-ui,sans-serif !important;
+}
+
+/* ── Topbar: glass morphism with dramatic gradient border ───────────────── */
+.topbar {
+  background:linear-gradient(180deg, rgba(12,18,40,.96) 0%, rgba(6,10,24,.98) 100%) !important;
+  border-bottom:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.06),
+    0 8px 40px rgba(0,0,0,.80),
+    0 0 80px rgba(33,150,243,.06) !important;
+  backdrop-filter:blur(24px) saturate(1.4) !important;
+  position:relative;z-index:100;
+}
+.topbar::after {
+  content:'';
+  position:absolute;bottom:-1px;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(33,150,243,.4) 20%,
+    rgba(0,229,160,.5) 50%,
+    rgba(156,39,255,.4) 80%,
+    transparent 100%);
+}
+
+/* ── Brand: bigger, bolder, more cinematic ─────────────────────────────── */
+.brand h1 {
+  font-family:'Bebas Neue','Barlow Condensed',sans-serif !important;
+  font-size:22px !important;
+  letter-spacing:2.5px !important;
+  font-weight:400 !important;
+  color:#ffffff !important;
+  text-shadow:0 0 30px rgba(33,150,243,.6),0 0 60px rgba(33,150,243,.25) !important;
+}
+.brand .sub {
+  font-family:'Barlow Condensed',sans-serif !important;
+  font-size:9px !important;
+  letter-spacing:2px !important;
+  text-transform:uppercase !important;
+  color:rgba(255,255,255,.35) !important;
+}
+.qxlogo {
+  font-family:'Bebas Neue',sans-serif !important;
+  font-size:18px !important;
+  letter-spacing:2px !important;
+  background:linear-gradient(135deg, #2196f3, #00e5ff, #00e5a0) !important;
+  -webkit-background-clip:text !important;
+  -webkit-text-fill-color:transparent !important;
+  background-clip:text !important;
+  filter:drop-shadow(0 0 12px rgba(33,150,243,.8)) !important;
+}
+
+/* ── Cards: deep glass with dramatic edge lighting ─────────────────────── */
+.card {
+  background:
+    linear-gradient(160deg, rgba(20,30,60,.85) 0%, rgba(8,14,34,.90) 100%) !important;
+  border:1px solid rgba(255,255,255,.07) !important;
+  box-shadow:
+    0 32px 80px rgba(0,0,0,.80),
+    0 8px 24px rgba(0,0,0,.50),
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 -1px 0 rgba(0,0,0,.20) !important;
+  border-radius:14px !important;
+  position:relative;overflow:hidden;
+  transition:box-shadow .3s ease, border-color .3s ease !important;
+}
+.card::before {
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(135deg, rgba(255,255,255,.025) 0%, transparent 60%);
+  pointer-events:none;z-index:0;border-radius:inherit;
+}
+.card:hover {
+  border-color:rgba(33,150,243,.25) !important;
+  box-shadow:
+    0 32px 80px rgba(0,0,0,.85),
+    0 8px 24px rgba(0,0,0,.55),
+    0 0 0 1px rgba(33,150,243,.12),
+    0 0 40px rgba(33,150,243,.08),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+.card > .inner { position:relative;z-index:1; }
+
+/* ── Card titles: uppercase tracked, glowing ───────────────────────────── */
+.card-title h2 {
+  font-family:'Barlow Condensed',sans-serif !important;
+  font-size:11px !important;
+  font-weight:600 !important;
+  letter-spacing:2.5px !important;
+  text-transform:uppercase !important;
+  color:rgba(255,255,255,.65) !important;
+}
+
+/* ── Hero state widget: cinematic large text ────────────────────────────── */
+.stateBig {
+  font-family:'Bebas Neue',sans-serif !important;
+  font-size:28px !important;
+  letter-spacing:3px !important;
+  text-shadow:0 0 40px currentColor !important;
+}
+
+/* ── Numbers / mono values: sharp electric look ─────────────────────────── */
+.quotePx {
+  font-family:'JetBrains Mono',monospace !important;
+  font-size:42px !important;
+  letter-spacing:-2px !important;
+  background:linear-gradient(180deg,#ffffff 30%,rgba(200,220,255,.80) 100%) !important;
+  -webkit-background-clip:text !important;
+  -webkit-text-fill-color:transparent !important;
+  background-clip:text !important;
+  filter:drop-shadow(0 0 20px rgba(33,150,243,.5)) !important;
+}
+
+/* ── Positive/negative values: vivid electric colors ───────────────────── */
+.pos, .up { color:#00e5a0 !important; text-shadow:0 0 16px rgba(0,229,160,.50) !important; }
+.neg, .dn { color:#ff3448 !important; text-shadow:0 0 16px rgba(255,52,72,.50) !important; }
+.warn      { color:#ffc107 !important; text-shadow:0 0 16px rgba(255,193,7,.40) !important; }
+
+/* ── Buttons: more cinematic ──────────────────────────────────────────── */
+.btn {
+  background:rgba(255,255,255,.04) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  color:rgba(255,255,255,.60) !important;
+  font-family:'Barlow Condensed',sans-serif !important;
+  font-size:11px !important;
+  letter-spacing:1.5px !important;
+  text-transform:uppercase !important;
+  border-radius:6px !important;
+  transition:all .2s ease !important;
+  backdrop-filter:blur(8px) !important;
+}
+.btn:hover {
+  background:rgba(33,150,243,.15) !important;
+  border-color:rgba(33,150,243,.45) !important;
+  color:rgba(255,255,255,.90) !important;
+  box-shadow:0 0 20px rgba(33,150,243,.20) !important;
+}
+.btn.primary {
+  background:linear-gradient(135deg, rgba(33,150,243,.25), rgba(0,229,160,.15)) !important;
+  border-color:rgba(33,150,243,.40) !important;
+  color:rgba(200,235,255,.90) !important;
+  box-shadow:0 0 20px rgba(33,150,243,.15) !important;
+}
+.btn.primary:hover {
+  background:linear-gradient(135deg, rgba(33,150,243,.40), rgba(0,229,160,.25)) !important;
+  box-shadow:0 0 30px rgba(33,150,243,.30) !important;
+}
+
+/* ── Sync badge / status pills ──────────────────────────────────────────── */
+.syncBadge, .pill, .pillTag {
+  backdrop-filter:blur(12px) !important;
+}
+.dot { box-shadow:0 0 0 3px rgba(0,229,160,.15),0 0 12px rgba(0,229,160,.50) !important; }
+.dot.amber { box-shadow:0 0 0 3px rgba(255,193,7,.15),0 0 12px rgba(255,193,7,.50) !important; }
+.dot.red   { box-shadow:0 0 0 3px rgba(255,52,72,.15), 0 0 12px rgba(255,52,72,.50)  !important; }
+
+/* ── Risk pulse widget ──────────────────────────────────────────────────── */
+.riskPulse {
+  background:rgba(0,0,0,.35) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  backdrop-filter:blur(16px) !important;
+}
+
+/* ── Section labels: small caps with letter spacing ─────────────────────── */
+.k, .rlabel, .sec-label, .fpTfLabel, .rpLabel {
+  font-family:'Barlow Condensed',sans-serif !important;
+  letter-spacing:2px !important;
+  font-size:9px !important;
+  font-weight:600 !important;
+  text-transform:uppercase !important;
+  color:rgba(255,255,255,.30) !important;
+}
+
+/* ── Timeline canvas glow ───────────────────────────────────────────────── */
+.tlCanvas { filter:drop-shadow(0 0 6px rgba(33,150,243,.30)) !important; }
+
+/* ── Table rows: less harsh borders ────────────────────────────────────── */
+tbody tr:hover td { background:rgba(33,150,243,.06) !important; }
+thead th {
+  font-family:'Barlow Condensed',sans-serif !important;
+  font-size:9px !important;
+  letter-spacing:2px !important;
+  text-transform:uppercase !important;
+  color:rgba(255,255,255,.28) !important;
+  background:rgba(0,0,0,.25) !important;
+}
+
+/* ── Grid / stack layout: tighter, no dead space ────────────────────────── */
+.grid {
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:14px !important;
+  padding:14px !important;
+  align-items:start !important;
+}
+.stack { display:flex;flex-direction:column;gap:10px;align-items:stretch; }
+.stack .card { flex-shrink:0;margin:0 !important; }
+
+/* ── HMM hero: add ambient colored border on regime ────────────────────── */
+.hero {
+  background:linear-gradient(160deg, rgba(255,255,255,.025) 0%, transparent 100%) !important;
+  border:1px solid rgba(255,255,255,.06) !important;
+  border-radius:10px !important;
+}
+
+/* ── Chip rows: dark glass look ─────────────────────────────────────────── */
+.chip {
+  background:rgba(0,0,0,.40) !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+  font-size:9.5px !important;
+  backdrop-filter:blur(8px) !important;
+  border-radius:6px !important;
+}
+.chip b { color:rgba(255,255,255,.85) !important; }
+
+/* ── Quote card: dramatic ────────────────────────────────────────────────── */
+.quoteCard {
+  background:
+    linear-gradient(135deg, rgba(33,150,243,.08) 0%, rgba(0,229,160,.05) 100%),
+    linear-gradient(160deg, rgba(20,30,60,.85) 0%, rgba(8,14,34,.90) 100%) !important;
+  border:1px solid rgba(33,150,243,.18) !important;
+  box-shadow:
+    0 32px 80px rgba(0,0,0,.80),
+    0 0 60px rgba(33,150,243,.08),
+    inset 0 1px 0 rgba(33,150,243,.15) !important;
+}
+
+/* ── Signal bus banner: neon accent ──────────────────────────────────────── */
+.busBanner {
+  background:linear-gradient(135deg, rgba(33,150,243,.12) 0%, rgba(0,229,160,.08) 100%) !important;
+  border:1px solid rgba(0,229,160,.18) !important;
+}
+.busBannerDir {
+  font-family:'Bebas Neue',sans-serif !important;
+  font-size:40px !important;
+  letter-spacing:3px !important;
+  text-shadow:0 0 40px currentColor !important;
+}
+
+/* ── FP boxes: vivid accents ─────────────────────────────────────────────── */
+.fpBox {
+  background:rgba(0,0,0,.30) !important;
+  border:1px solid rgba(255,255,255,.06) !important;
+  border-radius:10px !important;
+}
+.fpBox .v {
+  font-family:'JetBrains Mono',monospace !important;
+  background:linear-gradient(180deg,#fff 0%,rgba(180,220,255,.85) 100%) !important;
+  -webkit-background-clip:text !important;
+  -webkit-text-fill-color:transparent !important;
+  background-clip:text !important;
+}
+
+/* ── PA boxes: same depth ────────────────────────────────────────────────── */
+.paBox {
+  background:rgba(0,0,0,.30) !important;
+  border:1px solid rgba(255,255,255,.06) !important;
+  border-radius:10px !important;
+}
+.paBox.hero {
+  background:linear-gradient(135deg, rgba(33,150,243,.12), rgba(0,229,160,.07)) !important;
+  border-color:rgba(33,150,243,.22) !important;
+  box-shadow:0 0 24px rgba(33,150,243,.12) !important;
+}
+
+/* ── Macro boxes ─────────────────────────────────────────────────────────── */
+.macroBox {
+  background:rgba(0,0,0,.30) !important;
+  border:1px solid rgba(255,255,255,.06) !important;
+  border-radius:8px !important;
+}
+
+/* ── TM matrix cells ─────────────────────────────────────────────────────── */
+.txMx td {
+  border-color:rgba(255,255,255,.05) !important;
+}
+
+/* ── Intel tiles: depth and drama ────────────────────────────────────────── */
+.intelTile {
+  background:rgba(0,0,0,.35) !important;
+  border:1px solid rgba(255,255,255,.07) !important;
+  border-radius:9px !important;
+}
+
+/* ── Conviction meter ────────────────────────────────────────────────────── */
+.convicText .cv {
+  font-family:'Bebas Neue',sans-serif !important;
+  font-size:34px !important;
+  letter-spacing:2px !important;
+}
+
+/* ── Session cards ────────────────────────────────────────────────────────── */
+.sessLeft, .sessRight {
+  border:1px solid rgba(255,255,255,.06) !important;
+  background:rgba(0,0,0,.30) !important;
+  border-radius:8px !important;
+}
+
+/* ── News feed: subtle border ─────────────────────────────────────────────── */
+.teNewsItem { border-bottom:1px solid rgba(255,255,255,.04) !important; }
+.teNewsItem:hover { background:rgba(33,150,243,.05) !important; }
+
+/* ── Scrollbars: dark custom ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width:4px;height:4px; }
+::-webkit-scrollbar-track { background:rgba(255,255,255,.02); }
+::-webkit-scrollbar-thumb { background:rgba(33,150,243,.30);border-radius:4px; }
+::-webkit-scrollbar-thumb:hover { background:rgba(33,150,243,.55); }
+
+/* ── Market Superintelligence pill: single, dramatic ────────────────────── */
+.qxSuperPill, .qx-brandSuper {
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px 4px 9px;
+  border-radius:999px;
+  background:linear-gradient(135deg, rgba(33,150,243,.18) 0%, rgba(0,229,160,.12) 100%);
+  border:1px solid rgba(33,150,243,.35);
+  box-shadow:0 0 20px rgba(33,150,243,.18),inset 0 1px 0 rgba(255,255,255,.08);
+  font-family:'Barlow Condensed',sans-serif !important;
+  font-size:9.5px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(180,220,255,.90);
+  backdrop-filter:blur(12px);
+}
+.qxSuperPill i, .qx-brandSuper i {
+  width:5px;height:5px;border-radius:50%;
+  background:radial-gradient(circle, #00e5ff, #2196f3);
+  box-shadow:0 0 8px rgba(0,229,255,.80);
+  animation:pillPulse 2s ease-in-out infinite;
+  flex-shrink:0;
+}
+@keyframes pillPulse {
+  0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(1.4)}
+}
+
+/* ── Remove any residual negative space hacks ────────────────────────────── */
+.qx-rebalanced { min-height:0 !important; }
+.qx-rebalanced .card { min-height:0 !important; }
+.qx-hidden-card { display:none !important; }
+
+/* ── Animated bottom gradient on cards (edge light) ─────────────────────── */
+@keyframes cardEdgePulse {
+  0%,100%{opacity:.4} 50%{opacity:.8}
+}
+
+/* ── Pro touch: selection color ──────────────────────────────────────────── */
+::selection { background:rgba(33,150,243,.35);color:#fff; }
+
+/* ── Stale data warning: more dramatic ───────────────────────────────────── */
+.staleWarning, #staleWarn {
+  background:linear-gradient(135deg, rgba(255,52,72,.15), rgba(255,193,7,.10)) !important;
+  border:1px solid rgba(255,52,72,.35) !important;
+  animation:staleFlash 2s ease-in-out infinite !important;
+}
+@keyframes staleFlash { 0%,100%{opacity:1} 50%{opacity:.7} }
+
+</style>
 
 </body>
 </html>
