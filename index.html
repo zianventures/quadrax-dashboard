@@ -884,6 +884,168 @@ body.qx-auth-locked .wrap{display:none!important}
 }
 </style>
 
+
+<!-- Step 1: visual enhancement layer only. Preserves baseline structure and panel order. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+<style id="qx-v37-visual-enhancement-step1">
+:root{
+  --qx-ink:#E6EDF3;
+  --qx-ink2:#B2C0D4;
+  --qx-ink3:#73839A;
+  --qx-blue:#3DA9FF;
+  --qx-green:#2EE6A6;
+  --qx-violet:#9B7CFF;
+  --qx-amber:#FFB347;
+  --qx-red:#FF5C7A;
+  --qx-shadow:0 26px 80px rgba(0,0,0,.46), 0 12px 30px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.03);
+  --qx-shadow-soft:0 18px 44px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.03);
+  --qx-ease:cubic-bezier(.22,1,.36,1);
+}
+html,body{
+  color:var(--qx-ink)!important;
+  font-family:Inter, system-ui, sans-serif!important;
+  background:
+    radial-gradient(1400px 700px at 10% -10%, rgba(61,169,255,.16), transparent 56%),
+    radial-gradient(1100px 620px at 100% 6%, rgba(46,230,166,.12), transparent 52%),
+    radial-gradient(980px 520px at 50% 110%, rgba(155,124,255,.12), transparent 56%),
+    linear-gradient(180deg, #02050b 0%, #07101a 56%, #0a1522 100%)!important;
+}
+body::before{
+  content:"";
+  position:fixed; inset:0; z-index:-2; pointer-events:none;
+  background:
+    radial-gradient(880px 280px at 24% 14%, rgba(255,179,71,.08), transparent 62%),
+    radial-gradient(1180px 420px at 78% 20%, rgba(255,92,122,.06), transparent 70%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,.010) 0 1px, transparent 1px 20px);
+  opacity:.82;
+  mix-blend-mode:screen;
+}
+body::after{
+  content:"";
+  position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:radial-gradient(ellipse at center, rgba(0,0,0,0) 0%, rgba(0,0,0,.34) 62%, rgba(0,0,0,.58) 100%);
+}
+.wrap{max-width:1600px!important;padding:18px 18px 58px!important}
+.grid{gap:14px!important;margin-top:14px!important}
+.stack{gap:14px!important}
+.topbar{
+  background:rgba(8,13,24,.78)!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 22px 60px rgba(0,0,0,.42)!important;
+  backdrop-filter:blur(18px) saturate(1.15)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(1.15)!important;
+}
+.brand h1{
+  font-family:"Space Grotesk", Inter, sans-serif!important;
+  font-size:16px!important;
+  letter-spacing:-.38px!important;
+  color:var(--qx-ink)!important;
+}
+.brand .sub{
+  color:rgba(230,237,243,.46)!important;
+  letter-spacing:.2px!important;
+}
+.qxlogo{
+  width:42px!important;height:42px!important;border-radius:12px!important;
+  background:linear-gradient(135deg, rgba(61,169,255,.28), rgba(46,230,166,.15), rgba(155,124,255,.12))!important;
+  border:1px solid rgba(255,255,255,.10)!important;
+  box-shadow:0 16px 34px rgba(0,0,0,.34)!important;
+}
+.pill,.btn,.syncBadge,.riskPulse,.tagOk,.chip,.impact,.dayBadge,.qStatus,.fcastBias,.srcPill,
+.quotePx,.qv,.v,.bv,.fv,.rbig,.busBannerDir,.convicText .cv,.ds,.aType,.fpTfRange,.fpTfTarget,.paCalibRow .cv{
+  font-family:"JetBrains Mono", ui-monospace, monospace!important;
+  font-variant-numeric:tabular-nums!important;
+}
+.btn{
+  background:rgba(255,255,255,.045)!important;
+  border:1px solid rgba(255,255,255,.10)!important;
+  transition:transform .16s var(--qx-ease), background .16s var(--qx-ease), border-color .16s var(--qx-ease), box-shadow .16s var(--qx-ease)!important;
+}
+.btn:hover{
+  transform:translateY(-1px)!important;
+  background:rgba(255,255,255,.08)!important;
+  border-color:rgba(255,255,255,.16)!important;
+  box-shadow:0 10px 24px rgba(0,0,0,.18)!important;
+}
+.btn.primary{
+  background:linear-gradient(135deg, rgba(61,169,255,.30), rgba(46,230,166,.14))!important;
+  border-color:rgba(61,169,255,.24)!important;
+  color:#eef7ff!important;
+}
+.card,.hero,.quoteCard,.sessLeft,.sessRight,.qeBox,.macroBox,.tmBox,.fpBox,.fpTfBox,.paBox,.sharpeBox,.busBox,.pb3Box,.intelTile,.archMain,.pb3Dom,.convicRow,.paCalibRow,.dayRow,.sessBox,.tvWrap,.tableWrap,.eqWrap,.coneWrap,.paLog{
+  background:linear-gradient(180deg, rgba(13,20,34,.82), rgba(8,12,22,.90))!important;
+  border:1px solid rgba(255,255,255,.075)!important;
+  box-shadow:var(--qx-shadow-soft)!important;
+  backdrop-filter:blur(16px) saturate(1.16)!important;
+  -webkit-backdrop-filter:blur(16px) saturate(1.16)!important;
+}
+.card{
+  transition:transform .20s var(--qx-ease), box-shadow .20s var(--qx-ease), border-color .20s var(--qx-ease)!important;
+}
+.card:hover{
+  transform:translateY(-3px)!important;
+  border-color:rgba(255,255,255,.11)!important;
+  box-shadow:var(--qx-shadow)!important;
+}
+.card::before,.hero::before,.quoteCard::before,.sessLeft::before,.sessRight::before,.qeBox::before,.macroBox::before,.tmBox::before,.fpTfBox::before,.paBox::before,.sharpeBox::before,.busBox::before,.pb3Box::before,.intelTile::before,.archMain::before,.pb3Dom::before,.convicRow::before,.paCalibRow::before{
+  content:"";
+  position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 18%),
+    radial-gradient(680px 180px at 0% -12%, rgba(61,169,255,.14), transparent 70%),
+    radial-gradient(560px 180px at 100% -12%, rgba(46,230,166,.10), transparent 70%);
+  opacity:1;
+}
+.card .inner{padding:16px 16px 15px!important}
+.card-title{margin-bottom:10px!important}
+.card-title h2{
+  font-family:"JetBrains Mono", ui-monospace, monospace!important;
+  font-size:10px!important;
+  letter-spacing:1.8px!important;
+  text-transform:uppercase!important;
+  color:rgba(230,237,243,.56)!important;
+}
+.card-title .hint{
+  color:rgba(230,237,243,.40)!important;
+  font-size:10px!important;
+  line-height:1.35!important;
+  max-width:430px!important;
+}
+.stateBig{
+  font-family:"Space Grotesk", Inter, sans-serif!important;
+  font-size:24px!important;
+  letter-spacing:-.45px!important;
+}
+.quotePx{font-size:44px!important;letter-spacing:-1.0px!important}
+.qv,.v,.bv,.fv{letter-spacing:-.6px!important}
+.meta,.qm,.bm,.fm,.rm,.smallNote,.muted,.macroHint,.probVal,.sVol,.sTime,.pb3Note,.aConf,.aNote,.aAnalog{
+  color:rgba(230,237,243,.52)!important;
+}
+.pos{color:var(--qx-green)!important}
+.neg{color:var(--qx-red)!important}
+.liveBadge.live,.syncBadge.synced,.syncBadge.fbmaster{
+  box-shadow:0 0 0 1px rgba(255,255,255,.03), 0 0 18px rgba(46,230,166,.10)!important;
+}
+.syncBadge.fbreader{
+  box-shadow:0 0 0 1px rgba(255,255,255,.03), 0 0 18px rgba(155,124,255,.12)!important;
+}
+.pill,.chip,.tagOk,.impact,.dayBadge,.qStatus{
+  background:rgba(255,255,255,.035)!important;
+  border-color:rgba(255,255,255,.09)!important;
+}
+.tableWrap,.paLog,.eqWrap,.coneWrap,.tvWrap{
+  box-shadow:0 16px 40px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.03)!important;
+}
+thead th,.paLogTable th{color:rgba(230,237,243,.44)!important}
+tbody td,.paLogTable td{color:rgba(230,237,243,.72)!important}
+.busBanner,.convicRow,.paCalibRow,.pb3Dom,.archMain{
+  box-shadow:0 18px 44px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.03)!important;
+}
+</style>
+
 </head>
 <body class="qx-auth-locked">
 
