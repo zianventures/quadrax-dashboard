@@ -2435,7 +2435,18 @@ const Engine=(()=>{
   const HN=80,MW=8,VW=18,HT=2,PT=1.35,MSW=10,WARMUP=20;
   let tickN=0,regAge=0,lastPol=null;let prices=[],returns=[];let polState=null,pendingState=null,hold=0;
   // TM: flat uniform priors — real observed transitions build it up from scratch
-  let TM=Array.from({length:8},()=>new Array(8).fill(0.25));let prevPol=null;
+  // Realistic EUR/USD regime transition priors (row = from, col = to, normalized by drawTM)
+  // Based on: mean-rev dominance, trend continuation, rare shock states resolving to S1/S4
+  let TM=[
+    [9, 1, 4, 3, 1, 1, 2, 0.5],  // S1 Mean-Rev: self-loop, often→S3/S4
+    [5, 4, 4, 2, 2, 1, 1, 0.5],  // S2 Liq Vacuum: resolves→S1/S3
+    [5, 1, 8, 4, 1, 1, 2, 0.5],  // S3 Slow Drift: self-loop, stays or→S1/S4
+    [4, 1, 3, 7, 2, 1, 2, 1],    // S4 Strong Trend: continues, reverts→S1/S3
+    [6, 1, 2, 4, 3, 2, 1, 1],    // S5 Stop Cascade: resolves→S1/S4
+    [5, 1, 2, 5, 2, 3, 1, 1],    // S6 News Shock: resolves→S1/S4
+    [5, 2, 4, 2, 1, 1, 4, 1],    // S7 Dealer Unwind: resolves→S1/S3
+    [6, 1, 1, 3, 4, 2, 1, 2]     // S8 Panic/Forced: resolves→S1/S5
+  ];let prevPol=null;
   const softmax=lg=>{const m=Math.max(...lg),e=lg.map(v=>Math.exp((v-m)/PT)),s=e.reduce((a,b)=>a+b,0)||1;return e.map(v=>v/s);};
   function feats(){if(prices.length<3)return null;const p=prices.at(-1),pp=prices.at(-2),r=pp?p-pp:0;const mb=prices[Math.max(0,prices.length-1-MW)],mom=mb?p-mb:0;const rr=returns.slice(-VW),avg=rr.length?rr.reduce((a,b)=>a+Math.abs(b),0)/rr.length:0;const volx=clamp(avg/0.00015,0,5),shock=Math.abs(r)>0.0007?1:0;const rrm=returns.slice(-MSW),md=Math.sign(mom);const momScore=rrm.length>0?rrm.filter(v=>Math.sign(v)===md).length/rrm.length:0.5;return{p,r,mom,volx,shock,momScore};}
   function scoreStates(f){
@@ -5282,7 +5293,7 @@ body::after{
   }
 
   function addPremiumTag(card, label){
-    if(!card || card.querySelector('.qx-premTag')) return;
+    if(!card || card.querySelector('.qx-premTag') || card.querySelector('.qxStage')) return;
     var inner = card.querySelector('.inner');
     var title = card.querySelector('.card-title');
     if(!inner || !title) return;
@@ -5670,7 +5681,7 @@ thead th,.paLogTable th{padding:7px 8px!important}
     var heads=find('Live Headlines');
     var daily=find('Daily EUR/USD Trend');
 
-    // left stack: core product flow
+    // left stack: Market → Signal → Consensus → Forecast → Accuracy → Performance → Session → Calendar → TE
     move(market,left,left.firstChild);
     move(qedge,left,null);
     move(bus,left,null);
@@ -5678,15 +5689,15 @@ thead th,.paLogTable th{padding:7px 8px!important}
     move(proj,left,null);
     move(sharpe,left,null);
     move(session,left,null);
+    move(wcal,left,null);      // World Events Calendar below Session
+    move(te,left,null);        // Trading Economics below Calendar
 
-    // right stack: Transition → Transmission → Macro → Signal → Playbook → Calendar → TE News
+    // right stack: Transition → Transmission → Macro → Signal → Playbook
     move(hmm,right,null);      // Transition Intelligence (top)
-    move(trans,right,null);    // Transmission Mechanism (below Transition)
-    move(macro,right,null);    // Macro Intelligence (between Transmission and Signal)
+    move(trans,right,null);    // Transmission Mechanism
+    move(macro,right,null);    // Macro Intelligence
     move(sigInt,right,null);   // Signal Intelligence
     move(play,right,null);     // Session Playbook
-    move(wcal,right,null);     // World Events Calendar (FX red folder)
-    move(te,right,null);       // Trading Economics News
 
     // hide true reference-only panels
     [daily,pb3,event,corr,heads].forEach(hide);
@@ -5703,6 +5714,9 @@ thead th,.paLogTable th{padding:7px 8px!important}
     addStage(sharpe,'Performance Intelligence');
     addStage(play,'Decision Layer');
     addStage(sigInt,'Execution Layer');
+    addStage(session,'Session Intelligence');
+    addStage(wcal,'Market Calendar');
+    addStage(te,'Live Newsfeed');
   }
   function tightenText(){
     var hints=document.querySelectorAll('.card-title .hint');
@@ -6160,27 +6174,28 @@ body::after{
 
     hide(risk);
 
-    // Right rail: Transition → Transmission → Macro → Signal → Playbook → Calendar → TE News
+    // Right rail: Transition → Transmission → Macro → Signal → Playbook
     moveTop(matrix, right);
     moveAfter(trans, right, 'HMM Transition Matrix');
     moveAfter(macroCard, right, 'Transmission Mechanism');
     moveAfter(signalIntel, right, 'Macro Drivers');
     moveAfter(sessionPlay, right, 'Signal Intelligence');
-    if(wcalCard){ wcalCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(wcalCard, right, 'Session Playbook'); }
-    if(teCard){ teCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(teCard, right, 'World Events Calendar'); }
 
-    // shift validation/performance to left for balance if needed
-    if(projAcc) moveAfter(projAcc, right, 'Trading Economics');
-    if(performance) moveAfter(performance, right, 'Projection Accuracy');
+    // Left rail: Session → Calendar → TE News below main flow
+    if(sessionIntel) moveAfter(sessionIntel, left, 'Signal Performance');
+    if(wcalCard){ wcalCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(wcalCard, left, 'Session Intelligence'); }
+    if(teCard){ teCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(teCard, left, 'World Events Calendar'); }
 
-    compact(matrix); compact(trans); compact(macroCard); compact(signalIntel); compact(sessionPlay); compact(projAcc); compact(performance);
+    // shift validation/performance before session for balance
+    if(projAcc) moveAfter(projAcc, left, 'Forward Projection');
+    if(performance) moveAfter(performance, left, 'Projection Accuracy');
+
+    compact(matrix); compact(trans); compact(macroCard); compact(signalIntel); compact(sessionPlay);
+    compact(sessionIntel); compact(qedge); compact(bus);
     if(wcalCard) compact(wcalCard);
     if(teCard) compact(teCard);
-
-    // Left side: no gaps — compact everything and remove min-heights aggressively
-    if(sessionIntel) moveAfter(sessionIntel, left, 'Forward Projection');
-    compact(sessionIntel);
-    compact(qedge); compact(bus);
+    if(projAcc) compact(projAcc);
+    if(performance) compact(performance);
 
     // Eliminate all min-height spacers on left side too
     Array.prototype.slice.call(left.children).forEach(function(card){
