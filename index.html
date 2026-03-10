@@ -884,168 +884,6 @@ body.qx-auth-locked .wrap{display:none!important}
 }
 </style>
 
-
-<!-- Step 1: visual enhancement layer only. Preserves baseline structure and panel order. -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-
-<style id="qx-v37-visual-enhancement-step1">
-:root{
-  --qx-ink:#E6EDF3;
-  --qx-ink2:#B2C0D4;
-  --qx-ink3:#73839A;
-  --qx-blue:#3DA9FF;
-  --qx-green:#2EE6A6;
-  --qx-violet:#9B7CFF;
-  --qx-amber:#FFB347;
-  --qx-red:#FF5C7A;
-  --qx-shadow:0 26px 80px rgba(0,0,0,.46), 0 12px 30px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.03);
-  --qx-shadow-soft:0 18px 44px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.03);
-  --qx-ease:cubic-bezier(.22,1,.36,1);
-}
-html,body{
-  color:var(--qx-ink)!important;
-  font-family:Inter, system-ui, sans-serif!important;
-  background:
-    radial-gradient(1400px 700px at 10% -10%, rgba(61,169,255,.16), transparent 56%),
-    radial-gradient(1100px 620px at 100% 6%, rgba(46,230,166,.12), transparent 52%),
-    radial-gradient(980px 520px at 50% 110%, rgba(155,124,255,.12), transparent 56%),
-    linear-gradient(180deg, #02050b 0%, #07101a 56%, #0a1522 100%)!important;
-}
-body::before{
-  content:"";
-  position:fixed; inset:0; z-index:-2; pointer-events:none;
-  background:
-    radial-gradient(880px 280px at 24% 14%, rgba(255,179,71,.08), transparent 62%),
-    radial-gradient(1180px 420px at 78% 20%, rgba(255,92,122,.06), transparent 70%),
-    repeating-linear-gradient(135deg, rgba(255,255,255,.010) 0 1px, transparent 1px 20px);
-  opacity:.82;
-  mix-blend-mode:screen;
-}
-body::after{
-  content:"";
-  position:fixed; inset:0; z-index:-1; pointer-events:none;
-  background:radial-gradient(ellipse at center, rgba(0,0,0,0) 0%, rgba(0,0,0,.34) 62%, rgba(0,0,0,.58) 100%);
-}
-.wrap{max-width:1600px!important;padding:18px 18px 58px!important}
-.grid{gap:14px!important;margin-top:14px!important}
-.stack{gap:14px!important}
-.topbar{
-  background:rgba(8,13,24,.78)!important;
-  border:1px solid rgba(255,255,255,.08)!important;
-  box-shadow:0 22px 60px rgba(0,0,0,.42)!important;
-  backdrop-filter:blur(18px) saturate(1.15)!important;
-  -webkit-backdrop-filter:blur(18px) saturate(1.15)!important;
-}
-.brand h1{
-  font-family:"Space Grotesk", Inter, sans-serif!important;
-  font-size:16px!important;
-  letter-spacing:-.38px!important;
-  color:var(--qx-ink)!important;
-}
-.brand .sub{
-  color:rgba(230,237,243,.46)!important;
-  letter-spacing:.2px!important;
-}
-.qxlogo{
-  width:42px!important;height:42px!important;border-radius:12px!important;
-  background:linear-gradient(135deg, rgba(61,169,255,.28), rgba(46,230,166,.15), rgba(155,124,255,.12))!important;
-  border:1px solid rgba(255,255,255,.10)!important;
-  box-shadow:0 16px 34px rgba(0,0,0,.34)!important;
-}
-.pill,.btn,.syncBadge,.riskPulse,.tagOk,.chip,.impact,.dayBadge,.qStatus,.fcastBias,.srcPill,
-.quotePx,.qv,.v,.bv,.fv,.rbig,.busBannerDir,.convicText .cv,.ds,.aType,.fpTfRange,.fpTfTarget,.paCalibRow .cv{
-  font-family:"JetBrains Mono", ui-monospace, monospace!important;
-  font-variant-numeric:tabular-nums!important;
-}
-.btn{
-  background:rgba(255,255,255,.045)!important;
-  border:1px solid rgba(255,255,255,.10)!important;
-  transition:transform .16s var(--qx-ease), background .16s var(--qx-ease), border-color .16s var(--qx-ease), box-shadow .16s var(--qx-ease)!important;
-}
-.btn:hover{
-  transform:translateY(-1px)!important;
-  background:rgba(255,255,255,.08)!important;
-  border-color:rgba(255,255,255,.16)!important;
-  box-shadow:0 10px 24px rgba(0,0,0,.18)!important;
-}
-.btn.primary{
-  background:linear-gradient(135deg, rgba(61,169,255,.30), rgba(46,230,166,.14))!important;
-  border-color:rgba(61,169,255,.24)!important;
-  color:#eef7ff!important;
-}
-.card,.hero,.quoteCard,.sessLeft,.sessRight,.qeBox,.macroBox,.tmBox,.fpBox,.fpTfBox,.paBox,.sharpeBox,.busBox,.pb3Box,.intelTile,.archMain,.pb3Dom,.convicRow,.paCalibRow,.dayRow,.sessBox,.tvWrap,.tableWrap,.eqWrap,.coneWrap,.paLog{
-  background:linear-gradient(180deg, rgba(13,20,34,.82), rgba(8,12,22,.90))!important;
-  border:1px solid rgba(255,255,255,.075)!important;
-  box-shadow:var(--qx-shadow-soft)!important;
-  backdrop-filter:blur(16px) saturate(1.16)!important;
-  -webkit-backdrop-filter:blur(16px) saturate(1.16)!important;
-}
-.card{
-  transition:transform .20s var(--qx-ease), box-shadow .20s var(--qx-ease), border-color .20s var(--qx-ease)!important;
-}
-.card:hover{
-  transform:translateY(-3px)!important;
-  border-color:rgba(255,255,255,.11)!important;
-  box-shadow:var(--qx-shadow)!important;
-}
-.card::before,.hero::before,.quoteCard::before,.sessLeft::before,.sessRight::before,.qeBox::before,.macroBox::before,.tmBox::before,.fpTfBox::before,.paBox::before,.sharpeBox::before,.busBox::before,.pb3Box::before,.intelTile::before,.archMain::before,.pb3Dom::before,.convicRow::before,.paCalibRow::before{
-  content:"";
-  position:absolute; inset:0; pointer-events:none; border-radius:inherit;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 18%),
-    radial-gradient(680px 180px at 0% -12%, rgba(61,169,255,.14), transparent 70%),
-    radial-gradient(560px 180px at 100% -12%, rgba(46,230,166,.10), transparent 70%);
-  opacity:1;
-}
-.card .inner{padding:16px 16px 15px!important}
-.card-title{margin-bottom:10px!important}
-.card-title h2{
-  font-family:"JetBrains Mono", ui-monospace, monospace!important;
-  font-size:10px!important;
-  letter-spacing:1.8px!important;
-  text-transform:uppercase!important;
-  color:rgba(230,237,243,.56)!important;
-}
-.card-title .hint{
-  color:rgba(230,237,243,.40)!important;
-  font-size:10px!important;
-  line-height:1.35!important;
-  max-width:430px!important;
-}
-.stateBig{
-  font-family:"Space Grotesk", Inter, sans-serif!important;
-  font-size:24px!important;
-  letter-spacing:-.45px!important;
-}
-.quotePx{font-size:44px!important;letter-spacing:-1.0px!important}
-.qv,.v,.bv,.fv{letter-spacing:-.6px!important}
-.meta,.qm,.bm,.fm,.rm,.smallNote,.muted,.macroHint,.probVal,.sVol,.sTime,.pb3Note,.aConf,.aNote,.aAnalog{
-  color:rgba(230,237,243,.52)!important;
-}
-.pos{color:var(--qx-green)!important}
-.neg{color:var(--qx-red)!important}
-.liveBadge.live,.syncBadge.synced,.syncBadge.fbmaster{
-  box-shadow:0 0 0 1px rgba(255,255,255,.03), 0 0 18px rgba(46,230,166,.10)!important;
-}
-.syncBadge.fbreader{
-  box-shadow:0 0 0 1px rgba(255,255,255,.03), 0 0 18px rgba(155,124,255,.12)!important;
-}
-.pill,.chip,.tagOk,.impact,.dayBadge,.qStatus{
-  background:rgba(255,255,255,.035)!important;
-  border-color:rgba(255,255,255,.09)!important;
-}
-.tableWrap,.paLog,.eqWrap,.coneWrap,.tvWrap{
-  box-shadow:0 16px 40px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.03)!important;
-}
-thead th,.paLogTable th{color:rgba(230,237,243,.44)!important}
-tbody td,.paLogTable td{color:rgba(230,237,243,.72)!important}
-.busBanner,.convicRow,.paCalibRow,.pb3Dom,.archMain{
-  box-shadow:0 18px 44px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.03)!important;
-}
-</style>
-
 </head>
 <body class="qx-auth-locked">
 
@@ -1101,8 +939,35 @@ tbody td,.paLogTable td{color:rgba(230,237,243,.72)!important}
 <div class="wrap">
 <div class="topbar">
 <div class="brand">
-<div class="qxlogo">4X</div>
-<div><h1>QuadraX</h1><div class="sub">EUR/USD Intelligence Platform · HMM · PB3 · Signal Bus</div></div>
+<div class="qxlogo-mark" title="QuadraX">
+<svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer frame -->
+  <rect x="1" y="1" width="40" height="40" rx="8" stroke="rgba(0,229,255,0.25)" stroke-width="1"/>
+  <!-- Inner geometric X with trend arrow -->
+  <!-- Left diagonal line of X -->
+  <line x1="10" y1="28" x2="32" y2="10" stroke="#00e5ff" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Right diagonal line of X -->
+  <line x1="10" y1="10" x2="26" y2="26" stroke="rgba(0,229,255,0.45)" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Trend arrow continuation (kinetic upward motion) -->
+  <polyline points="26,26 32,20 32,14" stroke="#00e5ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Arrow head -->
+  <polyline points="28,14 32,10 36,14" stroke="#00e5ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Bottom accent dot -->
+  <circle cx="10" cy="32" r="1.5" fill="#00e5ff" opacity="0.6"/>
+  <!-- Glow overlay -->
+  <rect x="1" y="1" width="40" height="40" rx="8" fill="url(#gx)" opacity="0.08"/>
+  <defs>
+    <radialGradient id="gx" cx="70%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>
+</svg>
+</div>
+<div class="brand-text-block">
+  <div class="brand-wordmark"><span class="brand-q">QUAD</span><span class="brand-rx">RAX</span></div>
+  <div class="sub">EUR/USD · HMM · PB3 · Signal Bus · <span class="sub-si"><span class="sub-si-dot"></span>Market Superintelligence</span></div>
+</div>
 </div>
 <div class="top-actions">
 <div class="alertBadge" id="alertBadge">⚡<span id="alertBadgeText">Alert</span></div>
@@ -5493,7 +5358,7 @@ body::after{
   function strengthenBrandLanguage(){
     var sub = document.querySelector('.brand .sub');
     if(sub){
-      sub.textContent = 'Adaptive Macro Intelligence Platform · HMM · PB3 · Signal Bus';
+      // sub preserved — inline brand text is set in HTML
     }
     var hints = document.querySelectorAll('.card-title .hint');
     hints.forEach(function(h){
@@ -6046,13 +5911,7 @@ body::after{
     return cards().find(function(c){ return title(c).toLowerCase().indexOf(txt.toLowerCase()) !== -1; });
   }
   function addBrandPill(){
-    var brand = document.querySelector('.brand');
-    if(!brand || brand.querySelector('.qxSuperPill')) return;
-    var pill = document.createElement('span');
-    pill.className = 'qxSuperPill';
-    pill.innerHTML = '<i></i><span>Market Superintelligence</span>';
-    var sub = brand.querySelector('.sub');
-    if(sub) sub.insertAdjacentElement('afterend', pill);
+    // Market Superintelligence is now inline in the sub text — no-op
   }
   function compactRightRail(){
     var macro = find('Macro Drivers');
@@ -6387,214 +6246,359 @@ body::after{
 
 
 
-<style id="qx-terminal-pro">
+
+
+<style id="qx-deep-terminal">
 /*
-╔═══════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  PROFESSIONAL TERMINAL  ·  v37                    ║
-║  Design: Bloomberg-grade fintech precision                    ║
-║  Fonts: IBM Plex Sans (UI) + JetBrains Mono (data)           ║
-║  Color: Deep charcoal void · off-white data · electric blue  ║
-║  Philosophy: The numbers are the design.                     ║
-╚═══════════════════════════════════════════════════════════════╝
+╔═══════════════════════════════════════════════════════════════════════════╗
+║  QUADRAX  ·  DEEP TERMINAL  ·  v37-final                                  ║
+║  "Future Dust" + Electric Cyan — institutional precision meets             ║
+║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
+╚═══════════════════════════════════════════════════════════════════════════╝
 */
 
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
 
-/* ───────────────────────────────────────────────
-   TOKENS
-─────────────────────────────────────────────── */
+/* ────────────────────────────────────────────
+   DEEP TERMINAL TOKENS
+──────────────────────────────────────────── */
 :root {
-  /* Background hierarchy */
-  --t-bg0:     #0d1117;    /* page void */
-  --t-bg1:     #131920;    /* card surface */
-  --t-bg2:     #1a2230;    /* raised element */
-  --t-bg3:     #1f2a38;    /* hover / active */
+  /* "Future Dust" backgrounds */
+  --dt-bg0:   #060b12;    /* page void */
+  --dt-bg1:   #0b1420;    /* card surface */
+  --dt-bg2:   #101c2c;    /* raised element */
+  --dt-bg3:   #152233;    /* hover / active */
+  --dt-bg4:   #0d1929;    /* deep inset */
 
-  /* Text hierarchy — off-white, never pure white */
-  --t-tx1:     #e2e8f0;    /* primary data */
-  --t-tx2:     #94a3b8;    /* secondary label */
-  --t-tx3:     #475569;    /* ghost / dim */
-  --t-tx4:     #2d3f52;    /* structural */
+  /* Electric Cyan — the single hero accent */
+  --dt-cyan:  #00e5ff;
+  --dt-cyan2: #40efff;
+  --dt-cyan3: rgba(0,229,255,.55);
 
-  /* Accent system — used with extreme discipline */
-  --t-blue:    #3b82f6;    /* trust / neutral */
-  --t-blue2:   #60a5fa;    /* elevated blue */
-  --t-green:   #10b981;    /* positive / live */
-  --t-green2:  #34d399;    /* elevated green */
-  --t-amber:   #f59e0b;    /* warning / action */
-  --t-amber2:  #fbbf24;    /* elevated amber */
-  --t-red:     #ef4444;    /* danger / negative */
-  --t-red2:    #f87171;    /* elevated red */
-  --t-teal:    #14b8a6;    /* secondary positive */
+  /* Neon Lime — positive/growth only */
+  --dt-lime:  #00e676;
+  --dt-lime2: #69ff9e;
 
-  /* Borders — barely-there lines */
-  --t-b1:  rgba(148,163,184,.10);
-  --t-b2:  rgba(148,163,184,.06);
-  --t-b3:  rgba(148,163,184,.035);
+  /* Amber — warning/action */
+  --dt-amber: #ffab00;
+  --dt-amber2:#ffc740;
+
+  /* Red — danger only */
+  --dt-red:   #ff3d57;
+  --dt-red2:  #ff6b7a;
+
+  /* Text — off-white system */
+  --dt-t1:  #dde6f0;    /* primary — never pure white */
+  --dt-t2:  #8a9ab5;    /* secondary */
+  --dt-t3:  #445570;    /* labels / ghost */
+  --dt-t4:  #2a3a52;    /* structural separators */
+
+  /* Borders — barely there */
+  --dt-b1:  rgba(0,229,255,.10);
+  --dt-b2:  rgba(0,229,255,.06);
+  --dt-b3:  rgba(0,229,255,.03);
 
   /* Typography */
-  --t-ui:   'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
-  --t-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --dt-ui:   'IBM Plex Sans', ui-sans-serif, sans-serif;
+  --dt-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
 
-  /* Radius */
-  --t-r1: 6px;
-  --t-r2: 8px;
-  --t-r3: 10px;
+  /* Glow — one accent, used sparingly */
+  --dt-glow: 0 0 20px rgba(0,229,255,.18), 0 0 50px rgba(0,229,255,.08);
+  --dt-glow-sm: 0 0 12px rgba(0,229,255,.22);
 }
 
-/* ───────────────────────────────────────────────
-   GLOBAL RESET OF PREVIOUS THEME VARS
-   So nothing leaks from earlier blocks
-─────────────────────────────────────────────── */
+/* Push these to override previous blocks */
 :root {
-  --sq-display: var(--t-ui) !important;
-  --sq-body:    var(--t-ui) !important;
-  --sq-mono:    var(--t-mono) !important;
+  --t-ui:   var(--dt-ui) !important;
+  --t-mono: var(--dt-mono) !important;
+  --sq-display: var(--dt-ui) !important;
+  --sq-body: var(--dt-ui) !important;
+  --sq-mono: var(--dt-mono) !important;
 }
 
-/* ───────────────────────────────────────────────
-   BODY — DEEP CHARCOAL VOID
-─────────────────────────────────────────────── */
+/* ────────────────────────────────────────────
+   BODY — FUTURE DUST VOID
+──────────────────────────────────────────── */
 body {
-  font-family: var(--t-ui) !important;
-  background: var(--t-bg0) !important;
-  color: var(--t-tx1) !important;
+  font-family: var(--dt-ui) !important;
+  background: var(--dt-bg0) !important;
+  color: var(--dt-t1) !important;
   -webkit-font-smoothing: antialiased !important;
   font-variant-numeric: tabular-nums !important;
 }
+body::before, body::after { display: none !important; }
 
-/* Kill all previous background effects */
-body::before {
-  display: none !important;
-  content: '' !important;
-  background: none !important;
-  background-image: none !important;
-}
-body::after {
-  display: none !important;
-  animation: none !important;
-}
-
-/* ───────────────────────────────────────────────
-   TOPBAR — MINIMAL COMMAND LINE
-─────────────────────────────────────────────── */
+/* ────────────────────────────────────────────
+   TOPBAR — SINGLE-ROW COMMAND LINE
+──────────────────────────────────────────── */
 .topbar {
-  background: #0a0f16 !important;
-  border-bottom: 1px solid var(--t-b1) !important;
-  box-shadow: 0 1px 0 rgba(0,0,0,.40) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  padding: 10px 18px !important;
+  background: rgba(4,8,16,.96) !important;
+  border: none !important;
+  border-bottom: 1px solid var(--dt-b1) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 1px 0 rgba(0,229,255,.06), 0 4px 24px rgba(0,0,0,.80) !important;
   backdrop-filter: none !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 200 !important;
 }
-/* Kill previous spectrum animation */
-.topbar::after { display: none !important; }
+/* kill previous spectrum line */
+.topbar::after, .topbar::before { display: none !important; }
 
-/* Brand */
-.brand h1 {
-  font-family: var(--t-ui) !important;
+/* ────────────────────────────────────────────
+   LOGO MARK — GEOMETRIC SVG CONTAINER
+──────────────────────────────────────────── */
+.qxlogo-mark {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  filter: drop-shadow(0 0 8px rgba(0,229,255,.35));
+  transition: filter .2s ease;
+}
+.qxlogo-mark:hover {
+  filter: drop-shadow(0 0 16px rgba(0,229,255,.65));
+}
+
+/* ────────────────────────────────────────────
+   BRAND TEXT BLOCK
+──────────────────────────────────────────── */
+.brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-width: unset !important;
+  flex-shrink: 0 !important;
+}
+.brand-text-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* QUADRAX Wordmark */
+.brand-wordmark {
+  font-family: var(--dt-ui) !important;
   font-size: 16px !important;
   font-weight: 700 !important;
-  letter-spacing: 3px !important;
+  letter-spacing: 4px !important;
   text-transform: uppercase !important;
-  color: var(--t-tx1) !important;
-  -webkit-text-fill-color: var(--t-tx1) !important;
+  line-height: 1 !important;
+  user-select: none !important;
+}
+.brand-q {
+  color: var(--dt-t1) !important;
+}
+.brand-rx {
+  color: var(--dt-cyan) !important;
+  text-shadow: 0 0 20px rgba(0,229,255,.45) !important;
+}
+
+/* Override old h1 brand just in case */
+.brand h1 {
+  font-family: var(--dt-ui) !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  letter-spacing: 4px !important;
+  color: var(--dt-t1) !important;
+  -webkit-text-fill-color: var(--dt-t1) !important;
   background: none !important;
   text-shadow: none !important;
   filter: none !important;
   animation: none !important;
 }
+
+/* Sub — single condensed info line */
 .brand .sub {
-  font-family: var(--t-ui) !important;
+  font-family: var(--dt-ui) !important;
   font-size: 9px !important;
-  letter-spacing: 2.5px !important;
-  text-transform: uppercase !important;
-  color: var(--t-tx3) !important;
   font-weight: 400 !important;
-}
-.qxlogo {
-  font-family: var(--t-mono) !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  letter-spacing: 1px !important;
-  color: var(--t-blue2) !important;
-  -webkit-text-fill-color: var(--t-blue2) !important;
-  background: none !important;
-  text-shadow: none !important;
-  filter: none !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  color: var(--dt-t3) !important;
+  margin-top: 0 !important;
+  white-space: nowrap !important;
+  line-height: 1.2 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
 }
 
-/* Buttons */
+/* Market Superintelligence inline badge */
+.sub-si {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 1px 7px !important;
+  background: rgba(0,229,255,.06) !important;
+  border: 1px solid rgba(0,229,255,.20) !important;
+  border-radius: 3px !important;
+  font-size: 8px !important;
+  font-weight: 600 !important;
+  letter-spacing: 2px !important;
+  color: var(--dt-cyan) !important;
+  text-transform: uppercase !important;
+  font-family: var(--dt-ui) !important;
+}
+.sub-si-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--dt-cyan);
+  box-shadow: 0 0 6px rgba(0,229,255,.80);
+  animation: cyanPulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes cyanPulse {
+  0%,100% { opacity: .7; box-shadow: 0 0 4px rgba(0,229,255,.60); }
+  50%      { opacity: 1;  box-shadow: 0 0 10px rgba(0,229,255,.95); }
+}
+
+/* Kill old qxlogo if it appears */
+.qxlogo {
+  font-family: var(--dt-mono) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--dt-cyan) !important;
+  -webkit-text-fill-color: var(--dt-cyan) !important;
+  background: rgba(0,229,255,.06) !important;
+  border: 1px solid var(--dt-b1) !important;
+  box-shadow: var(--dt-glow-sm) !important;
+}
+
+/* ────────────────────────────────────────────
+   TOPBAR ACTIONS — COMPACT SINGLE ROW
+──────────────────────────────────────────── */
+.top-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-wrap: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+/* Buttons — clean terminal style */
 .btn {
-  font-family: var(--t-ui) !important;
-  font-size: 10px !important;
+  font-family: var(--dt-mono) !important;
+  font-size: 9px !important;
   font-weight: 500 !important;
-  letter-spacing: .5px !important;
-  text-transform: none !important;
-  background: var(--t-bg2) !important;
-  border: 1px solid var(--t-b1) !important;
-  color: var(--t-tx2) !important;
-  border-radius: var(--t-r1) !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid var(--dt-b1) !important;
+  color: var(--dt-t2) !important;
+  border-radius: 4px !important;
   transition: all .15s ease !important;
-  padding: 5px 11px !important;
+  padding: 5px 10px !important;
+  height: 26px !important;
+  display: flex !important;
+  align-items: center !important;
 }
 .btn:hover {
-  background: var(--t-bg3) !important;
-  border-color: rgba(59,130,246,.40) !important;
-  color: var(--t-tx1) !important;
+  background: rgba(0,229,255,.06) !important;
+  border-color: rgba(0,229,255,.30) !important;
+  color: var(--dt-cyan) !important;
 }
 .btn.primary {
-  background: rgba(59,130,246,.12) !important;
-  border-color: rgba(59,130,246,.35) !important;
-  color: var(--t-blue2) !important;
+  background: rgba(0,229,255,.08) !important;
+  border-color: rgba(0,229,255,.28) !important;
+  color: var(--dt-cyan) !important;
 }
 .btn.primary:hover {
-  background: rgba(59,130,246,.20) !important;
-  border-color: rgba(59,130,246,.55) !important;
+  background: rgba(0,229,255,.14) !important;
+  border-color: rgba(0,229,255,.50) !important;
+  box-shadow: var(--dt-glow-sm) !important;
 }
 
-/* Pills */
+/* Pills — compact */
 .pill {
-  font-family: var(--t-ui) !important;
-  font-size: 9px !important;
+  font-family: var(--dt-mono) !important;
+  font-size: 8.5px !important;
   letter-spacing: 1px !important;
-  background: var(--t-bg2) !important;
-  border-color: var(--t-b1) !important;
-  color: var(--t-tx3) !important;
+  text-transform: uppercase !important;
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid var(--dt-b1) !important;
+  color: var(--dt-t3) !important;
+  padding: 4px 8px !important;
+  height: 26px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
 }
+
 /* LIVE dot */
 .dot {
-  background: var(--t-green) !important;
-  box-shadow: 0 0 0 2px rgba(16,185,129,.12), 0 0 8px rgba(16,185,129,.50) !important;
-  animation: termLive 2.2s ease-in-out infinite !important;
+  background: var(--dt-lime) !important;
+  width: 6px !important; height: 6px !important;
+  box-shadow: 0 0 8px rgba(0,230,118,.65) !important;
+  animation: livePulse 2s ease-in-out infinite !important;
 }
-@keyframes termLive {
-  0%,100% { box-shadow: 0 0 0 2px rgba(16,185,129,.08), 0 0 6px rgba(16,185,129,.40); }
-  50%     { box-shadow: 0 0 0 3px rgba(16,185,129,.16), 0 0 12px rgba(16,185,129,.65); }
+@keyframes livePulse {
+  0%,100% { box-shadow: 0 0 6px rgba(0,230,118,.50); }
+  50%     { box-shadow: 0 0 14px rgba(0,230,118,.85); }
 }
-.dot.amber { background: var(--t-amber) !important; box-shadow: none !important; animation: none !important; }
-.dot.red   { background: var(--t-red) !important;   box-shadow: none !important; animation: none !important; }
+.dot.amber { background: var(--dt-amber) !important; box-shadow: none !important; animation: none !important; }
+.dot.red   { background: var(--dt-red) !important;   box-shadow: none !important; animation: none !important; }
 
 /* 4H badge */
 .qx-tf-badge {
-  font-family: var(--t-mono) !important;
+  font-family: var(--dt-mono) !important;
   font-size: 8.5px !important;
-  letter-spacing: 1.5px !important;
-  background: rgba(245,158,11,.06) !important;
-  border: 1px solid rgba(245,158,11,.22) !important;
-  color: var(--t-amber2) !important;
+  letter-spacing: 1px !important;
+  background: rgba(255,171,0,.05) !important;
+  border: 1px solid rgba(255,171,0,.20) !important;
+  color: var(--dt-amber2) !important;
+  height: 26px !important;
+  display: flex !important;
+  align-items: center !important;
 }
 
 /* Sync badge */
 .syncBadge {
-  font-family: var(--t-mono) !important;
+  font-family: var(--dt-mono) !important;
   font-size: 8.5px !important;
-  background: var(--t-bg2) !important;
-  border: 1px solid rgba(245,158,11,.16) !important;
-  color: var(--t-tx3) !important;
   letter-spacing: .5px !important;
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid rgba(255,171,0,.14) !important;
+  color: var(--dt-t3) !important;
+  padding: 4px 8px !important;
+  height: 26px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  border-radius: 4px !important;
 }
 
-/* ───────────────────────────────────────────────
-   INTELLIGENCE LAYER BADGES
-─────────────────────────────────────────────── */
+/* Risk Pulse compact */
+.riskPulse {
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid var(--dt-b1) !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+  height: 26px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+.rpTop { gap: 6px !important; }
+.rpBar i { border-radius: 1px !important; }
+
+/* Alert badge */
+.alertBadge {
+  font-family: var(--dt-mono) !important;
+  font-size: 8.5px !important;
+  letter-spacing: .5px !important;
+  height: 26px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* ────────────────────────────────────────────
+   INTELLIGENCE BADGES (card layer labels)
+──────────────────────────────────────────── */
 .qxStage, .qx-premTag {
   display: inline-flex !important;
   align-items: center !important;
@@ -6602,728 +6606,233 @@ body::after {
   padding: 2px 10px 2px 8px !important;
   margin-bottom: 8px !important;
   border-radius: 3px !important;
-  background: rgba(59,130,246,.06) !important;
-  border: 1px solid rgba(59,130,246,.18) !important;
-  border-left: 2px solid rgba(59,130,246,.70) !important;
-  font-family: var(--t-ui) !important;
+  background: rgba(0,229,255,.04) !important;
+  border: 1px solid rgba(0,229,255,.14) !important;
+  border-left: 2px solid rgba(0,229,255,.60) !important;
+  font-family: var(--dt-ui) !important;
   font-size: 8px !important;
   font-weight: 600 !important;
   letter-spacing: 2.5px !important;
   text-transform: uppercase !important;
-  color: rgba(96,165,250,.70) !important;
+  color: rgba(0,229,255,.60) !important;
   box-shadow: none !important;
 }
 .qxStage i, .qx-premTag i {
   width: 4px; height: 4px;
   border-radius: 50% !important;
-  background: var(--t-blue) !important;
-  box-shadow: 0 0 5px rgba(59,130,246,.70) !important;
-  animation: termLive 2.5s ease-in-out infinite !important;
+  background: var(--dt-cyan) !important;
+  box-shadow: 0 0 6px rgba(0,229,255,.75) !important;
+  animation: cyanPulse 2.5s ease-in-out infinite !important;
+  flex-shrink: 0;
 }
 .qxSuperPill {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 7px !important;
-  padding: 3px 10px !important;
-  border-radius: 3px !important;
-  background: rgba(16,185,129,.06) !important;
-  border: 1px solid rgba(16,185,129,.20) !important;
-  font-family: var(--t-ui) !important;
-  font-size: 8px !important;
-  font-weight: 600 !important;
-  letter-spacing: 2.5px !important;
-  text-transform: uppercase !important;
-  color: rgba(52,211,153,.75) !important;
-  box-shadow: none !important;
-}
-.qxSuperPill i {
-  width: 4px; height: 4px;
-  border-radius: 50% !important;
-  background: var(--t-green) !important;
-  box-shadow: 0 0 5px rgba(16,185,129,.65) !important;
-  animation: termLive 2s ease-in-out infinite !important;
+  display: none !important; /* now inline in sub */
 }
 
-/* ───────────────────────────────────────────────
-   CARDS — FRAMELESS DATA PANELS
-─────────────────────────────────────────────── */
+/* ────────────────────────────────────────────
+   CARDS
+──────────────────────────────────────────── */
 .card {
-  background: var(--t-bg1) !important;
-  border: 1px solid var(--t-b2) !important;
-  border-radius: var(--t-r3) !important;
-  box-shadow: 0 4px 24px rgba(0,0,0,.45), 0 1px 4px rgba(0,0,0,.30) !important;
+  background: var(--dt-bg1) !important;
+  border: 1px solid var(--dt-b2) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,.50), 0 1px 3px rgba(0,0,0,.35) !important;
   position: relative; overflow: hidden;
   transition: border-color .15s ease !important;
 }
-/* Ultra-subtle top line — almost invisible */
 .card::before {
   content: '';
   position: absolute; top: 0; left: 0; right: 0; height: 1px;
   background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(59,130,246,.14) 30%,
-    rgba(148,163,184,.10) 60%,
-    transparent 100%);
+    transparent, rgba(0,229,255,.12) 40%, rgba(0,229,255,.06) 70%, transparent);
   pointer-events: none;
 }
 .card::after { display: none !important; }
 .card > .inner { position: relative; z-index: 1; }
 .card:hover {
-  border-color: rgba(59,130,246,.16) !important;
+  border-color: rgba(0,229,255,.14) !important;
 }
 
-/* ───────────────────────────────────────────────
+/* ────────────────────────────────────────────
    CARD TITLES
-─────────────────────────────────────────────── */
+──────────────────────────────────────────── */
 .card-title h2 {
-  font-family: var(--t-ui) !important;
-  font-size: 10px !important;
+  font-family: var(--dt-ui) !important;
+  font-size: 9.5px !important;
   font-weight: 600 !important;
-  letter-spacing: 2px !important;
+  letter-spacing: 2.5px !important;
   text-transform: uppercase !important;
-  color: var(--t-tx2) !important;
+  color: var(--dt-t2) !important;
 }
 .card-title .hint {
-  font-family: var(--t-ui) !important;
+  font-family: var(--dt-ui) !important;
   font-size: 10px !important;
-  color: var(--t-tx3) !important;
   font-weight: 400 !important;
+  color: var(--dt-t3) !important;
   line-height: 1.5 !important;
 }
 
-/* ───────────────────────────────────────────────
-   TYPOGRAPHY — ALL DATA ELEMENTS
-─────────────────────────────────────────────── */
-/* Quote price */
+/* ────────────────────────────────────────────
+   DATA TYPOGRAPHY
+──────────────────────────────────────────── */
 .quotePx {
-  font-family: var(--t-mono) !important;
+  font-family: var(--dt-mono) !important;
   font-size: 44px !important;
   font-weight: 400 !important;
   letter-spacing: -2px !important;
-  color: var(--t-tx1) !important;
-  -webkit-text-fill-color: var(--t-tx1) !important;
+  color: var(--dt-t1) !important;
+  -webkit-text-fill-color: var(--dt-t1) !important;
   background: none !important;
   filter: none !important;
   text-shadow: none !important;
   font-variant-numeric: tabular-nums !important;
 }
-
-/* State name */
 .stateBig {
-  font-family: var(--t-ui) !important;
-  font-size: 22px !important;
+  font-family: var(--dt-ui) !important;
+  font-size: 21px !important;
   font-weight: 600 !important;
   letter-spacing: .5px !important;
   text-shadow: none !important;
-  line-height: 1.2 !important;
 }
-
-/* Bus direction */
 .busBannerDir {
-  font-family: var(--t-ui) !important;
+  font-family: var(--dt-ui) !important;
   font-size: 40px !important;
   font-weight: 700 !important;
-  letter-spacing: 4px !important;
-  text-transform: uppercase !important;
+  letter-spacing: 5px !important;
   text-shadow: none !important;
   filter: none !important;
 }
-
-/* Forecast + perf numbers */
-.fpBox .v, .fpTfRange {
-  font-family: var(--t-mono) !important;
-  font-variant-numeric: tabular-nums !important;
-  color: var(--t-tx1) !important;
-  -webkit-text-fill-color: var(--t-tx1) !important;
-  background: none !important;
-  filter: none !important;
-  text-shadow: none !important;
-}
+.fpBox .v, .fpTfRange,
 .paBox .v, .qeBox .qv, .sharpeBox .v, .fcastBox .fv, .macroBox .v, .convicText .cv {
-  font-family: var(--t-mono) !important;
+  font-family: var(--dt-mono) !important;
   font-variant-numeric: tabular-nums !important;
-  color: var(--t-tx1) !important;
-  -webkit-text-fill-color: var(--t-tx1) !important;
+  color: var(--dt-t1) !important;
+  -webkit-text-fill-color: var(--dt-t1) !important;
   background: none !important;
+  filter: none !important;
   text-shadow: none !important;
 }
-
-/* Labels — IBM Plex, tracked, dim */
-.k, .rlabel, .sec-label, .fpTfLabel, .rpLabel, .bk, .dk,
-.rk, .tlLabel, .sName, .fpTfHeader .fpTfLabel {
-  font-family: var(--t-ui) !important;
+/* Labels */
+.k, .rlabel, .sec-label, .fpTfLabel, .rpLabel, .bk, .dk, .rk, .tlLabel, .sName {
+  font-family: var(--dt-ui) !important;
   font-size: 8px !important;
   font-weight: 500 !important;
   letter-spacing: 2px !important;
   text-transform: uppercase !important;
-  color: var(--t-tx3) !important;
-  text-shadow: none !important;
+  color: var(--dt-t3) !important;
 }
 
-/* ───────────────────────────────────────────────
-   STATE / BIAS COLORS
-─────────────────────────────────────────────── */
-.pos, .up { color: var(--t-green2) !important; text-shadow: none !important; }
-.neg, .dn { color: var(--t-red2) !important;   text-shadow: none !important; }
-.warn      { color: var(--t-amber2) !important; text-shadow: none !important; }
+/* ────────────────────────────────────────────
+   STATE COLORS
+──────────────────────────────────────────── */
+.pos, .up { color: var(--dt-lime2) !important; text-shadow: none !important; }
+.neg, .dn { color: var(--dt-red2) !important;  text-shadow: none !important; }
+.warn      { color: var(--dt-amber2) !important; text-shadow: none !important; }
 
-/* ───────────────────────────────────────────────
-   CHIPS + MICROBADGES
-─────────────────────────────────────────────── */
-.chip {
-  font-family: var(--t-ui) !important;
-  font-size: 9px !important;
-  letter-spacing: .5px !important;
-  background: var(--t-bg2) !important;
-  border: 1px solid var(--t-b1) !important;
-  border-radius: 4px !important;
-  color: var(--t-tx2) !important;
-}
-.chip b {
-  font-family: var(--t-mono) !important;
-  color: var(--t-tx1) !important;
-  font-variant-numeric: tabular-nums !important;
-}
-.pillTag, .dayBadge {
-  font-family: var(--t-ui) !important;
-  font-size: 8.5px !important;
-  letter-spacing: 1.5px !important;
-  background: var(--t-bg2) !important;
-  border-color: var(--t-b1) !important;
-  color: var(--t-tx3) !important;
-}
-.liveBadge {
-  font-family: var(--t-mono) !important;
-  font-size: 8px !important;
-  letter-spacing: 1px !important;
-  background: var(--t-bg2) !important;
-  border-color: var(--t-b1) !important;
-  color: var(--t-tx3) !important;
-}
-.liveBadge.live {
-  background: rgba(16,185,129,.07) !important;
-  color: var(--t-green2) !important;
-  border-color: rgba(16,185,129,.22) !important;
-}
-
-/* ───────────────────────────────────────────────
+/* ────────────────────────────────────────────
    DATA PANELS
-─────────────────────────────────────────────── */
-.hero, .busBanner {
-  background: var(--t-bg2) !important;
-  border: 1px solid var(--t-b1) !important;
-  border-radius: var(--t-r2) !important;
-}
-.hero::before, .hero::after,
-.busBanner::before, .busBanner::after { display: none !important; }
-
+──────────────────────────────────────────── */
+.hero, .busBanner,
 .macroBox, .fpBox, .paBox, .tmBox, .pb3Top, .sharpeBox,
 .qeBox, .busBox, .sessBox, .sessLeft, .sessRight, .intelTile {
-  background: var(--t-bg2) !important;
-  border: 1px solid var(--t-b2) !important;
-  border-radius: var(--t-r2) !important;
+  background: var(--dt-bg2) !important;
+  border: 1px solid var(--dt-b2) !important;
+  border-radius: 6px !important;
 }
+.hero::before, .hero::after,
+.busBanner::before, .busBanner::after,
 .intelTile::before { display: none !important; }
 
-/* ───────────────────────────────────────────────
-   TABLES — DENSE, TABULAR
-─────────────────────────────────────────────── */
+/* ────────────────────────────────────────────
+   CHIPS / BADGES
+──────────────────────────────────────────── */
+.chip {
+  font-family: var(--dt-ui) !important;
+  font-size: 9px !important;
+  background: var(--dt-bg2) !important;
+  border: 1px solid var(--dt-b1) !important;
+  border-radius: 3px !important;
+  color: var(--dt-t2) !important;
+}
+.chip b { font-family: var(--dt-mono) !important; color: var(--dt-t1) !important; }
+.pillTag, .dayBadge {
+  font-family: var(--dt-ui) !important;
+  font-size: 8.5px !important;
+  letter-spacing: 1.5px !important;
+  background: var(--dt-bg2) !important;
+  border-color: var(--dt-b1) !important;
+  color: var(--dt-t3) !important;
+}
+.liveBadge { font-family: var(--dt-mono) !important; font-size: 8px !important; letter-spacing: 1px !important; background: var(--dt-bg2) !important; border-color: var(--dt-b1) !important; color: var(--dt-t3) !important; }
+.liveBadge.live { background: rgba(0,230,118,.06) !important; color: var(--dt-lime2) !important; border-color: rgba(0,230,118,.20) !important; }
+
+/* ────────────────────────────────────────────
+   TABLES
+──────────────────────────────────────────── */
 thead th {
-  font-family: var(--t-ui) !important;
+  font-family: var(--dt-ui) !important;
   font-size: 8px !important;
   font-weight: 600 !important;
   letter-spacing: 2px !important;
   text-transform: uppercase !important;
-  color: var(--t-tx3) !important;
+  color: var(--dt-t3) !important;
   background: rgba(0,0,0,.25) !important;
-  border-bottom: 1px solid var(--t-b1) !important;
+  border-bottom: 1px solid var(--dt-b1) !important;
 }
 td {
-  font-family: var(--t-mono) !important;
+  font-family: var(--dt-mono) !important;
   font-size: 10px !important;
-  font-weight: 400 !important;
-  color: var(--t-tx2) !important;
-  border-color: var(--t-b3) !important;
+  color: var(--dt-t2) !important;
+  border-color: var(--dt-b3) !important;
   font-variant-numeric: tabular-nums !important;
 }
-tbody tr:hover td {
-  background: rgba(59,130,246,.04) !important;
-}
+tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
+.txMx .rl { font-family: var(--dt-ui) !important; font-size: 8px !important; color: var(--dt-t3) !important; }
+.txMx th  { font-family: var(--dt-ui) !important; letter-spacing: 1.5px !important; color: var(--dt-t3) !important; background: rgba(0,0,0,.20) !important; }
 
-/* TM matrix */
-.txMx .rl {
-  font-family: var(--t-ui) !important;
-  font-size: 8px !important;
-  letter-spacing: 1px !important;
-  color: var(--t-tx3) !important;
-}
-.txMx th {
-  font-family: var(--t-ui) !important;
-  letter-spacing: 1.5px !important;
-  color: var(--t-tx3) !important;
-  background: rgba(0,0,0,.20) !important;
-}
-
-/* ───────────────────────────────────────────────
-   RISK PULSE
-─────────────────────────────────────────────── */
-.riskPulse {
-  background: var(--t-bg2) !important;
-  border: 1px solid var(--t-b1) !important;
-  border-radius: var(--t-r2) !important;
-}
-
-/* ───────────────────────────────────────────────
+/* ────────────────────────────────────────────
    NEWSFEED
-─────────────────────────────────────────────── */
-.teNewsItem { border-bottom: 1px solid var(--t-b3) !important; }
-.teNewsItem:hover { background: rgba(59,130,246,.035) !important; }
-.teNewsTime {
-  font-family: var(--t-mono) !important;
-  font-size: 8px !important;
-  letter-spacing: 1px !important;
-  color: var(--t-tx3) !important;
-  text-transform: uppercase !important;
-}
-.teNewsTitle {
-  font-family: var(--t-ui) !important;
-  font-size: 11px !important;
-  font-weight: 400 !important;
-  color: var(--t-tx2) !important;
-  line-height: 1.5 !important;
-}
-.teNewsCategory.USD {
-  background: rgba(59,130,246,.10) !important;
-  color: var(--t-blue2) !important;
-  border: 1px solid rgba(59,130,246,.22) !important;
-  font-family: var(--t-ui) !important;
-  font-size: 7.5px !important;
-  letter-spacing: 1.5px !important;
-  font-weight: 600 !important;
-}
-.teNewsCategory.EUR {
-  background: rgba(16,185,129,.07) !important;
-  color: var(--t-green2) !important;
-  border: 1px solid rgba(16,185,129,.20) !important;
-}
+──────────────────────────────────────────── */
+.teNewsItem { border-bottom: 1px solid var(--dt-b3) !important; }
+.teNewsItem:hover { background: rgba(0,229,255,.025) !important; }
+.teNewsTime { font-family: var(--dt-mono) !important; font-size: 8px !important; color: var(--dt-t3) !important; letter-spacing: 1px !important; text-transform: uppercase !important; }
+.teNewsTitle { font-family: var(--dt-ui) !important; font-size: 11px !important; font-weight: 400 !important; color: var(--dt-t2) !important; line-height: 1.5 !important; }
+.teNewsCategory.USD { background: rgba(0,229,255,.08) !important; color: var(--dt-cyan) !important; border: 1px solid rgba(0,229,255,.20) !important; font-family: var(--dt-ui) !important; font-size: 7.5px !important; letter-spacing: 1.5px !important; font-weight: 600 !important; }
+.teNewsCategory.EUR { background: rgba(0,230,118,.06) !important; color: var(--dt-lime2) !important; border: 1px solid rgba(0,230,118,.18) !important; }
 
-/* ───────────────────────────────────────────────
-   PROBABILITY BARS
-─────────────────────────────────────────────── */
-.probBar > div {
-  border-radius: 2px !important;
-  filter: none !important;
-  box-shadow: none !important;
-}
-
-/* ───────────────────────────────────────────────
-   RISK STRIP
-─────────────────────────────────────────────── */
-.riskItem { border-color: var(--t-b3) !important; }
-.rv {
-  font-family: var(--t-mono) !important;
-  color: var(--t-tx1) !important;
-  font-variant-numeric: tabular-nums !important;
-}
-
-/* ───────────────────────────────────────────────
-   QX CONTEXT BOXES
-─────────────────────────────────────────────── */
-.qxMxCell {
-  background: var(--t-bg2) !important;
-  border: 1px solid var(--t-b2) !important;
-}
-.qxMxCell .lab {
-  font-family: var(--t-ui) !important;
-  font-size: 8px !important;
-  letter-spacing: 1.5px !important;
-  color: var(--t-tx3) !important;
-}
-.qxMxCell .val {
-  font-family: var(--t-mono) !important;
-  color: var(--t-tx1) !important;
-  font-variant-numeric: tabular-nums !important;
-}
-
-/* ───────────────────────────────────────────────
+/* ────────────────────────────────────────────
    MISC
-─────────────────────────────────────────────── */
-.smallNote, .muted, .meta, .rm, .fm, .bm {
-  font-family: var(--t-ui) !important;
-  color: var(--t-tx3) !important;
-}
-.foot {
-  font-family: var(--t-ui) !important;
-  color: var(--t-tx4) !important;
-}
-.alertBadge {
-  font-family: var(--t-mono) !important;
-  font-size: 9px !important;
-  letter-spacing: 1px !important;
-}
-.staleWarning, #staleWarn {
-  background: rgba(239,68,68,.08) !important;
-  border: 1px solid rgba(239,68,68,.25) !important;
-  animation: termStale 2s ease-in-out infinite !important;
-}
-@keyframes termStale { 0%,100% { opacity: 1; } 50% { opacity: .65; } }
+──────────────────────────────────────────── */
+.qxMxCell { background: var(--dt-bg2) !important; border: 1px solid var(--dt-b2) !important; }
+.qxMxCell .lab { font-family: var(--dt-ui) !important; font-size: 8px !important; letter-spacing: 1.5px !important; color: var(--dt-t3) !important; }
+.qxMxCell .val { font-family: var(--dt-mono) !important; color: var(--dt-t1) !important; font-variant-numeric: tabular-nums !important; }
+.smallNote, .muted { font-family: var(--dt-ui) !important; color: var(--dt-t3) !important; }
+.foot { font-family: var(--dt-ui) !important; color: var(--dt-t4) !important; }
+.riskItem { border-color: var(--dt-b3) !important; }
+.rv { font-family: var(--dt-mono) !important; color: var(--dt-t1) !important; font-variant-numeric: tabular-nums !important; }
+.staleWarning, #staleWarn { background: rgba(255,61,85,.07) !important; border: 1px solid rgba(255,61,85,.22) !important; animation: dtStale 2s ease-in-out infinite !important; }
+@keyframes dtStale { 0%,100% { opacity: 1; } 50% { opacity: .65; } }
+.probBar > div { border-radius: 2px !important; filter: none !important; box-shadow: none !important; }
+.tlLabel { font-family: var(--dt-mono) !important; font-size: 8px !important; color: var(--dt-t3) !important; letter-spacing: 1px !important; }
 
-/* Timeline */
-.tlLabel {
-  font-family: var(--t-mono) !important;
-  font-size: 8px !important;
-  letter-spacing: 1px !important;
-  color: var(--t-tx3) !important;
-}
-
-/* ───────────────────────────────────────────────
-   GRID
-─────────────────────────────────────────────── */
-.grid {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 12px !important;
-  padding: 12px !important;
-  align-items: start !important;
-}
+/* Grid */
+.grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px !important; padding: 12px !important; align-items: start !important; }
 .stack { display: flex; flex-direction: column; gap: 10px; }
 .stack .card { flex-shrink: 0; margin: 0 !important; }
 
-/* ───────────────────────────────────────────────
-   SCROLLBARS — INVISIBLE UNTIL HOVER
-─────────────────────────────────────────────── */
+/* Scrollbars */
 ::-webkit-scrollbar { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: rgba(148,163,184,.18);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,.38); }
+::-webkit-scrollbar-thumb { background: rgba(0,229,255,.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,229,255,.35); }
 
 /* Selection */
-::selection { background: rgba(59,130,246,.25); color: var(--t-tx1); }
+::selection { background: rgba(0,229,255,.20); color: var(--dt-t1); }
 
-/* Tabular nums globally for all numeric-looking elements */
-.v, .fv, .qv, .cv, .rv, td, .fpBox, .paBox, .macroBox,
-.sharpeBox, .qeBox, .quotePx, .fcastBox {
-  font-variant-numeric: tabular-nums !important;
-}
+/* Tabular nums global */
+.v, .fv, .qv, .cv, .rv, td, .fpBox, .paBox, .macroBox, .sharpeBox, .qeBox, .quotePx, .fcastBox { font-variant-numeric: tabular-nums !important; }
 
 </style>
-
-
-<style id="qx-v37-guided-mode-pass">
-/* keep top header on one row */
-.topbar{
-  display:flex!important;
-  align-items:center!important;
-  justify-content:space-between!important;
-  gap:14px!important;
-  flex-wrap:nowrap!important;
-}
-.topbar > *{min-width:0}
-.brand{flex:1 1 auto!important; min-width:280px!important}
-.top-actions{
-  display:flex!important;
-  align-items:center!important;
-  gap:8px!important;
-  flex-wrap:nowrap!important;
-  white-space:nowrap!important;
-  overflow-x:auto!important;
-  overflow-y:hidden!important;
-  scrollbar-width:none;
-}
-.top-actions::-webkit-scrollbar{display:none}
-.top-actions .btn{flex:0 0 auto!important}
-
-/* guided mode */
-#qxGuidedToggle{
-  background:linear-gradient(135deg, rgba(61,169,255,.28), rgba(155,124,255,.18), rgba(46,230,166,.12))!important;
-  border-color:rgba(61,169,255,.22)!important;
-  color:#eef7ff!important;
-}
-
-#qxGuidedBackdrop{
-  position:fixed; inset:0; z-index:13000; display:none;
-  background:rgba(3,6,14,.62);
-  backdrop-filter:blur(8px) saturate(1.05);
-  -webkit-backdrop-filter:blur(8px) saturate(1.05);
-}
-#qxGuidedSpotlight{
-  position:absolute; border-radius:18px; pointer-events:none;
-  box-shadow:
-    0 0 0 9999px rgba(3,6,14,.68),
-    0 0 0 1px rgba(255,255,255,.10),
-    0 20px 70px rgba(0,0,0,.48),
-    0 0 44px rgba(61,169,255,.12);
-  transition:all .28s cubic-bezier(.22,1,.36,1);
-}
-#qxGuidedCard{
-  position:absolute;
-  width:min(430px, calc(100vw - 32px));
-  border-radius:20px;
-  border:1px solid rgba(255,255,255,.10);
-  background:linear-gradient(180deg, rgba(14,20,38,.97), rgba(9,14,26,.97));
-  box-shadow:0 28px 90px rgba(0,0,0,.56), inset 0 1px 0 rgba(255,255,255,.04);
-  padding:16px 16px 14px;
-  color:#e8eaf0;
-  transition:all .28s cubic-bezier(.22,1,.36,1);
-}
-.qxG-step{
-  font-family:"JetBrains Mono", ui-monospace, monospace;
-  font-size:10px; letter-spacing:1px; text-transform:uppercase;
-  color:rgba(180,220,255,.72);
-}
-.qxG-title{
-  font-family:"Space Grotesk", Inter, sans-serif;
-  font-size:18px; font-weight:800; letter-spacing:-.3px; line-height:1.1; margin-top:4px;
-}
-.qxG-copy{
-  margin-top:9px; font-size:12px; line-height:1.56; color:rgba(232,234,240,.76);
-}
-.qxG-box{
-  margin-top:10px; padding:10px 11px; border-radius:13px;
-  background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.07);
-  font-size:11px; line-height:1.5; color:rgba(232,234,240,.68);
-}
-.qxG-label{
-  font-family:"JetBrains Mono", ui-monospace, monospace;
-  font-size:9px; letter-spacing:1px; text-transform:uppercase; color:rgba(232,234,240,.44); margin-bottom:4px;
-}
-.qxG-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}
-.qxG-dots{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.qxG-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18)}
-.qxG-dot.active{background:rgba(46,230,166,.94); box-shadow:0 0 12px rgba(46,230,166,.30)}
-.qxG-btns{display:flex;gap:8px;align-items:center}
-.qxG-btn{
-  cursor:pointer; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.05);
-  color:#eef7ff; border-radius:999px; padding:8px 12px; font-size:11px; font-weight:700;
-}
-.qxG-btn.primary{
-  background:linear-gradient(135deg, rgba(61,169,255,.30), rgba(46,230,166,.16));
-  border-color:rgba(61,169,255,.24);
-}
-.qxG-btn.ghost{color:rgba(232,234,240,.72)}
-.qxG-close{cursor:pointer; font-size:11px; color:rgba(232,234,240,.54); padding:4px 6px; border-radius:8px;}
-.qxGuidedPinned{position:relative; z-index:13001}
-@media(max-width:1200px){
-  .topbar{flex-wrap:wrap!important}
-  .brand{min-width:220px!important}
-}
-@media(max-width:860px){
-  #qxGuidedCard{width:min(360px, calc(100vw - 24px))}
-  .qxG-title{font-size:16px}
-}
-</style>
-
-<div id="qxGuidedBackdrop" aria-hidden="true">
-  <div id="qxGuidedSpotlight"></div>
-  <div id="qxGuidedCard">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px">
-      <div>
-        <div class="qxG-step" id="qxGStep">Step 1 of 6</div>
-        <div class="qxG-title" id="qxGTitle">Welcome</div>
-      </div>
-      <div class="qxG-close" id="qxGClose">Close</div>
-    </div>
-    <div class="qxG-copy" id="qxGCopy">Guided Mode explains the dashboard in the order an investor, partner, or first-time user should read it.</div>
-    <div class="qxG-box">
-      <div class="qxG-label">Why it matters</div>
-      <div id="qxGWhy">This turns a complex dashboard into a clear product story.</div>
-    </div>
-    <div class="qxG-box">
-      <div class="qxG-label">How it fits the story</div>
-      <div id="qxGHow">Each panel contributes one layer: structure, edge, consensus, forecast, context, and validation.</div>
-    </div>
-    <div class="qxG-nav">
-      <div class="qxG-dots" id="qxGDots"></div>
-      <div class="qxG-btns">
-        <button class="qxG-btn ghost" id="qxGPrev">Back</button>
-        <button class="qxG-btn primary" id="qxGNext">Next</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script id="qx-v37-guided-mode-script">
-(function(){
-  function $(id){ return document.getElementById(id); }
-
-  function findCardTitleContains(txt){
-    return Array.prototype.slice.call(document.querySelectorAll('.card')).find(function(card){
-      var h2 = card.querySelector('.card-title h2');
-      return h2 && h2.textContent && h2.textContent.toLowerCase().indexOf(txt.toLowerCase()) !== -1;
-    });
-  }
-
-  var steps = [
-    {
-      title: "Current Market Regime",
-      meaning: "This panel shows where the market is structurally right now: whether conditions are stable, trending, transitional, or fragile.",
-      why: "It is the first filter. Every downstream model should be interpreted through the regime first.",
-      how: "The story starts with structure, because edge only matters if the environment supports it.",
-      target: function(){ return findCardTitleContains('Current Market State'); }
-    },
-    {
-      title: "Signal Edge",
-      meaning: "This panel tells you whether a real statistical advantage exists right now, rather than just price movement.",
-      why: "Markets can move without offering usable edge. This separates motion from opportunity.",
-      how: "After structure, the platform asks the next critical question: is there an exploitable advantage?",
-      target: function(){ return findCardTitleContains('Quantitative Edge'); }
-    },
-    {
-      title: "Model Consensus",
-      meaning: "This is the unified decision layer where independent models resolve into one coherent BUY, SELL, or WAIT view.",
-      why: "Professional systems need one answer, not multiple indicators contradicting each other.",
-      how: "This is where structure and edge become a single institutional decision.",
-      target: function(){ return findCardTitleContains('Unified Signal Bus'); }
-    },
-    {
-      title: "Forecast + Execution",
-      meaning: "The forecast engine frames the probable path and range. Execution context tells you whether the trade is actually worth taking now.",
-      why: "Direction alone is not enough. Timing, liquidity, and session behavior decide execution quality.",
-      how: "This layer translates the model view into an actionable trade path.",
-      target: function(){ return findCardTitleContains('Forward Projection') || findCardTitleContains('Session Playbook'); }
-    },
-    {
-      title: "Macro Pressure Map",
-      meaning: "This explains why the market is behaving the way it is by showing cross-asset pressure from the dollar, commodities, and related FX pairs.",
-      why: "Investors want to understand the drivers behind the signal, not just the signal itself.",
-      how: "This is the explanatory context layer that gives the terminal macro credibility.",
-      target: function(){ return findCardTitleContains('Macro Drivers'); }
-    },
-    {
-      title: "Regime Transition Engine + System Performance",
-      meaning: "The transition matrix shows what could change next. Calibration and performance show whether the machine is learning and whether the edge actually works.",
-      why: "This is where confidence becomes justified: what could change, and whether the system has earned trust.",
-      how: "The story ends with validation, so the terminal proves both forward awareness and real-world performance.",
-      target: function(){
-        return findCardTitleContains('HMM Transition Matrix') || findCardTitleContains('Projection Accuracy') || findCardTitleContains('Signal Performance');
-      }
-    }
-  ];
-
-  var state = { open:false, idx:0 };
-  var backdrop = $('qxGuidedBackdrop');
-  var spot = $('qxGuidedSpotlight');
-  var card = $('qxGuidedCard');
-  var stepEl = $('qxGStep');
-  var titleEl = $('qxGTitle');
-  var copyEl = $('qxGCopy');
-  var whyEl = $('qxGWhy');
-  var howEl = $('qxGHow');
-  var dotsEl = $('qxGDots');
-  var prevBtn = $('qxGPrev');
-  var nextBtn = $('qxGNext');
-  var closeBtn = $('qxGClose');
-
-  function ensureGuidedButton(){
-    if($('qxGuidedToggle')) return;
-    var topActions = document.querySelector('.top-actions');
-    if(!topActions) return;
-    var btn = document.createElement('button');
-    btn.className = 'btn';
-    btn.id = 'qxGuidedToggle';
-    btn.textContent = 'Guided Mode';
-    btn.addEventListener('click', function(){ openGuide(0); });
-    topActions.insertBefore(btn, topActions.firstChild);
-  }
-
-  function renderDots(){
-    dotsEl.innerHTML = steps.map(function(_,i){
-      return '<span class="qxG-dot '+(i===state.idx?'active':'')+'"></span>';
-    }).join('');
-  }
-
-  function resolveTarget(step){
-    var el = step.target();
-    if(el) return el;
-    return document.querySelector('.card');
-  }
-
-  function placeForTarget(target){
-    var rect = target.getBoundingClientRect();
-    var pad = 8;
-    spot.style.left = (rect.left - pad + window.scrollX) + 'px';
-    spot.style.top = (rect.top - pad + window.scrollY) + 'px';
-    spot.style.width = (rect.width + pad*2) + 'px';
-    spot.style.height = (rect.height + pad*2) + 'px';
-
-    var vw = window.innerWidth;
-    var vh = window.innerHeight;
-    var cardW = Math.min(430, vw - 32);
-    var below = rect.bottom + 14;
-    var above = rect.top - 18;
-    var rightSide = rect.right + 18;
-    var cLeft, cTop;
-
-    if(rightSide + cardW < vw - 16){
-      cLeft = rightSide + window.scrollX;
-      cTop = Math.max(16, rect.top + window.scrollY);
-    } else if (below + 260 < vh) {
-      cLeft = Math.max(16, Math.min(vw - cardW - 16, rect.left + window.scrollX));
-      cTop = below + window.scrollY;
-    } else {
-      cLeft = Math.max(16, Math.min(vw - cardW - 16, rect.left + window.scrollX));
-      cTop = Math.max(16, above - 240 + window.scrollY);
-    }
-    card.style.left = cLeft + 'px';
-    card.style.top = cTop + 'px';
-
-    target.scrollIntoView({behavior:'smooth', block:'center'});
-  }
-
-  function render(){
-    var step = steps[state.idx];
-    stepEl.textContent = 'Step ' + (state.idx + 1) + ' of ' + steps.length;
-    titleEl.textContent = step.title;
-    copyEl.textContent = step.meaning;
-    whyEl.textContent = step.why;
-    howEl.textContent = step.how;
-    prevBtn.disabled = state.idx===0;
-    nextBtn.textContent = state.idx===steps.length-1 ? 'Finish' : 'Next';
-    renderDots();
-
-    document.querySelectorAll('.qxGuidedPinned').forEach(function(el){ el.classList.remove('qxGuidedPinned'); });
-    var target = resolveTarget(step);
-    if(target){
-      target.classList.add('qxGuidedPinned');
-      placeForTarget(target);
-    }
-  }
-
-  function openGuide(idx){
-    state.open = true;
-    state.idx = typeof idx === 'number' ? idx : 0;
-    backdrop.style.display = 'block';
-    backdrop.setAttribute('aria-hidden','false');
-    render();
-  }
-
-  function closeGuide(){
-    state.open = false;
-    backdrop.style.display = 'none';
-    backdrop.setAttribute('aria-hidden','true');
-    document.querySelectorAll('.qxGuidedPinned').forEach(function(el){ el.classList.remove('qxGuidedPinned'); });
-  }
-
-  prevBtn.addEventListener('click', function(){
-    if(state.idx>0){ state.idx--; render(); }
-  });
-  nextBtn.addEventListener('click', function(){
-    if(state.idx < steps.length-1){ state.idx++; render(); }
-    else closeGuide();
-  });
-  closeBtn.addEventListener('click', closeGuide);
-  backdrop.addEventListener('click', function(e){
-    if(e.target === backdrop) closeGuide();
-  });
-  window.addEventListener('resize', function(){ if(state.open) render(); });
-  window.addEventListener('scroll', function(){ if(state.open) render(); }, {passive:true});
-
-  document.addEventListener('DOMContentLoaded', ensureGuidedButton);
-})();
-</script>
 
 </body>
 </html>
