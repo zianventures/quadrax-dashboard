@@ -5720,5 +5720,265 @@ thead th,.paLogTable th{padding:7px 8px!important}
 })();
 </script>
 
+
+<style id="qx-final-it-factor">
+/* Premium, denser right-rail and stronger product styling */
+:root{
+  --qx-neon-a: rgba(105,166,255,.34);
+  --qx-neon-b: rgba(0,214,143,.24);
+  --qx-neon-c: rgba(140,90,255,.16);
+}
+body::after{
+  content:"";
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(900px 280px at 8% -2%, var(--qx-neon-a), transparent 62%),
+    radial-gradient(700px 240px at 96% 8%, var(--qx-neon-b), transparent 58%),
+    radial-gradient(760px 300px at 55% 100%, var(--qx-neon-c), transparent 65%);
+  opacity:.9;
+}
+.wrap{max-width:1640px!important; padding:14px 14px 44px!important}
+.grid,.stack{gap:12px!important}
+.topbar{
+  background:linear-gradient(180deg, rgba(15,24,44,.94), rgba(8,13,25,.95))!important;
+  box-shadow:0 24px 58px rgba(0,0,0,.34)!important;
+}
+.brand .sub{
+  font-size:9px!important;
+  color:rgba(232,234,240,.44)!important;
+}
+.qxSuperPill{
+  display:inline-flex; align-items:center; gap:6px;
+  margin-left:10px; padding:5px 10px;
+  border-radius:999px; background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.08);
+  color:rgba(232,234,240,.56);
+  font-size:8.5px; letter-spacing:1px; font-family:var(--mono); text-transform:uppercase;
+}
+.qxSuperPill i{
+  width:6px;height:6px;border-radius:50%;
+  background:linear-gradient(135deg, rgba(105,166,255,.95), rgba(0,214,143,.92));
+  box-shadow:0 0 10px rgba(105,166,255,.36);
+}
+
+/* globally denser */
+.card .inner{padding:15px!important}
+.card-title{margin-bottom:9px!important}
+.card-title h2{font-size:9.8px!important; letter-spacing:1.75px!important}
+.card-title .hint{font-size:10px!important; line-height:1.42!important}
+.smallNote,.muted,.meta,.bm,.fm,.rm,.aNote,.aAnalog{line-height:1.42!important}
+.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip{
+  border-radius:16px!important;
+}
+.card,.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip{
+  box-shadow:0 18px 46px rgba(0,0,0,.30)!important;
+}
+.card::before,.hero::before,.quoteCard::before,.sessLeft::before,.sessRight::before,.intelTile::before,.fpTfBox::before,.paBox::before{
+  content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 20%),
+    radial-gradient(560px 150px at 0% -18%, var(--qx-neon-a), transparent 72%),
+    radial-gradient(420px 130px at 100% -20%, var(--qx-neon-b), transparent 72%);
+  opacity:1;
+}
+
+/* Right rail compacting */
+.qx-right-compact .card{min-height:auto!important; height:auto!important}
+.qx-right-compact .inner{min-height:auto!important; height:auto!important; padding:14px!important}
+.qx-right-compact .card-title{margin-bottom:8px!important}
+.qx-right-compact .macroGrid{gap:8px!important}
+.qx-right-compact .macroBox,.qx-right-compact .tmBox{min-height:auto!important; padding:9px 10px!important}
+.qx-right-compact .tmGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important; gap:8px!important}
+.qx-right-compact .tmGrid .macroBox{grid-column:auto!important}
+.qx-right-compact .macroBox[style*="grid-column:1/span 2"]{grid-column:1 / span 2!important}
+.qx-right-compact .riskLevel{
+  display:grid!important; grid-template-columns:1.15fr .85fr .85fr; gap:8px; align-items:start;
+  min-height:auto!important; padding:15px!important;
+}
+.qx-right-compact .riskLevel .rlabel{grid-column:1 / span 3}
+.qx-right-compact .riskLevel .rbig{margin-top:0!important}
+.qxRiskMini{
+  padding:10px 11px; border-radius:12px;
+  background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07);
+}
+.qxRiskMini .k{
+  font-size:8px; text-transform:uppercase; letter-spacing:1px; color:rgba(232,234,240,.46); font-family:var(--mono)
+}
+.qxRiskMini .v{
+  margin-top:4px; font-size:12px; font-weight:700; font-family:var(--mono); color:#fff;
+}
+.qx-right-compact .intelGrid{gap:8px!important}
+.qx-right-compact .intelTile{padding:10px!important}
+.qx-right-compact #orbCanvas,.qx-right-compact #radarCanvas{height:150px!important}
+.qx-right-compact .hmmDiagGrid{gap:8px!important}
+.qx-right-compact .qxMxContext{margin-bottom:8px!important}
+.qx-right-compact .qxMxExplain{margin-bottom:8px!important}
+.qx-right-compact table{margin-bottom:0!important}
+.qx-right-compact .pb3Grid,.qx-right-compact .alGrid{gap:8px!important}
+.qx-right-compact .smallNote:last-child{margin-top:8px!important}
+
+/* Transition strip stronger */
+.qxMxContext{
+  display:grid!important;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px!important;
+  padding:8px!important;
+}
+.qxMxCell{
+  padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.028); border:1px solid rgba(255,255,255,.06);
+}
+.qxMxCell .lab{
+  display:block; font-size:8px; text-transform:uppercase; letter-spacing:1px; color:rgba(232,234,240,.46); font-family:var(--mono);
+}
+.qxMxCell .val{
+  display:block; margin-top:3px; font-size:13px; font-weight:700; color:#fff; font-family:var(--mono)
+}
+
+/* Signal card stronger */
+.qx-command-card .card-title h2,
+.qx-matrix-card .card-title h2,
+.qx-macro-card .card-title h2,
+.qx-tm-card .card-title h2{
+  color:rgba(232,234,240,.62)!important;
+}
+.qx-command-card .card-title .hint,
+.qx-matrix-card .card-title .hint,
+.qx-macro-card .card-title .hint,
+.qx-tm-card .card-title .hint{
+  color:rgba(232,234,240,.46)!important;
+}
+.qx-command-card .intelTile{
+  background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015))!important;
+}
+
+/* Remove dead-space chart reference if still present */
+.qx-hide-card{display:none!important}
+</style>
+
+<script id="qx-final-it-factor-script">
+(function(){
+  function cards(){ return Array.prototype.slice.call(document.querySelectorAll('.card')); }
+  function title(card){
+    var h = card && card.querySelector('.card-title h2');
+    return h ? h.textContent.trim() : '';
+  }
+  function find(txt){
+    return cards().find(function(c){ return title(c).toLowerCase().indexOf(txt.toLowerCase()) !== -1; });
+  }
+  function addBrandPill(){
+    var brand = document.querySelector('.brand');
+    if(!brand || brand.querySelector('.qxSuperPill')) return;
+    var pill = document.createElement('span');
+    pill.className = 'qxSuperPill';
+    pill.innerHTML = '<i></i><span>Market Superintelligence</span>';
+    var sub = brand.querySelector('.sub');
+    if(sub) sub.insertAdjacentElement('afterend', pill);
+  }
+  function compactRightRail(){
+    var macro = find('Macro Drivers');
+    var tm = find('Transmission Mechanism');
+    var matrix = find('HMM Transition Matrix');
+    var risk = Array.prototype.slice.call(document.querySelectorAll('.card .riskLevel')).map(function(x){return x.closest('.card')})[0];
+    var cmd = find('Signal Intelligence');
+    [macro,tm,matrix,risk,cmd].forEach(function(card){
+      if(card) card.classList.add('qx-right-compact');
+    });
+    if(macro) macro.classList.add('qx-macro-card');
+    if(tm) tm.classList.add('qx-tm-card');
+    if(matrix) matrix.classList.add('qx-matrix-card');
+    if(cmd) cmd.classList.add('qx-command-card');
+
+    // hide the separate TV reference card if still visible
+    var daily = find('Daily EUR/USD Trend');
+    if(daily) daily.classList.add('qx-hide-card');
+  }
+  function fillRiskCard(){
+    var riskInner = document.querySelector('.riskLevel');
+    if(!riskInner || riskInner.querySelector('.qxRiskMini')) return;
+    var b1 = document.createElement('div');
+    b1.className = 'qxRiskMini';
+    b1.innerHTML = '<div class="k">Current Regime</div><div class="v" id="qxRiskRegime">--</div>';
+    var b2 = document.createElement('div');
+    b2.className = 'qxRiskMini';
+    b2.innerHTML = '<div class="k">Transition Watch</div><div class="v" id="qxRiskNext">--</div>';
+    var b3 = document.createElement('div');
+    b3.className = 'qxRiskMini';
+    b3.innerHTML = '<div class="k">Probability</div><div class="v" id="qxRiskProb">--</div>';
+    riskInner.appendChild(b1); riskInner.appendChild(b2); riskInner.appendChild(b3);
+  }
+  function updateTransitionContext(){
+    var current = (document.getElementById('hmmDiagCurrent')?.textContent || document.getElementById('policyStateTitle')?.textContent || '--').replace(/^Policy State:\s*/,'').trim();
+    var nextRaw = (document.getElementById('hmmDiagNext')?.textContent || document.getElementById('nextStateChip')?.textContent || '--').trim();
+    var probRaw = (document.getElementById('hmmDiagProb')?.textContent || '--').trim();
+
+    var next = nextRaw;
+    var prob = probRaw;
+    var m = nextRaw.match(/(S\d+).*?(\d+%)/i);
+    if(m){
+      next = m[1];
+      if(prob === '--') prob = m[2];
+    }
+
+    var wrap = document.querySelector('.qxMxContext');
+    if(wrap){
+      wrap.innerHTML =
+        '<div class="qxMxCell"><span class="lab">Current Regime</span><span class="val">'+(current||'--')+'</span></div>'+
+        '<div class="qxMxCell"><span class="lab">Transition Watch</span><span class="val">'+(next||'--')+'</span></div>'+
+        '<div class="qxMxCell"><span class="lab">Transition Probability</span><span class="val">'+(prob||'--')+'</span></div>';
+    }
+
+    var r1=document.getElementById('qxRiskRegime');
+    var r2=document.getElementById('qxRiskNext');
+    var r3=document.getElementById('qxRiskProb');
+    if(r1) r1.textContent=current||'--';
+    if(r2) r2.textContent=next||'--';
+    if(r3) r3.textContent=prob||'--';
+  }
+  function reorderForFlow(){
+    var stacks = Array.prototype.slice.call(document.querySelectorAll('.grid > .stack'));
+    if(stacks.length < 2) return;
+    var left = stacks[0], right = stacks[1];
+    var market = find('Current Market State');
+    var qedge = find('Quantitative Edge');
+    var bus = find('Unified Signal Bus');
+    var forecast = find('Forward Projection');
+    var proj = find('Projection Accuracy');
+    var perf = find('Signal Performance');
+    var macro = find('Macro Drivers');
+    var tm = find('Transmission Mechanism');
+    var matrix = find('HMM Transition Matrix');
+    var cmd = find('Signal Intelligence');
+    function move(card, stack, afterTxt){
+      if(!card||!stack) return;
+      if(afterTxt){
+        var anchor = Array.prototype.slice.call(stack.children).find(function(c){ return title(c).toLowerCase().indexOf(afterTxt.toLowerCase())!==-1;});
+        if(anchor && anchor.nextSibling) stack.insertBefore(card, anchor.nextSibling);
+        else stack.appendChild(card);
+      } else stack.insertBefore(card, stack.firstChild);
+    }
+    move(market,left,null);
+    move(qedge,left,'Current Market State');
+    move(bus,left,'Quantitative Edge');
+    move(forecast,left,'Unified Signal Bus');
+    move(proj,left,'Forward Projection');
+    move(perf,left,'Projection Accuracy');
+
+    move(macro,right,null);
+    move(tm,right,'Macro Drivers');
+    move(matrix,right,'Transmission Mechanism');
+    move(cmd,right,'HMM Transition Matrix');
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    addBrandPill();
+    reorderForFlow();
+    compactRightRail();
+    fillRiskCard();
+    updateTransitionContext();
+    setInterval(updateTransitionContext, 1200);
+  });
+})();
+</script>
+
 </body>
 </html>
