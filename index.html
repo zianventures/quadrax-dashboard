@@ -5,9 +5,9 @@
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>QuadraX Dashboard</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg0:#010205;--bg1:#030610;--bg2:#060a18;--bg3:#090e22;
@@ -5681,23 +5681,23 @@ thead th,.paLogTable th{padding:7px 8px!important}
     var heads=find('Live Headlines');
     var daily=find('Daily EUR/USD Trend');
 
-    // left stack: Market → Signal → Consensus → Forecast → Accuracy → Performance → Session → Calendar → TE
+    // LEFT: Market → Signal → Consensus → Forecast → Session → Calendar → TE
     move(market,left,left.firstChild);
     move(qedge,left,null);
     move(bus,left,null);
     move(forecast,left,null);
-    move(proj,left,null);
-    move(sharpe,left,null);
     move(session,left,null);
     move(wcal,left,null);      // World Events Calendar below Session
     move(te,left,null);        // Trading Economics below Calendar
 
-    // right stack: Transition → Transmission → Macro → Signal → Playbook
+    // RIGHT: Transition → Transmission → Macro → Signal → Playbook → Proj Accuracy → Signal Performance
     move(hmm,right,null);      // Transition Intelligence (top)
     move(trans,right,null);    // Transmission Mechanism
     move(macro,right,null);    // Macro Intelligence
     move(sigInt,right,null);   // Signal Intelligence
     move(play,right,null);     // Session Playbook
+    move(proj,right,null);     // Projection Accuracy → below Playbook
+    move(sharpe,right,null);   // Signal Performance → below Proj Accuracy
 
     // hide true reference-only panels
     [daily,pb3,event,corr,heads].forEach(hide);
@@ -6174,21 +6174,19 @@ body::after{
 
     hide(risk);
 
-    // Right rail: Transition → Transmission → Macro → Signal → Playbook
+    // RIGHT: Transition → Transmission → Macro → Signal → Playbook → Proj Accuracy → Performance
     moveTop(matrix, right);
     moveAfter(trans, right, 'HMM Transition Matrix');
     moveAfter(macroCard, right, 'Transmission Mechanism');
     moveAfter(signalIntel, right, 'Macro Drivers');
     moveAfter(sessionPlay, right, 'Signal Intelligence');
+    if(projAcc){ projAcc.classList.remove('qx-hidden-card'); moveAfter(projAcc, right, 'Session Playbook'); }
+    if(performance){ performance.classList.remove('qx-hidden-card'); moveAfter(performance, right, 'Projection Accuracy'); }
 
-    // Left rail: Session → Calendar → TE News below main flow
-    if(sessionIntel) moveAfter(sessionIntel, left, 'Signal Performance');
+    // LEFT: Session → Calendar → TE News below main flow
+    if(sessionIntel) moveAfter(sessionIntel, left, 'Forward Projection');
     if(wcalCard){ wcalCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(wcalCard, left, 'Session Intelligence'); }
     if(teCard){ teCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(teCard, left, 'World Events Calendar'); }
-
-    // shift validation/performance before session for balance
-    if(projAcc) moveAfter(projAcc, left, 'Forward Projection');
-    if(performance) moveAfter(performance, left, 'Projection Accuracy');
 
     compact(matrix); compact(trans); compact(macroCard); compact(signalIntel); compact(sessionPlay);
     compact(sessionIntel); compact(qedge); compact(bus);
@@ -6638,6 +6636,735 @@ thead th {
   animation:staleFlash 2s ease-in-out infinite !important;
 }
 @keyframes staleFlash { 0%,100%{opacity:1} 50%{opacity:.7} }
+
+</style>
+
+<style id="qx-vertus-ultra-v36">
+/*
+╔══════════════════════════════════════════════════════════════════════════════════╗
+║  QUADRAX · SUPERINTELLIGENCE OS  ·  ULTRA-PREMIUM VISUAL LAYER v36             ║
+║  Beyond Vertus. Beyond imagination.                                             ║
+║  Dark Void Intelligence · Hyper-Cinematic · 8K Depth · Neural Glow              ║
+╚══════════════════════════════════════════════════════════════════════════════════╝
+*/
+
+/* ── Import elite display font: Orbitron for tech display + Rajdhani body ─── */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+
+:root {
+  /* Deep void palette */
+  --void:      #000408;
+  --abyss:     #010608;
+  --deep:      #020b12;
+  --surface-a: #050f1a;
+  --surface-b: #071525;
+  --surface-c: #0a1c30;
+
+  /* Neural accent system */
+  --neural-cyan:   #00f0ff;
+  --neural-blue:   #0066ff;
+  --neural-teal:   #00e5b0;
+  --neural-gold:   #ffd60a;
+  --neural-amber:  #ff8c00;
+  --neural-red:    #ff1744;
+  --neural-violet: #7b2fff;
+
+  /* Glow intensities */
+  --glow-cyan:   0 0 20px rgba(0,240,255,.35), 0 0 60px rgba(0,240,255,.15);
+  --glow-blue:   0 0 20px rgba(0,102,255,.35), 0 0 60px rgba(0,102,255,.15);
+  --glow-teal:   0 0 20px rgba(0,229,176,.35), 0 0 60px rgba(0,229,176,.15);
+  --glow-gold:   0 0 20px rgba(255,214,10,.40), 0 0 60px rgba(255,214,10,.18);
+  --glow-red:    0 0 20px rgba(255,23,68,.35), 0 0 60px rgba(255,23,68,.15);
+  --glow-violet: 0 0 20px rgba(123,47,255,.40), 0 0 60px rgba(123,47,255,.18);
+
+  /* Font stack override */
+  --font-hud:     'Orbitron', 'Barlow Condensed', sans-serif;
+  --font-body:    'Rajdhani', 'Barlow', ui-sans-serif, sans-serif;
+  --font-data:    'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BODY & VOID BACKGROUND
+═══════════════════════════════════════════════════════════════════════════ */
+body {
+  background:
+    radial-gradient(ellipse 140% 70% at 50% -10%, rgba(0,40,80,.35) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 50% at 0% 50%, rgba(0,30,60,.20) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 50% at 100% 50%, rgba(0,20,40,.15) 0%, transparent 55%),
+    linear-gradient(180deg, #000810 0%, #000408 40%, #010205 100%) !important;
+  font-family: var(--font-body) !important;
+}
+
+/* Animated scanning line effect */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,240,255,.008) 2px,
+    rgba(0,240,255,.008) 4px
+  );
+  animation: scanMove 12s linear infinite;
+}
+@keyframes scanMove {
+  from { background-position: 0 0; }
+  to   { background-position: 0 -400px; }
+}
+
+/* Animated ambient orbs */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 700px 500px at 8% 15%,  rgba(0,102,255,.06) 0%, transparent 70%),
+    radial-gradient(ellipse 600px 400px at 92% 80%, rgba(0,229,176,.05) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 300px at 50% 110%, rgba(123,47,255,.04) 0%, transparent 65%),
+    radial-gradient(ellipse 350px 250px at 85% 8%,  rgba(255,214,10,.03) 0%, transparent 60%),
+    radial-gradient(ellipse 300px 200px at 15% 90%, rgba(0,240,255,.04) 0%, transparent 60%);
+  animation: orbPulse 16s ease-in-out infinite alternate;
+}
+@keyframes orbPulse {
+  0%   { opacity: .55; transform: scale(1); }
+  50%  { opacity: .90; transform: scale(1.06); }
+  100% { opacity: .65; transform: scale(.98); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOPBAR — COMMAND BRIDGE
+═══════════════════════════════════════════════════════════════════════════ */
+.topbar {
+  background: linear-gradient(180deg,
+    rgba(0,12,28,.97) 0%,
+    rgba(0,8,20,.99) 100%) !important;
+  border-bottom: 1px solid rgba(0,240,255,.12) !important;
+  box-shadow:
+    0 1px 0 rgba(0,240,255,.08),
+    0 4px 40px rgba(0,0,0,.90),
+    0 0 120px rgba(0,102,255,.06),
+    inset 0 1px 0 rgba(255,255,255,.04) !important;
+  backdrop-filter: blur(32px) saturate(1.6) !important;
+  position: relative; z-index: 200;
+}
+
+/* Topbar animated spectrum underline */
+.topbar::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0,102,255,.7) 15%,
+    rgba(0,240,255,.9) 35%,
+    rgba(0,229,176,.8) 55%,
+    rgba(123,47,255,.7) 75%,
+    rgba(0,240,255,.5) 90%,
+    transparent 100%);
+  animation: spectrumFlow 4s linear infinite;
+  background-size: 200% 100%;
+}
+@keyframes spectrumFlow {
+  from { background-position: 0% center; }
+  to   { background-position: -200% center; }
+}
+
+/* ── Brand ───────────────────────────────────────────────────────────────── */
+.brand h1 {
+  font-family: var(--font-hud) !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  letter-spacing: 4px !important;
+  text-transform: uppercase !important;
+  background: linear-gradient(135deg, #ffffff 0%, #a0d8ff 40%, #00f0ff 70%, #00e5b0 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  filter: drop-shadow(0 0 12px rgba(0,240,255,.70)) !important;
+  animation: brandGlow 4s ease-in-out infinite alternate !important;
+}
+@keyframes brandGlow {
+  from { filter: drop-shadow(0 0 8px rgba(0,240,255,.50)); }
+  to   { filter: drop-shadow(0 0 20px rgba(0,240,255,.90)); }
+}
+.brand .sub {
+  font-family: var(--font-body) !important;
+  font-size: 9px !important;
+  letter-spacing: 3px !important;
+  text-transform: uppercase !important;
+  color: rgba(0,240,255,.40) !important;
+}
+.qxlogo {
+  font-family: var(--font-hud) !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  letter-spacing: 2px !important;
+  background: linear-gradient(135deg, #00f0ff, #0066ff, #00e5b0) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  filter: drop-shadow(0 0 16px rgba(0,240,255,.85)) !important;
+}
+
+/* ── Topbar buttons ─────────────────────────────────────────────────────── */
+.btn {
+  font-family: var(--font-hud) !important;
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  background: rgba(0,240,255,.04) !important;
+  border: 1px solid rgba(0,240,255,.15) !important;
+  color: rgba(0,240,255,.55) !important;
+  border-radius: 4px !important;
+  transition: all .2s ease !important;
+  padding: 6px 12px !important;
+}
+.btn:hover {
+  background: rgba(0,240,255,.12) !important;
+  border-color: rgba(0,240,255,.50) !important;
+  color: rgba(0,240,255,.95) !important;
+  box-shadow: var(--glow-cyan) !important;
+}
+.btn.primary {
+  background: linear-gradient(135deg, rgba(0,102,255,.22), rgba(0,240,255,.12)) !important;
+  border-color: rgba(0,240,255,.40) !important;
+  color: rgba(120,220,255,.95) !important;
+  box-shadow: 0 0 16px rgba(0,240,255,.12) !important;
+}
+.btn.primary:hover {
+  background: linear-gradient(135deg, rgba(0,102,255,.38), rgba(0,240,255,.22)) !important;
+  box-shadow: var(--glow-cyan) !important;
+}
+
+/* ── Status pills ───────────────────────────────────────────────────────── */
+.pill {
+  font-family: var(--font-hud) !important;
+  font-size: 9px !important;
+  letter-spacing: 2px !important;
+  background: rgba(0,240,255,.04) !important;
+  border-color: rgba(0,240,255,.18) !important;
+  color: rgba(0,240,255,.65) !important;
+}
+.dot {
+  background: var(--neural-teal) !important;
+  box-shadow: 0 0 0 3px rgba(0,229,176,.15), 0 0 14px rgba(0,229,176,.70) !important;
+  animation: dotPulse 1.8s ease-in-out infinite !important;
+}
+@keyframes dotPulse {
+  0%,100% { box-shadow: 0 0 0 2px rgba(0,229,176,.15), 0 0 8px rgba(0,229,176,.50); }
+  50%     { box-shadow: 0 0 0 4px rgba(0,229,176,.25), 0 0 20px rgba(0,229,176,.90); }
+}
+.dot.amber { background: var(--neural-amber) !important; box-shadow: 0 0 0 3px rgba(255,140,0,.15), 0 0 14px rgba(255,140,0,.70) !important; animation: none !important; }
+.dot.red   { background: var(--neural-red) !important;   box-shadow: 0 0 0 3px rgba(255,23,68,.15),  0 0 14px rgba(255,23,68,.70)  !important; animation: none !important; }
+
+/* 4H BASIS badge override */
+.qx-tf-badge {
+  font-family: var(--font-hud) !important;
+  font-size: 9px !important;
+  letter-spacing: 2.5px !important;
+  background: linear-gradient(135deg, rgba(255,214,10,.18), rgba(255,140,0,.10)) !important;
+  border: 1px solid rgba(255,214,10,.45) !important;
+  color: rgba(255,220,80,.95) !important;
+  box-shadow: 0 0 18px rgba(255,214,10,.20) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CARDS — NEURAL INTELLIGENCE PANELS
+═══════════════════════════════════════════════════════════════════════════ */
+.card {
+  background:
+    linear-gradient(145deg,
+      rgba(0,20,45,.88) 0%,
+      rgba(0,12,28,.92) 50%,
+      rgba(0,8,18,.95) 100%) !important;
+  border: 1px solid rgba(0,240,255,.08) !important;
+  border-radius: 12px !important;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.40),
+    0 24px 64px rgba(0,0,0,.80),
+    0 8px 24px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(0,240,255,.07),
+    inset 0 -1px 0 rgba(0,0,0,.30) !important;
+  position: relative; overflow: hidden;
+  transition: border-color .3s ease, box-shadow .3s ease !important;
+}
+
+/* Corner accent marks — sci-fi frame */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0,240,255,.30) 20%,
+    rgba(0,240,255,.12) 50%,
+    rgba(0,229,176,.20) 80%,
+    transparent 100%);
+  pointer-events: none;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg,
+    rgba(0,240,255,.25) 0%,
+    rgba(0,240,255,.06) 40%,
+    transparent 100%);
+  pointer-events: none;
+}
+
+.card > .inner { position: relative; z-index: 1; }
+
+.card:hover {
+  border-color: rgba(0,240,255,.22) !important;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.40),
+    0 24px 64px rgba(0,0,0,.85),
+    0 0 0 1px rgba(0,240,255,.10),
+    0 0 40px rgba(0,102,255,.08),
+    inset 0 1px 0 rgba(0,240,255,.12) !important;
+}
+
+/* ── Card title intelligence tags ─────────────────────────────────────── */
+.card-title h2 {
+  font-family: var(--font-body) !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 3px !important;
+  text-transform: uppercase !important;
+  color: rgba(0,240,255,.45) !important;
+}
+.card-title .hint {
+  font-family: var(--font-body) !important;
+  font-size: 9.5px !important;
+  color: rgba(255,255,255,.25) !important;
+}
+
+/* ── qxStage / qxSuperPill — intelligence layer badges ─────────────────── */
+.qxStage, .qxSuperPill, .qx-premTag {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 4px 14px 4px 10px !important;
+  margin-bottom: 8px !important;
+  border-radius: 3px 999px 999px 3px !important;
+  background: linear-gradient(90deg,
+    rgba(0,240,255,.14) 0%,
+    rgba(0,102,255,.08) 100%) !important;
+  border: 1px solid rgba(0,240,255,.25) !important;
+  border-left: 2px solid rgba(0,240,255,.80) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 0 16px rgba(0,240,255,.08) !important;
+  font-family: var(--font-hud) !important;
+  font-size: 8.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 2.5px !important;
+  text-transform: uppercase !important;
+  color: rgba(0,240,255,.85) !important;
+}
+.qxStage i, .qxSuperPill i, .qx-premTag i {
+  width: 5px; height: 5px; border-radius: 50% !important;
+  background: radial-gradient(circle, #00f0ff, #0066ff) !important;
+  box-shadow: 0 0 8px rgba(0,240,255,.90) !important;
+  animation: dotPulse 2.2s ease-in-out infinite !important;
+  flex-shrink: 0;
+}
+/* Market Superintelligence special pill */
+.qxSuperPill {
+  background: linear-gradient(90deg, rgba(123,47,255,.18) 0%, rgba(0,240,255,.08) 100%) !important;
+  border-color: rgba(123,47,255,.40) !important;
+  border-left-color: rgba(123,47,255,.90) !important;
+  color: rgba(200,160,255,.90) !important;
+  box-shadow: 0 0 20px rgba(123,47,255,.12) !important;
+}
+.qxSuperPill i {
+  background: radial-gradient(circle, #b06fff, #7b2fff) !important;
+  box-shadow: 0 0 10px rgba(123,47,255,.90) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DATA TYPOGRAPHY — HUD-GRADE NUMERICS
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* Quote price — the center of gravity */
+.quotePx {
+  font-family: var(--font-hud) !important;
+  font-size: 44px !important;
+  font-weight: 700 !important;
+  letter-spacing: -1px !important;
+  background: linear-gradient(180deg, #ffffff 0%, #a0d8ff 40%, #00f0ff 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  filter: drop-shadow(0 0 24px rgba(0,240,255,.55)) !important;
+}
+
+/* Large hero stats */
+.stateBig, .fpBox .v, .paBox .v, .qeBox .qv, .sharpeBox .v,
+.convicText .cv, .fcastBox .fv, .busBannerDir {
+  font-family: var(--font-hud) !important;
+  letter-spacing: 2px !important;
+}
+.stateBig {
+  font-size: 26px !important;
+  text-shadow: 0 0 40px currentColor !important;
+}
+.busBannerDir {
+  font-size: 42px !important;
+  font-weight: 700 !important;
+  letter-spacing: 4px !important;
+  text-shadow: 0 0 50px currentColor !important;
+  filter: drop-shadow(0 0 20px currentColor) !important;
+}
+
+/* Mono data values */
+.v, .fpBox .v, .quotePx, .paBox .v {
+  font-family: var(--font-data) !important;
+}
+/* Labels */
+.k, .rlabel, .sec-label, .fpTfLabel, .rpLabel, .bk, .dk {
+  font-family: var(--font-hud) !important;
+  font-size: 8px !important;
+  letter-spacing: 2.5px !important;
+  text-transform: uppercase !important;
+  color: rgba(0,240,255,.35) !important;
+}
+
+/* ── State / bias colors ─────────────────────────────────────────────────── */
+.pos, .up, [style*="color:var(--green)"], [style*="color:#00e5a0"], [style*="color:#00d68f"] {
+  color: var(--neural-teal) !important;
+  text-shadow: 0 0 14px rgba(0,229,176,.55) !important;
+}
+.neg, .dn, [style*="color:var(--red)"], [style*="color:#ff3448"] {
+  color: var(--neural-red) !important;
+  text-shadow: 0 0 14px rgba(255,23,68,.55) !important;
+}
+.warn, [style*="color:var(--amber)"] {
+  color: var(--neural-amber) !important;
+  text-shadow: 0 0 14px rgba(255,140,0,.45) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHIPS & BADGES — MICRO-COMPONENTS
+═══════════════════════════════════════════════════════════════════════════ */
+.chip {
+  font-family: var(--font-hud) !important;
+  font-size: 8.5px !important;
+  letter-spacing: 1.2px !important;
+  background: rgba(0,20,50,.70) !important;
+  border: 1px solid rgba(0,240,255,.10) !important;
+  border-radius: 4px !important;
+  backdrop-filter: blur(8px) !important;
+}
+.chip b {
+  color: rgba(0,240,255,.85) !important;
+  font-family: var(--font-data) !important;
+}
+.pillTag {
+  font-family: var(--font-hud) !important;
+  font-size: 9px !important;
+  letter-spacing: 1.5px !important;
+  background: rgba(0,20,50,.60) !important;
+  border-color: rgba(0,240,255,.12) !important;
+}
+.liveBadge {
+  font-family: var(--font-hud) !important;
+  font-size: 8px !important;
+  letter-spacing: 2px !important;
+}
+.liveBadge.live {
+  background: rgba(0,229,176,.12) !important;
+  color: var(--neural-teal) !important;
+  border: 1px solid rgba(0,229,176,.30) !important;
+  box-shadow: 0 0 12px rgba(0,229,176,.20) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HERO STATE CARD — THE CROWN JEWEL
+═══════════════════════════════════════════════════════════════════════════ */
+.hero {
+  background: linear-gradient(145deg,
+    rgba(0,30,70,.60) 0%,
+    rgba(0,15,40,.70) 100%) !important;
+  border: 1px solid rgba(0,240,255,.10) !important;
+  border-radius: 10px !important;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%,
+    rgba(0,102,255,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SIGNAL BUS BANNER — MOST IMPACTFUL ELEMENT
+═══════════════════════════════════════════════════════════════════════════ */
+.busBanner {
+  background: linear-gradient(145deg,
+    rgba(0,30,70,.75) 0%,
+    rgba(0,15,40,.85) 100%) !important;
+  border: 1px solid rgba(0,240,255,.12) !important;
+  border-radius: 10px !important;
+  position: relative; overflow: hidden;
+}
+.busBanner::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 80% at 50% 50%,
+    rgba(0,102,255,.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TABLES — INTELLIGENCE GRIDS
+═══════════════════════════════════════════════════════════════════════════ */
+thead th {
+  font-family: var(--font-hud) !important;
+  font-size: 8px !important;
+  letter-spacing: 2.5px !important;
+  text-transform: uppercase !important;
+  color: rgba(0,240,255,.35) !important;
+  background: rgba(0,10,25,.60) !important;
+  border-bottom: 1px solid rgba(0,240,255,.08) !important;
+}
+tbody tr:hover td {
+  background: rgba(0,102,255,.06) !important;
+}
+td {
+  font-family: var(--font-data) !important;
+  border-color: rgba(0,240,255,.04) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   INTEL TILES — SIGNAL INTELLIGENCE GRID
+═══════════════════════════════════════════════════════════════════════════ */
+.intelTile {
+  background: linear-gradient(145deg,
+    rgba(0,20,50,.75), rgba(0,10,30,.85)) !important;
+  border: 1px solid rgba(0,240,255,.09) !important;
+  border-radius: 8px !important;
+  position: relative;
+}
+.intelTile::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, rgba(0,240,255,.20), transparent);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MACRO BOXES — DATA PANELS
+═══════════════════════════════════════════════════════════════════════════ */
+.macroBox, .fpBox, .paBox, .tmBox, .pb3Top, .sharpeBox, .qeBox {
+  background: rgba(0,10,30,.60) !important;
+  border: 1px solid rgba(0,240,255,.08) !important;
+  border-radius: 8px !important;
+}
+.macroBox .v {
+  font-family: var(--font-hud) !important;
+  background: linear-gradient(180deg, #e8f4ff 0%, #80c8ff 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROBABILITY BARS — REGIME EMISSION PROBS
+═══════════════════════════════════════════════════════════════════════════ */
+.probBar > div {
+  box-shadow: 0 0 8px currentColor !important;
+  border-radius: 2px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RISK PULSE & SYNC BADGE
+═══════════════════════════════════════════════════════════════════════════ */
+.riskPulse {
+  background: rgba(0,10,30,.70) !important;
+  border: 1px solid rgba(0,240,255,.14) !important;
+  border-radius: 8px !important;
+}
+.rpLabel {
+  font-family: var(--font-hud) !important;
+  color: rgba(0,240,255,.45) !important;
+}
+.syncBadge {
+  font-family: var(--font-hud) !important;
+  font-size: 9px !important;
+  letter-spacing: 1.5px !important;
+  background: rgba(0,10,30,.60) !important;
+  border: 1px solid rgba(255,140,0,.18) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FPBOX DATA NUMBERS — PRICE TARGETS
+═══════════════════════════════════════════════════════════════════════════ */
+.fpBox .v, .fpTfRange {
+  font-family: var(--font-data) !important;
+  background: linear-gradient(180deg, #ffffff 0%, rgba(160,216,255,.80) 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  filter: drop-shadow(0 0 10px rgba(0,240,255,.35)) !important;
+}
+.fpTfLabel {
+  font-family: var(--font-hud) !important;
+  font-size: 8px !important;
+  letter-spacing: 2px !important;
+  color: rgba(0,240,255,.40) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SESSION BOXES
+═══════════════════════════════════════════════════════════════════════════ */
+.sessLeft, .sessRight, .sessBox {
+  background: rgba(0,10,30,.55) !important;
+  border: 1px solid rgba(0,240,255,.07) !important;
+  border-radius: 8px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NEWS FEED — INTELLIGENCE STREAM
+═══════════════════════════════════════════════════════════════════════════ */
+.teNewsItem {
+  border-bottom: 1px solid rgba(0,240,255,.05) !important;
+  transition: background .2s ease !important;
+}
+.teNewsItem:hover {
+  background: rgba(0,102,255,.06) !important;
+}
+.teNewsTime {
+  font-family: var(--font-hud) !important;
+  font-size: 8px !important;
+  letter-spacing: 1.5px !important;
+  color: rgba(0,240,255,.35) !important;
+}
+.teNewsTitle {
+  font-family: var(--font-body) !important;
+  color: rgba(200,230,255,.75) !important;
+}
+.teNewsCategory.USD {
+  background: rgba(0,102,255,.18) !important;
+  color: rgba(100,180,255,.90) !important;
+  border: 1px solid rgba(0,102,255,.30) !important;
+  font-family: var(--font-hud) !important;
+  letter-spacing: 1px !important;
+}
+.teNewsCategory.EUR {
+  background: rgba(0,229,176,.12) !important;
+  color: rgba(0,229,176,.90) !important;
+  border: 1px solid rgba(0,229,176,.25) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLLBARS — PRECISION CHROME
+═══════════════════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: rgba(0,240,255,.02); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(0,240,255,.40), rgba(0,102,255,.30));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(0,240,255,.65); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GRID LAYOUT — TIGHT ZERO-GAP INTELLIGENCE GRID
+═══════════════════════════════════════════════════════════════════════════ */
+.grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+  padding: 12px !important;
+  align-items: start !important;
+}
+.stack { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
+.stack .card { flex-shrink: 0; margin: 0 !important; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SELECTION & MISC
+═══════════════════════════════════════════════════════════════════════════ */
+::selection { background: rgba(0,240,255,.25); color: #fff; }
+
+/* TM matrix accent */
+.txMx .rl {
+  font-family: var(--font-hud) !important;
+  font-size: 8px !important;
+  letter-spacing: 1px !important;
+  color: rgba(0,240,255,.50) !important;
+}
+.txMx th {
+  font-family: var(--font-hud) !important;
+  font-size: 8px !important;
+  letter-spacing: 1.5px !important;
+  color: rgba(0,240,255,.35) !important;
+  background: rgba(0,10,25,.70) !important;
+}
+
+/* Alert badge */
+.alertBadge {
+  font-family: var(--font-hud) !important;
+  font-size: 9px !important;
+  letter-spacing: 1.5px !important;
+}
+
+/* Riskstrip */
+.riskItem { border-color: rgba(0,240,255,.06) !important; }
+.rk {
+  font-family: var(--font-hud) !important;
+  font-size: 8px !important;
+  letter-spacing: 2px !important;
+  color: rgba(0,240,255,.35) !important;
+}
+.rv {
+  font-family: var(--font-data) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+/* Regime age chip special */
+#ageChip, #tickChip {
+  font-family: var(--font-data) !important;
+  color: rgba(0,240,255,.90) !important;
+}
+
+/* Stale warning */
+.staleWarning, #staleWarn {
+  background: linear-gradient(135deg, rgba(255,23,68,.14), rgba(255,140,0,.09)) !important;
+  border: 1px solid rgba(255,23,68,.35) !important;
+  animation: staleFlash 2s ease-in-out infinite !important;
+}
+@keyframes staleFlash { 0%,100% { opacity: 1; } 50% { opacity: .65; } }
+
+/* Conviction arc */
+.convicText .cv { filter: drop-shadow(0 0 20px currentColor) !important; }
+
+/* Small note / muted text */
+.smallNote, .muted { color: rgba(0,240,255,.25) !important; }
+
+/* Day badge */
+.dayBadge {
+  font-family: var(--font-hud) !important;
+  font-size: 9px !important;
+  letter-spacing: 1.5px !important;
+  background: rgba(0,10,30,.60) !important;
+  border-color: rgba(0,240,255,.12) !important;
+  color: rgba(0,240,255,.60) !important;
+}
+
+/* Footer */
+.foot { color: rgba(0,240,255,.20) !important; }
+
+/* qxMxContext highlight boxes */
+.qxMxCell {
+  background: rgba(0,15,40,.70) !important;
+  border: 1px solid rgba(0,240,255,.09) !important;
+}
+.qxMxCell .lab { color: rgba(0,240,255,.35) !important; font-family: var(--font-hud) !important; }
+.qxMxCell .val { color: rgba(200,230,255,.90) !important; font-family: var(--font-data) !important; }
 
 </style>
 
