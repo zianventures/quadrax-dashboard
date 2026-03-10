@@ -5,9 +5,9 @@
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>QuadraX Dashboard</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg0:#010205;--bg1:#030610;--bg2:#060a18;--bg3:#090e22;
@@ -5681,23 +5681,23 @@ thead th,.paLogTable th{padding:7px 8px!important}
     var heads=find('Live Headlines');
     var daily=find('Daily EUR/USD Trend');
 
-    // LEFT: Market → Signal → Consensus → Forecast → Session → Calendar → TE
+    // LEFT: Market → Signal → Consensus → Forecast → Session → TE News
     move(market,left,left.firstChild);
     move(qedge,left,null);
     move(bus,left,null);
     move(forecast,left,null);
     move(session,left,null);
-    move(wcal,left,null);      // World Events Calendar below Session
-    move(te,left,null);        // Trading Economics below Calendar
+    move(te,left,null);        // Trading Economics below Session
 
-    // RIGHT: Transition → Transmission → Macro → Signal → Playbook → Proj Accuracy → Signal Performance
+    // RIGHT: Transition → Transmission → Macro → Signal → Playbook → Proj Accuracy → Signal Performance → Calendar
     move(hmm,right,null);      // Transition Intelligence (top)
     move(trans,right,null);    // Transmission Mechanism
     move(macro,right,null);    // Macro Intelligence
     move(sigInt,right,null);   // Signal Intelligence
     move(play,right,null);     // Session Playbook
-    move(proj,right,null);     // Projection Accuracy → below Playbook
-    move(sharpe,right,null);   // Signal Performance → below Proj Accuracy
+    move(proj,right,null);     // Projection Accuracy
+    move(sharpe,right,null);   // Signal Performance
+    move(wcal,right,null);     // Market Calendar at bottom right
 
     // hide true reference-only panels
     [daily,pb3,event,corr,heads].forEach(hide);
@@ -6183,10 +6183,11 @@ body::after{
     if(projAcc){ projAcc.classList.remove('qx-hidden-card'); moveAfter(projAcc, right, 'Session Playbook'); }
     if(performance){ performance.classList.remove('qx-hidden-card'); moveAfter(performance, right, 'Projection Accuracy'); }
 
-    // LEFT: Session → Calendar → TE News below main flow
+    // LEFT: Session → TE News below main flow
     if(sessionIntel) moveAfter(sessionIntel, left, 'Forward Projection');
-    if(wcalCard){ wcalCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(wcalCard, left, 'Session Intelligence'); }
-    if(teCard){ teCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(teCard, left, 'World Events Calendar'); }
+    if(teCard){ teCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(teCard, left, 'Session Intelligence'); }
+    // RIGHT bottom: Market Calendar under Signal Performance
+    if(wcalCard){ wcalCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(wcalCard, right, 'Signal Performance'); }
 
     compact(matrix); compact(trans); compact(macroCard); compact(signalIntel); compact(sessionPlay);
     compact(sessionIntel); compact(qedge); compact(bus);
@@ -6194,6 +6195,7 @@ body::after{
     if(teCard) compact(teCard);
     if(projAcc) compact(projAcc);
     if(performance) compact(performance);
+    if(wcalCard) compact(wcalCard);
 
     // Eliminate all min-height spacers on left side too
     Array.prototype.slice.call(left.children).forEach(function(card){
@@ -6217,1063 +6219,589 @@ body::after{
 </script>
 
 
-<style id="qx-hyper-cinematic-8k">
-/* ═══════════════════════════════════════════════════════════════════════════
-   HYPER-CINEMATIC 8K UPGRADE — DARK · MOODY · EPIC · ATMOSPHERIC
-   Dramatic ambient lighting, vivid accents, immersive depth
-═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Animated noise grain overlay ─────────────────────────────────────── */
-body::before {
-  content:'';
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  background-size:128px 128px;
-  opacity:.028;
-  mix-blend-mode:overlay;
-  animation:grainShift 8s steps(1) infinite;
-}
-@keyframes grainShift {
-  0%{background-position:0 0} 10%{background-position:-20px 30px}
-  20%{background-position:40px -20px} 30%{background-position:-30px 50px}
-  40%{background-position:20px -40px} 50%{background-position:-50px 20px}
-  60%{background-position:30px 40px} 70%{background-position:-10px -30px}
-  80%{background-position:50px 10px} 90%{background-position:-40px -10px}
-  100%{background-position:0 0}
-}
 
-/* ── Ambient light blobs in background ─────────────────────────────────── */
-body::after {
-  content:'';
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse 800px 500px at 15% 20%, rgba(33,150,243,.055) 0%, transparent 70%),
-    radial-gradient(ellipse 600px 400px at 85% 75%, rgba(0,229,160,.045) 0%, transparent 70%),
-    radial-gradient(ellipse 500px 300px at 50% 100%, rgba(156,39,255,.035) 0%, transparent 65%),
-    radial-gradient(ellipse 400px 250px at 90% 5%, rgba(255,193,7,.030) 0%, transparent 60%);
-  animation:ambientPulse 12s ease-in-out infinite alternate;
-}
-@keyframes ambientPulse {
-  from{opacity:.7} to{opacity:1.0}
-}
 
-/* ── Body background: deep void with subtle vignette ───────────────────── */
-body {
-  background:
-    radial-gradient(ellipse 120% 80% at 50% 0%, #070d1e 0%, #010205 55%),
-    radial-gradient(ellipse 100% 60% at 50% 100%, #050812 0%, #010205 60%),
-    #010205 !important;
-  font-family:'Barlow',ui-sans-serif,system-ui,sans-serif !important;
-}
 
-/* ── Topbar: glass morphism with dramatic gradient border ───────────────── */
-.topbar {
-  background:linear-gradient(180deg, rgba(12,18,40,.96) 0%, rgba(6,10,24,.98) 100%) !important;
-  border-bottom:1px solid rgba(255,255,255,.08) !important;
-  box-shadow:
-    0 1px 0 rgba(255,255,255,.06),
-    0 8px 40px rgba(0,0,0,.80),
-    0 0 80px rgba(33,150,243,.06) !important;
-  backdrop-filter:blur(24px) saturate(1.4) !important;
-  position:relative;z-index:100;
-}
-.topbar::after {
-  content:'';
-  position:absolute;bottom:-1px;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,
-    transparent 0%,
-    rgba(33,150,243,.4) 20%,
-    rgba(0,229,160,.5) 50%,
-    rgba(156,39,255,.4) 80%,
-    transparent 100%);
-}
-
-/* ── Brand: bigger, bolder, more cinematic ─────────────────────────────── */
-.brand h1 {
-  font-family:'Bebas Neue','Barlow Condensed',sans-serif !important;
-  font-size:22px !important;
-  letter-spacing:2.5px !important;
-  font-weight:400 !important;
-  color:#ffffff !important;
-  text-shadow:0 0 30px rgba(33,150,243,.6),0 0 60px rgba(33,150,243,.25) !important;
-}
-.brand .sub {
-  font-family:'Barlow Condensed',sans-serif !important;
-  font-size:9px !important;
-  letter-spacing:2px !important;
-  text-transform:uppercase !important;
-  color:rgba(255,255,255,.35) !important;
-}
-.qxlogo {
-  font-family:'Bebas Neue',sans-serif !important;
-  font-size:18px !important;
-  letter-spacing:2px !important;
-  background:linear-gradient(135deg, #2196f3, #00e5ff, #00e5a0) !important;
-  -webkit-background-clip:text !important;
-  -webkit-text-fill-color:transparent !important;
-  background-clip:text !important;
-  filter:drop-shadow(0 0 12px rgba(33,150,243,.8)) !important;
-}
-
-/* ── Cards: deep glass with dramatic edge lighting ─────────────────────── */
-.card {
-  background:
-    linear-gradient(160deg, rgba(20,30,60,.85) 0%, rgba(8,14,34,.90) 100%) !important;
-  border:1px solid rgba(255,255,255,.07) !important;
-  box-shadow:
-    0 32px 80px rgba(0,0,0,.80),
-    0 8px 24px rgba(0,0,0,.50),
-    inset 0 1px 0 rgba(255,255,255,.08),
-    inset 0 -1px 0 rgba(0,0,0,.20) !important;
-  border-radius:14px !important;
-  position:relative;overflow:hidden;
-  transition:box-shadow .3s ease, border-color .3s ease !important;
-}
-.card::before {
-  content:'';
-  position:absolute;inset:0;
-  background:linear-gradient(135deg, rgba(255,255,255,.025) 0%, transparent 60%);
-  pointer-events:none;z-index:0;border-radius:inherit;
-}
-.card:hover {
-  border-color:rgba(33,150,243,.25) !important;
-  box-shadow:
-    0 32px 80px rgba(0,0,0,.85),
-    0 8px 24px rgba(0,0,0,.55),
-    0 0 0 1px rgba(33,150,243,.12),
-    0 0 40px rgba(33,150,243,.08),
-    inset 0 1px 0 rgba(255,255,255,.10) !important;
-}
-.card > .inner { position:relative;z-index:1; }
-
-/* ── Card titles: uppercase tracked, glowing ───────────────────────────── */
-.card-title h2 {
-  font-family:'Barlow Condensed',sans-serif !important;
-  font-size:11px !important;
-  font-weight:600 !important;
-  letter-spacing:2.5px !important;
-  text-transform:uppercase !important;
-  color:rgba(255,255,255,.65) !important;
-}
-
-/* ── Hero state widget: cinematic large text ────────────────────────────── */
-.stateBig {
-  font-family:'Bebas Neue',sans-serif !important;
-  font-size:28px !important;
-  letter-spacing:3px !important;
-  text-shadow:0 0 40px currentColor !important;
-}
-
-/* ── Numbers / mono values: sharp electric look ─────────────────────────── */
-.quotePx {
-  font-family:'JetBrains Mono',monospace !important;
-  font-size:42px !important;
-  letter-spacing:-2px !important;
-  background:linear-gradient(180deg,#ffffff 30%,rgba(200,220,255,.80) 100%) !important;
-  -webkit-background-clip:text !important;
-  -webkit-text-fill-color:transparent !important;
-  background-clip:text !important;
-  filter:drop-shadow(0 0 20px rgba(33,150,243,.5)) !important;
-}
-
-/* ── Positive/negative values: vivid electric colors ───────────────────── */
-.pos, .up { color:#00e5a0 !important; text-shadow:0 0 16px rgba(0,229,160,.50) !important; }
-.neg, .dn { color:#ff3448 !important; text-shadow:0 0 16px rgba(255,52,72,.50) !important; }
-.warn      { color:#ffc107 !important; text-shadow:0 0 16px rgba(255,193,7,.40) !important; }
-
-/* ── Buttons: more cinematic ──────────────────────────────────────────── */
-.btn {
-  background:rgba(255,255,255,.04) !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-  color:rgba(255,255,255,.60) !important;
-  font-family:'Barlow Condensed',sans-serif !important;
-  font-size:11px !important;
-  letter-spacing:1.5px !important;
-  text-transform:uppercase !important;
-  border-radius:6px !important;
-  transition:all .2s ease !important;
-  backdrop-filter:blur(8px) !important;
-}
-.btn:hover {
-  background:rgba(33,150,243,.15) !important;
-  border-color:rgba(33,150,243,.45) !important;
-  color:rgba(255,255,255,.90) !important;
-  box-shadow:0 0 20px rgba(33,150,243,.20) !important;
-}
-.btn.primary {
-  background:linear-gradient(135deg, rgba(33,150,243,.25), rgba(0,229,160,.15)) !important;
-  border-color:rgba(33,150,243,.40) !important;
-  color:rgba(200,235,255,.90) !important;
-  box-shadow:0 0 20px rgba(33,150,243,.15) !important;
-}
-.btn.primary:hover {
-  background:linear-gradient(135deg, rgba(33,150,243,.40), rgba(0,229,160,.25)) !important;
-  box-shadow:0 0 30px rgba(33,150,243,.30) !important;
-}
-
-/* ── Sync badge / status pills ──────────────────────────────────────────── */
-.syncBadge, .pill, .pillTag {
-  backdrop-filter:blur(12px) !important;
-}
-.dot { box-shadow:0 0 0 3px rgba(0,229,160,.15),0 0 12px rgba(0,229,160,.50) !important; }
-.dot.amber { box-shadow:0 0 0 3px rgba(255,193,7,.15),0 0 12px rgba(255,193,7,.50) !important; }
-.dot.red   { box-shadow:0 0 0 3px rgba(255,52,72,.15), 0 0 12px rgba(255,52,72,.50)  !important; }
-
-/* ── Risk pulse widget ──────────────────────────────────────────────────── */
-.riskPulse {
-  background:rgba(0,0,0,.35) !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-  backdrop-filter:blur(16px) !important;
-}
-
-/* ── Section labels: small caps with letter spacing ─────────────────────── */
-.k, .rlabel, .sec-label, .fpTfLabel, .rpLabel {
-  font-family:'Barlow Condensed',sans-serif !important;
-  letter-spacing:2px !important;
-  font-size:9px !important;
-  font-weight:600 !important;
-  text-transform:uppercase !important;
-  color:rgba(255,255,255,.30) !important;
-}
-
-/* ── Timeline canvas glow ───────────────────────────────────────────────── */
-.tlCanvas { filter:drop-shadow(0 0 6px rgba(33,150,243,.30)) !important; }
-
-/* ── Table rows: less harsh borders ────────────────────────────────────── */
-tbody tr:hover td { background:rgba(33,150,243,.06) !important; }
-thead th {
-  font-family:'Barlow Condensed',sans-serif !important;
-  font-size:9px !important;
-  letter-spacing:2px !important;
-  text-transform:uppercase !important;
-  color:rgba(255,255,255,.28) !important;
-  background:rgba(0,0,0,.25) !important;
-}
-
-/* ── Grid / stack layout: tighter, no dead space ────────────────────────── */
-.grid {
-  display:grid !important;
-  grid-template-columns:1fr 1fr !important;
-  gap:14px !important;
-  padding:14px !important;
-  align-items:start !important;
-}
-.stack { display:flex;flex-direction:column;gap:10px;align-items:stretch; }
-.stack .card { flex-shrink:0;margin:0 !important; }
-
-/* ── HMM hero: add ambient colored border on regime ────────────────────── */
-.hero {
-  background:linear-gradient(160deg, rgba(255,255,255,.025) 0%, transparent 100%) !important;
-  border:1px solid rgba(255,255,255,.06) !important;
-  border-radius:10px !important;
-}
-
-/* ── Chip rows: dark glass look ─────────────────────────────────────────── */
-.chip {
-  background:rgba(0,0,0,.40) !important;
-  border:1px solid rgba(255,255,255,.08) !important;
-  font-size:9.5px !important;
-  backdrop-filter:blur(8px) !important;
-  border-radius:6px !important;
-}
-.chip b { color:rgba(255,255,255,.85) !important; }
-
-/* ── Quote card: dramatic ────────────────────────────────────────────────── */
-.quoteCard {
-  background:
-    linear-gradient(135deg, rgba(33,150,243,.08) 0%, rgba(0,229,160,.05) 100%),
-    linear-gradient(160deg, rgba(20,30,60,.85) 0%, rgba(8,14,34,.90) 100%) !important;
-  border:1px solid rgba(33,150,243,.18) !important;
-  box-shadow:
-    0 32px 80px rgba(0,0,0,.80),
-    0 0 60px rgba(33,150,243,.08),
-    inset 0 1px 0 rgba(33,150,243,.15) !important;
-}
-
-/* ── Signal bus banner: neon accent ──────────────────────────────────────── */
-.busBanner {
-  background:linear-gradient(135deg, rgba(33,150,243,.12) 0%, rgba(0,229,160,.08) 100%) !important;
-  border:1px solid rgba(0,229,160,.18) !important;
-}
-.busBannerDir {
-  font-family:'Bebas Neue',sans-serif !important;
-  font-size:40px !important;
-  letter-spacing:3px !important;
-  text-shadow:0 0 40px currentColor !important;
-}
-
-/* ── FP boxes: vivid accents ─────────────────────────────────────────────── */
-.fpBox {
-  background:rgba(0,0,0,.30) !important;
-  border:1px solid rgba(255,255,255,.06) !important;
-  border-radius:10px !important;
-}
-.fpBox .v {
-  font-family:'JetBrains Mono',monospace !important;
-  background:linear-gradient(180deg,#fff 0%,rgba(180,220,255,.85) 100%) !important;
-  -webkit-background-clip:text !important;
-  -webkit-text-fill-color:transparent !important;
-  background-clip:text !important;
-}
-
-/* ── PA boxes: same depth ────────────────────────────────────────────────── */
-.paBox {
-  background:rgba(0,0,0,.30) !important;
-  border:1px solid rgba(255,255,255,.06) !important;
-  border-radius:10px !important;
-}
-.paBox.hero {
-  background:linear-gradient(135deg, rgba(33,150,243,.12), rgba(0,229,160,.07)) !important;
-  border-color:rgba(33,150,243,.22) !important;
-  box-shadow:0 0 24px rgba(33,150,243,.12) !important;
-}
-
-/* ── Macro boxes ─────────────────────────────────────────────────────────── */
-.macroBox {
-  background:rgba(0,0,0,.30) !important;
-  border:1px solid rgba(255,255,255,.06) !important;
-  border-radius:8px !important;
-}
-
-/* ── TM matrix cells ─────────────────────────────────────────────────────── */
-.txMx td {
-  border-color:rgba(255,255,255,.05) !important;
-}
-
-/* ── Intel tiles: depth and drama ────────────────────────────────────────── */
-.intelTile {
-  background:rgba(0,0,0,.35) !important;
-  border:1px solid rgba(255,255,255,.07) !important;
-  border-radius:9px !important;
-}
-
-/* ── Conviction meter ────────────────────────────────────────────────────── */
-.convicText .cv {
-  font-family:'Bebas Neue',sans-serif !important;
-  font-size:34px !important;
-  letter-spacing:2px !important;
-}
-
-/* ── Session cards ────────────────────────────────────────────────────────── */
-.sessLeft, .sessRight {
-  border:1px solid rgba(255,255,255,.06) !important;
-  background:rgba(0,0,0,.30) !important;
-  border-radius:8px !important;
-}
-
-/* ── News feed: subtle border ─────────────────────────────────────────────── */
-.teNewsItem { border-bottom:1px solid rgba(255,255,255,.04) !important; }
-.teNewsItem:hover { background:rgba(33,150,243,.05) !important; }
-
-/* ── Scrollbars: dark custom ──────────────────────────────────────────────── */
-::-webkit-scrollbar { width:4px;height:4px; }
-::-webkit-scrollbar-track { background:rgba(255,255,255,.02); }
-::-webkit-scrollbar-thumb { background:rgba(33,150,243,.30);border-radius:4px; }
-::-webkit-scrollbar-thumb:hover { background:rgba(33,150,243,.55); }
-
-/* ── Market Superintelligence pill: single, dramatic ────────────────────── */
-.qxSuperPill, .qx-brandSuper {
-  display:inline-flex;align-items:center;gap:6px;
-  padding:4px 12px 4px 9px;
-  border-radius:999px;
-  background:linear-gradient(135deg, rgba(33,150,243,.18) 0%, rgba(0,229,160,.12) 100%);
-  border:1px solid rgba(33,150,243,.35);
-  box-shadow:0 0 20px rgba(33,150,243,.18),inset 0 1px 0 rgba(255,255,255,.08);
-  font-family:'Barlow Condensed',sans-serif !important;
-  font-size:9.5px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
-  color:rgba(180,220,255,.90);
-  backdrop-filter:blur(12px);
-}
-.qxSuperPill i, .qx-brandSuper i {
-  width:5px;height:5px;border-radius:50%;
-  background:radial-gradient(circle, #00e5ff, #2196f3);
-  box-shadow:0 0 8px rgba(0,229,255,.80);
-  animation:pillPulse 2s ease-in-out infinite;
-  flex-shrink:0;
-}
-@keyframes pillPulse {
-  0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(1.4)}
-}
-
-/* ── Remove any residual negative space hacks ────────────────────────────── */
-.qx-rebalanced { min-height:0 !important; }
-.qx-rebalanced .card { min-height:0 !important; }
-.qx-hidden-card { display:none !important; }
-
-/* ── Animated bottom gradient on cards (edge light) ─────────────────────── */
-@keyframes cardEdgePulse {
-  0%,100%{opacity:.4} 50%{opacity:.8}
-}
-
-/* ── 4H Timeframe basis badge ────────────────────────────────────────────── */
-.qx-tf-badge {
-  background:linear-gradient(135deg, rgba(255,193,7,.18), rgba(255,140,0,.10)) !important;
-  border:1px solid rgba(255,193,7,.40) !important;
-  color:rgba(255,220,100,.92) !important;
-  font-family:'Barlow Condensed',sans-serif !important;
-  font-size:10px !important;
-  letter-spacing:1.5px !important;
-  text-transform:uppercase !important;
-  box-shadow:0 0 16px rgba(255,193,7,.15) !important;
-  cursor:default !important;
-}
-.qx-tf-badge b { color:rgba(255,220,60,1) !important; font-weight:700 !important; }
-
-/* ── Pro touch: selection color ──────────────────────────────────────────── */
-::selection { background:rgba(33,150,243,.35);color:#fff; }
-
-/* ── TE News + Calendar compact on right rail ──────────────────────────────── */
-.qx-ultra-compact #teNewsBody { max-height:220px !important; }
-.qx-ultra-compact .tableWrap .scroll { max-height:180px !important; }
-.qx-ultra-compact .card-title .hint { display:none !important; }
-/* Ensure TE/Calendar not hidden by legacy classes */
-.qx-hidden-card.qx-show-override { display:block !important; }
-
-/* ── Stale data warning: more dramatic ───────────────────────────────────── */
-.staleWarning, #staleWarn {
-  background:linear-gradient(135deg, rgba(255,52,72,.15), rgba(255,193,7,.10)) !important;
-  border:1px solid rgba(255,52,72,.35) !important;
-  animation:staleFlash 2s ease-in-out infinite !important;
-}
-@keyframes staleFlash { 0%,100%{opacity:1} 50%{opacity:.7} }
-
-</style>
-
-<style id="qx-vertus-ultra-v36">
+<style id="qx-sovereign-intelligence">
 /*
-╔══════════════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX · SUPERINTELLIGENCE OS  ·  ULTRA-PREMIUM VISUAL LAYER v36             ║
-║  Beyond Vertus. Beyond imagination.                                             ║
-║  Dark Void Intelligence · Hyper-Cinematic · 8K Depth · Neural Glow              ║
-╚══════════════════════════════════════════════════════════════════════════════════╝
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║  QUADRAX  ·  SOVEREIGN INTELLIGENCE  ·  v37                                  ║
+║  Design philosophy: Vertus-class restraint × institutional gravitas           ║
+║  The data is the spectacle. The chrome serves it.                             ║
+║  Inspired by: Bloomberg Terminal refinement + Vertus editorial minimalism     ║
+║  + the cold precision of systems that manage billions                         ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
 */
 
-/* ── Import elite display font: Orbitron for tech display + Rajdhani body ─── */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
 
+/* ═══════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════ */
 :root {
-  /* Deep void palette */
-  --void:      #000408;
-  --abyss:     #010608;
-  --deep:      #020b12;
-  --surface-a: #050f1a;
-  --surface-b: #071525;
-  --surface-c: #0a1c30;
+  /* The void */
+  --sq-void:     #000507;
+  --sq-deep:     #010a10;
+  --sq-surface:  #04111a;
+  --sq-panel:    #061520;
+  --sq-raised:   #091d2a;
 
-  /* Neural accent system */
-  --neural-cyan:   #00f0ff;
-  --neural-blue:   #0066ff;
-  --neural-teal:   #00e5b0;
-  --neural-gold:   #ffd60a;
-  --neural-amber:  #ff8c00;
-  --neural-red:    #ff1744;
-  --neural-violet: #7b2fff;
+  /* Singular accent — ice-white blue, used with extreme restraint */
+  --sq-ice:      #c8f0ff;
+  --sq-ice2:     #7dd4f8;
+  --sq-ice3:     #3ab8f0;
+  --sq-live:     #00ffa3;    /* live/positive only */
+  --sq-warn:     #ffb830;    /* warning/amber only */
+  --sq-danger:   #ff3d55;    /* danger/negative only */
+  --sq-gold:     #e8c96a;    /* premium highlights */
 
-  /* Glow intensities */
-  --glow-cyan:   0 0 20px rgba(0,240,255,.35), 0 0 60px rgba(0,240,255,.15);
-  --glow-blue:   0 0 20px rgba(0,102,255,.35), 0 0 60px rgba(0,102,255,.15);
-  --glow-teal:   0 0 20px rgba(0,229,176,.35), 0 0 60px rgba(0,229,176,.15);
-  --glow-gold:   0 0 20px rgba(255,214,10,.40), 0 0 60px rgba(255,214,10,.18);
-  --glow-red:    0 0 20px rgba(255,23,68,.35), 0 0 60px rgba(255,23,68,.15);
-  --glow-violet: 0 0 20px rgba(123,47,255,.40), 0 0 60px rgba(123,47,255,.18);
+  /* Text hierarchy — tight 4-step scale */
+  --sq-t1: rgba(255,255,255,.94);   /* primary data */
+  --sq-t2: rgba(255,255,255,.58);   /* secondary */
+  --sq-t3: rgba(255,255,255,.32);   /* labels */
+  --sq-t4: rgba(200,230,255,.18);   /* ghost */
 
-  /* Font stack override */
-  --font-hud:     'Orbitron', 'Barlow Condensed', sans-serif;
-  --font-body:    'Rajdhani', 'Barlow', ui-sans-serif, sans-serif;
-  --font-data:    'JetBrains Mono', ui-monospace, monospace;
+  /* Borders */
+  --sq-b1: rgba(200,240,255,.10);
+  --sq-b2: rgba(200,240,255,.06);
+  --sq-b3: rgba(200,240,255,.03);
+
+  /* Typography */
+  --sq-display: 'Syne', ui-sans-serif, sans-serif;
+  --sq-body:    'DM Sans', ui-sans-serif, sans-serif;
+  --sq-mono:    'JetBrains Mono', 'Syne Mono', ui-monospace, monospace;
+
+  /* Shadows */
+  --sq-sh:  0 20px 60px rgba(0,0,0,.85), 0 6px 20px rgba(0,0,0,.60);
+  --sq-sh2: 0 8px 32px rgba(0,0,0,.70);
+  --sq-sh3: 0 2px 10px rgba(0,0,0,.50);
+
+  /* Ice glow — used sparingly */
+  --sq-glow-ice:  0 0 24px rgba(200,240,255,.18), 0 0 60px rgba(58,184,240,.10);
+  --sq-glow-live: 0 0 20px rgba(0,255,163,.22);
+  --sq-glow-warn: 0 0 20px rgba(255,184,48,.20);
+  --sq-glow-danger: 0 0 20px rgba(255,61,85,.22);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   BODY & VOID BACKGROUND
-═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════
+   BODY — THE VOID
+═══════════════════════════════ */
 body {
+  font-family: var(--sq-body) !important;
   background:
-    radial-gradient(ellipse 140% 70% at 50% -10%, rgba(0,40,80,.35) 0%, transparent 60%),
-    radial-gradient(ellipse 80% 50% at 0% 50%, rgba(0,30,60,.20) 0%, transparent 55%),
-    radial-gradient(ellipse 80% 50% at 100% 50%, rgba(0,20,40,.15) 0%, transparent 55%),
-    linear-gradient(180deg, #000810 0%, #000408 40%, #010205 100%) !important;
-  font-family: var(--font-body) !important;
+    radial-gradient(ellipse 160% 80% at 50% -5%,
+      rgba(0,40,70,.22) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 60% at 0% 60%,
+      rgba(0,20,40,.14) 0%, transparent 50%),
+    radial-gradient(ellipse 100% 60% at 100% 40%,
+      rgba(0,15,35,.10) 0%, transparent 50%),
+    linear-gradient(180deg, #000c15 0%, #000507 30%, #000305 100%) !important;
+  color: var(--sq-t1) !important;
 }
 
-/* Animated scanning line effect */
+/* Subtle hexagonal mesh background — the intelligence grid */
 body::before {
   content: '';
-  position: fixed; inset: 0; z-index: 1; pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,240,255,.008) 2px,
-    rgba(0,240,255,.008) 4px
-  );
-  animation: scanMove 12s linear infinite;
-}
-@keyframes scanMove {
-  from { background-position: 0 0; }
-  to   { background-position: 0 -400px; }
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(200,240,255,.020) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,240,255,.020) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%,
+    rgba(0,0,0,.40) 0%, transparent 100%);
 }
 
-/* Animated ambient orbs */
+/* Single slow breathing ambient — not multiple colored orbs */
 body::after {
   content: '';
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(ellipse 700px 500px at 8% 15%,  rgba(0,102,255,.06) 0%, transparent 70%),
-    radial-gradient(ellipse 600px 400px at 92% 80%, rgba(0,229,176,.05) 0%, transparent 70%),
-    radial-gradient(ellipse 500px 300px at 50% 110%, rgba(123,47,255,.04) 0%, transparent 65%),
-    radial-gradient(ellipse 350px 250px at 85% 8%,  rgba(255,214,10,.03) 0%, transparent 60%),
-    radial-gradient(ellipse 300px 200px at 15% 90%, rgba(0,240,255,.04) 0%, transparent 60%);
-  animation: orbPulse 16s ease-in-out infinite alternate;
+    radial-gradient(ellipse 900px 600px at 20% 15%,
+      rgba(3,84,148,.065) 0%, transparent 65%),
+    radial-gradient(ellipse 700px 500px at 80% 85%,
+      rgba(0,160,120,.045) 0%, transparent 65%),
+    radial-gradient(ellipse 500px 350px at 85% 10%,
+      rgba(100,60,200,.030) 0%, transparent 60%);
+  animation: sovereignBreathe 18s ease-in-out infinite alternate;
 }
-@keyframes orbPulse {
-  0%   { opacity: .55; transform: scale(1); }
-  50%  { opacity: .90; transform: scale(1.06); }
-  100% { opacity: .65; transform: scale(.98); }
+@keyframes sovereignBreathe {
+  from { opacity: .60; } to { opacity: 1.0; }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════
    TOPBAR — COMMAND BRIDGE
-═══════════════════════════════════════════════════════════════════════════ */
+═══════════════════════════════ */
 .topbar {
   background: linear-gradient(180deg,
-    rgba(0,12,28,.97) 0%,
-    rgba(0,8,20,.99) 100%) !important;
-  border-bottom: 1px solid rgba(0,240,255,.12) !important;
+    rgba(0,12,24,.98) 0%,
+    rgba(0,8,16,.99) 100%) !important;
+  border-bottom: 1px solid var(--sq-b1) !important;
   box-shadow:
-    0 1px 0 rgba(0,240,255,.08),
-    0 4px 40px rgba(0,0,0,.90),
-    0 0 120px rgba(0,102,255,.06),
-    inset 0 1px 0 rgba(255,255,255,.04) !important;
-  backdrop-filter: blur(32px) saturate(1.6) !important;
+    0 1px 0 rgba(200,240,255,.04),
+    0 8px 48px rgba(0,0,0,.92),
+    inset 0 1px 0 rgba(255,255,255,.025) !important;
+  backdrop-filter: blur(40px) saturate(1.8) !important;
   position: relative; z-index: 200;
 }
-
-/* Topbar animated spectrum underline */
+/* Ultra-thin spectrum line — one elegant accent, not loud */
 .topbar::after {
   content: '';
   position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
   background: linear-gradient(90deg,
     transparent 0%,
-    rgba(0,102,255,.7) 15%,
-    rgba(0,240,255,.9) 35%,
-    rgba(0,229,176,.8) 55%,
-    rgba(123,47,255,.7) 75%,
-    rgba(0,240,255,.5) 90%,
+    rgba(58,184,240,.55) 25%,
+    rgba(200,240,255,.85) 50%,
+    rgba(0,255,163,.55) 75%,
     transparent 100%);
-  animation: spectrumFlow 4s linear infinite;
-  background-size: 200% 100%;
+  animation: iceFlow 6s linear infinite;
+  background-size: 300% 100%;
+  opacity: .7;
 }
-@keyframes spectrumFlow {
-  from { background-position: 0% center; }
-  to   { background-position: -200% center; }
+@keyframes iceFlow {
+  from { background-position: 100% center; }
+  to   { background-position: -100% center; }
 }
 
-/* ── Brand ───────────────────────────────────────────────────────────────── */
+/* Brand — editorial confidence */
 .brand h1 {
-  font-family: var(--font-hud) !important;
-  font-size: 18px !important;
-  font-weight: 700 !important;
-  letter-spacing: 4px !important;
+  font-family: var(--sq-display) !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  letter-spacing: 5px !important;
   text-transform: uppercase !important;
-  background: linear-gradient(135deg, #ffffff 0%, #a0d8ff 40%, #00f0ff 70%, #00e5b0 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-  filter: drop-shadow(0 0 12px rgba(0,240,255,.70)) !important;
-  animation: brandGlow 4s ease-in-out infinite alternate !important;
-}
-@keyframes brandGlow {
-  from { filter: drop-shadow(0 0 8px rgba(0,240,255,.50)); }
-  to   { filter: drop-shadow(0 0 20px rgba(0,240,255,.90)); }
+  color: var(--sq-t1) !important;
+  -webkit-text-fill-color: unset !important;
+  background: none !important;
+  text-shadow: 0 0 40px rgba(200,240,255,.25) !important;
+  animation: none !important;
+  filter: none !important;
 }
 .brand .sub {
-  font-family: var(--font-body) !important;
-  font-size: 9px !important;
-  letter-spacing: 3px !important;
+  font-family: var(--sq-body) !important;
+  font-size: 8.5px !important;
+  letter-spacing: 3.5px !important;
   text-transform: uppercase !important;
-  color: rgba(0,240,255,.40) !important;
+  color: var(--sq-t4) !important;
 }
 .qxlogo {
-  font-family: var(--font-hud) !important;
-  font-size: 16px !important;
-  font-weight: 900 !important;
-  letter-spacing: 2px !important;
-  background: linear-gradient(135deg, #00f0ff, #0066ff, #00e5b0) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-  filter: drop-shadow(0 0 16px rgba(0,240,255,.85)) !important;
+  font-family: var(--sq-display) !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: 3px !important;
+  color: var(--sq-ice) !important;
+  -webkit-text-fill-color: var(--sq-ice) !important;
+  background: none !important;
+  text-shadow: var(--sq-glow-ice) !important;
+  filter: none !important;
 }
 
-/* ── Topbar buttons ─────────────────────────────────────────────────────── */
+/* Topbar buttons */
 .btn {
-  font-family: var(--font-hud) !important;
-  font-size: 9px !important;
-  font-weight: 600 !important;
-  letter-spacing: 2px !important;
+  font-family: var(--sq-body) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 1px !important;
   text-transform: uppercase !important;
-  background: rgba(0,240,255,.04) !important;
-  border: 1px solid rgba(0,240,255,.15) !important;
-  color: rgba(0,240,255,.55) !important;
-  border-radius: 4px !important;
-  transition: all .2s ease !important;
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid var(--sq-b1) !important;
+  color: var(--sq-t3) !important;
+  border-radius: 5px !important;
+  transition: all .18s ease !important;
   padding: 6px 12px !important;
 }
 .btn:hover {
-  background: rgba(0,240,255,.12) !important;
-  border-color: rgba(0,240,255,.50) !important;
-  color: rgba(0,240,255,.95) !important;
-  box-shadow: var(--glow-cyan) !important;
+  background: rgba(200,240,255,.06) !important;
+  border-color: rgba(200,240,255,.22) !important;
+  color: var(--sq-t1) !important;
 }
 .btn.primary {
-  background: linear-gradient(135deg, rgba(0,102,255,.22), rgba(0,240,255,.12)) !important;
-  border-color: rgba(0,240,255,.40) !important;
-  color: rgba(120,220,255,.95) !important;
-  box-shadow: 0 0 16px rgba(0,240,255,.12) !important;
+  background: rgba(200,240,255,.06) !important;
+  border-color: rgba(200,240,255,.22) !important;
+  color: var(--sq-ice2) !important;
 }
 .btn.primary:hover {
-  background: linear-gradient(135deg, rgba(0,102,255,.38), rgba(0,240,255,.22)) !important;
-  box-shadow: var(--glow-cyan) !important;
+  background: rgba(200,240,255,.12) !important;
+  box-shadow: var(--sq-glow-ice) !important;
 }
 
-/* ── Status pills ───────────────────────────────────────────────────────── */
+/* Status pills */
 .pill {
-  font-family: var(--font-hud) !important;
-  font-size: 9px !important;
-  letter-spacing: 2px !important;
-  background: rgba(0,240,255,.04) !important;
-  border-color: rgba(0,240,255,.18) !important;
-  color: rgba(0,240,255,.65) !important;
+  font-family: var(--sq-body) !important;
+  font-size: 9.5px !important;
+  letter-spacing: 1px !important;
+  background: rgba(255,255,255,.03) !important;
+  border-color: var(--sq-b1) !important;
+  color: var(--sq-t3) !important;
 }
 .dot {
-  background: var(--neural-teal) !important;
-  box-shadow: 0 0 0 3px rgba(0,229,176,.15), 0 0 14px rgba(0,229,176,.70) !important;
-  animation: dotPulse 1.8s ease-in-out infinite !important;
+  background: var(--sq-live) !important;
+  box-shadow: 0 0 0 2px rgba(0,255,163,.10), 0 0 12px rgba(0,255,163,.60) !important;
+  animation: liveDot 2s ease-in-out infinite !important;
 }
-@keyframes dotPulse {
-  0%,100% { box-shadow: 0 0 0 2px rgba(0,229,176,.15), 0 0 8px rgba(0,229,176,.50); }
-  50%     { box-shadow: 0 0 0 4px rgba(0,229,176,.25), 0 0 20px rgba(0,229,176,.90); }
+@keyframes liveDot {
+  0%,100% { box-shadow: 0 0 0 2px rgba(0,255,163,.10), 0 0 8px rgba(0,255,163,.50); }
+  50%     { box-shadow: 0 0 0 3px rgba(0,255,163,.18), 0 0 18px rgba(0,255,163,.80); }
 }
-.dot.amber { background: var(--neural-amber) !important; box-shadow: 0 0 0 3px rgba(255,140,0,.15), 0 0 14px rgba(255,140,0,.70) !important; animation: none !important; }
-.dot.red   { background: var(--neural-red) !important;   box-shadow: 0 0 0 3px rgba(255,23,68,.15),  0 0 14px rgba(255,23,68,.70)  !important; animation: none !important; }
+.dot.amber { background: var(--sq-warn) !important;   box-shadow: 0 0 0 2px rgba(255,184,48,.10), 0 0 10px rgba(255,184,48,.55) !important; animation: none !important; }
+.dot.red   { background: var(--sq-danger) !important; box-shadow: 0 0 0 2px rgba(255,61,85,.10),  0 0 10px rgba(255,61,85,.55)  !important; animation: none !important; }
 
-/* 4H BASIS badge override */
+/* 4H BASIS badge */
 .qx-tf-badge {
-  font-family: var(--font-hud) !important;
+  font-family: var(--sq-body) !important;
   font-size: 9px !important;
-  letter-spacing: 2.5px !important;
-  background: linear-gradient(135deg, rgba(255,214,10,.18), rgba(255,140,0,.10)) !important;
-  border: 1px solid rgba(255,214,10,.45) !important;
-  color: rgba(255,220,80,.95) !important;
-  box-shadow: 0 0 18px rgba(255,214,10,.20) !important;
+  letter-spacing: 2px !important;
+  background: rgba(232,201,106,.06) !important;
+  border: 1px solid rgba(232,201,106,.28) !important;
+  color: var(--sq-gold) !important;
+  box-shadow: none !important;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   CARDS — NEURAL INTELLIGENCE PANELS
-═══════════════════════════════════════════════════════════════════════════ */
-.card {
-  background:
-    linear-gradient(145deg,
-      rgba(0,20,45,.88) 0%,
-      rgba(0,12,28,.92) 50%,
-      rgba(0,8,18,.95) 100%) !important;
-  border: 1px solid rgba(0,240,255,.08) !important;
-  border-radius: 12px !important;
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.40),
-    0 24px 64px rgba(0,0,0,.80),
-    0 8px 24px rgba(0,0,0,.55),
-    inset 0 1px 0 rgba(0,240,255,.07),
-    inset 0 -1px 0 rgba(0,0,0,.30) !important;
-  position: relative; overflow: hidden;
-  transition: border-color .3s ease, box-shadow .3s ease !important;
+/* Sync badge */
+.syncBadge {
+  font-family: var(--sq-body) !important;
+  font-size: 9px !important;
+  letter-spacing: 1px !important;
+  background: rgba(255,255,255,.02) !important;
+  border: 1px solid rgba(255,184,48,.14) !important;
+  color: var(--sq-t3) !important;
 }
 
-/* Corner accent marks — sci-fi frame */
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(0,240,255,.30) 20%,
-    rgba(0,240,255,.12) 50%,
-    rgba(0,229,176,.20) 80%,
-    transparent 100%);
-  pointer-events: none;
-}
-
-.card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; bottom: 0;
-  width: 1px;
-  background: linear-gradient(180deg,
-    rgba(0,240,255,.25) 0%,
-    rgba(0,240,255,.06) 40%,
-    transparent 100%);
-  pointer-events: none;
-}
-
-.card > .inner { position: relative; z-index: 1; }
-
-.card:hover {
-  border-color: rgba(0,240,255,.22) !important;
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.40),
-    0 24px 64px rgba(0,0,0,.85),
-    0 0 0 1px rgba(0,240,255,.10),
-    0 0 40px rgba(0,102,255,.08),
-    inset 0 1px 0 rgba(0,240,255,.12) !important;
-}
-
-/* ── Card title intelligence tags ─────────────────────────────────────── */
-.card-title h2 {
-  font-family: var(--font-body) !important;
-  font-size: 10px !important;
+/* ═══════════════════════════════
+   INTELLIGENCE LAYER BADGES
+═══════════════════════════════ */
+.qxStage, .qx-premTag {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 3px 12px 3px 0 !important;
+  margin-bottom: 9px !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-left: 2px solid rgba(200,240,255,.45) !important;
+  padding-left: 10px !important;
+  box-shadow: none !important;
+  font-family: var(--sq-body) !important;
+  font-size: 9px !important;
   font-weight: 600 !important;
   letter-spacing: 3px !important;
   text-transform: uppercase !important;
-  color: rgba(0,240,255,.45) !important;
+  color: rgba(200,240,255,.50) !important;
 }
-.card-title .hint {
-  font-family: var(--font-body) !important;
-  font-size: 9.5px !important;
-  color: rgba(255,255,255,.25) !important;
-}
-
-/* ── qxStage / qxSuperPill — intelligence layer badges ─────────────────── */
-.qxStage, .qxSuperPill, .qx-premTag {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 7px !important;
-  padding: 4px 14px 4px 10px !important;
-  margin-bottom: 8px !important;
-  border-radius: 3px 999px 999px 3px !important;
-  background: linear-gradient(90deg,
-    rgba(0,240,255,.14) 0%,
-    rgba(0,102,255,.08) 100%) !important;
-  border: 1px solid rgba(0,240,255,.25) !important;
-  border-left: 2px solid rgba(0,240,255,.80) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 0 16px rgba(0,240,255,.08) !important;
-  font-family: var(--font-hud) !important;
-  font-size: 8.5px !important;
-  font-weight: 600 !important;
-  letter-spacing: 2.5px !important;
-  text-transform: uppercase !important;
-  color: rgba(0,240,255,.85) !important;
-}
-.qxStage i, .qxSuperPill i, .qx-premTag i {
-  width: 5px; height: 5px; border-radius: 50% !important;
-  background: radial-gradient(circle, #00f0ff, #0066ff) !important;
-  box-shadow: 0 0 8px rgba(0,240,255,.90) !important;
-  animation: dotPulse 2.2s ease-in-out infinite !important;
+.qxStage i, .qx-premTag i {
+  width: 4px; height: 4px;
+  border-radius: 50% !important;
+  background: var(--sq-ice2) !important;
+  box-shadow: 0 0 6px rgba(125,212,248,.80) !important;
+  animation: liveDot 2.5s ease-in-out infinite !important;
   flex-shrink: 0;
 }
-/* Market Superintelligence special pill */
+/* Market Superintelligence — slightly elevated */
 .qxSuperPill {
-  background: linear-gradient(90deg, rgba(123,47,255,.18) 0%, rgba(0,240,255,.08) 100%) !important;
-  border-color: rgba(123,47,255,.40) !important;
-  border-left-color: rgba(123,47,255,.90) !important;
-  color: rgba(200,160,255,.90) !important;
-  box-shadow: 0 0 20px rgba(123,47,255,.12) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 4px 14px 4px 11px !important;
+  border-radius: 999px !important;
+  background: rgba(200,240,255,.04) !important;
+  border: 1px solid rgba(200,240,255,.16) !important;
+  box-shadow: none !important;
+  font-family: var(--sq-body) !important;
+  font-size: 9px !important;
+  font-weight: 500 !important;
+  letter-spacing: 2.5px !important;
+  text-transform: uppercase !important;
+  color: rgba(200,240,255,.55) !important;
 }
 .qxSuperPill i {
-  background: radial-gradient(circle, #b06fff, #7b2fff) !important;
-  box-shadow: 0 0 10px rgba(123,47,255,.90) !important;
+  width: 5px; height: 5px;
+  border-radius: 50% !important;
+  background: var(--sq-ice2) !important;
+  box-shadow: 0 0 8px rgba(125,212,248,.70) !important;
+  animation: liveDot 2s ease-in-out infinite !important;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   DATA TYPOGRAPHY — HUD-GRADE NUMERICS
-═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════
+   CARDS — INTELLIGENCE PANELS
+   Near-invisible, data floats in void
+═══════════════════════════════ */
+.card {
+  background: rgba(255,255,255,.022) !important;
+  border: 1px solid var(--sq-b2) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--sq-sh) !important;
+  position: relative; overflow: hidden;
+  transition: border-color .25s ease, box-shadow .25s ease !important;
+}
+/* Whisper-thin top edge light */
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg,
+    transparent, rgba(200,240,255,.15) 50%, transparent);
+  pointer-events: none;
+}
+.card::after { display: none; }
+.card > .inner { position: relative; z-index: 1; }
+.card:hover {
+  border-color: rgba(200,240,255,.14) !important;
+  box-shadow: var(--sq-sh), 0 0 0 1px rgba(200,240,255,.05) !important;
+}
 
-/* Quote price — the center of gravity */
+/* ═══════════════════════════════
+   CARD TITLE TYPOGRAPHY
+═══════════════════════════════ */
+.card-title h2 {
+  font-family: var(--sq-body) !important;
+  font-size: 9.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 3px !important;
+  text-transform: uppercase !important;
+  color: var(--sq-t3) !important;
+}
+.card-title .hint {
+  font-family: var(--sq-body) !important;
+  font-size: 9.5px !important;
+  color: var(--sq-t4) !important;
+  line-height: 1.5 !important;
+}
+
+/* ═══════════════════════════════
+   DATA HIERARCHY — THE HERO
+═══════════════════════════════ */
+/* Quote price — pure white, massive */
 .quotePx {
-  font-family: var(--font-hud) !important;
-  font-size: 44px !important;
-  font-weight: 700 !important;
-  letter-spacing: -1px !important;
-  background: linear-gradient(180deg, #ffffff 0%, #a0d8ff 40%, #00f0ff 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-  filter: drop-shadow(0 0 24px rgba(0,240,255,.55)) !important;
+  font-family: var(--sq-mono) !important;
+  font-size: 46px !important;
+  font-weight: 400 !important;
+  letter-spacing: -2px !important;
+  color: var(--sq-t1) !important;
+  -webkit-text-fill-color: var(--sq-t1) !important;
+  background: none !important;
+  filter: none !important;
+  text-shadow: 0 0 40px rgba(200,240,255,.12) !important;
 }
-
-/* Large hero stats */
-.stateBig, .fpBox .v, .paBox .v, .qeBox .qv, .sharpeBox .v,
-.convicText .cv, .fcastBox .fv, .busBannerDir {
-  font-family: var(--font-hud) !important;
-  letter-spacing: 2px !important;
-}
+/* State title */
 .stateBig {
-  font-size: 26px !important;
-  text-shadow: 0 0 40px currentColor !important;
-}
-.busBannerDir {
-  font-size: 42px !important;
+  font-family: var(--sq-display) !important;
+  font-size: 24px !important;
   font-weight: 700 !important;
-  letter-spacing: 4px !important;
-  text-shadow: 0 0 50px currentColor !important;
+  letter-spacing: 2px !important;
+  text-shadow: 0 2px 20px rgba(0,0,0,.80) !important;
+}
+/* Bus direction — the loudest single element */
+.busBannerDir {
+  font-family: var(--sq-display) !important;
+  font-size: 46px !important;
+  font-weight: 800 !important;
+  letter-spacing: 6px !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 0 60px currentColor !important;
   filter: drop-shadow(0 0 20px currentColor) !important;
 }
-
-/* Mono data values */
-.v, .fpBox .v, .quotePx, .paBox .v {
-  font-family: var(--font-data) !important;
+/* FP numbers */
+.fpBox .v, .fpTfRange {
+  font-family: var(--sq-mono) !important;
+  font-size: 22px !important;
+  letter-spacing: -1px !important;
+  color: var(--sq-t1) !important;
+  -webkit-text-fill-color: var(--sq-t1) !important;
+  background: none !important;
+  filter: none !important;
 }
-/* Labels */
-.k, .rlabel, .sec-label, .fpTfLabel, .rpLabel, .bk, .dk {
-  font-family: var(--font-hud) !important;
-  font-size: 8px !important;
-  letter-spacing: 2.5px !important;
-  text-transform: uppercase !important;
-  color: rgba(0,240,255,.35) !important;
+/* Large stat values */
+.paBox .v, .qeBox .qv, .sharpeBox .v {
+  font-family: var(--sq-mono) !important;
+  color: var(--sq-t1) !important;
+  -webkit-text-fill-color: var(--sq-t1) !important;
+  background: none !important;
 }
-
-/* ── State / bias colors ─────────────────────────────────────────────────── */
-.pos, .up, [style*="color:var(--green)"], [style*="color:#00e5a0"], [style*="color:#00d68f"] {
-  color: var(--neural-teal) !important;
-  text-shadow: 0 0 14px rgba(0,229,176,.55) !important;
+.convicText .cv {
+  font-family: var(--sq-mono) !important;
+  font-size: 32px !important;
+  font-weight: 400 !important;
 }
-.neg, .dn, [style*="color:var(--red)"], [style*="color:#ff3448"] {
-  color: var(--neural-red) !important;
-  text-shadow: 0 0 14px rgba(255,23,68,.55) !important;
-}
-.warn, [style*="color:var(--amber)"] {
-  color: var(--neural-amber) !important;
-  text-shadow: 0 0 14px rgba(255,140,0,.45) !important;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   CHIPS & BADGES — MICRO-COMPONENTS
-═══════════════════════════════════════════════════════════════════════════ */
-.chip {
-  font-family: var(--font-hud) !important;
-  font-size: 8.5px !important;
-  letter-spacing: 1.2px !important;
-  background: rgba(0,20,50,.70) !important;
-  border: 1px solid rgba(0,240,255,.10) !important;
-  border-radius: 4px !important;
-  backdrop-filter: blur(8px) !important;
-}
-.chip b {
-  color: rgba(0,240,255,.85) !important;
-  font-family: var(--font-data) !important;
-}
-.pillTag {
-  font-family: var(--font-hud) !important;
-  font-size: 9px !important;
-  letter-spacing: 1.5px !important;
-  background: rgba(0,20,50,.60) !important;
-  border-color: rgba(0,240,255,.12) !important;
-}
-.liveBadge {
-  font-family: var(--font-hud) !important;
-  font-size: 8px !important;
-  letter-spacing: 2px !important;
-}
-.liveBadge.live {
-  background: rgba(0,229,176,.12) !important;
-  color: var(--neural-teal) !important;
-  border: 1px solid rgba(0,229,176,.30) !important;
-  box-shadow: 0 0 12px rgba(0,229,176,.20) !important;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   HERO STATE CARD — THE CROWN JEWEL
-═══════════════════════════════════════════════════════════════════════════ */
-.hero {
-  background: linear-gradient(145deg,
-    rgba(0,30,70,.60) 0%,
-    rgba(0,15,40,.70) 100%) !important;
-  border: 1px solid rgba(0,240,255,.10) !important;
-  border-radius: 10px !important;
-  position: relative; overflow: hidden;
-}
-.hero::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 0%,
-    rgba(0,102,255,.12) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   SIGNAL BUS BANNER — MOST IMPACTFUL ELEMENT
-═══════════════════════════════════════════════════════════════════════════ */
-.busBanner {
-  background: linear-gradient(145deg,
-    rgba(0,30,70,.75) 0%,
-    rgba(0,15,40,.85) 100%) !important;
-  border: 1px solid rgba(0,240,255,.12) !important;
-  border-radius: 10px !important;
-  position: relative; overflow: hidden;
-}
-.busBanner::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse 70% 80% at 50% 50%,
-    rgba(0,102,255,.08) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   TABLES — INTELLIGENCE GRIDS
-═══════════════════════════════════════════════════════════════════════════ */
-thead th {
-  font-family: var(--font-hud) !important;
-  font-size: 8px !important;
-  letter-spacing: 2.5px !important;
-  text-transform: uppercase !important;
-  color: rgba(0,240,255,.35) !important;
-  background: rgba(0,10,25,.60) !important;
-  border-bottom: 1px solid rgba(0,240,255,.08) !important;
-}
-tbody tr:hover td {
-  background: rgba(0,102,255,.06) !important;
-}
-td {
-  font-family: var(--font-data) !important;
-  border-color: rgba(0,240,255,.04) !important;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   INTEL TILES — SIGNAL INTELLIGENCE GRID
-═══════════════════════════════════════════════════════════════════════════ */
-.intelTile {
-  background: linear-gradient(145deg,
-    rgba(0,20,50,.75), rgba(0,10,30,.85)) !important;
-  border: 1px solid rgba(0,240,255,.09) !important;
-  border-radius: 8px !important;
-  position: relative;
-}
-.intelTile::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, rgba(0,240,255,.20), transparent);
-  pointer-events: none;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   MACRO BOXES — DATA PANELS
-═══════════════════════════════════════════════════════════════════════════ */
-.macroBox, .fpBox, .paBox, .tmBox, .pb3Top, .sharpeBox, .qeBox {
-  background: rgba(0,10,30,.60) !important;
-  border: 1px solid rgba(0,240,255,.08) !important;
-  border-radius: 8px !important;
+.fcastBox .fv {
+  font-family: var(--sq-mono) !important;
+  color: var(--sq-t1) !important;
+  -webkit-text-fill-color: var(--sq-t1) !important;
+  background: none !important;
 }
 .macroBox .v {
-  font-family: var(--font-hud) !important;
-  background: linear-gradient(180deg, #e8f4ff 0%, #80c8ff 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
+  font-family: var(--sq-mono) !important;
+  color: var(--sq-t1) !important;
+  -webkit-text-fill-color: var(--sq-t1) !important;
+  background: none !important;
+}
+/* Labels — tight, dim, tracked */
+.k, .rlabel, .sec-label, .fpTfLabel, .rpLabel, .bk, .dk,
+.rk, .tlLabel, .sName {
+  font-family: var(--sq-body) !important;
+  font-size: 8px !important;
+  font-weight: 500 !important;
+  letter-spacing: 2.5px !important;
+  text-transform: uppercase !important;
+  color: var(--sq-t3) !important;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   PROBABILITY BARS — REGIME EMISSION PROBS
-═══════════════════════════════════════════════════════════════════════════ */
-.probBar > div {
-  box-shadow: 0 0 8px currentColor !important;
-  border-radius: 2px !important;
+/* ═══════════════════════════════
+   STATE COLORS — PRECISE SIGNAL
+═══════════════════════════════ */
+.pos, .up { color: var(--sq-live) !important;   text-shadow: var(--sq-glow-live) !important; }
+.neg, .dn { color: var(--sq-danger) !important;  text-shadow: var(--sq-glow-danger) !important; }
+.warn      { color: var(--sq-warn) !important;   text-shadow: var(--sq-glow-warn) !important; }
+
+/* ═══════════════════════════════
+   CHIPS — MICRO-INTELLIGENCE
+═══════════════════════════════ */
+.chip {
+  font-family: var(--sq-body) !important;
+  font-size: 9px !important;
+  letter-spacing: 1px !important;
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid var(--sq-b1) !important;
+  border-radius: 4px !important;
+  color: var(--sq-t2) !important;
+}
+.chip b {
+  font-family: var(--sq-mono) !important;
+  color: var(--sq-t1) !important;
+}
+.pillTag, .dayBadge, .liveBadge {
+  font-family: var(--sq-body) !important;
+  font-size: 8.5px !important;
+  letter-spacing: 2px !important;
+  background: rgba(255,255,255,.03) !important;
+  border-color: var(--sq-b1) !important;
+  color: var(--sq-t3) !important;
+}
+.liveBadge.live {
+  background: rgba(0,255,163,.06) !important;
+  color: var(--sq-live) !important;
+  border-color: rgba(0,255,163,.25) !important;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   RISK PULSE & SYNC BADGE
-═══════════════════════════════════════════════════════════════════════════ */
-.riskPulse {
-  background: rgba(0,10,30,.70) !important;
-  border: 1px solid rgba(0,240,255,.14) !important;
+/* ═══════════════════════════════
+   HERO PANEL (HMM state widget)
+═══════════════════════════════ */
+.hero {
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid var(--sq-b1) !important;
   border-radius: 8px !important;
 }
-.rpLabel {
-  font-family: var(--font-hud) !important;
-  color: rgba(0,240,255,.45) !important;
+.hero::before { display: none; }
+
+/* ═══════════════════════════════
+   SIGNAL BUS — THE DECISIVE PANEL
+═══════════════════════════════ */
+.busBanner {
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid var(--sq-b1) !important;
+  border-radius: 8px !important;
 }
-.syncBadge {
-  font-family: var(--font-hud) !important;
-  font-size: 9px !important;
-  letter-spacing: 1.5px !important;
-  background: rgba(0,10,30,.60) !important;
-  border: 1px solid rgba(255,140,0,.18) !important;
+.busBanner::after { display: none; }
+
+/* ═══════════════════════════════
+   DATA BOXES
+═══════════════════════════════ */
+.macroBox, .fpBox, .paBox, .tmBox, .pb3Top, .sharpeBox, .qeBox, .busBox {
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid var(--sq-b2) !important;
+  border-radius: 7px !important;
+}
+.sessBox, .sessLeft, .sessRight {
+  background: rgba(255,255,255,.020) !important;
+  border: 1px solid var(--sq-b2) !important;
+  border-radius: 7px !important;
+}
+.intelTile {
+  background: rgba(255,255,255,.022) !important;
+  border: 1px solid var(--sq-b2) !important;
+  border-radius: 7px !important;
+}
+.intelTile::before { display: none; }
+
+/* ═══════════════════════════════
+   TABLES
+═══════════════════════════════ */
+thead th {
+  font-family: var(--sq-body) !important;
+  font-size: 8px !important;
+  letter-spacing: 2.5px !important;
+  text-transform: uppercase !important;
+  color: var(--sq-t3) !important;
+  background: rgba(0,0,0,.20) !important;
+  border-bottom: 1px solid var(--sq-b2) !important;
+}
+td {
+  font-family: var(--sq-mono) !important;
+  font-size: 10px !important;
+  color: var(--sq-t2) !important;
+  border-color: var(--sq-b3) !important;
+}
+tbody tr:hover td {
+  background: rgba(200,240,255,.03) !important;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   FPBOX DATA NUMBERS — PRICE TARGETS
-═══════════════════════════════════════════════════════════════════════════ */
-.fpBox .v, .fpTfRange {
-  font-family: var(--font-data) !important;
-  background: linear-gradient(180deg, #ffffff 0%, rgba(160,216,255,.80) 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-  filter: drop-shadow(0 0 10px rgba(0,240,255,.35)) !important;
+/* TM matrix */
+.txMx .rl {
+  font-family: var(--sq-body) !important;
+  font-size: 8px !important;
+  letter-spacing: 1px !important;
+  color: var(--sq-t3) !important;
 }
-.fpTfLabel {
-  font-family: var(--font-hud) !important;
+.txMx th {
+  font-family: var(--sq-body) !important;
+  letter-spacing: 2px !important;
+  color: var(--sq-t3) !important;
+  background: rgba(0,0,0,.25) !important;
+}
+
+/* ═══════════════════════════════
+   RISK PULSE
+═══════════════════════════════ */
+.riskPulse {
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid var(--sq-b1) !important;
+  border-radius: 7px !important;
+}
+
+/* ═══════════════════════════════
+   NEWSFEED
+═══════════════════════════════ */
+.teNewsItem { border-bottom: 1px solid var(--sq-b3) !important; }
+.teNewsItem:hover { background: rgba(200,240,255,.025) !important; }
+.teNewsTime {
+  font-family: var(--sq-body) !important;
   font-size: 8px !important;
   letter-spacing: 2px !important;
-  color: rgba(0,240,255,.40) !important;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   SESSION BOXES
-═══════════════════════════════════════════════════════════════════════════ */
-.sessLeft, .sessRight, .sessBox {
-  background: rgba(0,10,30,.55) !important;
-  border: 1px solid rgba(0,240,255,.07) !important;
-  border-radius: 8px !important;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   NEWS FEED — INTELLIGENCE STREAM
-═══════════════════════════════════════════════════════════════════════════ */
-.teNewsItem {
-  border-bottom: 1px solid rgba(0,240,255,.05) !important;
-  transition: background .2s ease !important;
-}
-.teNewsItem:hover {
-  background: rgba(0,102,255,.06) !important;
-}
-.teNewsTime {
-  font-family: var(--font-hud) !important;
-  font-size: 8px !important;
-  letter-spacing: 1.5px !important;
-  color: rgba(0,240,255,.35) !important;
+  color: var(--sq-t4) !important;
+  text-transform: uppercase !important;
 }
 .teNewsTitle {
-  font-family: var(--font-body) !important;
-  color: rgba(200,230,255,.75) !important;
+  font-family: var(--sq-body) !important;
+  font-size: 11px !important;
+  color: var(--sq-t2) !important;
+  line-height: 1.5 !important;
 }
 .teNewsCategory.USD {
-  background: rgba(0,102,255,.18) !important;
-  color: rgba(100,180,255,.90) !important;
-  border: 1px solid rgba(0,102,255,.30) !important;
-  font-family: var(--font-hud) !important;
-  letter-spacing: 1px !important;
+  background: rgba(58,184,240,.10) !important;
+  color: var(--sq-ice2) !important;
+  border: 1px solid rgba(58,184,240,.22) !important;
+  font-family: var(--sq-body) !important;
+  font-size: 7.5px !important;
+  letter-spacing: 1.5px !important;
 }
 .teNewsCategory.EUR {
-  background: rgba(0,229,176,.12) !important;
-  color: rgba(0,229,176,.90) !important;
-  border: 1px solid rgba(0,229,176,.25) !important;
+  background: rgba(0,255,163,.07) !important;
+  color: var(--sq-live) !important;
+  border: 1px solid rgba(0,255,163,.18) !important;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   SCROLLBARS — PRECISION CHROME
-═══════════════════════════════════════════════════════════════════════════ */
-::-webkit-scrollbar { width: 3px; height: 3px; }
-::-webkit-scrollbar-track { background: rgba(0,240,255,.02); }
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(0,240,255,.40), rgba(0,102,255,.30));
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover { background: rgba(0,240,255,.65); }
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   GRID LAYOUT — TIGHT ZERO-GAP INTELLIGENCE GRID
-═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════
+   GRID LAYOUT
+═══════════════════════════════ */
 .grid {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
@@ -7284,87 +6812,96 @@ td {
 .stack { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
 .stack .card { flex-shrink: 0; margin: 0 !important; }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   SELECTION & MISC
-═══════════════════════════════════════════════════════════════════════════ */
-::selection { background: rgba(0,240,255,.25); color: #fff; }
-
-/* TM matrix accent */
-.txMx .rl {
-  font-family: var(--font-hud) !important;
-  font-size: 8px !important;
-  letter-spacing: 1px !important;
-  color: rgba(0,240,255,.50) !important;
+/* ═══════════════════════════════
+   QXMX CONTEXT BOXES
+═══════════════════════════════ */
+.qxMxCell {
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid var(--sq-b2) !important;
 }
-.txMx th {
-  font-family: var(--font-hud) !important;
+.qxMxCell .lab {
+  font-family: var(--sq-body) !important;
   font-size: 8px !important;
-  letter-spacing: 1.5px !important;
-  color: rgba(0,240,255,.35) !important;
-  background: rgba(0,10,25,.70) !important;
+  letter-spacing: 2px !important;
+  color: var(--sq-t3) !important;
+}
+.qxMxCell .val {
+  font-family: var(--sq-mono) !important;
+  color: var(--sq-t1) !important;
+}
+
+/* ═══════════════════════════════
+   MUTED / SMALL NOTES
+═══════════════════════════════ */
+.smallNote, .muted, .meta, .rm, .fm, .bm {
+  color: var(--sq-t3) !important;
+  font-family: var(--sq-body) !important;
+}
+.foot { color: var(--sq-t4) !important; }
+
+/* ═══════════════════════════════
+   SCROLLBARS
+═══════════════════════════════ */
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(200,240,255,.20);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(200,240,255,.45); }
+
+/* ═══════════════════════════════
+   SELECTION
+═══════════════════════════════ */
+::selection { background: rgba(200,240,255,.18); color: #fff; }
+
+/* ═══════════════════════════════
+   STALE WARNING
+═══════════════════════════════ */
+.staleWarning, #staleWarn {
+  background: rgba(255,61,85,.08) !important;
+  border: 1px solid rgba(255,61,85,.25) !important;
+  animation: sqStale 2s ease-in-out infinite !important;
+}
+@keyframes sqStale { 0%,100% { opacity: 1; } 50% { opacity: .65; } }
+
+/* Probability bars — faint glow */
+.probBar > div {
+  border-radius: 2px !important;
+  filter: brightness(1.1) !important;
 }
 
 /* Alert badge */
 .alertBadge {
-  font-family: var(--font-hud) !important;
+  font-family: var(--sq-body) !important;
   font-size: 9px !important;
   letter-spacing: 1.5px !important;
 }
 
-/* Riskstrip */
-.riskItem { border-color: rgba(0,240,255,.06) !important; }
-.rk {
-  font-family: var(--font-hud) !important;
+/* QEdge / FP header numbers */
+.fpTfHeader .fpTfLabel {
+  font-family: var(--sq-body) !important;
   font-size: 8px !important;
   letter-spacing: 2px !important;
-  color: rgba(0,240,255,.35) !important;
-}
-.rv {
-  font-family: var(--font-data) !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
+  color: var(--sq-t3) !important;
 }
 
-/* Regime age chip special */
-#ageChip, #tickChip {
-  font-family: var(--font-data) !important;
-  color: rgba(0,240,255,.90) !important;
+/* Risk strip */
+.riskStrip { border-color: var(--sq-b2) !important; }
+.riskItem   { border-color: var(--sq-b3) !important; }
+.rv { font-family: var(--sq-mono) !important; color: var(--sq-t1) !important; }
+
+/* Timeline */
+.tlLabel {
+  font-family: var(--sq-body) !important;
+  font-size: 8px !important;
+  letter-spacing: 2px !important;
+  color: var(--sq-t4) !important;
 }
+.tlCanvas { filter: drop-shadow(0 0 4px rgba(200,240,255,.20)) !important; }
 
-/* Stale warning */
-.staleWarning, #staleWarn {
-  background: linear-gradient(135deg, rgba(255,23,68,.14), rgba(255,140,0,.09)) !important;
-  border: 1px solid rgba(255,23,68,.35) !important;
-  animation: staleFlash 2s ease-in-out infinite !important;
-}
-@keyframes staleFlash { 0%,100% { opacity: 1; } 50% { opacity: .65; } }
-
-/* Conviction arc */
-.convicText .cv { filter: drop-shadow(0 0 20px currentColor) !important; }
-
-/* Small note / muted text */
-.smallNote, .muted { color: rgba(0,240,255,.25) !important; }
-
-/* Day badge */
-.dayBadge {
-  font-family: var(--font-hud) !important;
-  font-size: 9px !important;
-  letter-spacing: 1.5px !important;
-  background: rgba(0,10,30,.60) !important;
-  border-color: rgba(0,240,255,.12) !important;
-  color: rgba(0,240,255,.60) !important;
-}
-
-/* Footer */
-.foot { color: rgba(0,240,255,.20) !important; }
-
-/* qxMxContext highlight boxes */
-.qxMxCell {
-  background: rgba(0,15,40,.70) !important;
-  border: 1px solid rgba(0,240,255,.09) !important;
-}
-.qxMxCell .lab { color: rgba(0,240,255,.35) !important; font-family: var(--font-hud) !important; }
-.qxMxCell .val { color: rgba(200,230,255,.90) !important; font-family: var(--font-data) !important; }
+/* Compact card override */
+.qx-ultra-compact .card-title .hint { opacity: .7 !important; }
 
 </style>
 
