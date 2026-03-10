@@ -1047,7 +1047,7 @@ body.qx-auth-locked .wrap{display:none!important}
 </div>
 <!-- CENTER STAGE — fills negative space, balances header -->
 <div class="qx-topbar-center">
-  <div class="qx-center-stat" title="Edge Score (Risk Throttle)">
+  <div class="qx-center-stat" title="Edge Score — (Conviction × 0.55 + Coherence × 0.45) × (1 − Risk × 0.55). Measures actionable signal quality.">
     <span class="qx-cs-label">Edge Score</span>
     <span class="qx-cs-val" id="topbarEdgeScore">--</span>
   </div>
@@ -1071,7 +1071,7 @@ body.qx-auth-locked .wrap{display:none!important}
 </div>
 <!-- RISK inline chip (no progress bar — saves width) -->
 <div class="qx-risk-chip" title="Unified risk throttle (vol + conviction)">
-  <span class="qx-risk-lbl">RISK</span>
+  <span class="qx-risk-lbl">THROTTLE</span>
   <span class="qx-risk-val" id="riskPulseVal">--</span>
   <i id="riskPulseFill" style="display:none"></i><!-- hidden compat -->
 </div>
@@ -3978,7 +3978,6 @@ function updateQuantUI(q){
       const pct=Math.round(risk*100);
       if(rpV){
         rpV.textContent=pct+"%";
-        var tbE=$('topbarEdgeScore');if(tbE){tbE.textContent=pct+'%';tbE.style.color=risk>0.66?'rgba(255,140,140,.95)':risk>0.38?'rgba(255,210,140,.95)':'rgba(120,230,190,.90)';}
         rpV.style.color = risk>0.66 ? "rgba(255,120,120,.95)" : risk>0.38 ? "rgba(255,210,140,.95)" : "rgba(180,240,220,.95)";
       }
       if(rpF){
@@ -4771,15 +4770,8 @@ thead th,.paLogTable th{padding:7px 9px!important}
   const txt = (id)=>($(id)?.textContent||"").trim();
 
   function ensureEdgeMeter(){
-    const actions = document.querySelector(".top-actions");
-    if(!actions || $("qxEdgeMeter")) return;
-    const node = document.createElement("div");
-    node.className = "qx-edgeMeter";
-    node.id = "qxEdgeMeter";
-    node.innerHTML = '<div class="l">Edge Score</div><div class="v" id="qxEdgeVal">--</div><div class="b"><i id="qxEdgeFill"></i></div>';
-    const riskPulse = document.querySelector(".riskPulse");
-    if(riskPulse && riskPulse.nextSibling) actions.insertBefore(node, riskPulse.nextSibling);
-    else actions.prepend(node);
+    // Disabled — Edge Score now shown in center stage topbar panel
+    // qxEdgeVal / qxEdgeFill still updated below; mirrored to topbarEdgeScore
   }
 
   function ensureSignalLights(){
@@ -4881,6 +4873,7 @@ thead th,.paLogTable th{padding:7px 9px!important}
     const edge = Math.max(0, Math.min(1, (c*0.55 + h*0.45) * (1-r*0.55)));
     const val = $('qxEdgeVal'), fill = $('qxEdgeFill');
     if(val) val.textContent = Math.round(edge*100) + '%';
+    var tbE=$('topbarEdgeScore');if(tbE){tbE.textContent=Math.round(edge*100)+'%';tbE.style.color=edge>0.55?'rgba(105,255,158,.92)':edge>0.30?'rgba(255,210,140,.92)':'rgba(255,140,140,.88)';}
     if(fill) fill.style.width = (edge*100).toFixed(0) + '%';
   }
 
