@@ -939,33 +939,84 @@ body.qx-auth-locked .wrap{display:none!important}
 <div class="wrap">
 <div class="topbar">
 <div class="brand">
-<div class="qxlogo-mark" title="QuadraX">
-<svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Outer frame -->
-  <rect x="1" y="1" width="40" height="40" rx="8" stroke="rgba(0,229,255,0.25)" stroke-width="1"/>
-  <!-- Inner geometric X with trend arrow -->
-  <!-- Left diagonal line of X -->
-  <line x1="10" y1="28" x2="32" y2="10" stroke="#00e5ff" stroke-width="1.5" stroke-linecap="round"/>
-  <!-- Right diagonal line of X -->
-  <line x1="10" y1="10" x2="26" y2="26" stroke="rgba(0,229,255,0.45)" stroke-width="1.5" stroke-linecap="round"/>
-  <!-- Trend arrow continuation (kinetic upward motion) -->
-  <polyline points="26,26 32,20 32,14" stroke="#00e5ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- Arrow head -->
-  <polyline points="28,14 32,10 36,14" stroke="#00e5ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- Bottom accent dot -->
-  <circle cx="10" cy="32" r="1.5" fill="#00e5ff" opacity="0.6"/>
-  <!-- Glow overlay -->
-  <rect x="1" y="1" width="40" height="40" rx="8" fill="url(#gx)" opacity="0.08"/>
+<div class="qxlogo-mark" title="QuadraX — 4X Intelligence Platform">
+<!--
+  4X LOGO MARK
+  Inspired by the actual QuadraX 4X identity:
+  Bold geometric "4" + kinetic forward-chevron + bold "X"
+  Neon lime on deep void — precision meets momentum
+-->
+<svg width="74" height="42" viewBox="0 0 74 42" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="gx" cx="70%" cy="30%" r="80%">
-      <stop offset="0%" stop-color="#00e5ff"/>
-      <stop offset="100%" stop-color="transparent"/>
+    <!-- Neon lime glow filter -->
+    <filter id="limeGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Subtle ambient fill -->
+    <radialGradient id="ambientFill" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#69ff9e" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#69ff9e" stop-opacity="0"/>
     </radialGradient>
   </defs>
+
+  <!-- Container: very dark pill — matches logo 2's dark bg -->
+  <rect width="74" height="42" rx="7" fill="rgba(0,8,4,0.70)"/>
+  <rect width="74" height="42" rx="7" fill="url(#ambientFill)"/>
+  <rect x="0.5" y="0.5" width="73" height="41" rx="6.5" stroke="rgba(105,255,158,0.18)" stroke-width="1"/>
+
+  <!-- ══════════════════════════════════
+       "4" MARK — bold geometric polygon
+       Points trace: top-left arm → horizontal → full right bar
+       Rounded corners via thick stroke + round join trick
+  ═══════════════════════════════════ -->
+  <polygon
+    points="3,4  8.5,4  8.5,19  15.5,19  15.5,4  21,4  21,38  15.5,38  15.5,24.5  3,24.5"
+    fill="#69ff9e"
+    stroke="#69ff9e"
+    stroke-width="3.2"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+    filter="url(#limeGlow)"
+  />
+
+  <!-- ══════════════════════════════════
+       CHEVRON ARROW — kinetic motion between 4 and X
+       Single bold ">" pointing right
+       Symbolises: data in motion, forward momentum, live signal
+  ═══════════════════════════════════ -->
+  <polyline
+    points="27,5  36,21  27,37"
+    fill="none"
+    stroke="#69ff9e"
+    stroke-width="5.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    filter="url(#limeGlow)"
+  />
+
+  <!-- ══════════════════════════════════
+       "X" MARK — bold crossing diagonals
+       Two thick strokes crossing at center (56, 21)
+       Mirroring the bold "X" in the logo
+  ═══════════════════════════════════ -->
+  <line x1="43" y1="4"  x2="69" y2="38" stroke="#69ff9e" stroke-width="6.5" stroke-linecap="round" filter="url(#limeGlow)"/>
+  <line x1="69" y1="4"  x2="43" y2="38" stroke="#69ff9e" stroke-width="6.5" stroke-linecap="round" filter="url(#limeGlow)"/>
 </svg>
 </div>
 <div class="brand-text-block">
-  <div class="brand-wordmark"><span class="brand-q">QUAD</span><span class="brand-rx">RAX</span></div>
+  <!--
+    QUADRAX WORDMARK — styled after Image 1: "QUADRA X"
+    Bold uppercase, generous letter-spacing
+    "QUADRA" in off-white → "X" in neon lime accent
+    Vertical separator · between them for visual separation
+  -->
+  <div class="brand-wordmark">
+    <span class="brand-q">QUADRA</span><span class="brand-sep"> </span><span class="brand-rx">X</span>
+  </div>
   <div class="sub">EUR/USD · HMM · PB3 · Signal Bus · <span class="sub-si"><span class="sub-si-dot"></span>Market Superintelligence</span></div>
 </div>
 </div>
@@ -6357,11 +6408,12 @@ body::before, body::after { display: none !important; }
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  filter: drop-shadow(0 0 8px rgba(0,229,255,.35));
-  transition: filter .2s ease;
+  /* Lime glow matching the actual 4X logo */
+  filter: drop-shadow(0 0 10px rgba(105,255,158,.28));
+  transition: filter .25s ease;
 }
 .qxlogo-mark:hover {
-  filter: drop-shadow(0 0 16px rgba(0,229,255,.65));
+  filter: drop-shadow(0 0 20px rgba(105,255,158,.55));
 }
 
 /* ────────────────────────────────────────────
@@ -6380,22 +6432,35 @@ body::before, body::after { display: none !important; }
   gap: 2px;
 }
 
-/* QUADRAX Wordmark */
+/* QUADRAX Wordmark — styled after Image 1: "QUADRA X" bold spaced typography */
 .brand-wordmark {
   font-family: var(--dt-ui) !important;
-  font-size: 16px !important;
+  font-size: 15px !important;
   font-weight: 700 !important;
-  letter-spacing: 4px !important;
+  letter-spacing: 5px !important;
   text-transform: uppercase !important;
   line-height: 1 !important;
   user-select: none !important;
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 0 !important;
 }
+/* "QUADRA" — solid institutional white */
 .brand-q {
   color: var(--dt-t1) !important;
+  letter-spacing: 5px !important;
 }
+/* Space separator */
+.brand-sep {
+  display: inline-block !important;
+  width: 6px !important;
+}
+/* "X" — neon lime, matching the 4X icon mark */
 .brand-rx {
-  color: var(--dt-cyan) !important;
-  text-shadow: 0 0 20px rgba(0,229,255,.45) !important;
+  color: #69ff9e !important;
+  text-shadow: 0 0 16px rgba(105,255,158,.50), 0 0 40px rgba(105,255,158,.20) !important;
+  letter-spacing: 1px !important;
+  font-size: 17px !important;
 }
 
 /* Override old h1 brand just in case */
@@ -6434,23 +6499,27 @@ body::before, body::after { display: none !important; }
   align-items: center !important;
   gap: 5px !important;
   padding: 1px 7px !important;
-  background: rgba(0,229,255,.06) !important;
-  border: 1px solid rgba(0,229,255,.20) !important;
+  background: rgba(105,255,158,.05) !important;
+  border: 1px solid rgba(105,255,158,.22) !important;
   border-radius: 3px !important;
   font-size: 8px !important;
   font-weight: 600 !important;
   letter-spacing: 2px !important;
-  color: var(--dt-cyan) !important;
+  color: #69ff9e !important;
   text-transform: uppercase !important;
   font-family: var(--dt-ui) !important;
 }
 .sub-si-dot {
   width: 4px; height: 4px;
   border-radius: 50%;
-  background: var(--dt-cyan);
-  box-shadow: 0 0 6px rgba(0,229,255,.80);
-  animation: cyanPulse 2s ease-in-out infinite;
+  background: #69ff9e;
+  box-shadow: 0 0 6px rgba(105,255,158,.85);
+  animation: limePulse 2s ease-in-out infinite;
   flex-shrink: 0;
+}
+@keyframes limePulse {
+  0%,100% { opacity: .7; box-shadow: 0 0 5px rgba(105,255,158,.65); }
+  50%      { opacity: 1;  box-shadow: 0 0 12px rgba(105,255,158,1.0); }
 }
 @keyframes cyanPulse {
   0%,100% { opacity: .7; box-shadow: 0 0 4px rgba(0,229,255,.60); }
