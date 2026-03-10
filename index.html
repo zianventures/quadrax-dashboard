@@ -843,9 +843,9 @@ body.qx-auth-locked .wrap{display:none!important}
 .qx-auth-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .qx-auth-mark{
   display:flex;align-items:center;justify-content:center;
-  width:54px;height:32px;border-radius:8px;
+  width:42px;height:24px;border-radius:6px;
   background:transparent;border:none;
-  filter:drop-shadow(0 0 10px rgba(105,255,158,.28));
+  filter:drop-shadow(0 0 8px rgba(105,255,158,.25));
   flex-shrink:0;
 }
 .qx-auth-title{
@@ -896,7 +896,7 @@ body.qx-auth-locked .wrap{display:none!important}
   <div class="qx-auth-shell">
     <div class="qx-auth-head">
       <div class="qx-auth-mark">
-<svg width="46" height="26" viewBox="0 0 74 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="36" height="20" viewBox="0 0 74 42" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <filter id="lgGlow" x="-30%" y="-30%" width="160%" height="160%">
       <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur"/>
@@ -971,7 +971,7 @@ body.qx-auth-locked .wrap{display:none!important}
   Bold geometric "4" + kinetic forward-chevron + bold "X"
   Neon lime on deep void — precision meets momentum
 -->
-<svg width="52" height="30" viewBox="0 0 74 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="40" height="23" viewBox="0 0 74 42" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <!-- Neon lime glow filter -->
     <filter id="limeGlow" x="-30%" y="-30%" width="160%" height="160%">
@@ -5810,15 +5810,15 @@ thead th,.paLogTable th{padding:7px 8px!important}
     move(session,left,null);
     move(te,left,null);        // Trading Economics below Session
 
-    // RIGHT: Transition → Transmission → Macro → Signal → Playbook → Proj Accuracy → Signal Performance → Calendar
+    // RIGHT: Transition → Transmission → Macro → Signal → Calendar → Playbook → Proj Accuracy → Signal Performance
     move(hmm,right,null);      // Transition Intelligence (top)
     move(trans,right,null);    // Transmission Mechanism
     move(macro,right,null);    // Macro Intelligence
-    move(sigInt,right,null);   // Signal Intelligence
-    move(play,right,null);     // Session Playbook
+    move(sigInt,right,null);   // Signal Intelligence (Execution Layer)
+    move(wcal,right,null);     // Market Calendar — between Execution and Decision
+    move(play,right,null);     // Session Playbook (Decision Layer)
     move(proj,right,null);     // Projection Accuracy
     move(sharpe,right,null);   // Signal Performance
-    move(wcal,right,null);     // Market Calendar at bottom right
 
     // hide true reference-only panels
     [daily,pb3,event,corr,heads].forEach(hide);
@@ -5833,10 +5833,10 @@ thead th,.paLogTable th{padding:7px 8px!important}
     addStage(forecast,'Forecast Intelligence');
     addStage(proj,'Calibration Intelligence');
     addStage(sharpe,'Performance Intelligence');
-    addStage(play,'Decision Layer');
     addStage(sigInt,'Execution Layer');
-    addStage(session,'Session Intelligence');
     addStage(wcal,'Market Calendar');
+    addStage(play,'Decision Layer');
+    addStage(session,'Session Intelligence');
     addStage(te,'Live Newsfeed');
   }
   function tightenText(){
@@ -6301,8 +6301,8 @@ body::after{
     // LEFT: Session → TE News below main flow
     if(sessionIntel) moveAfter(sessionIntel, left, 'Forward Projection');
     if(teCard){ teCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(teCard, left, 'Session Intelligence'); }
-    // RIGHT bottom: Market Calendar under Signal Performance
-    if(wcalCard){ wcalCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(wcalCard, right, 'Signal Performance'); }
+    // RIGHT: Market Calendar between Execution (Signal Intelligence) and Decision (Session Playbook)
+    if(wcalCard){ wcalCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(wcalCard, right, 'Signal Intelligence · Command Layer'); }
 
     compact(matrix); compact(trans); compact(macroCard); compact(signalIntel); compact(sessionPlay);
     compact(sessionIntel); compact(qedge); compact(bus);
