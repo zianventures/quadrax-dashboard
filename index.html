@@ -1042,7 +1042,7 @@ body.qx-auth-locked .wrap{display:none!important}
   <div class="brand-wordmark">
     <span class="brand-q">QUADRA</span><span class="brand-sep"> </span><span class="brand-rx">X</span>
   </div>
-  <div class="sub">EUR/USD · HMM · PB3 · <span class="sub-si"><span class="sub-si-dot"></span>Superintelligence Architecture</span></div>
+  <div class="sub">EUR/USD · HMM · PB3 · <span class="sub-si">Superintelligence Architecture</span></div>
 </div>
 </div>
 <!-- CENTER STAGE — fills negative space, balances header -->
@@ -1066,8 +1066,8 @@ body.qx-auth-locked .wrap{display:none!important}
 <!-- STATUS CHIP: Alert + Sync merged -->
 <div class="qx-status-chip" id="alertBadge" title="Alerts and sync status">
   <span class="qx-status-alert" id="alertBadgeText">Alert</span>
-  <span class="qx-status-div"></span>
-  <span class="dot amber" id="syncDot"></span><span class="qx-status-sync" id="syncText">0/20</span>
+  <span class="dot amber" id="syncDot" style="margin-left:2px"></span>
+  <span id="syncText" style="display:none">0/20</span>
 </div>
 <!-- RISK inline chip (no progress bar — saves width) -->
 <div class="qx-risk-chip" title="Unified risk throttle (vol + conviction)">
@@ -4303,7 +4303,7 @@ function updateCorrUI(corrs){const assets=[{key:"OIL",label:"Brent (BZ=F)",dir:"
 let lastAlertAt=0;
 function checkAlerts(r1,bias){const thresh=Number(settings.alertThreshPips)||0;if(thresh>0&&r1>=thresh){if(Date.now()-lastAlertAt<300000)return;lastAlertAt=Date.now();const ab=$("alertBadge"),at=$("alertBadgeText");if(ab)ab.classList.add("show");if(at)at.textContent="1h range "+r1+"p >= "+thresh+"p";setTimeout(()=>{const ab2=$("alertBadge");if(ab2)ab2.classList.remove("show");},30000);if("Notification"in window&&Notification.permission==="granted"){try{new Notification("QuadraX Alert",{body:"1h range "+r1+"p. Bias: "+bias,tag:"qx-alert"});}catch{}}}}
 let nightMode=false;
-function toggleNight(){nightMode=!nightMode;document.body.classList.toggle("night",nightMode);const nb=$("nightBtn");if(nb){nb.classList.toggle("night-active",nightMode);nb.textContent=nightMode?"Day":"Night";}}
+function toggleNight(){nightMode=!nightMode;document.body.classList.toggle("night",nightMode);const nb=$("nightBtn");if(nb){nb.classList.toggle("night-active",nightMode);nb.textContent=nightMode?"☀":"☾";}}
 function exportSnapshot(){const url=URL.createObjectURL(new Blob([JSON.stringify({timestamp:new Date().toISOString(),version:"v5",state:lastFullState,projAccuracy:ProjTracker.getStats(),calibMult:ProjTracker.getCalibMult()},null,2)],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download="quadrax-v5-snap-"+Date.now()+".json";a.click();URL.revokeObjectURL(url);}
 
 let lastSpot=null,lastFullState=null,paused=false,syncing=false;
@@ -4481,14 +4481,14 @@ if(saveBtn)saveBtn.addEventListener("click",async()=>{
   }
 });
 const pBtn=$("pauseBtn"),nBtn=$("nightBtn"),eBtn=$("exportBtn"),syncBtn=$("syncBtn");
-if(pBtn)pBtn.addEventListener("click",()=>{paused=!paused;pBtn.textContent=paused?"Resume":"Pause";const ss=$("sysStatus");if(ss)ss.textContent=paused?"PAUSED":"LIVE";const ld=$("liveDot");if(ld)ld.classList.toggle("amber",paused);});
+if(pBtn)pBtn.addEventListener("click",()=>{paused=!paused;pBtn.textContent=paused?"▶":"⏸";const ss=$("sysStatus");if(ss)ss.textContent=paused?"PAUSED":"LIVE";const ld=$("liveDot");if(ld)ld.classList.toggle("amber",paused);});
 if(nBtn)nBtn.addEventListener("click",toggleNight);
 if(eBtn)eBtn.addEventListener("click",exportSnapshot);
 if(syncBtn)syncBtn.addEventListener("click",async()=>{
   if(FirebaseSync.isReader){const sb=$("syncBadge");if(sb)sb.classList.add("pulse");setTimeout(()=>{if(sb)sb.classList.remove("pulse");},2000);return;}
-  if(syncing)return;syncing=true;syncBtn.textContent="Syncing...";syncBtn.classList.add("syncing");
+  if(syncing)return;syncing=true;syncBtn.textContent="⟳";syncBtn.classList.add("syncing");
   try{await Promise.allSettled([SpotFeed.tick(onSpotUpdate),MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()]);}
-  finally{syncing=false;syncBtn.textContent="Sync";syncBtn.classList.remove("syncing");}
+  finally{syncing=false;syncBtn.textContent="⟳";syncBtn.classList.remove("syncing");}
 });
 window.addEventListener("keydown",e=>{if(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")return;const k=e.key.toLowerCase();if(k==="p"&&pBtn)pBtn.click();else if(k==="s"&&syncBtn)syncBtn.click();else if(k==="n")toggleNight();else if(k==="x")exportSnapshot();else if(k==="?"){const kh=$("kbHint");if(kh)kh.classList.toggle("show");}});
 const tvf=$("tvFrame");if(tvf){let tvLoaded=false;tvf.addEventListener("load",()=>{tvLoaded=true;});setTimeout(()=>{if(!tvLoaded){const fb=$("tvFallback");if(fb)fb.classList.add("show");}},9000);}
@@ -6954,204 +6954,389 @@ tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
 </style>
 
 
-<style id="qx-topbar-compact">
-/* ── TOPBAR COMPACT OVERRIDES ─────────────────────────────── */
+
+
+
+
+<style id="qx-header-signature">
+/*
+╔══════════════════════════════════════════════════════════════════════╗
+║  QUADRAX · SIGNATURE TOPBAR                                          ║
+║  The topbar IS the terminal. It breathes, it watches, it reports.   ║
+║  One glance = full situational awareness.                            ║
+╚══════════════════════════════════════════════════════════════════════╝
+*/
+
+/* ── TOPBAR: scanline + accent rule at top ─────────────────────────── */
+.topbar {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 200 !important;
+  display: grid !important;
+  grid-template-columns: auto 1fr auto !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 0 18px !important;
+  height: 52px !important;
+  background: rgba(4, 9, 18, 0.98) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(0, 229, 255, 0.08) !important;
+  border-radius: 0 !important;
+  box-shadow:
+    0 0 0 1px rgba(0, 229, 255, 0.04),
+    0 8px 32px rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: none !important;
+  overflow: hidden !important;
+}
+
+/* Accent line across very top — "terminal power on" indicator */
+.topbar::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important; left: 0 !important; right: 0 !important;
+  height: 1.5px !important;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(105,255,158,0.0) 5%,
+    rgba(105,255,158,0.70) 30%,
+    rgba(0,229,255,0.90) 50%,
+    rgba(105,255,158,0.70) 70%,
+    rgba(105,255,158,0.0) 95%,
+    transparent 100%
+  ) !important;
+  display: block !important;
+  animation: headerBeam 6s ease-in-out infinite !important;
+}
+@keyframes headerBeam {
+  0%,100% { opacity: 0.55; }
+  50%      { opacity: 1.00; }
+}
+.topbar::after { display: none !important; }
+
+/* ── BRAND ─────────────────────────────────────────────────────────── */
+.brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  flex-shrink: 0 !important;
+  height: 52px !important;
+}
+
+/* Left-edge accent bar on brand block */
+.brand::before {
+  content: '' !important;
+  position: absolute !important;
+  left: 0 !important; top: 8px !important; bottom: 8px !important;
+  width: 2px !important;
+  background: linear-gradient(180deg, transparent, #69ff9e, transparent) !important;
+  border-radius: 2px !important;
+  display: block !important;
+}
+
+.brand-text-block {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+}
+
+/* QUADRA X wordmark — wider tracking, stronger */
+.brand-wordmark {
+  font-family: 'IBM Plex Sans', ui-sans-serif, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: 6px !important;
+  text-transform: uppercase !important;
+  line-height: 1 !important;
+  user-select: none !important;
+}
+.brand-q { color: #d8e6f5 !important; }
+.brand-rx {
+  color: #69ff9e !important;
+  text-shadow: 0 0 18px rgba(105,255,158,.55), 0 0 40px rgba(105,255,158,.18) !important;
+  letter-spacing: 2px !important;
+  font-size: 15px !important;
+}
+
+/* Sub line — lean & informational */
+.brand .sub {
+  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-size: 8.5px !important;
+  font-weight: 400 !important;
+  letter-spacing: 2.5px !important;
+  text-transform: uppercase !important;
+  color: rgba(100, 130, 168, 0.80) !important;
+  white-space: nowrap !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+}
+
+/* SUPERINTELLIGENCE ARCHITECTURE badge — no dot, clean label */
+.sub-si {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 2px 8px !important;
+  background: rgba(105,255,158,.05) !important;
+  border: 1px solid rgba(105,255,158,.22) !important;
+  border-left: 2px solid rgba(105,255,158,.65) !important;
+  border-radius: 2px !important;
+  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-size: 7.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 2.5px !important;
+  color: rgba(105,255,158,.80) !important;
+  text-transform: uppercase !important;
+}
+
+/* ── CENTER STAGE — instrument cluster ────────────────────────────── */
+.qx-topbar-center {
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+  height: 36px !important;
+  background: rgba(255,255,255,.018) !important;
+  border: 1px solid rgba(255,255,255,.06) !important;
+  border-radius: 5px !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* Subtle cyan shimmer on center panel */
+.qx-topbar-center::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(0,229,255,.025) 50%, transparent 100%) !important;
+  pointer-events: none !important;
+}
+
+.qx-center-stat {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  padding: 0 24px !important;
+  position: relative !important;
+  cursor: default !important;
+  transition: background .15s ease !important;
+}
+.qx-center-stat:hover {
+  background: rgba(0,229,255,.04) !important;
+}
+
+.qx-cs-label {
+  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-size: 6.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 2.5px !important;
+  text-transform: uppercase !important;
+  color: rgba(90, 118, 158, 0.80) !important;
+  line-height: 1 !important;
+}
+.qx-cs-val {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: rgba(205, 222, 242, 0.95) !important;
+  line-height: 1 !important;
+  font-variant-numeric: tabular-nums !important;
+  white-space: nowrap !important;
+  letter-spacing: .5px !important;
+}
+
+.qx-center-div {
+  width: 1px !important;
+  margin: 7px 0 !important;
+  background: rgba(255,255,255,.07) !important;
+  flex-shrink: 0 !important;
+}
+
+/* ── ACTIONS ─────────────────────────────────────────────────────── */
 .top-actions {
+  display: flex !important;
+  align-items: center !important;
   gap: 5px !important;
   flex-wrap: nowrap !important;
+  flex-shrink: 0 !important;
   overflow: visible !important;
 }
 
-/* STATUS CHIP — Alert + Sync fused */
+/* Status chip — ALERT only, no counter */
 .qx-status-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 0 9px;
-  height: 26px;
-  background: rgba(255,171,0,.05);
-  border: 1px solid rgba(255,171,0,.22);
-  border-radius: 4px;
-  font-family: var(--dt-mono, 'JetBrains Mono', monospace);
-  font-size: 8.5px;
-  letter-spacing: .8px;
-  text-transform: uppercase;
-  white-space: nowrap;
-  cursor: default;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 9px !important;
+  height: 28px !important;
+  background: rgba(255,171,0,.05) !important;
+  border: 1px solid rgba(255,171,0,.20) !important;
+  border-radius: 4px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 8.5px !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
 }
-.qx-status-alert {
-  color: rgba(255,190,60,.92);
-  font-weight: 600;
-}
-.qx-status-div {
-  width: 1px;
-  height: 12px;
-  background: rgba(255,171,0,.25);
-  flex-shrink: 0;
-}
-.qx-status-sync {
-  color: rgba(180,195,220,.75);
-  font-size: 8px;
-}
-/* RISK CHIP */
+.qx-status-alert { color: rgba(255,190,60,.95) !important; font-weight: 600 !important; }
+.qx-status-div   { display: none !important; }
+.qx-status-sync  { display: none !important; }
+
+/* Risk chip */
 .qx-risk-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 0 9px;
-  height: 26px;
-  background: rgba(255,255,255,.03);
-  border: 1px solid rgba(255,255,255,.09);
-  border-radius: 4px;
-  font-family: var(--dt-mono, 'JetBrains Mono', monospace);
-  white-space: nowrap;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 0 9px !important;
+  height: 28px !important;
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 4px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  white-space: nowrap !important;
 }
 .qx-risk-lbl {
-  font-size: 7.5px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: rgba(155,175,205,.70);
+  font-size: 7px !important;
+  letter-spacing: 1.5px !important;
+  text-transform: uppercase !important;
+  color: rgba(130,155,185,.72) !important;
 }
 .qx-risk-val {
-  font-size: 11px;
-  font-weight: 600;
-  color: rgba(220,230,245,.92);
-  font-variant-numeric: tabular-nums;
-  min-width: 28px;
-  text-align: right;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: rgba(215,228,244,.95) !important;
+  font-variant-numeric: tabular-nums !important;
+  min-width: 28px !important;
+  text-align: right !important;
 }
-/* Compact pill for 4H */
-.qx-tf-badge {
-  white-space: nowrap !important;
-  padding: 4px 7px !important;
-}
-/* Time pill compact */
+
+/* Pills */
 .pill {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 8.5px !important;
+  letter-spacing: .8px !important;
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  color: rgba(155,175,205,.82) !important;
+  padding: 0 8px !important;
+  height: 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
   white-space: nowrap !important;
-  padding: 4px 7px !important;
-  height: 26px !important;
+  border-radius: 4px !important;
 }
-/* Icon-only buttons */
+.qx-tf-badge {
+  background: rgba(255,171,0,.05) !important;
+  border-color: rgba(255,171,0,.18) !important;
+  color: rgba(255,200,80,.88) !important;
+}
+
+/* Buttons — compact icon style */
+.btn {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important;
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  color: rgba(160,182,215,.88) !important;
+  border-radius: 4px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  padding: 0 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all .15s ease !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  cursor: pointer !important;
+}
+.btn:hover {
+  background: rgba(0,229,255,.06) !important;
+  border-color: rgba(0,229,255,.28) !important;
+  color: #00e5ff !important;
+}
+.btn.primary {
+  background: rgba(0,229,255,.07) !important;
+  border-color: rgba(0,229,255,.25) !important;
+  color: rgba(0,229,255,.92) !important;
+}
+.btn.primary:hover {
+  background: rgba(0,229,255,.13) !important;
+  border-color: rgba(0,229,255,.45) !important;
+}
+/* Export — keep word, wider */
+.btn[id="exportBtn"] {
+  font-size: 8.5px !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  padding: 0 11px !important;
+}
+/* Guide — keep word, visible */
+.btn[id="guideBtn"] {
+  font-size: 8.5px !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  padding: 0 10px !important;
+}
+/* Icon buttons fixed size */
 .btn[id="pauseBtn"],
 .btn[id="syncBtn"],
 .btn[id="nightBtn"],
 .btn[id="settingsBtn"] {
-  padding: 0 9px !important;
-  font-size: 13px !important;
-  width: 30px !important;
-  height: 26px !important;
-  justify-content: center !important;
-  letter-spacing: 0 !important;
-  text-transform: none !important;
+  width: 28px !important;
+  min-width: 28px !important;
+  padding: 0 !important;
+  font-size: 14px !important;
 }
-.btn[id="exportBtn"] {
-  padding: 0 10px !important;
-  font-size: 9px !important;
-  height: 26px !important;
-}
-.btn[id="guideBtn"] {
-  padding: 0 9px !important;
-  font-size: 9px !important;
-  height: 26px !important;
-}
-/* Ensure brand stays compact */
-.brand {
+
+/* LIVE dot */
+.dot {
+  width: 6px !important; height: 6px !important;
+  border-radius: 50% !important;
+  background: #00e676 !important;
+  box-shadow: 0 0 8px rgba(0,230,118,.70) !important;
+  animation: livePulse 2s ease-in-out infinite !important;
   flex-shrink: 0 !important;
 }
-.brand-wordmark {
-  white-space: nowrap !important;
+.dot.amber {
+  background: rgba(255,171,0,.85) !important;
+  box-shadow: 0 0 5px rgba(255,171,0,.45) !important;
+  animation: none !important;
 }
-.brand .sub {
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  max-width: 360px !important;
+.dot.red {
+  background: rgba(255,61,85,.85) !important;
+  box-shadow: none !important;
+  animation: none !important;
 }
-/* Hide the ⏸ text in pauseBtn tooltip support */
-.alertBadge { display: none !important; } /* legacy — we replaced it */
-</style>
+@keyframes livePulse {
+  0%,100% { box-shadow: 0 0 5px rgba(0,230,118,.55); }
+  50%     { box-shadow: 0 0 14px rgba(0,230,118,.90); }
+}
 
-<style id="qx-topbar-center-css">
-/* ── TOPBAR CENTER STAGE ─────────────────────────────────────── */
-/* Makes topbar a 3-zone layout: brand | center | actions */
-.topbar {
-  display: grid !important;
-  grid-template-columns: auto 1fr auto !important;
+/* syncBadge FS READER badge */
+.syncBadge {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 8px !important;
+  letter-spacing: .5px !important;
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid rgba(255,171,0,.12) !important;
+  color: rgba(155,175,205,.75) !important;
+  padding: 0 8px !important;
+  height: 28px !important;
+  display: flex !important;
   align-items: center !important;
-  gap: 16px !important;
-}
-
-/* Center zone — stretches to fill all negative space */
-.qx-topbar-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  padding: 6px 20px;
-  background: rgba(255,255,255,.018);
-  border: 1px solid rgba(255,255,255,.06);
-  border-radius: 6px;
-  height: 36px;
-  box-sizing: border-box;
-}
-
-/* Individual stat */
-.qx-center-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  padding: 0 20px;
-  cursor: default;
-}
-.qx-cs-label {
-  font-family: var(--dt-ui, 'IBM Plex Sans', sans-serif);
-  font-size: 7px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: rgba(120,145,178,.72);
-  line-height: 1;
-  margin-bottom: 2px;
-}
-.qx-cs-val {
-  font-family: var(--dt-mono, 'JetBrains Mono', monospace);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: .5px;
-  color: rgba(200,218,240,.92);
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-/* Dividers between stats */
-.qx-center-div {
-  width: 1px;
-  height: 22px;
-  background: rgba(255,255,255,.08);
-  flex-shrink: 0;
-}
-
-/* Ensure top-actions doesn't shrink */
-.top-actions {
-  flex-shrink: 0 !important;
-  justify-content: flex-end !important;
-}
-
-/* Brand doesn't shrink */
-.brand {
-  flex-shrink: 0 !important;
-}
-
-/* Sub-si badge — shortened text fits now */
-.sub-si {
+  gap: 5px !important;
+  border-radius: 4px !important;
   white-space: nowrap !important;
 }
-.brand .sub {
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  max-width: none !important;
-}
+
+/* Alert badge — hide legacy */
+.alertBadge { display: none !important; }
 </style>
 
 </body>
