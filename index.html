@@ -949,6 +949,7 @@ body.qx-auth-locked .wrap{display:none!important}
 <div class="rpTop"><span class="rpLabel">RISK</span><span class="rpVal" id="riskPulseVal">--</span></div>
 <div class="rpBar"><i id="riskPulseFill"></i></div>
 </div>
+<div class="pill qx-tf-badge" title="All signals, projections and scoring are anchored to the 4-hour timeframe">⧖ <b>4H BASIS</b></div>
 <div class="pill"><span class="dot" id="liveDot"></span><span>LIVE</span></div>
 <div class="pill">⏱ <b id="lastUpdate">--:--:--</b></div>
 <button class="btn" id="pauseBtn">Pause</button>
@@ -5131,13 +5132,13 @@ body::before{
     moveCardToStack(sessIntel, right, 'Signal Intelligence');
 
     // Tags
-    stage(market, '1 · Regime');
-    stage(macro, '2 · Macro');
-    stage(hmm, '3 · Model');
-    stage(qedge, '4 · Signal');
-    stage(bus, '5 · Consensus');
-    stage(forecast, '6 · Forecast');
-    stage(projAcc, '7 · Validation');
+    stage(market, 'Market Intelligence');
+    stage(macro, 'Macro Intelligence');
+    stage(hmm, 'Transition Intelligence');
+    stage(qedge, 'Signal Intelligence');
+    stage(bus, 'Consensus Intelligence');
+    stage(forecast, 'Forecast Intelligence');
+    stage(projAcc, 'Performance Intelligence');
     stage(sessPlay, 'Decision');
     stage(signalIntel, 'Execution');
     stage(daily, 'Reference');
@@ -5307,13 +5308,13 @@ body::after{
     if(bus) bus.classList.add('qx-bus');
     if(forecast) forecast.classList.add('qx-forecast');
 
-    addPremiumTag(market, '1 · State Intelligence');
-    addPremiumTag(findCardContains('Macro Drivers'), '2 · Macro Intelligence');
-    addPremiumTag(findCardContains('HMM Transition Matrix'), '3 · Transition Intelligence');
-    addPremiumTag(signal, '4 · Signal Intelligence');
-    addPremiumTag(bus, '5 · Consensus Intelligence');
-    addPremiumTag(forecast, '6 · Forecast Intelligence');
-    addPremiumTag(findCardContains('Projection Accuracy'), '7 · Performance Intelligence');
+    addPremiumTag(market, 'Market Intelligence');
+    addPremiumTag(findCardContains('Macro Drivers'), 'Macro Intelligence');
+    addPremiumTag(findCardContains('HMM Transition Matrix'), 'Transition Intelligence');
+    addPremiumTag(signal, 'Signal Intelligence');
+    addPremiumTag(bus, 'Consensus Intelligence');
+    addPremiumTag(forecast, 'Forecast Intelligence');
+    addPremiumTag(findCardContains('Projection Accuracy'), 'Performance Intelligence');
   }
 
   function strengthenBrandLanguage(){
@@ -5678,26 +5679,28 @@ thead th,.paLogTable th{padding:7px 8px!important}
     move(sharpe,left,null);
     move(session,left,null);
 
-    // right stack: supporting intelligence
-    right.insertBefore(macro, right.firstChild);
-    move(trans,right,null);
-    move(hmm,right,null);
-    move(play,right,null);
-    move(sigInt,right,null);
+    // right stack: Transition → Transmission → Macro → Signal → Playbook → Calendar → TE News
+    move(hmm,right,null);      // Transition Intelligence (top)
+    move(trans,right,null);    // Transmission Mechanism (below Transition)
+    move(macro,right,null);    // Macro Intelligence (between Transmission and Signal)
+    move(sigInt,right,null);   // Signal Intelligence
+    move(play,right,null);     // Session Playbook
+    move(wcal,right,null);     // World Events Calendar (FX red folder)
+    move(te,right,null);       // Trading Economics News
 
-    // hide lower priority research/reference surfaces from main dashboard
-    [daily,pb3,event,corr,wcal,te,heads].forEach(hide);
+    // hide true reference-only panels
+    [daily,pb3,event,corr,heads].forEach(hide);
 
     // stages
-    addStage(market,'1 · Market Intelligence');
-    addStage(macro,'2 · Macro Intelligence');
-    addStage(trans,'3 · Transmission Intelligence');
-    addStage(hmm,'4 · Transition Intelligence');
-    addStage(qedge,'5 · Signal Intelligence');
-    addStage(bus,'6 · Consensus Intelligence');
-    addStage(forecast,'7 · Forecast Intelligence');
-    addStage(proj,'8 · Calibration Intelligence');
-    addStage(sharpe,'9 · Performance Intelligence');
+    addStage(market,'Market Intelligence');
+    addStage(macro,'Macro Intelligence');
+    addStage(trans,'Transmission Intelligence');
+    addStage(hmm,'Transition Intelligence');
+    addStage(qedge,'Signal Intelligence');
+    addStage(bus,'Consensus Intelligence');
+    addStage(forecast,'Forecast Intelligence');
+    addStage(proj,'Calibration Intelligence');
+    addStage(sharpe,'Performance Intelligence');
     addStage(play,'Decision Layer');
     addStage(sigInt,'Execution Layer');
   }
@@ -6142,8 +6145,9 @@ body::after{
     right.classList.add('qx-rebalanced');
 
     var risk = findCard('Risk Level');
-    var trans = findCard('Transmission Mechanism');
     var matrix = findCard('HMM Transition Matrix');
+    var trans = findCard('Transmission Mechanism');
+    var macroCard = findCard('Macro Drivers');
     var signalIntel = findCard('Signal Intelligence');
     var sessionPlay = findCard('Session Playbook');
     var projAcc = findCard('Projection Accuracy');
@@ -6151,20 +6155,27 @@ body::after{
     var sessionIntel = findCard('Session Intelligence');
     var qedge = findCard('Quantitative Edge');
     var bus = findCard('Unified Signal Bus');
+    var wcalCard = findCard('World Events Calendar');
+    var teCard = findCard('Trading Economics');
 
     hide(risk);
 
-    // Fill right rail with useful, compact modules
-    moveTop(trans, right);
-    moveAfter(matrix, right, 'Transmission Mechanism');
-    moveAfter(signalIntel, right, 'HMM Transition Matrix');
+    // Right rail: Transition → Transmission → Macro → Signal → Playbook → Calendar → TE News
+    moveTop(matrix, right);
+    moveAfter(trans, right, 'HMM Transition Matrix');
+    moveAfter(macroCard, right, 'Transmission Mechanism');
+    moveAfter(signalIntel, right, 'Macro Drivers');
     moveAfter(sessionPlay, right, 'Signal Intelligence');
+    if(wcalCard){ wcalCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(wcalCard, right, 'Session Playbook'); }
+    if(teCard){ teCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(teCard, right, 'World Events Calendar'); }
 
-    // shift validation/performance to right if they remain lower-left and causing imbalance
-    if(projAcc) moveAfter(projAcc, right, 'Session Playbook');
+    // shift validation/performance to left for balance if needed
+    if(projAcc) moveAfter(projAcc, right, 'Trading Economics');
     if(performance) moveAfter(performance, right, 'Projection Accuracy');
 
-    compact(trans); compact(matrix); compact(signalIntel); compact(sessionPlay); compact(projAcc); compact(performance);
+    compact(matrix); compact(trans); compact(macroCard); compact(signalIntel); compact(sessionPlay); compact(projAcc); compact(performance);
+    if(wcalCard) compact(wcalCard);
+    if(teCard) compact(teCard);
 
     // Left side: no gaps — compact everything and remove min-heights aggressively
     if(sessionIntel) moveAfter(sessionIntel, left, 'Forward Projection');
@@ -6581,8 +6592,29 @@ thead th {
   0%,100%{opacity:.4} 50%{opacity:.8}
 }
 
+/* ── 4H Timeframe basis badge ────────────────────────────────────────────── */
+.qx-tf-badge {
+  background:linear-gradient(135deg, rgba(255,193,7,.18), rgba(255,140,0,.10)) !important;
+  border:1px solid rgba(255,193,7,.40) !important;
+  color:rgba(255,220,100,.92) !important;
+  font-family:'Barlow Condensed',sans-serif !important;
+  font-size:10px !important;
+  letter-spacing:1.5px !important;
+  text-transform:uppercase !important;
+  box-shadow:0 0 16px rgba(255,193,7,.15) !important;
+  cursor:default !important;
+}
+.qx-tf-badge b { color:rgba(255,220,60,1) !important; font-weight:700 !important; }
+
 /* ── Pro touch: selection color ──────────────────────────────────────────── */
 ::selection { background:rgba(33,150,243,.35);color:#fff; }
+
+/* ── TE News + Calendar compact on right rail ──────────────────────────────── */
+.qx-ultra-compact #teNewsBody { max-height:220px !important; }
+.qx-ultra-compact .tableWrap .scroll { max-height:180px !important; }
+.qx-ultra-compact .card-title .hint { display:none !important; }
+/* Ensure TE/Calendar not hidden by legacy classes */
+.qx-hidden-card.qx-show-override { display:block !important; }
 
 /* ── Stale data warning: more dramatic ───────────────────────────────────── */
 .staleWarning, #staleWarn {
