@@ -7011,5 +7011,319 @@ tbody tr:hover td {
 
 </style>
 
+
+<style id="qx-v37-guided-mode-pass">
+/* keep top header on one row */
+.topbar{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:14px!important;
+  flex-wrap:nowrap!important;
+}
+.topbar > *{min-width:0}
+.brand{flex:1 1 auto!important; min-width:280px!important}
+.top-actions{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  flex-wrap:nowrap!important;
+  white-space:nowrap!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scrollbar-width:none;
+}
+.top-actions::-webkit-scrollbar{display:none}
+.top-actions .btn{flex:0 0 auto!important}
+
+/* guided mode */
+#qxGuidedToggle{
+  background:linear-gradient(135deg, rgba(61,169,255,.28), rgba(155,124,255,.18), rgba(46,230,166,.12))!important;
+  border-color:rgba(61,169,255,.22)!important;
+  color:#eef7ff!important;
+}
+
+#qxGuidedBackdrop{
+  position:fixed; inset:0; z-index:13000; display:none;
+  background:rgba(3,6,14,.62);
+  backdrop-filter:blur(8px) saturate(1.05);
+  -webkit-backdrop-filter:blur(8px) saturate(1.05);
+}
+#qxGuidedSpotlight{
+  position:absolute; border-radius:18px; pointer-events:none;
+  box-shadow:
+    0 0 0 9999px rgba(3,6,14,.68),
+    0 0 0 1px rgba(255,255,255,.10),
+    0 20px 70px rgba(0,0,0,.48),
+    0 0 44px rgba(61,169,255,.12);
+  transition:all .28s cubic-bezier(.22,1,.36,1);
+}
+#qxGuidedCard{
+  position:absolute;
+  width:min(430px, calc(100vw - 32px));
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(180deg, rgba(14,20,38,.97), rgba(9,14,26,.97));
+  box-shadow:0 28px 90px rgba(0,0,0,.56), inset 0 1px 0 rgba(255,255,255,.04);
+  padding:16px 16px 14px;
+  color:#e8eaf0;
+  transition:all .28s cubic-bezier(.22,1,.36,1);
+}
+.qxG-step{
+  font-family:"JetBrains Mono", ui-monospace, monospace;
+  font-size:10px; letter-spacing:1px; text-transform:uppercase;
+  color:rgba(180,220,255,.72);
+}
+.qxG-title{
+  font-family:"Space Grotesk", Inter, sans-serif;
+  font-size:18px; font-weight:800; letter-spacing:-.3px; line-height:1.1; margin-top:4px;
+}
+.qxG-copy{
+  margin-top:9px; font-size:12px; line-height:1.56; color:rgba(232,234,240,.76);
+}
+.qxG-box{
+  margin-top:10px; padding:10px 11px; border-radius:13px;
+  background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.07);
+  font-size:11px; line-height:1.5; color:rgba(232,234,240,.68);
+}
+.qxG-label{
+  font-family:"JetBrains Mono", ui-monospace, monospace;
+  font-size:9px; letter-spacing:1px; text-transform:uppercase; color:rgba(232,234,240,.44); margin-bottom:4px;
+}
+.qxG-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}
+.qxG-dots{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.qxG-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18)}
+.qxG-dot.active{background:rgba(46,230,166,.94); box-shadow:0 0 12px rgba(46,230,166,.30)}
+.qxG-btns{display:flex;gap:8px;align-items:center}
+.qxG-btn{
+  cursor:pointer; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.05);
+  color:#eef7ff; border-radius:999px; padding:8px 12px; font-size:11px; font-weight:700;
+}
+.qxG-btn.primary{
+  background:linear-gradient(135deg, rgba(61,169,255,.30), rgba(46,230,166,.16));
+  border-color:rgba(61,169,255,.24);
+}
+.qxG-btn.ghost{color:rgba(232,234,240,.72)}
+.qxG-close{cursor:pointer; font-size:11px; color:rgba(232,234,240,.54); padding:4px 6px; border-radius:8px;}
+.qxGuidedPinned{position:relative; z-index:13001}
+@media(max-width:1200px){
+  .topbar{flex-wrap:wrap!important}
+  .brand{min-width:220px!important}
+}
+@media(max-width:860px){
+  #qxGuidedCard{width:min(360px, calc(100vw - 24px))}
+  .qxG-title{font-size:16px}
+}
+</style>
+
+<div id="qxGuidedBackdrop" aria-hidden="true">
+  <div id="qxGuidedSpotlight"></div>
+  <div id="qxGuidedCard">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px">
+      <div>
+        <div class="qxG-step" id="qxGStep">Step 1 of 6</div>
+        <div class="qxG-title" id="qxGTitle">Welcome</div>
+      </div>
+      <div class="qxG-close" id="qxGClose">Close</div>
+    </div>
+    <div class="qxG-copy" id="qxGCopy">Guided Mode explains the dashboard in the order an investor, partner, or first-time user should read it.</div>
+    <div class="qxG-box">
+      <div class="qxG-label">Why it matters</div>
+      <div id="qxGWhy">This turns a complex dashboard into a clear product story.</div>
+    </div>
+    <div class="qxG-box">
+      <div class="qxG-label">How it fits the story</div>
+      <div id="qxGHow">Each panel contributes one layer: structure, edge, consensus, forecast, context, and validation.</div>
+    </div>
+    <div class="qxG-nav">
+      <div class="qxG-dots" id="qxGDots"></div>
+      <div class="qxG-btns">
+        <button class="qxG-btn ghost" id="qxGPrev">Back</button>
+        <button class="qxG-btn primary" id="qxGNext">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script id="qx-v37-guided-mode-script">
+(function(){
+  function $(id){ return document.getElementById(id); }
+
+  function findCardTitleContains(txt){
+    return Array.prototype.slice.call(document.querySelectorAll('.card')).find(function(card){
+      var h2 = card.querySelector('.card-title h2');
+      return h2 && h2.textContent && h2.textContent.toLowerCase().indexOf(txt.toLowerCase()) !== -1;
+    });
+  }
+
+  var steps = [
+    {
+      title: "Current Market Regime",
+      meaning: "This panel shows where the market is structurally right now: whether conditions are stable, trending, transitional, or fragile.",
+      why: "It is the first filter. Every downstream model should be interpreted through the regime first.",
+      how: "The story starts with structure, because edge only matters if the environment supports it.",
+      target: function(){ return findCardTitleContains('Current Market State'); }
+    },
+    {
+      title: "Signal Edge",
+      meaning: "This panel tells you whether a real statistical advantage exists right now, rather than just price movement.",
+      why: "Markets can move without offering usable edge. This separates motion from opportunity.",
+      how: "After structure, the platform asks the next critical question: is there an exploitable advantage?",
+      target: function(){ return findCardTitleContains('Quantitative Edge'); }
+    },
+    {
+      title: "Model Consensus",
+      meaning: "This is the unified decision layer where independent models resolve into one coherent BUY, SELL, or WAIT view.",
+      why: "Professional systems need one answer, not multiple indicators contradicting each other.",
+      how: "This is where structure and edge become a single institutional decision.",
+      target: function(){ return findCardTitleContains('Unified Signal Bus'); }
+    },
+    {
+      title: "Forecast + Execution",
+      meaning: "The forecast engine frames the probable path and range. Execution context tells you whether the trade is actually worth taking now.",
+      why: "Direction alone is not enough. Timing, liquidity, and session behavior decide execution quality.",
+      how: "This layer translates the model view into an actionable trade path.",
+      target: function(){ return findCardTitleContains('Forward Projection') || findCardTitleContains('Session Playbook'); }
+    },
+    {
+      title: "Macro Pressure Map",
+      meaning: "This explains why the market is behaving the way it is by showing cross-asset pressure from the dollar, commodities, and related FX pairs.",
+      why: "Investors want to understand the drivers behind the signal, not just the signal itself.",
+      how: "This is the explanatory context layer that gives the terminal macro credibility.",
+      target: function(){ return findCardTitleContains('Macro Drivers'); }
+    },
+    {
+      title: "Regime Transition Engine + System Performance",
+      meaning: "The transition matrix shows what could change next. Calibration and performance show whether the machine is learning and whether the edge actually works.",
+      why: "This is where confidence becomes justified: what could change, and whether the system has earned trust.",
+      how: "The story ends with validation, so the terminal proves both forward awareness and real-world performance.",
+      target: function(){
+        return findCardTitleContains('HMM Transition Matrix') || findCardTitleContains('Projection Accuracy') || findCardTitleContains('Signal Performance');
+      }
+    }
+  ];
+
+  var state = { open:false, idx:0 };
+  var backdrop = $('qxGuidedBackdrop');
+  var spot = $('qxGuidedSpotlight');
+  var card = $('qxGuidedCard');
+  var stepEl = $('qxGStep');
+  var titleEl = $('qxGTitle');
+  var copyEl = $('qxGCopy');
+  var whyEl = $('qxGWhy');
+  var howEl = $('qxGHow');
+  var dotsEl = $('qxGDots');
+  var prevBtn = $('qxGPrev');
+  var nextBtn = $('qxGNext');
+  var closeBtn = $('qxGClose');
+
+  function ensureGuidedButton(){
+    if($('qxGuidedToggle')) return;
+    var topActions = document.querySelector('.top-actions');
+    if(!topActions) return;
+    var btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.id = 'qxGuidedToggle';
+    btn.textContent = 'Guided Mode';
+    btn.addEventListener('click', function(){ openGuide(0); });
+    topActions.insertBefore(btn, topActions.firstChild);
+  }
+
+  function renderDots(){
+    dotsEl.innerHTML = steps.map(function(_,i){
+      return '<span class="qxG-dot '+(i===state.idx?'active':'')+'"></span>';
+    }).join('');
+  }
+
+  function resolveTarget(step){
+    var el = step.target();
+    if(el) return el;
+    return document.querySelector('.card');
+  }
+
+  function placeForTarget(target){
+    var rect = target.getBoundingClientRect();
+    var pad = 8;
+    spot.style.left = (rect.left - pad + window.scrollX) + 'px';
+    spot.style.top = (rect.top - pad + window.scrollY) + 'px';
+    spot.style.width = (rect.width + pad*2) + 'px';
+    spot.style.height = (rect.height + pad*2) + 'px';
+
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var cardW = Math.min(430, vw - 32);
+    var below = rect.bottom + 14;
+    var above = rect.top - 18;
+    var rightSide = rect.right + 18;
+    var cLeft, cTop;
+
+    if(rightSide + cardW < vw - 16){
+      cLeft = rightSide + window.scrollX;
+      cTop = Math.max(16, rect.top + window.scrollY);
+    } else if (below + 260 < vh) {
+      cLeft = Math.max(16, Math.min(vw - cardW - 16, rect.left + window.scrollX));
+      cTop = below + window.scrollY;
+    } else {
+      cLeft = Math.max(16, Math.min(vw - cardW - 16, rect.left + window.scrollX));
+      cTop = Math.max(16, above - 240 + window.scrollY);
+    }
+    card.style.left = cLeft + 'px';
+    card.style.top = cTop + 'px';
+
+    target.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  function render(){
+    var step = steps[state.idx];
+    stepEl.textContent = 'Step ' + (state.idx + 1) + ' of ' + steps.length;
+    titleEl.textContent = step.title;
+    copyEl.textContent = step.meaning;
+    whyEl.textContent = step.why;
+    howEl.textContent = step.how;
+    prevBtn.disabled = state.idx===0;
+    nextBtn.textContent = state.idx===steps.length-1 ? 'Finish' : 'Next';
+    renderDots();
+
+    document.querySelectorAll('.qxGuidedPinned').forEach(function(el){ el.classList.remove('qxGuidedPinned'); });
+    var target = resolveTarget(step);
+    if(target){
+      target.classList.add('qxGuidedPinned');
+      placeForTarget(target);
+    }
+  }
+
+  function openGuide(idx){
+    state.open = true;
+    state.idx = typeof idx === 'number' ? idx : 0;
+    backdrop.style.display = 'block';
+    backdrop.setAttribute('aria-hidden','false');
+    render();
+  }
+
+  function closeGuide(){
+    state.open = false;
+    backdrop.style.display = 'none';
+    backdrop.setAttribute('aria-hidden','true');
+    document.querySelectorAll('.qxGuidedPinned').forEach(function(el){ el.classList.remove('qxGuidedPinned'); });
+  }
+
+  prevBtn.addEventListener('click', function(){
+    if(state.idx>0){ state.idx--; render(); }
+  });
+  nextBtn.addEventListener('click', function(){
+    if(state.idx < steps.length-1){ state.idx++; render(); }
+    else closeGuide();
+  });
+  closeBtn.addEventListener('click', closeGuide);
+  backdrop.addEventListener('click', function(e){
+    if(e.target === backdrop) closeGuide();
+  });
+  window.addEventListener('resize', function(){ if(state.open) render(); });
+  window.addEventListener('scroll', function(){ if(state.open) render(); }, {passive:true});
+
+  document.addEventListener('DOMContentLoaded', ensureGuidedButton);
+})();
+</script>
+
 </body>
 </html>
