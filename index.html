@@ -7633,12 +7633,14 @@ tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
 
   function openGuidedMode(){
     idx = 0;
+    document.body.classList.add("qxGuidedActive");
     back.classList.add("show");
     back.setAttribute("aria-hidden","false");
     render();
   }
 
   function closeGuidedMode(){
+    document.body.classList.remove("qxGuidedActive");
     back.classList.remove("show");
     back.setAttribute("aria-hidden","true");
     clearFocus();
@@ -7691,6 +7693,91 @@ tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
   }
 })();
 </script>
+
+
+<style id="qx-guided-modal-v2-followup">
+/* Resize 4X logo in header and login to 26 x 15 */
+.qxlogo,
+#authCard .qxlogo,
+.loginCard .qxlogo,
+.authCard .qxlogo{
+  width:26px !important;
+  height:15px !important;
+  min-width:26px !important;
+  min-height:15px !important;
+  border-radius:5px !important;
+  box-shadow:0 8px 18px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.05) !important;
+}
+.qxlogo::before,
+#authCard .qxlogo::before,
+.loginCard .qxlogo::before,
+.authCard .qxlogo::before{
+  left:5px !important;
+  top:1px !important;
+  font-size:10px !important;
+}
+.qxlogo::after,
+#authCard .qxlogo::after,
+.loginCard .qxlogo::after,
+.authCard .qxlogo::after{
+  right:4px !important;
+  bottom:0px !important;
+  font-size:8px !important;
+}
+
+/* Guided mode blur behavior: blur everything, unblur active target cards and side panel */
+body.qxGuidedActive .wrap,
+body.qxGuidedActive .topbar,
+body.qxGuidedActive .card,
+body.qxGuidedActive .hero,
+body.qxGuidedActive .quoteCard,
+body.qxGuidedActive .sessLeft,
+body.qxGuidedActive .sessRight,
+body.qxGuidedActive .qeBox,
+body.qxGuidedActive .macroBox,
+body.qxGuidedActive .tmBox,
+body.qxGuidedActive .fpBox,
+body.qxGuidedActive .fpTfBox,
+body.qxGuidedActive .paBox,
+body.qxGuidedActive .sharpeBox,
+body.qxGuidedActive .busBox,
+body.qxGuidedActive .pb3Box,
+body.qxGuidedActive .intelTile,
+body.qxGuidedActive .archMain,
+body.qxGuidedActive .pb3Dom,
+body.qxGuidedActive .convicRow,
+body.qxGuidedActive .paCalibRow,
+body.qxGuidedActive .dayRow,
+body.qxGuidedActive .sessBox,
+body.qxGuidedActive .tvWrap,
+body.qxGuidedActive .tableWrap,
+body.qxGuidedActive .eqWrap,
+body.qxGuidedActive .coneWrap,
+body.qxGuidedActive .paLog{
+  transition:filter .22s ease, opacity .22s ease, transform .22s ease;
+}
+
+body.qxGuidedActive .grid > .stack > .card{
+  filter: blur(3px) saturate(.8);
+  opacity:.42;
+}
+body.qxGuidedActive .topbar{
+  filter: blur(2px) saturate(.85);
+  opacity:.55;
+}
+body.qxGuidedActive .qxGuideCardFocus{
+  filter:none !important;
+  opacity:1 !important;
+  position:relative;
+  z-index:16001 !important;
+}
+body.qxGuidedActive .qxGuideCardFocus *{
+  filter:none !important;
+}
+#qxGuidedShell{
+  z-index:17002 !important;
+}
+</style>
 
 </body>
 </html>
