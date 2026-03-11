@@ -843,7 +843,7 @@ body.qx-auth-locked .wrap{display:none!important}
 .qx-auth-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .qx-auth-mark{
   display:flex;align-items:center;justify-content:center;
-  width:32px;height:20px;border-radius:5px;
+  width:42px;height:24px;border-radius:6px;
   background:transparent;border:none;
   filter:drop-shadow(0 0 8px rgba(105,255,158,.25));
   flex-shrink:0;
@@ -896,7 +896,7 @@ body.qx-auth-locked .wrap{display:none!important}
   <div class="qx-auth-shell">
     <div class="qx-auth-head">
       <div class="qx-auth-mark">
-<svg width="26" height="15" viewBox="0 0 74 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="36" height="20" viewBox="0 0 74 42" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <filter id="lgGlow" x="-30%" y="-30%" width="160%" height="160%">
       <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur"/>
@@ -971,7 +971,7 @@ body.qx-auth-locked .wrap{display:none!important}
   Bold geometric "4" + kinetic forward-chevron + bold "X"
   Neon lime on deep void — precision meets momentum
 -->
-<svg width="26" height="15" viewBox="0 0 74 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="40" height="23" viewBox="0 0 74 42" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <!-- Neon lime glow filter -->
     <filter id="limeGlow" x="-30%" y="-30%" width="160%" height="160%">
@@ -7331,6 +7331,366 @@ tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
 /* Alert badge — hide legacy */
 .alertBadge { display: none !important; }
 </style>
+
+
+<style id="qx-guided-mode-v2-style">
+/* Deterministic Guided Mode v2 — fixed side panel, no brittle spotlight math */
+#qxGuidedBack{
+  position:fixed; inset:0; z-index:17000; display:none;
+  background:rgba(2,6,14,.62);
+  backdrop-filter:blur(8px) saturate(1.02);
+  -webkit-backdrop-filter:blur(8px) saturate(1.02);
+}
+#qxGuidedBack.show{display:flex}
+#qxGuidedShell{
+  margin-left:auto;
+  width:min(470px, calc(100vw - 24px));
+  height:100%;
+  background:linear-gradient(180deg, rgba(10,16,30,.98), rgba(7,11,22,.98));
+  border-left:1px solid rgba(255,255,255,.08);
+  box-shadow:-28px 0 80px rgba(0,0,0,.52), inset 1px 0 0 rgba(255,255,255,.03);
+  display:flex; flex-direction:column;
+}
+#qxGuidedHead{
+  padding:18px 18px 14px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  background:rgba(12,18,34,.94);
+}
+#qxGuidedStep{
+  font-family:var(--mono); font-size:10px; letter-spacing:1px; text-transform:uppercase;
+  color:rgba(180,220,255,.74);
+}
+#qxGuidedTitle{
+  font-family:var(--font-display); font-size:28px; letter-spacing:.5px; line-height:1;
+  margin-top:6px; color:rgba(245,248,255,.96);
+}
+#qxGuidedSub{
+  margin-top:8px; color:rgba(232,234,240,.64); font-size:11px; line-height:1.55;
+}
+#qxGuidedBody{
+  padding:16px 18px 18px; display:grid; gap:12px; overflow:auto;
+}
+.qxGuideBox{
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.03);
+  padding:12px 13px;
+}
+.qxGuideLabel{
+  font-family:var(--mono); font-size:9px; letter-spacing:1px; text-transform:uppercase;
+  color:rgba(232,234,240,.44); margin-bottom:5px;
+}
+.qxGuideText{
+  color:rgba(232,234,240,.78); font-size:12px; line-height:1.6;
+}
+.qxGuideTargets{display:grid; gap:8px}
+.qxGuideTarget{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+  padding:10px 11px; border-radius:12px;
+  border:1px solid rgba(100,170,255,.16);
+  background:linear-gradient(180deg, rgba(41,121,255,.10), rgba(255,255,255,.02));
+}
+.qxGuideTarget .t{
+  font-size:11px; color:rgba(245,248,255,.92); font-weight:700; line-height:1.45;
+}
+.qxGuideTarget .m{
+  font-size:10px; color:rgba(232,234,240,.52); margin-top:2px; line-height:1.45;
+}
+.qxGuidePill{
+  flex:0 0 auto;
+  font-family:var(--mono); font-size:9px; letter-spacing:.7px;
+  border-radius:999px; padding:4px 8px;
+  border:1px solid rgba(0,214,143,.20);
+  background:rgba(0,214,143,.08); color:rgba(0,214,143,.90);
+}
+#qxGuidedDots{display:flex; gap:6px; align-items:center; flex-wrap:wrap}
+.qxGuideDot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18)}
+.qxGuideDot.active{background:rgba(0,214,143,.94); box-shadow:0 0 12px rgba(0,214,143,.30)}
+#qxGuidedFoot{
+  margin-top:auto;
+  padding:14px 18px 18px;
+  border-top:1px solid rgba(255,255,255,.07);
+  display:grid; gap:10px;
+  background:rgba(9,14,26,.92);
+}
+#qxGuidedNav{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+}
+#qxGuidedBtns{display:flex; gap:8px; align-items:center}
+.qxGuideBtn{
+  cursor:pointer; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.05);
+  color:#eef7ff; border-radius:999px; padding:8px 12px; font-size:11px; font-weight:700;
+}
+.qxGuideBtn.primary{
+  background:linear-gradient(135deg, rgba(41,121,255,.30), rgba(0,214,143,.16));
+  border-color:rgba(41,121,255,.24);
+}
+.qxGuideBtn.ghost{color:rgba(232,234,240,.74)}
+#qxGuidedCloseTop{cursor:pointer}
+.qxGuideCardFocus{
+  border-color:rgba(41,121,255,.34)!important;
+  box-shadow:0 0 0 1px rgba(41,121,255,.18), 0 0 0 4px rgba(41,121,255,.08), 0 22px 56px rgba(0,0,0,.42)!important;
+  transform:translateY(-1px);
+}
+.qxGuideCardPulse{
+  animation:qxGuidePulse 1.8s ease-in-out infinite;
+}
+@keyframes qxGuidePulse{
+  0%,100%{box-shadow:0 0 0 1px rgba(41,121,255,.18), 0 0 0 4px rgba(41,121,255,.08), 0 22px 56px rgba(0,0,0,.42)}
+  50%{box-shadow:0 0 0 1px rgba(0,214,143,.22), 0 0 0 6px rgba(0,214,143,.10), 0 22px 56px rgba(0,0,0,.46)}
+}
+@media(max-width:980px){
+  #qxGuidedShell{width:min(100vw, 100vw)}
+}
+</style>
+
+<div id="qxGuidedBack" aria-hidden="true">
+  <div id="qxGuidedShell">
+    <div id="qxGuidedHead">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+        <div>
+          <div id="qxGuidedStep">Step 1 of 6</div>
+          <div id="qxGuidedTitle">Guided Mode</div>
+          <div id="qxGuidedSub">A deterministic walkthrough for investors, partners, and first-time users. No floating spotlight drama. Just the story, in order, like civilized software.</div>
+        </div>
+        <button class="qxGuideBtn ghost" id="qxGuidedCloseTop">Close</button>
+      </div>
+    </div>
+    <div id="qxGuidedBody">
+      <div class="qxGuideBox">
+        <div class="qxGuideLabel">What this panel means</div>
+        <div class="qxGuideText" id="qxGuideMeaning">--</div>
+      </div>
+      <div class="qxGuideBox">
+        <div class="qxGuideLabel">Why it matters</div>
+        <div class="qxGuideText" id="qxGuideWhy">--</div>
+      </div>
+      <div class="qxGuideBox">
+        <div class="qxGuideLabel">How it fits the overall story</div>
+        <div class="qxGuideText" id="qxGuideHow">--</div>
+      </div>
+      <div class="qxGuideBox">
+        <div class="qxGuideLabel">Focus panels</div>
+        <div class="qxGuideTargets" id="qxGuideTargets"></div>
+      </div>
+    </div>
+    <div id="qxGuidedFoot">
+      <div id="qxGuidedNav">
+        <div id="qxGuidedDots"></div>
+        <div id="qxGuidedBtns">
+          <button class="qxGuideBtn ghost" id="qxGuidePrev">Back</button>
+          <button class="qxGuideBtn primary" id="qxGuideNext">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script id="qx-guided-mode-v2-script">
+(function(){
+  function $(id){ return document.getElementById(id); }
+
+  const STEPS = [
+    {
+      title: "Current Market Regime",
+      meaning: "This is the structural state of the market right now. It tells a first-time viewer whether EUR/USD is range-bound, trending, transitional, or fragile.",
+      why: "Everything below only makes sense if the regime is understood first. Structure is the first decision filter.",
+      how: "The dashboard starts with regime because edge, direction, and execution all depend on the environment.",
+      targets: [
+        { title: "Current Market State · HMM Regime Engine", note: "Read state, confidence, age, next-state risk, and emission probabilities." }
+      ]
+    },
+    {
+      title: "Signal Edge",
+      meaning: "This panel shows whether a real statistical advantage exists, rather than just price movement. It measures persistence, volatility character, autocorrelation, Kelly sizing, and half-life.",
+      why: "Markets move all the time. Edge is rarer. This separates activity from opportunity.",
+      how: "After regime, the platform asks the next institutional question: is there an exploitable edge right now?",
+      targets: [
+        { title: "Quantitative Edge · Signal Engine", note: "This is the engine room for statistical validity." }
+      ]
+    },
+    {
+      title: "Model Consensus",
+      meaning: "This is the unified decision layer. Independent models resolve into one coherent BUY, SELL, or WAIT view.",
+      why: "Professional systems need one answer. Not six indicators holding a committee meeting.",
+      how: "This is where structure and edge become a single trade stance and risk throttle.",
+      targets: [
+        { title: "Unified Signal Bus · System Coherence", note: "Use this as the single source of truth for direction and coherence." }
+      ]
+    },
+    {
+      title: "Forecast + Execution",
+      meaning: "The forecast engine frames the likely path and range. Execution context explains when the market is actually tradable.",
+      why: "Direction alone is not enough. Timing, liquidity, session behavior, and cost gates decide execution quality.",
+      how: "This layer turns the model view into an actionable trade path with operational discipline.",
+      targets: [
+        { title: "Forward Projection · Regime-Conditioned Cone", note: "This is the price-path and range view." },
+        { title: "Session Playbook · 15m Decision Clock", note: "This explains whether the market is executable now." }
+      ]
+    },
+    {
+      title: "Macro Pressure Map",
+      meaning: "This explains why the market is behaving the way it is by showing cross-asset pressure from the dollar, commodities, and related FX pairs.",
+      why: "Investors want to know not just what the system sees, but why the market is under pressure.",
+      how: "This is the explanatory layer that gives the terminal macro credibility and narrative clarity.",
+      targets: [
+        { title: "Macro Drivers", note: "Cross-asset context: Brent, Gold, Silver, DXY, and correlated FX." },
+        { title: "Transmission Mechanism", note: "Shows how those macro levers propagate into EUR/USD." }
+      ]
+    },
+    {
+      title: "Regime Transition Engine + System Performance",
+      meaning: "The transition matrix shows what could change next. Calibration and performance show whether the machine is learning and whether the edge actually works.",
+      why: "This is where confidence becomes justified. A strong platform shows both what may happen next and whether it has earned trust.",
+      how: "The story ends with validation: path dependency, adaptive learning, and live performance quality.",
+      targets: [
+        { title: "HMM Transition Matrix", note: "What regime path is most likely next." },
+        { title: "Projection Accuracy · Adaptive Learning", note: "Whether forecasts are learning from resolved outcomes." },
+        { title: "Signal Performance · Rolling Sharpe", note: "Whether the system is compounding real quality." }
+      ]
+    }
+  ];
+
+  const back = $("qxGuidedBack");
+  const stepEl = $("qxGuidedStep");
+  const titleEl = $("qxGuidedTitle");
+  const meaningEl = $("qxGuideMeaning");
+  const whyEl = $("qxGuideWhy");
+  const howEl = $("qxGuideHow");
+  const targetsEl = $("qxGuideTargets");
+  const dotsEl = $("qxGuidedDots");
+  const prevBtn = $("qxGuidePrev");
+  const nextBtn = $("qxGuideNext");
+  const closeTop = $("qxGuidedCloseTop");
+
+  let idx = 0;
+
+  function allCards(){
+    return Array.prototype.slice.call(document.querySelectorAll(".card"));
+  }
+
+  function findCardByTitle(title){
+    return allCards().find(function(card){
+      const h2 = card.querySelector(".card-title h2");
+      return h2 && h2.textContent && h2.textContent.trim() === title;
+    });
+  }
+
+  function clearFocus(){
+    document.querySelectorAll(".qxGuideCardFocus,.qxGuideCardPulse").forEach(function(el){
+      el.classList.remove("qxGuideCardFocus","qxGuideCardPulse");
+    });
+  }
+
+  function applyFocus(step){
+    clearFocus();
+    let firstTarget = null;
+    step.targets.forEach(function(t){
+      const card = findCardByTitle(t.title);
+      if(card){
+        card.classList.add("qxGuideCardFocus","qxGuideCardPulse");
+        if(!firstTarget) firstTarget = card;
+      }
+    });
+    if(firstTarget){
+      firstTarget.scrollIntoView({behavior:"smooth", block:"center"});
+    }
+  }
+
+  function renderDots(){
+    dotsEl.innerHTML = STEPS.map(function(_,i){
+      return '<span class="qxGuideDot '+(i===idx?'active':'')+'"></span>';
+    }).join("");
+  }
+
+  function renderTargets(step){
+    targetsEl.innerHTML = step.targets.map(function(t){
+      return (
+        '<div class="qxGuideTarget">' +
+          '<div>' +
+            '<div class="t">'+t.title+'</div>' +
+            '<div class="m">'+t.note+'</div>' +
+          '</div>' +
+          '<div class="qxGuidePill">Focus</div>' +
+        '</div>'
+      );
+    }).join("");
+  }
+
+  function render(){
+    const step = STEPS[idx];
+    stepEl.textContent = "Step " + (idx + 1) + " of " + STEPS.length;
+    titleEl.textContent = step.title;
+    meaningEl.textContent = step.meaning;
+    whyEl.textContent = step.why;
+    howEl.textContent = step.how;
+    renderTargets(step);
+    renderDots();
+    prevBtn.disabled = idx === 0;
+    nextBtn.textContent = idx === STEPS.length - 1 ? "Finish" : "Next";
+    applyFocus(step);
+  }
+
+  function openGuidedMode(){
+    idx = 0;
+    back.classList.add("show");
+    back.setAttribute("aria-hidden","false");
+    render();
+  }
+
+  function closeGuidedMode(){
+    back.classList.remove("show");
+    back.setAttribute("aria-hidden","true");
+    clearFocus();
+  }
+
+  function patchGuideButton(){
+    const legacyGuide = $("guideBack");
+    if(legacyGuide) legacyGuide.style.display = "none";
+
+    const guideBtn = $("guideBtn");
+    if(guideBtn){
+      const clone = guideBtn.cloneNode(true);
+      clone.id = "guideBtn";
+      clone.textContent = "Guided Mode";
+      guideBtn.parentNode.replaceChild(clone, guideBtn);
+      clone.addEventListener("click", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        openGuidedMode();
+      });
+    }
+  }
+
+  prevBtn.addEventListener("click", function(){
+    if(idx > 0){ idx -= 1; render(); }
+  });
+  nextBtn.addEventListener("click", function(){
+    if(idx < STEPS.length - 1){ idx += 1; render(); }
+    else { closeGuidedMode(); }
+  });
+  closeTop.addEventListener("click", closeGuidedMode);
+  back.addEventListener("click", function(e){
+    if(e.target === back) closeGuidedMode();
+  });
+  document.addEventListener("keydown", function(e){
+    if(!back.classList.contains("show")) return;
+    if(e.key === "Escape") closeGuidedMode();
+    if(e.key === "ArrowRight" || e.key === "Enter"){
+      if(idx < STEPS.length - 1){ idx += 1; render(); } else { closeGuidedMode(); }
+    }
+    if(e.key === "ArrowLeft" && idx > 0){
+      idx -= 1; render();
+    }
+  });
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", patchGuideButton, {once:true});
+  } else {
+    patchGuideButton();
+  }
+})();
+</script>
 
 </body>
 </html>
