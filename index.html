@@ -896,7 +896,7 @@ body.qx-auth-locked .wrap{display:none!important}
   <div class="qx-auth-shell">
     <div class="qx-auth-head">
       <div class="qx-auth-mark">
-<svg width="36" height="20" viewBox="0 0 74 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="26" height="15" viewBox="0 0 74 42" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <filter id="lgGlow" x="-30%" y="-30%" width="160%" height="160%">
       <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur"/>
@@ -971,7 +971,7 @@ body.qx-auth-locked .wrap{display:none!important}
   Bold geometric "4" + kinetic forward-chevron + bold "X"
   Neon lime on deep void — precision meets momentum
 -->
-<svg width="40" height="23" viewBox="0 0 74 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="26" height="15" viewBox="0 0 74 42" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <!-- Neon lime glow filter -->
     <filter id="limeGlow" x="-30%" y="-30%" width="160%" height="160%">
@@ -7337,9 +7337,9 @@ tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
 /* Deterministic Guided Mode v2 — fixed side panel, no brittle spotlight math */
 #qxGuidedBack{
   position:fixed; inset:0; z-index:17000; display:none;
-  background:rgba(2,6,14,.62);
-  backdrop-filter:blur(8px) saturate(1.02);
-  -webkit-backdrop-filter:blur(8px) saturate(1.02);
+  background:rgba(2,6,14,.55);
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
 }
 #qxGuidedBack.show{display:flex}
 #qxGuidedShell{
@@ -7428,9 +7428,17 @@ tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
 .qxGuideBtn.ghost{color:rgba(232,234,240,.74)}
 #qxGuidedCloseTop{cursor:pointer}
 .qxGuideCardFocus{
-  border-color:rgba(41,121,255,.34)!important;
-  box-shadow:0 0 0 1px rgba(41,121,255,.18), 0 0 0 4px rgba(41,121,255,.08), 0 22px 56px rgba(0,0,0,.42)!important;
-  transform:translateY(-1px);
+  filter: none !important;
+  opacity: 1 !important;
+  transform: translateZ(0) !important;
+  border-color: rgba(0,229,255,.45) !important;
+  box-shadow:
+    0 0 0 1px rgba(0,229,255,.25),
+    0 0 0 4px rgba(0,229,255,.08),
+    0 24px 60px rgba(0,0,0,.55) !important;
+  position: relative !important;
+  z-index: 9999 !important;
+  transition: filter .35s ease, opacity .35s ease, box-shadow .35s ease !important;
 }
 .qxGuideCardPulse{
   animation:qxGuidePulse 1.8s ease-in-out infinite;
@@ -7633,16 +7641,16 @@ tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
 
   function openGuidedMode(){
     idx = 0;
-    document.body.classList.add("qxGuidedActive");
     back.classList.add("show");
     back.setAttribute("aria-hidden","false");
+    document.body.classList.add("guided-active");
     render();
   }
 
   function closeGuidedMode(){
-    document.body.classList.remove("qxGuidedActive");
     back.classList.remove("show");
     back.setAttribute("aria-hidden","true");
+    document.body.classList.remove("guided-active");
     clearFocus();
   }
 
@@ -7695,89 +7703,39 @@ tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
 </script>
 
 
-<style id="qx-guided-modal-v2-followup">
-/* Resize 4X logo in header and login to 26 x 15 */
-.qxlogo,
-#authCard .qxlogo,
-.loginCard .qxlogo,
-.authCard .qxlogo{
-  width:26px !important;
-  height:15px !important;
-  min-width:26px !important;
-  min-height:15px !important;
-  border-radius:5px !important;
-  box-shadow:0 8px 18px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.05) !important;
-}
-.qxlogo::before,
-#authCard .qxlogo::before,
-.loginCard .qxlogo::before,
-.authCard .qxlogo::before{
-  left:5px !important;
-  top:1px !important;
-  font-size:10px !important;
-}
-.qxlogo::after,
-#authCard .qxlogo::after,
-.loginCard .qxlogo::after,
-.authCard .qxlogo::after{
-  right:4px !important;
-  bottom:0px !important;
-  font-size:8px !important;
+<style id="qx-guided-blur-layer">
+/* ── GUIDED MODE: Dashboard de-emphasis + active panel spotlight ─── */
+
+/* All cards dim + blur when guided mode is active */
+body.guided-active .card {
+  filter: blur(2.5px) brightness(0.45) !important;
+  opacity: 0.6 !important;
+  transition: filter .35s ease, opacity .35s ease !important;
+  pointer-events: none !important;
 }
 
-/* Guided mode blur behavior: blur everything, unblur active target cards and side panel */
-body.qxGuidedActive .wrap,
-body.qxGuidedActive .topbar,
-body.qxGuidedActive .card,
-body.qxGuidedActive .hero,
-body.qxGuidedActive .quoteCard,
-body.qxGuidedActive .sessLeft,
-body.qxGuidedActive .sessRight,
-body.qxGuidedActive .qeBox,
-body.qxGuidedActive .macroBox,
-body.qxGuidedActive .tmBox,
-body.qxGuidedActive .fpBox,
-body.qxGuidedActive .fpTfBox,
-body.qxGuidedActive .paBox,
-body.qxGuidedActive .sharpeBox,
-body.qxGuidedActive .busBox,
-body.qxGuidedActive .pb3Box,
-body.qxGuidedActive .intelTile,
-body.qxGuidedActive .archMain,
-body.qxGuidedActive .pb3Dom,
-body.qxGuidedActive .convicRow,
-body.qxGuidedActive .paCalibRow,
-body.qxGuidedActive .dayRow,
-body.qxGuidedActive .sessBox,
-body.qxGuidedActive .tvWrap,
-body.qxGuidedActive .tableWrap,
-body.qxGuidedActive .eqWrap,
-body.qxGuidedActive .coneWrap,
-body.qxGuidedActive .paLog{
-  transition:filter .22s ease, opacity .22s ease, transform .22s ease;
+/* Active step card breaks through — fully sharp and lit */
+body.guided-active .card.qxGuideCardFocus {
+  filter: none !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transition: filter .35s ease, opacity .35s ease !important;
 }
 
-body.qxGuidedActive .grid > .stack > .card{
-  filter: blur(3px) saturate(.8);
-  opacity:.42;
+/* Topbar stays crisp — it's the anchor, not a card */
+body.guided-active .topbar {
+  filter: none !important;
+  opacity: 1 !important;
+  z-index: 201 !important;
 }
-body.qxGuidedActive .topbar{
-  filter: blur(2px) saturate(.85);
-  opacity:.55;
-}
-body.qxGuidedActive .qxGuideCardFocus{
-  filter:none !important;
-  opacity:1 !important;
-  position:relative;
-  z-index:16001 !important;
-}
-body.qxGuidedActive .qxGuideCardFocus *{
-  filter:none !important;
-}
-#qxGuidedShell{
-  z-index:17002 !important;
+
+/* Grid/layout wrappers — don't dim them, only .card children */
+body.guided-active .grid,
+body.guided-active .stack,
+body.guided-active .col {
+  filter: none !important;
+  opacity: 1 !important;
 }
 </style>
-
 </body>
 </html>
