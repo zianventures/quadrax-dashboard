@@ -705,10 +705,11 @@ body::after{
 }
 .bootTop{display:flex;align-items:center;gap:12px}
 .bootMark{
-  width:42px;height:42px;border-radius:14px;
+  min-width:42px;height:42px;border-radius:14px;padding:0 12px;
   display:grid;place-items:center;font-family:var(--mono);font-weight:800;font-size:12px;
   background:linear-gradient(135deg, rgba(41,121,255,.28), rgba(0,214,143,.18));
   border:1px solid rgba(255,255,255,.10);
+  perspective:200px;
 }
 .bootTitle{font-size:14px;font-weight:800;letter-spacing:-.2px}
 .bootSub{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px;line-height:1.35}
@@ -843,10 +844,11 @@ body.qx-auth-locked .wrap{display:none!important}
 .qx-auth-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .qx-auth-mark{
   display:flex;align-items:center;justify-content:center;
-  width:42px;height:24px;border-radius:6px;
+  min-width:42px;height:24px;border-radius:6px;
   background:transparent;border:none;
-  filter:drop-shadow(0 0 8px rgba(105,255,158,.25));
+  perspective:200px;
   flex-shrink:0;
+  padding-bottom:8px;
 }
 .qx-auth-title{
   font-family:'IBM Plex Sans',system-ui,sans-serif;
@@ -896,25 +898,7 @@ body.qx-auth-locked .wrap{display:none!important}
   <div class="qx-auth-shell">
     <div class="qx-auth-head">
       <div class="qx-auth-mark">
-<svg width="26" height="15" viewBox="0 0 74 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <filter id="lgGlow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-  <rect width="74" height="42" rx="7" fill="rgba(0,8,4,0.60)"/>
-  <rect x="0.5" y="0.5" width="73" height="41" rx="6.5" stroke="rgba(105,255,158,0.20)" stroke-width="1"/>
-  <!-- 4 mark -->
-  <polygon points="3,4 8.5,4 8.5,19 15.5,19 15.5,4 21,4 21,38 15.5,38 15.5,24.5 3,24.5"
-    fill="#69ff9e" stroke="#69ff9e" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round" filter="url(#lgGlow)"/>
-  <!-- Chevron -->
-  <polyline points="27,5 36,21 27,37" fill="none" stroke="#69ff9e" stroke-width="5.5"
-    stroke-linecap="round" stroke-linejoin="round" filter="url(#lgGlow)"/>
-  <!-- X mark -->
-  <line x1="43" y1="4" x2="69" y2="38" stroke="#69ff9e" stroke-width="6.5" stroke-linecap="round" filter="url(#lgGlow)"/>
-  <line x1="69" y1="4" x2="43" y2="38" stroke="#69ff9e" stroke-width="6.5" stroke-linecap="round" filter="url(#lgGlow)"/>
-</svg>
+<span class="davincii-logo-auth" data-text="DAVINCII">DAVINCII</span>
 </div>
       <div>
         <div class="qx-auth-title"><span style="color:#dde6f0">QUADRA</span><span style="display:inline-block;width:5px"></span><span style="color:#69ff9e;text-shadow:0 0 16px rgba(105,255,158,.50)">X</span></div>
@@ -950,7 +934,7 @@ body.qx-auth-locked .wrap{display:none!important}
 <div aria-hidden="false" id="bootSplash">
 <div class="bootBox">
 <div class="bootTop">
-<div class="bootMark">4X</div>
+<div class="bootMark"><span class="davincii-logo-boot">DAVINCII</span></div>
 <div>
 <div class="bootTitle">QuadraX Mission Control</div>
 <div class="bootSub">Synchronizing signals, calibrations, and regime intelligence.</div>
@@ -964,73 +948,8 @@ body.qx-auth-locked .wrap{display:none!important}
 <div class="wrap">
 <div class="topbar">
 <div class="brand">
-<div class="qxlogo-mark" title="QuadraX — 4X Intelligence Platform">
-<!--
-  4X LOGO MARK
-  Inspired by the actual QuadraX 4X identity:
-  Bold geometric "4" + kinetic forward-chevron + bold "X"
-  Neon lime on deep void — precision meets momentum
--->
-<svg width="26" height="15" viewBox="0 0 74 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <!-- Neon lime glow filter -->
-    <filter id="limeGlow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="1.8" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-    <!-- Subtle ambient fill -->
-    <radialGradient id="ambientFill" cx="50%" cy="50%" r="70%">
-      <stop offset="0%" stop-color="#69ff9e" stop-opacity="0.08"/>
-      <stop offset="100%" stop-color="#69ff9e" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-
-  <!-- Container: very dark pill — matches logo 2's dark bg -->
-  <rect width="74" height="42" rx="7" fill="rgba(0,8,4,0.70)"/>
-  <rect width="74" height="42" rx="7" fill="url(#ambientFill)"/>
-  <rect x="0.5" y="0.5" width="73" height="41" rx="6.5" stroke="rgba(105,255,158,0.18)" stroke-width="1"/>
-
-  <!-- ══════════════════════════════════
-       "4" MARK — bold geometric polygon
-       Points trace: top-left arm → horizontal → full right bar
-       Rounded corners via thick stroke + round join trick
-  ═══════════════════════════════════ -->
-  <polygon
-    points="3,4  8.5,4  8.5,19  15.5,19  15.5,4  21,4  21,38  15.5,38  15.5,24.5  3,24.5"
-    fill="#69ff9e"
-    stroke="#69ff9e"
-    stroke-width="3.2"
-    stroke-linejoin="round"
-    stroke-linecap="round"
-    filter="url(#limeGlow)"
-  />
-
-  <!-- ══════════════════════════════════
-       CHEVRON ARROW — kinetic motion between 4 and X
-       Single bold ">" pointing right
-       Symbolises: data in motion, forward momentum, live signal
-  ═══════════════════════════════════ -->
-  <polyline
-    points="27,5  36,21  27,37"
-    fill="none"
-    stroke="#69ff9e"
-    stroke-width="5.5"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    filter="url(#limeGlow)"
-  />
-
-  <!-- ══════════════════════════════════
-       "X" MARK — bold crossing diagonals
-       Two thick strokes crossing at center (56, 21)
-       Mirroring the bold "X" in the logo
-  ═══════════════════════════════════ -->
-  <line x1="43" y1="4"  x2="69" y2="38" stroke="#69ff9e" stroke-width="6.5" stroke-linecap="round" filter="url(#limeGlow)"/>
-  <line x1="69" y1="4"  x2="43" y2="38" stroke="#69ff9e" stroke-width="6.5" stroke-linecap="round" filter="url(#limeGlow)"/>
-</svg>
+<div class="qxlogo-mark" title="DaVincii — QuadraX Intelligence Platform">
+<span class="davincii-logo" data-text="DAVINCII">DAVINCII</span>
 </div>
 <div class="brand-text-block">
   <!--
@@ -1373,7 +1292,7 @@ body.qx-auth-locked .wrap{display:none!important}
 <div class="paLogLabel">Projection log — last 100 · scored at +4H</div>
 <div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Date</th><th>Entry</th><th>Exit 4H</th><th>Bias</th><th>Dir</th><th>Move</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
 </div>
-<div class="smallNote" style="margin-top:6px">Direction hit = called direction correctly at +4H. Range hit = price stayed inside projected ±pip cone. Need 5+ resolved for adaptive learning, 10+ for full calibration.</div>
+<div class="smallNote" style="margin-top:6px">Direction hit = called direction correctly at +4H. Range hit (IN) = direction correct AND price within projected ±pip cone. Need 5+ resolved for adaptive learning, 10+ for full calibration.</div>
 <div style="margin-top:14px;border-top:1px solid rgba(180,220,255,.08);padding-top:12px">
 <div class="card-title" style="padding:0 0 8px"><h3 style="font-size:11px;font-weight:600;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.7px;margin:0">Adaptive Learning Engine — Self-Calibrating from Live Outcomes</h3></div>
 <div class="fcastGrid">
@@ -2758,7 +2677,7 @@ const ProjTracker=(()=>{
       const movePips=(currentSpot-spot0)*10000;
       const signed=(side==="LONG"?1:-1)*movePips;
       const dirOk=signed>0;
-      p[key]={dirHit:dirOk,rngHit:Math.abs(movePips)<=targetPips,movePips,exitSpot:currentSpot,event:"TIME"};
+      p[key]={dirHit:dirOk,rngHit:dirOk&&Math.abs(movePips)<=targetPips,movePips,exitSpot:currentSpot,event:"TIME"};
       changed=true;
     }
 
@@ -3860,9 +3779,10 @@ function applyFullStateToUI(st){
           const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
           const e4h=(d4h?.exitSpot!=null&&Number.isFinite(d4h.exitSpot))?d4h.exitSpot.toFixed(5):"pend";
           const r4h=p.r4||0;
-          const mv=(d4h&&d4h.movePips!=null&&Number.isFinite(Number(d4h.movePips)))?Number(d4h.movePips):null;
+          const mvRaw=(d4h&&d4h.movePips!=null&&Number.isFinite(Number(d4h.movePips)))?Number(d4h.movePips):null;
+          const mv=mvRaw!==null?(p.bias==="LONG"?1:-1)*mvRaw:null;
           const mvTxt=(mv===null)?"--":((mv>=0?"+":"")+Math.round(mv)+"p");
-          const favorable=(mv!==null)&&((p.bias==="LONG"&&mv>0)||(p.bias==="SHORT"&&mv<0));
+          const favorable=(mv!==null)&&(mv>0);
           const mvColor=(mv===null)?"var(--text3)":(favorable?"var(--green)":"var(--red)");
 
           return"<tr>"
@@ -4182,9 +4102,10 @@ function updateProjAccuracyUI(){
     const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
     const e4h=(d4h?.exitSpot!=null&&Number.isFinite(d4h.exitSpot))?d4h.exitSpot.toFixed(5):"pend";
     const r4h=p.r4||0;
-          const mv=(d4h&&d4h.movePips!=null&&Number.isFinite(Number(d4h.movePips)))?Number(d4h.movePips):null;
+          const mvRaw=(d4h&&d4h.movePips!=null&&Number.isFinite(Number(d4h.movePips)))?Number(d4h.movePips):null;
+          const mv=mvRaw!==null?(p.bias==="LONG"?1:-1)*mvRaw:null;
           const mvTxt=(mv===null)?"--":((mv>=0?"+":"")+Math.round(mv)+"p");
-          const favorable=(mv!==null)&&((p.bias==="LONG"&&mv>0)||(p.bias==="SHORT"&&mv<0));
+          const favorable=(mv!==null)&&(mv>0);
           const mvColor=(mv===null)?"var(--text3)":(favorable?"var(--green)":"var(--red)");
 
     return"<tr>"
@@ -6345,7 +6266,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v37-final                                  ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v39-davincii                                ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -6445,18 +6366,100 @@ body::before, body::after { display: none !important; }
 .topbar::after, .topbar::before { display: none !important; }
 
 /* ────────────────────────────────────────────
-   LOGO MARK — GEOMETRIC SVG CONTAINER
+   LOGO MARK — DAVINCII ANIMATED TEXT
 ──────────────────────────────────────────── */
 .qxlogo-mark {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  /* Lime glow matching the actual 4X logo */
-  filter: drop-shadow(0 0 10px rgba(105,255,158,.28));
+  perspective: 180px;
   transition: filter .25s ease;
 }
-.qxlogo-mark:hover {
-  filter: drop-shadow(0 0 20px rgba(105,255,158,.55));
+.qxlogo-mark:hover .davincii-logo {
+  text-shadow: 0 0 18px rgba(105,255,158,.70), 0 0 36px rgba(105,255,158,.30);
+}
+
+/* DAVINCII 3D animated text — replaces 4X SVG */
+.davincii-logo {
+  font-family: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  color: #e8eef6;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(105,255,158,.40), 0 0 28px rgba(105,255,158,.15);
+  position: relative;
+  display: inline-block;
+  animation: dv3d 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+  user-select: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+.davincii-logo::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0; top: 100%;
+  transform: scaleY(-1) translateY(-1px);
+  opacity: 0.12;
+  color: #69ff9e;
+  filter: blur(1.5px);
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.35), transparent 70%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.35), transparent 70%);
+}
+
+/* Auth / login screen DAVINCII — slightly larger */
+.davincii-logo-auth {
+  font-family: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: #e8eef6;
+  text-transform: uppercase;
+  text-shadow: 0 0 14px rgba(105,255,158,.45), 0 0 32px rgba(105,255,158,.18);
+  position: relative;
+  display: inline-block;
+  animation: dv3d 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+  user-select: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+.davincii-logo-auth::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0; top: 100%;
+  transform: scaleY(-1) translateY(-1px);
+  opacity: 0.15;
+  color: #69ff9e;
+  filter: blur(2px);
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.4), transparent 65%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.4), transparent 65%);
+}
+
+/* Boot splash DAVINCII */
+.davincii-logo-boot {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #e8eef6;
+  text-shadow: 0 0 10px rgba(105,255,158,.35);
+  animation: dv3d 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+  user-select: none;
+  display: inline-block;
+}
+
+/* 3D rotation keyframes — subtle oscillating perspective */
+@keyframes dv3d {
+  0%   { transform: rotateY(-12deg) rotateX(2deg); }
+  25%  { transform: rotateY(6deg) rotateX(-1deg); }
+  50%  { transform: rotateY(12deg) rotateX(2deg); }
+  75%  { transform: rotateY(-6deg) rotateX(-1deg); }
+  100% { transform: rotateY(-12deg) rotateX(2deg); }
 }
 
 /* ────────────────────────────────────────────
@@ -6498,7 +6501,7 @@ body::before, body::after { display: none !important; }
   display: inline-block !important;
   width: 6px !important;
 }
-/* "X" — neon lime, matching the 4X icon mark */
+/* "X" — neon lime, matching the DAVINCII accent */
 .brand-rx {
   color: #69ff9e !important;
   text-shadow: 0 0 16px rgba(105,255,158,.50), 0 0 40px rgba(105,255,158,.20) !important;
@@ -7033,6 +7036,15 @@ tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
   gap: 3px !important;
 }
 
+/* DAVINCII logo mark — separator + flow */
+.qxlogo-mark {
+  padding-right: 10px !important;
+  margin-right: 2px !important;
+  border-right: 1px solid rgba(105,255,158,.18) !important;
+  overflow: visible !important;
+  padding-bottom: 6px !important;
+}
+
 /* QUADRA X wordmark — wider tracking, stronger */
 .brand-wordmark {
   font-family: 'IBM Plex Sans', ui-sans-serif, sans-serif !important;
@@ -7459,7 +7471,7 @@ tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
         <div>
           <div id="qxGuidedStep">Step 1 of 6</div>
           <div id="qxGuidedTitle">Guided Mode</div>
-          <div id="qxGuidedSub">A deterministic walkthrough for Investment Management Team. No floating spotlight drama. Just the story, in order, like civilized software.</div>
+          <div id="qxGuidedSub">A deterministic walkthrough for the Investment Management Team. No floating spotlight drama. Just the story, in order, like civilized software.</div>
         </div>
         <button class="qxGuideBtn ghost" id="qxGuidedCloseTop">Close</button>
       </div>
