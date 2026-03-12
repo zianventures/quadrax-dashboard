@@ -6302,7 +6302,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v44-final                              ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v45-polished                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -7792,6 +7792,8 @@ body.guided-active .col {
    ╚══════════════════════════════════════════════════════════════════════════╝ */
 
 .qx-bottom-nav { display: none; }
+.qx-price-bar { display: none; }
+#qxPTR { display: none; }
 
 @media (max-width: 768px) {
 
@@ -8095,10 +8097,47 @@ body.guided-active .col {
     min-width: 0 !important;
     overflow: hidden !important;
   }
+
+  /* Macro boxes — force equal sizing in 2-col grid */
+  .macroBox {
+    min-width: 0 !important;
+    width: 100% !important;
+    min-height: 80px !important;
+  }
+  .macroBox .k {
+    font-size: 8.5px !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    overflow: hidden !important;
+  }
+  .macroBox .v {
+    font-size: 17px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .macroBox .v.fx { font-size: 12px !important; }
+  .macroBox .meta {
+    font-size: 8.5px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+  .sparkCanvas {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: 28px !important;
+  }
+  /* Transmission score span-2 — works in 2-col */
+  .macroBox[style*="grid-column"] { min-width: 0 !important; }
+
+  /* TM grid — 2 equal columns */
+  .tmGrid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; overflow: hidden !important; }
+  .tmBox { min-width: 0 !important; }
+  .tmBox[style*="grid-column"] { min-width: 0 !important; }
   .busGrid    { grid-template-columns: 1fr 1fr !important; gap: 8px !important; overflow: hidden !important; }
   .qeGrid     { grid-template-columns: 1fr 1fr !important; gap: 8px !important; overflow: hidden !important; }
   .paGrid     { grid-template-columns: 1fr 1fr !important; gap: 8px !important; overflow: hidden !important; }
-  .macroGrid  { grid-template-columns: 1fr !important; gap: 8px !important; overflow: hidden !important; }
+  .macroGrid  { grid-template-columns: 1fr 1fr !important; gap: 8px !important; overflow: hidden !important; }
   .sharpeGrid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; overflow: hidden !important; }
   .sessionGrid{ grid-template-columns: 1fr !important; gap: 8px !important; overflow: hidden !important; }
   .fpGrid     { grid-template-columns: 1fr 1fr !important; gap: 8px !important; overflow: hidden !important; }
@@ -8261,6 +8300,75 @@ body.guided-active .col {
   .probBlock { overflow: hidden !important; max-width: 100% !important; }
   .probRow { grid-template-columns: 110px 1fr 40px !important; overflow: hidden !important; }
   .probRow span { overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+  /* ═══════════════════════════════════════════════════════════════════════
+     STICKY PRICE BAR — visible when scrolled past hero
+  ═══════════════════════════════════════════════════════════════════════ */
+  .qx-price-bar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important; right: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    z-index: 199 !important;
+    background: rgba(3,6,14,.98) !important;
+    backdrop-filter: blur(20px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 12px !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    border-bottom: 1px solid rgba(0,229,255,.08) !important;
+    transition: height .25s cubic-bezier(.22,1,.36,1), opacity .25s ease !important;
+    opacity: 0 !important;
+  }
+  .qx-price-bar.show {
+    height: 34px !important;
+    opacity: 1 !important;
+  }
+  .qx-pb-pair {
+    font-size: 9px !important;
+    color: rgba(130,155,185,.60) !important;
+    font-weight: 600 !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+  }
+  .qx-pb-price {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: rgba(220,235,255,.95) !important;
+    letter-spacing: 0.5px !important;
+  }
+  .qx-pb-dir {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    letter-spacing: 1.5px !important;
+    padding: 2px 8px !important;
+    border-radius: 4px !important;
+    background: rgba(255,255,255,.05) !important;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     PULL-TO-REFRESH
+  ═══════════════════════════════════════════════════════════════════════ */
+  #qxPTR {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important; right: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    z-index: 300 !important;
+    background: rgba(0,229,255,.06) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 11px !important;
+    color: rgba(0,229,255,.70) !important;
+    font-family: 'IBM Plex Sans', sans-serif !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+    transition: height .2s ease, opacity .2s ease !important;
+  }
+
   ::-webkit-scrollbar { width: 2px !important; height: 2px !important; }
   ::-webkit-scrollbar-thumb { background: rgba(0,229,255,.12) !important; border-radius: 2px !important; }
   #qxUpdateBanner {
@@ -8350,53 +8458,52 @@ body.guided-active .col {
     <span class="qx-bnav-icon">◎</span>
     <span>Forecast</span>
   </button>
-  <button class="qx-bnav-tab" data-section="performance">
+  <button class="qx-bnav-tab" data-section="analytics">
     <span class="qx-bnav-icon">▤</span>
-    <span>Track</span>
-  </button>
-  <button class="qx-bnav-tab" data-section="macro">
-    <span class="qx-bnav-icon">◈</span>
-    <span>Macro</span>
+    <span>Analytics</span>
   </button>
 </nav>
 
+<!-- ── MOBILE STICKY PRICE BAR ─────────────────────────────────────────── -->
+<div class="qx-price-bar" id="qxPriceBar">
+  <span class="qx-pb-pair">EUR/USD</span>
+  <span class="qx-pb-price" id="qxPbPrice">--</span>
+  <span class="qx-pb-dir" id="qxPbDir">--</span>
+</div>
+
 <script>
-// Bottom nav — smooth scroll to card sections
+// ── Bottom nav — smooth scroll to card sections ──
 (function(){
   if(window.innerWidth > 768) return;
   const nav = document.getElementById('qxBottomNav');
   if(!nav) return;
   const cards = document.querySelectorAll('.card');
-  // Map tab names to card indices (approximate — cards render in order)
   const sectionMap = {
-    'top': 0,       // Market State + EUR/USD
-    'signals': 2,   // Signal Bus
-    'forecast': 3,  // Forward Projection
-    'performance': 5, // Projection Accuracy
-    'macro': 8      // Macro Sentiment (approximate)
+    'top': 0,        // Market State + EUR/USD
+    'signals': 2,    // Signal Bus
+    'forecast': 3,   // Forward Projection
+    'analytics': 5   // Projection Accuracy + Macro + everything below
   };
 
   nav.querySelectorAll('.qx-bnav-tab').forEach(tab => {
     tab.addEventListener('click', function(){
       const section = this.dataset.section;
-      // Highlight active tab
       nav.querySelectorAll('.qx-bnav-tab').forEach(t => t.classList.remove('active'));
       this.classList.add('active');
-      // Scroll to section
       if(section === 'top'){
         window.scrollTo({top: 0, behavior: 'smooth'});
       } else {
         const idx = sectionMap[section] || 0;
         const target = cards[idx];
         if(target){
-          const y = target.getBoundingClientRect().top + window.pageYOffset - 120;
+          const y = target.getBoundingClientRect().top + window.pageYOffset - 130;
           window.scrollTo({top: y, behavior: 'smooth'});
         }
       }
     });
   });
 
-  // Auto-highlight active tab on scroll
+  // Auto-highlight on scroll
   let scrollTimer;
   window.addEventListener('scroll', function(){
     clearTimeout(scrollTimer);
@@ -8415,6 +8522,73 @@ body.guided-active .col {
         t.classList.toggle('active', t.dataset.section === activeSection);
       });
     }, 80);
+  }, {passive: true});
+})();
+
+// ── Sticky price bar — shows when scrolled past hero ──
+(function(){
+  if(window.innerWidth > 768) return;
+  const bar = document.getElementById('qxPriceBar');
+  if(!bar) return;
+  let visible = false;
+  window.addEventListener('scroll', function(){
+    const show = window.scrollY > 320;
+    if(show !== visible){
+      visible = show;
+      bar.classList.toggle('show', show);
+    }
+  }, {passive: true});
+  // Update price bar from existing DOM
+  setInterval(function(){
+    const px = document.getElementById('eurPx') || document.querySelector('.quotePx');
+    const dir = document.getElementById('topbarConsensus');
+    const pbPx = document.getElementById('qxPbPrice');
+    const pbDir = document.getElementById('qxPbDir');
+    if(px && pbPx) pbPx.textContent = px.textContent;
+    if(dir && pbDir){
+      pbDir.textContent = dir.textContent;
+      pbDir.style.color = dir.textContent === 'BUY' ? 'rgba(0,214,143,.95)' :
+                           dir.textContent === 'SELL' ? 'rgba(255,71,87,.90)' :
+                           'rgba(180,220,255,.65)';
+    }
+  }, 1000);
+})();
+
+// ── Pull-to-refresh ──
+(function(){
+  if(window.innerWidth > 768) return;
+  let startY = 0, pulling = false;
+  const ptr = document.createElement('div');
+  ptr.id = 'qxPTR';
+  ptr.innerHTML = '<span>↓ Pull to sync</span>';
+  document.body.prepend(ptr);
+  
+  window.addEventListener('touchstart', function(e){
+    if(window.scrollY === 0) { startY = e.touches[0].clientY; pulling = true; }
+  }, {passive: true});
+  window.addEventListener('touchmove', function(e){
+    if(!pulling) return;
+    const dy = e.touches[0].clientY - startY;
+    if(dy > 0 && dy < 120){
+      ptr.style.height = Math.min(dy * 0.5, 50) + 'px';
+      ptr.style.opacity = Math.min(dy / 80, 1);
+      if(dy > 70) ptr.innerHTML = '<span>↑ Release to sync</span>';
+      else ptr.innerHTML = '<span>↓ Pull to sync</span>';
+    }
+  }, {passive: true});
+  window.addEventListener('touchend', function(){
+    if(!pulling) return;
+    const h = parseFloat(ptr.style.height) || 0;
+    if(h > 30){
+      ptr.innerHTML = '<span>⟳ Syncing...</span>';
+      ptr.style.height = '36px';
+      const syncBtn = document.getElementById('syncBtn');
+      if(syncBtn) syncBtn.click();
+      setTimeout(function(){ ptr.style.height = '0'; ptr.style.opacity = '0'; }, 1200);
+    } else {
+      ptr.style.height = '0'; ptr.style.opacity = '0';
+    }
+    pulling = false;
   }, {passive: true});
 })();
 </script>
