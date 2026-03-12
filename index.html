@@ -3,7 +3,17 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>QuadraX Dashboard</title>
+<title>DaVincii QuadraX</title>
+
+<!-- PWA manifest & meta -->
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#00e5ff"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="QuadraX"/>
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png"/>
+<meta name="description" content="EUR/USD FX intelligence dashboard — HMM regime detection, PB3 analytics, and adaptive projection tracking."/>
+
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
@@ -6275,7 +6285,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v39-davincii-cyan                           ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v40-pwa                                     ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -7756,6 +7766,98 @@ body.guided-active .stack,
 body.guided-active .col {
   filter: none !important;
   opacity: 1 !important;
+}
+</style>
+
+<!-- ── PWA Service Worker Registration ──────────────────────────────────── -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => {
+        console.log('[QuadraX] SW registered, scope:', reg.scope);
+
+        // Check for updates every 10 minutes
+        setInterval(() => reg.update(), 10 * 60 * 1000);
+
+        // When a new SW is waiting, show subtle update banner
+        reg.addEventListener('updatefound', () => {
+          const newSW = reg.installing;
+          if (!newSW) return;
+          newSW.addEventListener('statechange', () => {
+            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+              // New version available — show update prompt
+              const banner = document.createElement('div');
+              banner.id = 'qxUpdateBanner';
+              banner.innerHTML = '<span>New QuadraX version available</span><button id="qxUpdateBtn">UPDATE</button><button id="qxUpdateDismiss">✕</button>';
+              document.body.appendChild(banner);
+              document.getElementById('qxUpdateBtn').addEventListener('click', () => {
+                newSW.postMessage('skipWaiting');
+                window.location.reload();
+              });
+              document.getElementById('qxUpdateDismiss').addEventListener('click', () => {
+                banner.remove();
+              });
+            }
+          });
+        });
+      })
+      .catch(err => console.warn('[QuadraX] SW registration failed:', err));
+  });
+}
+</script>
+
+<style>
+/* ── PWA Update Banner ─────────────────────────────────────────── */
+#qxUpdateBanner {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(6,10,24,.95);
+  border: 1px solid rgba(0,229,255,.35);
+  border-radius: 10px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 12px;
+  color: rgba(232,234,240,.90);
+  z-index: 99999;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,.60);
+  animation: bannerIn .4s ease;
+}
+#qxUpdateBanner span { white-space: nowrap; }
+#qxUpdateBtn {
+  background: rgba(0,229,255,.18);
+  border: 1px solid rgba(0,229,255,.45);
+  color: #00e5ff;
+  padding: 4px 12px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .2s;
+  font-family: inherit;
+}
+#qxUpdateBtn:hover { background: rgba(0,229,255,.30); }
+#qxUpdateDismiss {
+  background: none;
+  border: none;
+  color: rgba(232,234,240,.45);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 4px;
+  line-height: 1;
+}
+#qxUpdateDismiss:hover { color: rgba(232,234,240,.80); }
+@keyframes bannerIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 </style>
 </body>
