@@ -2,7 +2,7 @@
 
 <html lang="en">
 <head>
-<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <title>DaVincii QuadraX</title>
 
 <!-- PWA manifest & meta -->
@@ -1012,6 +1012,14 @@ body.qx-auth-locked .wrap{display:none!important}
 <button class="btn primary" id="exportBtn">Export</button>
 <button class="btn" id="settingsBtn">⚙</button>
 <button class="btn" id="guideBtn">Guide</button>
+<!-- Mobile overflow menu -->
+<button class="btn qx-mob-more" id="mobMoreBtn" title="More actions">⋯</button>
+<div class="qx-mob-menu" id="mobMenu">
+  <button class="qx-mob-item" onclick="toggleNight();document.getElementById('mobMenu').classList.remove('show')">☾ Night Mode</button>
+  <button class="qx-mob-item" onclick="exportSnapshot();document.getElementById('mobMenu').classList.remove('show')">⬇ Export</button>
+  <button class="qx-mob-item" onclick="document.getElementById('settingsBtn').click();document.getElementById('mobMenu').classList.remove('show')">⚙ Settings</button>
+  <button class="qx-mob-item" onclick="document.getElementById('guideBtn').click();document.getElementById('mobMenu').classList.remove('show')">? Guide</button>
+</div>
 </div>
 </div>
 <div class="grid">
@@ -4430,6 +4438,15 @@ if(syncBtn)syncBtn.addEventListener("click",async()=>{
   finally{syncing=false;syncBtn.textContent="⟳";syncBtn.classList.remove("syncing");}
 });
 window.addEventListener("keydown",e=>{if(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")return;const k=e.key.toLowerCase();if(k==="p"&&pBtn)pBtn.click();else if(k==="s"&&syncBtn)syncBtn.click();else if(k==="n")toggleNight();else if(k==="x")exportSnapshot();else if(k==="?"){const kh=$("kbHint");if(kh)kh.classList.toggle("show");}});
+
+// Mobile overflow menu toggle
+(function(){
+  const mBtn=document.getElementById('mobMoreBtn'),mMenu=document.getElementById('mobMenu');
+  if(mBtn&&mMenu){
+    mBtn.addEventListener('click',function(e){e.stopPropagation();mMenu.classList.toggle('show');});
+    document.addEventListener('click',function(e){if(!mMenu.contains(e.target)&&e.target!==mBtn)mMenu.classList.remove('show');});
+  }
+})();
 const tvf=$("tvFrame");if(tvf){let tvLoaded=false;tvf.addEventListener("load",()=>{tvLoaded=true;});setTimeout(()=>{if(!tvLoaded){const fb=$("tvFallback");if(fb)fb.classList.add("show");}},9000);}
 
 // ── START ─────────────────────────────────────────────────────────────────
@@ -6285,7 +6302,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v40-pwa                                     ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v41-mobile-pwa                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -7766,6 +7783,383 @@ body.guided-active .stack,
 body.guided-active .col {
   filter: none !important;
   opacity: 1 !important;
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════════╗
+   ║  MOBILE PWA — PROFESSIONAL APP EXPERIENCE                              ║
+   ║  Targets phones (<768px). Desktop is untouched.                        ║
+   ╚══════════════════════════════════════════════════════════════════════════╝ */
+
+/* ── SAFE AREA — notched phones (iPhone, Pixel) ─────────────────────────── */
+@supports(padding: env(safe-area-inset-top)) {
+  .topbar {
+    padding-top: calc(8px + env(safe-area-inset-top)) !important;
+  }
+  .wrap {
+    padding-left: calc(10px + env(safe-area-inset-left)) !important;
+    padding-right: calc(10px + env(safe-area-inset-right)) !important;
+    padding-bottom: calc(40px + env(safe-area-inset-bottom)) !important;
+  }
+  #qxUpdateBanner {
+    bottom: calc(14px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ── MOBILE BREAKPOINT ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* -- Body & wrap -------------------------------------------------------- */
+  body {
+    -webkit-text-size-adjust: 100% !important;
+    -webkit-tap-highlight-color: transparent !important;
+    overscroll-behavior-y: contain !important;
+  }
+  .wrap {
+    padding: 8px 8px 50px !important;
+    max-width: 100vw !important;
+  }
+  .grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-top: 10px !important;
+  }
+  .stack { gap: 10px !important; }
+
+  /* -- TOPBAR: 2-row stacked layout -------------------------------------- */
+  .topbar {
+    flex-wrap: wrap !important;
+    padding: 10px 12px 8px !important;
+    gap: 8px !important;
+    border-radius: 0 !important;
+    position: sticky !important;
+    top: 0 !important;
+    margin: 0 -8px !important;
+    width: calc(100% + 16px) !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+  }
+
+  /* Kill the top-edge beam line on mobile — conflicts with notch */
+  .topbar::before { display: none !important; }
+
+  /* Brand — full width first row */
+  .brand {
+    width: 100% !important;
+    min-width: unset !important;
+    gap: 10px !important;
+    height: auto !important;
+    order: 1 !important;
+    justify-content: flex-start !important;
+  }
+  .brand::before { display: none !important; }
+
+  .qxlogo-mark {
+    border-right: none !important;
+    padding-right: 8px !important;
+    margin-right: 0 !important;
+    padding-bottom: 4px !important;
+  }
+  .davincii-logo {
+    font-size: 10px !important;
+    letter-spacing: 2px !important;
+  }
+  .davincii-logo::after { display: none !important; }
+
+  .brand-wordmark {
+    font-size: 13px !important;
+    letter-spacing: 4px !important;
+  }
+  .brand-rx { font-size: 14px !important; }
+  .brand .sub { font-size: 7.5px !important; letter-spacing: 1.5px !important; }
+  .sub-si {
+    font-size: 6.5px !important;
+    padding: 1px 5px !important;
+    letter-spacing: 1.5px !important;
+  }
+
+  /* Center stats — second row, compact horizontal strip */
+  .qx-topbar-center {
+    order: 2 !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    height: 32px !important;
+    border-radius: 4px !important;
+  }
+  .qx-center-stat {
+    padding: 0 12px !important;
+  }
+  .qx-cs-label {
+    font-size: 5.5px !important;
+    letter-spacing: 1.8px !important;
+  }
+  .qx-cs-val {
+    font-size: 11px !important;
+  }
+
+  /* Actions — second row, right-aligned, only key buttons */
+  .top-actions {
+    order: 3 !important;
+    gap: 4px !important;
+    flex-wrap: nowrap !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+  }
+
+  /* Hide non-essential buttons on mobile */
+  #nightBtn, #exportBtn, #settingsBtn, #guideBtn {
+    display: none !important;
+  }
+
+  /* Compact the remaining action chips */
+  .qx-status-chip {
+    height: 26px !important;
+    padding: 0 7px !important;
+    font-size: 9px !important;
+  }
+  .qx-risk-chip {
+    height: 26px !important;
+    padding: 0 7px !important;
+  }
+  .qx-risk-lbl { font-size: 6.5px !important; }
+  .qx-risk-val { font-size: 11px !important; }
+  .qx-tf-badge {
+    height: 26px !important;
+    padding: 0 6px !important;
+    font-size: 9px !important;
+  }
+  .pill {
+    height: 26px !important;
+    padding: 0 7px !important;
+    font-size: 9px !important;
+  }
+  .btn {
+    min-width: 32px !important;
+    height: 30px !important;
+    padding: 0 8px !important;
+    font-size: 12px !important;
+  }
+
+  /* -- CARDS: full-bleed native feel ------------------------------------- */
+  .card {
+    border-radius: 12px !important;
+  }
+  .card .inner {
+    padding: 12px !important;
+  }
+  .card-title h2 {
+    font-size: 11px !important;
+  }
+  .card-title .hint {
+    display: none !important;
+  }
+
+  /* -- Quote / Hero card ------------------------------------------------- */
+  .quotePx { font-size: 28px !important; }
+  .quoteCard { gap: 6px !important; }
+  .quoteBadges { gap: 3px !important; flex-wrap: wrap !important; }
+  .quoteBadges .pill { font-size: 8px !important; }
+  .intelGrid { grid-template-columns: 1fr !important; gap: 8px !important; }
+  .intelTile canvas { height: 130px !important; }
+
+  /* -- Intelligence grids ------------------------------------------------ */
+  .busGrid { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+  .qeGrid { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+  .paGrid { grid-template-columns: 1fr !important; gap: 6px !important; }
+  .macroGrid { grid-template-columns: 1fr !important; }
+  .sharpeGrid { grid-template-columns: 1fr 1fr !important; }
+  .sessionGrid { grid-template-columns: 1fr !important; gap: 6px !important; }
+  .fpGrid { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+  .fpTfGrid { grid-template-columns: 1fr !important; gap: 6px !important; }
+  .fcastGrid { grid-template-columns: 1fr !important; }
+  .hmmDiagGrid { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+
+  /* -- Tables: horizontal scroll ----------------------------------------- */
+  .tableWrap, .paLog {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .paLogTable { min-width: 480px !important; }
+  .corrTable, .txMx { min-width: 500px !important; }
+
+  /* -- Signal bus banner ------------------------------------------------- */
+  .busBanner {
+    flex-direction: column !important;
+    gap: 8px !important;
+    align-items: flex-start !important;
+    padding: 10px !important;
+  }
+
+  /* -- Forecast cards ---------------------------------------------------- */
+  .convicRow {
+    flex-direction: column !important;
+    gap: 6px !important;
+    align-items: flex-start !important;
+    padding: 10px !important;
+  }
+
+  /* -- Risk strip -------------------------------------------------------- */
+  .riskStrip {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+
+  /* -- Modals: full screen on mobile ------------------------------------- */
+  .modal {
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+  .overlay {
+    padding: 0 !important;
+    align-items: stretch !important;
+  }
+
+  /* -- Boot splash: smaller text ----------------------------------------- */
+  .bootBox { width: 85% !important; max-width: 320px !important; }
+  .bootTitle { font-size: 13px !important; }
+  .bootSub { font-size: 10px !important; }
+  .bootMark {
+    min-width: 36px !important;
+    height: 36px !important;
+    border-radius: 10px !important;
+    padding: 0 10px !important;
+  }
+  .davincii-logo-boot { font-size: 9px !important; letter-spacing: 1.5px !important; }
+
+  /* -- Auth/Login: mobile friendly --------------------------------------- */
+  .qx-auth-shell {
+    max-width: 100% !important;
+    margin: 20px 12px !important;
+    padding: 24px 18px !important;
+    border-radius: 14px !important;
+  }
+  .qx-auth-head { gap: 10px !important; }
+  .davincii-logo-auth { font-size: 12px !important; letter-spacing: 2px !important; }
+  .davincii-logo-auth::after { display: none !important; }
+  .qx-auth-title { font-size: 15px !important; letter-spacing: 3px !important; }
+  .qx-auth-btn {
+    min-height: 44px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+  }
+  .qx-auth-field input {
+    min-height: 44px !important;
+    font-size: 16px !important; /* prevents iOS zoom */
+    border-radius: 8px !important;
+  }
+
+  /* -- Touch targets: 44px minimum --------------------------------------- */
+  button, .btn, .pill, [role="button"] {
+    min-height: 32px !important;
+    -webkit-touch-callout: none !important;
+  }
+
+  /* -- Keyboard hint: hide on mobile ------------------------------------- */
+  .kbhint { display: none !important; }
+
+  /* -- Scrollbars: thin native ------------------------------------------- */
+  ::-webkit-scrollbar { width: 3px !important; height: 3px !important; }
+
+  /* -- PB3 / Probability rows -------------------------------------------- */
+  .probRow { grid-template-columns: 120px 1fr 36px !important; }
+  .pb3Grid { grid-template-columns: 1fr !important; gap: 6px !important; }
+
+  /* -- Cone / Equity canvas ---------------------------------------------- */
+  #coneCanvas { height: 160px !important; }
+  #equityCanvas { height: 80px !important; }
+
+  /* -- Recommendation engine --------------------------------------------- */
+  .recoMain { min-width: 0 !important; }
+  .recoTitle { font-size: 11px !important; }
+  .recoSide { min-width: 80px !important; }
+
+  /* -- Update banner — above safe area ----------------------------------- */
+  #qxUpdateBanner {
+    left: 8px !important;
+    right: 8px !important;
+    transform: none !important;
+    font-size: 11px !important;
+    padding: 10px 12px !important;
+    border-radius: 10px !important;
+  }
+}
+
+/* ── VERY SMALL PHONES (<400px) ─────────────────────────────────────────── */
+@media (max-width: 400px) {
+  .topbar { padding: 8px 10px 6px !important; }
+  .brand-wordmark { font-size: 12px !important; letter-spacing: 3px !important; }
+  .brand-rx { font-size: 13px !important; }
+  .davincii-logo { font-size: 9px !important; letter-spacing: 1.5px !important; }
+  .qx-center-stat { padding: 0 8px !important; }
+  .qx-cs-val { font-size: 10px !important; }
+  .quotePx { font-size: 24px !important; }
+  .qx-status-chip, .qx-risk-chip { display: none !important; }
+}
+
+/* ── LANDSCAPE PHONES ───────────────────────────────────────────────────── */
+@media (max-width: 768px) and (orientation: landscape) {
+  .topbar {
+    padding: 6px 14px !important;
+    gap: 6px !important;
+  }
+  .brand { height: auto !important; }
+  .qx-topbar-center { height: 28px !important; }
+  .bootBox { max-width: 50% !important; }
+  #bootSplash { padding: 10px !important; }
+}
+
+/* ── MOBILE OVERFLOW MENU ───────────────────────────────────────────────── */
+.qx-mob-more { display: none !important; }
+.qx-mob-menu { display: none; }
+@media (max-width: 768px) {
+  .qx-mob-more {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px !important;
+    height: 30px !important;
+    font-size: 16px !important;
+    letter-spacing: 2px;
+    padding: 0 6px !important;
+  }
+  .qx-mob-menu {
+    display: none;
+    position: absolute;
+    right: 12px;
+    top: 100%;
+    margin-top: 6px;
+    background: rgba(6,10,24,.97);
+    border: 1px solid rgba(0,229,255,.20);
+    border-radius: 10px;
+    padding: 6px 0;
+    z-index: 500;
+    box-shadow: 0 12px 40px rgba(0,0,0,.70);
+    backdrop-filter: blur(16px);
+    min-width: 150px;
+  }
+  .qx-mob-menu.show { display: block; }
+  .qx-mob-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    color: rgba(232,234,240,.85);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: background .15s;
+  }
+  .qx-mob-item:hover, .qx-mob-item:active {
+    background: rgba(0,229,255,.08);
+  }
 }
 </style>
 
