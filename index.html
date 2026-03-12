@@ -6302,7 +6302,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v41-mobile-pwa                              ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v42-native-pwa                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -7786,229 +7786,392 @@ body.guided-active .col {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════════╗
-   ║  MOBILE PWA — PROFESSIONAL APP EXPERIENCE                              ║
-   ║  Targets phones (<768px). Desktop is untouched.                        ║
+   ║  MOBILE PWA — NATIVE APP ARCHITECTURE  v42                              ║
+   ║  Designed as a standalone trading app, not a responsive website.         ║
+   ║  Targets phones (<768px). Desktop is completely untouched.              ║
    ╚══════════════════════════════════════════════════════════════════════════╝ */
 
-/* ── SAFE AREA — notched phones (iPhone, Pixel) ─────────────────────────── */
+/* ── SAFE AREA — notched phones (iPhone 14+, Pixel) ────────────────────── */
 @supports(padding: env(safe-area-inset-top)) {
-  .topbar {
-    padding-top: calc(8px + env(safe-area-inset-top)) !important;
-  }
-  .wrap {
-    padding-left: calc(10px + env(safe-area-inset-left)) !important;
-    padding-right: calc(10px + env(safe-area-inset-right)) !important;
-    padding-bottom: calc(40px + env(safe-area-inset-bottom)) !important;
-  }
-  #qxUpdateBanner {
-    bottom: calc(14px + env(safe-area-inset-bottom));
+  @media (max-width: 768px) {
+    .topbar {
+      padding-top: calc(10px + env(safe-area-inset-top)) !important;
+    }
+    .wrap {
+      padding-bottom: calc(70px + env(safe-area-inset-bottom)) !important;
+    }
+    .qx-bottom-nav {
+      padding-bottom: env(safe-area-inset-bottom) !important;
+    }
   }
 }
+
+/* ── BOTTOM NAVIGATION — native app tab bar (hidden on desktop) ─────── */
+.qx-bottom-nav { display: none; }
 
 /* ── MOBILE BREAKPOINT ──────────────────────────────────────────────────── */
 @media (max-width: 768px) {
 
-  /* -- Body & wrap -------------------------------------------------------- */
+  /* ====================================================================
+     FOUNDATION
+  ==================================================================== */
   body {
     -webkit-text-size-adjust: 100% !important;
     -webkit-tap-highlight-color: transparent !important;
     overscroll-behavior-y: contain !important;
+    background: #020408 !important;
   }
   .wrap {
-    padding: 8px 8px 50px !important;
+    padding: 0 0 74px !important;
     max-width: 100vw !important;
   }
   .grid {
     grid-template-columns: 1fr !important;
-    gap: 10px !important;
-    margin-top: 10px !important;
-  }
-  .stack { gap: 10px !important; }
-
-  /* -- TOPBAR: 2-row stacked layout -------------------------------------- */
-  .topbar {
-    flex-wrap: wrap !important;
-    padding: 10px 12px 8px !important;
     gap: 8px !important;
+    margin-top: 8px !important;
+    padding: 0 8px !important;
+  }
+  .stack { gap: 8px !important; }
+  canvas#bgFX { display: none !important; }
+
+  /* ====================================================================
+     TOPBAR — 3-ROW NATIVE APP HEADER
+     Row 1: Brand + live dot + actions
+     Row 2: Edge · Regime · Consensus (full-width strip)
+     Row 3: Status pills (Alert, Throttle, 4H, timestamp)
+  ==================================================================== */
+  .topbar {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto auto !important;
+    gap: 0 !important;
+    padding: 10px 14px 0 !important;
     border-radius: 0 !important;
     position: sticky !important;
     top: 0 !important;
-    margin: 0 -8px !important;
-    width: calc(100% + 16px) !important;
-    border-left: none !important;
-    border-right: none !important;
-    border-top: none !important;
+    z-index: 200 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(0,229,255,.10) !important;
+    background: rgba(3,6,16,.97) !important;
+    backdrop-filter: blur(24px) saturate(1.3) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(1.3) !important;
   }
-
-  /* Kill the top-edge beam line on mobile — conflicts with notch */
   .topbar::before { display: none !important; }
+  .topbar::after { display: none !important; }
 
-  /* Brand — full width first row */
+  /* ── ROW 1: BRAND + ACTIONS ──────────────────────────────────────────── */
   .brand {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
     width: 100% !important;
     min-width: unset !important;
-    gap: 10px !important;
     height: auto !important;
-    order: 1 !important;
-    justify-content: flex-start !important;
+    gap: 0 !important;
+    padding-bottom: 8px !important;
   }
   .brand::before { display: none !important; }
 
+  /* DAVINCII logo — compact */
   .qxlogo-mark {
-    border-right: none !important;
-    padding-right: 8px !important;
-    margin-right: 0 !important;
-    padding-bottom: 4px !important;
+    border-right: 1px solid rgba(0,229,255,.15) !important;
+    padding-right: 10px !important;
+    margin-right: 10px !important;
+    padding-bottom: 0 !important;
   }
   .davincii-logo {
-    font-size: 10px !important;
-    letter-spacing: 2px !important;
+    font-size: 9px !important;
+    letter-spacing: 2.5px !important;
   }
   .davincii-logo::after { display: none !important; }
 
+  /* QUADRA X wordmark */
   .brand-wordmark {
     font-size: 13px !important;
-    letter-spacing: 4px !important;
+    letter-spacing: 5px !important;
   }
   .brand-rx { font-size: 14px !important; }
-  .brand .sub { font-size: 7.5px !important; letter-spacing: 1.5px !important; }
-  .sub-si {
-    font-size: 6.5px !important;
-    padding: 1px 5px !important;
+  .brand .sub {
+    font-size: 7px !important;
     letter-spacing: 1.5px !important;
+    display: none !important;
+  }
+  .brand-text-block { gap: 0 !important; }
+
+  /* Actions float right in row 1 */
+  .top-actions {
+    position: absolute !important;
+    right: 14px !important;
+    top: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    flex-wrap: nowrap !important;
+    z-index: 10 !important;
   }
 
-  /* Center stats — second row, compact horizontal strip */
-  .qx-topbar-center {
-    order: 2 !important;
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    height: 32px !important;
-    border-radius: 4px !important;
+  /* Only show: live dot, sync, and overflow menu */
+  .qx-status-chip, .qx-risk-chip, .qx-tf-badge,
+  #pauseBtn, #nightBtn, #exportBtn, #settingsBtn, #guideBtn {
+    display: none !important;
   }
+  /* Show just the live pill and key buttons */
+  .top-actions .pill {
+    height: 28px !important;
+    padding: 0 8px !important;
+    font-size: 9px !important;
+    border-radius: 6px !important;
+    background: rgba(255,255,255,.04) !important;
+    border: 1px solid rgba(255,255,255,.08) !important;
+  }
+  .top-actions .btn {
+    min-width: 28px !important;
+    width: 28px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    font-size: 13px !important;
+    border-radius: 6px !important;
+  }
+  #syncBtn { display: inline-flex !important; }
+
+  /* ── ROW 2: METRICS STRIP — Edge | Regime | Consensus ────────────────── */
+  .qx-topbar-center {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr auto 1fr !important;
+    align-items: center !important;
+    width: 100% !important;
+    height: 42px !important;
+    background: rgba(0,229,255,.03) !important;
+    border: 1px solid rgba(0,229,255,.08) !important;
+    border-radius: 8px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+  .qx-topbar-center::before { display: none !important; }
+
   .qx-center-stat {
-    padding: 0 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    padding: 4px 0 !important;
   }
   .qx-cs-label {
-    font-size: 5.5px !important;
-    letter-spacing: 1.8px !important;
+    font-size: 6px !important;
+    letter-spacing: 2px !important;
+    color: rgba(0,229,255,.65) !important;
   }
   .qx-cs-val {
-    font-size: 11px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+  }
+  .qx-center-div {
+    width: 1px !important;
+    height: 24px !important;
+    margin: 0 !important;
+    background: rgba(0,229,255,.12) !important;
   }
 
-  /* Actions — second row, right-aligned, only key buttons */
-  .top-actions {
-    order: 3 !important;
-    gap: 4px !important;
-    flex-wrap: nowrap !important;
-    flex-shrink: 0 !important;
-    position: relative !important;
-  }
-
-  /* Hide non-essential buttons on mobile */
-  #nightBtn, #exportBtn, #settingsBtn, #guideBtn {
+  /* ── ROW 3: STATUS BAR — compact info strip ──────────────────────────── */
+  /* Repurpose .top-actions pills that we hid — create a new status row 
+     using the existing chip elements by re-showing them in a status bar */
+  .topbar::after {
+    content: '' !important;
     display: none !important;
   }
 
-  /* Compact the remaining action chips */
-  .qx-status-chip {
-    height: 26px !important;
-    padding: 0 7px !important;
-    font-size: 9px !important;
+  /* We need a new row — inject it via the existing elements.
+     The status chips will be positioned in the bottom-nav instead.
+     For row 3, we'll use a simple spacer. */
+
+  /* ====================================================================
+     BOTTOM NAVIGATION BAR — native app pattern
+  ==================================================================== */
+  .qx-bottom-nav {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important; right: 0 !important;
+    height: 56px !important;
+    background: rgba(3,6,16,.98) !important;
+    border-top: 1px solid rgba(0,229,255,.10) !important;
+    backdrop-filter: blur(20px) saturate(1.3) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.3) !important;
+    z-index: 9999 !important;
+    align-items: stretch !important;
+    justify-content: space-around !important;
+    padding: 0 4px !important;
   }
-  .qx-risk-chip {
-    height: 26px !important;
-    padding: 0 7px !important;
+  .qx-bnav-tab {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    flex: 1 !important;
+    padding: 6px 2px !important;
+    background: none !important;
+    border: none !important;
+    color: rgba(130,155,185,.55) !important;
+    font-family: 'IBM Plex Sans', system-ui, sans-serif !important;
+    font-size: 8.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+    cursor: pointer !important;
+    transition: color .15s ease !important;
+    -webkit-tap-highlight-color: transparent !important;
+    position: relative !important;
   }
-  .qx-risk-lbl { font-size: 6.5px !important; }
-  .qx-risk-val { font-size: 11px !important; }
-  .qx-tf-badge {
-    height: 26px !important;
-    padding: 0 6px !important;
-    font-size: 9px !important;
+  .qx-bnav-tab:active {
+    color: #00e5ff !important;
   }
-  .pill {
-    height: 26px !important;
-    padding: 0 7px !important;
-    font-size: 9px !important;
+  .qx-bnav-tab.active {
+    color: #00e5ff !important;
   }
-  .btn {
-    min-width: 32px !important;
-    height: 30px !important;
-    padding: 0 8px !important;
-    font-size: 12px !important;
+  .qx-bnav-tab.active::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 20% !important; right: 20% !important;
+    height: 2px !important;
+    background: #00e5ff !important;
+    border-radius: 0 0 2px 2px !important;
+    box-shadow: 0 0 8px rgba(0,229,255,.50) !important;
+  }
+  .qx-bnav-icon {
+    font-size: 18px !important;
+    line-height: 1 !important;
   }
 
-  /* -- CARDS: full-bleed native feel ------------------------------------- */
+  /* ====================================================================
+     CARDS — full-bleed professional treatment
+  ==================================================================== */
   .card {
-    border-radius: 12px !important;
+    border-radius: 14px !important;
+    border: 1px solid rgba(255,255,255,.05) !important;
+    background: rgba(8,12,28,.90) !important;
   }
   .card .inner {
-    padding: 12px !important;
+    padding: 14px 12px !important;
+  }
+  .card-title {
+    margin-bottom: 10px !important;
   }
   .card-title h2 {
-    font-size: 11px !important;
+    font-size: 10px !important;
+    letter-spacing: 1.8px !important;
   }
   .card-title .hint {
     display: none !important;
   }
 
-  /* -- Quote / Hero card ------------------------------------------------- */
-  .quotePx { font-size: 28px !important; }
+  /* Intelligence badges on cards — compact */
+  .liveBadge {
+    font-size: 7px !important;
+    padding: 2px 8px !important;
+    letter-spacing: 1.5px !important;
+  }
+
+  /* ====================================================================
+     QUOTE / HERO — the centerpiece
+  ==================================================================== */
+  .quotePx {
+    font-size: 32px !important;
+    letter-spacing: -0.5px !important;
+  }
   .quoteCard { gap: 6px !important; }
   .quoteBadges { gap: 3px !important; flex-wrap: wrap !important; }
-  .quoteBadges .pill { font-size: 8px !important; }
+  .quoteBadges .pill {
+    font-size: 8px !important;
+    padding: 3px 8px !important;
+    border-radius: 4px !important;
+  }
+  .stateBig {
+    font-size: 22px !important;
+  }
+  .hero {
+    padding: 14px !important;
+  }
   .intelGrid { grid-template-columns: 1fr !important; gap: 8px !important; }
-  .intelTile canvas { height: 130px !important; }
+  .intelTile {
+    border-radius: 12px !important;
+    padding: 12px !important;
+  }
+  .intelTile canvas { height: 140px !important; }
 
-  /* -- Intelligence grids ------------------------------------------------ */
-  .busGrid { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
-  .qeGrid { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
-  .paGrid { grid-template-columns: 1fr !important; gap: 6px !important; }
-  .macroGrid { grid-template-columns: 1fr !important; }
-  .sharpeGrid { grid-template-columns: 1fr 1fr !important; }
+  /* ====================================================================
+     DATA GRIDS — consistent 2-col where it fits
+  ==================================================================== */
+  .busGrid   { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+  .qeGrid    { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+  .paGrid    { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+  .macroGrid { grid-template-columns: 1fr !important; gap: 6px !important; }
+  .sharpeGrid{ grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
   .sessionGrid { grid-template-columns: 1fr !important; gap: 6px !important; }
-  .fpGrid { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
-  .fpTfGrid { grid-template-columns: 1fr !important; gap: 6px !important; }
-  .fcastGrid { grid-template-columns: 1fr !important; }
+  .fpGrid    { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+  .fpTfGrid  { grid-template-columns: 1fr !important; gap: 6px !important; }
+  .fcastGrid { grid-template-columns: 1fr !important; gap: 6px !important; }
   .hmmDiagGrid { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+  .pb3Grid   { grid-template-columns: 1fr !important; gap: 6px !important; }
+  .cmsGrid   { grid-template-columns: 1fr !important; gap: 8px !important; }
 
-  /* -- Tables: horizontal scroll ----------------------------------------- */
+  /* ====================================================================
+     TABLES — horizontal scroll with native momentum
+  ==================================================================== */
   .tableWrap, .paLog {
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
+    border-radius: 10px !important;
   }
-  .paLogTable { min-width: 480px !important; }
-  .corrTable, .txMx { min-width: 500px !important; }
+  .paLogTable { min-width: 500px !important; }
+  .corrTable, .txMx { min-width: 520px !important; }
+  .paLogTable td, .paLogTable th { padding: 7px 8px !important; }
 
-  /* -- Signal bus banner ------------------------------------------------- */
+  /* ====================================================================
+     SIGNAL BUS / CONVICTION / RISK
+  ==================================================================== */
   .busBanner {
     flex-direction: column !important;
     gap: 8px !important;
     align-items: flex-start !important;
-    padding: 10px !important;
+    padding: 12px !important;
+    border-radius: 12px !important;
   }
-
-  /* -- Forecast cards ---------------------------------------------------- */
   .convicRow {
     flex-direction: column !important;
-    gap: 6px !important;
+    gap: 8px !important;
     align-items: flex-start !important;
-    padding: 10px !important;
+    padding: 12px !important;
   }
-
-  /* -- Risk strip -------------------------------------------------------- */
   .riskStrip {
     grid-template-columns: 1fr 1fr !important;
     gap: 6px !important;
   }
+  .riskItem {
+    border-radius: 10px !important;
+    padding: 10px !important;
+  }
+  .probRow { grid-template-columns: 120px 1fr 36px !important; }
 
-  /* -- Modals: full screen on mobile ------------------------------------- */
+  /* ====================================================================
+     CANVASES — proportional
+  ==================================================================== */
+  #coneCanvas { height: 170px !important; }
+  #equityCanvas { height: 85px !important; }
+
+  /* ====================================================================
+     MODALS — full-screen overlay
+  ==================================================================== */
   .modal {
     max-width: 100vw !important;
     max-height: 100vh !important;
     width: 100% !important;
+    height: 100% !important;
     border-radius: 0 !important;
     margin: 0 !important;
   }
@@ -8017,8 +8180,10 @@ body.guided-active .col {
     align-items: stretch !important;
   }
 
-  /* -- Boot splash: smaller text ----------------------------------------- */
-  .bootBox { width: 85% !important; max-width: 320px !important; }
+  /* ====================================================================
+     BOOT SPLASH — mobile-optimized
+  ==================================================================== */
+  .bootBox { width: 85% !important; max-width: 300px !important; }
   .bootTitle { font-size: 13px !important; }
   .bootSub { font-size: 10px !important; }
   .bootMark {
@@ -8029,86 +8194,113 @@ body.guided-active .col {
   }
   .davincii-logo-boot { font-size: 9px !important; letter-spacing: 1.5px !important; }
 
-  /* -- Auth/Login: mobile friendly --------------------------------------- */
+  /* ====================================================================
+     AUTH / LOGIN — polished mobile experience
+  ==================================================================== */
+  #qxAuthGate {
+    align-items: flex-start !important;
+    padding-top: 15vh !important;
+  }
   .qx-auth-shell {
     max-width: 100% !important;
-    margin: 20px 12px !important;
-    padding: 24px 18px !important;
-    border-radius: 14px !important;
+    margin: 0 16px !important;
+    padding: 28px 20px !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(0,229,255,.12) !important;
   }
-  .qx-auth-head { gap: 10px !important; }
-  .davincii-logo-auth { font-size: 12px !important; letter-spacing: 2px !important; }
+  .qx-auth-head { gap: 12px !important; }
+  .davincii-logo-auth { font-size: 12px !important; letter-spacing: 2.5px !important; }
   .davincii-logo-auth::after { display: none !important; }
-  .qx-auth-title { font-size: 15px !important; letter-spacing: 3px !important; }
+  .qx-auth-title { font-size: 16px !important; letter-spacing: 4px !important; }
   .qx-auth-btn {
-    min-height: 44px !important;
+    min-height: 48px !important;
     font-size: 12px !important;
-    border-radius: 8px !important;
+    border-radius: 10px !important;
+    letter-spacing: 2px !important;
   }
   .qx-auth-field input {
-    min-height: 44px !important;
-    font-size: 16px !important; /* prevents iOS zoom */
-    border-radius: 8px !important;
+    min-height: 48px !important;
+    font-size: 16px !important; /* prevents iOS auto-zoom */
+    border-radius: 10px !important;
+    padding: 12px 14px !important;
+  }
+  .qx-auth-badges { gap: 6px !important; flex-wrap: wrap !important; }
+  .qx-auth-pill {
+    font-size: 8px !important;
+    padding: 4px 10px !important;
+    border-radius: 6px !important;
   }
 
-  /* -- Touch targets: 44px minimum --------------------------------------- */
+  /* ====================================================================
+     GLOBAL REFINEMENTS
+  ==================================================================== */
+  /* Touch targets */
   button, .btn, .pill, [role="button"] {
     min-height: 32px !important;
     -webkit-touch-callout: none !important;
   }
 
-  /* -- Keyboard hint: hide on mobile ------------------------------------- */
+  /* Hide keyboard shortcuts */
   .kbhint { display: none !important; }
 
-  /* -- Scrollbars: thin native ------------------------------------------- */
-  ::-webkit-scrollbar { width: 3px !important; height: 3px !important; }
+  /* Thin scrollbars */
+  ::-webkit-scrollbar { width: 2px !important; height: 2px !important; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,229,255,.15) !important; border-radius: 2px !important; }
 
-  /* -- PB3 / Probability rows -------------------------------------------- */
-  .probRow { grid-template-columns: 120px 1fr 36px !important; }
-  .pb3Grid { grid-template-columns: 1fr !important; gap: 6px !important; }
-
-  /* -- Cone / Equity canvas ---------------------------------------------- */
-  #coneCanvas { height: 160px !important; }
-  #equityCanvas { height: 80px !important; }
-
-  /* -- Recommendation engine --------------------------------------------- */
+  /* Recommendation engine */
   .recoMain { min-width: 0 !important; }
   .recoTitle { font-size: 11px !important; }
   .recoSide { min-width: 80px !important; }
 
-  /* -- Update banner — above safe area ----------------------------------- */
+  /* TF grid */
+  .tfGrid { grid-template-columns: repeat(4, 1fr) !important; gap: 4px !important; }
+  .tfBox { padding: 7px !important; font-size: 9px !important; }
+
+  /* Macro hint / rule text */
+  .macroHint, .rrule { max-width: 100% !important; text-align: left !important; font-size: 10px !important; }
+
+  /* Day rows */
+  .dayRow { padding: 10px !important; }
+
+  /* Update banner */
   #qxUpdateBanner {
     left: 8px !important;
     right: 8px !important;
+    bottom: 64px !important;
     transform: none !important;
     font-size: 11px !important;
     padding: 10px 12px !important;
     border-radius: 10px !important;
   }
-}
+
+  /* Overflow menu positioning */
+  .qx-mob-menu {
+    right: 0 !important;
+    top: 40px !important;
+  }
+
+} /* end 768px */
 
 /* ── VERY SMALL PHONES (<400px) ─────────────────────────────────────────── */
 @media (max-width: 400px) {
-  .topbar { padding: 8px 10px 6px !important; }
-  .brand-wordmark { font-size: 12px !important; letter-spacing: 3px !important; }
-  .brand-rx { font-size: 13px !important; }
-  .davincii-logo { font-size: 9px !important; letter-spacing: 1.5px !important; }
-  .qx-center-stat { padding: 0 8px !important; }
-  .qx-cs-val { font-size: 10px !important; }
-  .quotePx { font-size: 24px !important; }
-  .qx-status-chip, .qx-risk-chip { display: none !important; }
+  .brand-wordmark { font-size: 11px !important; letter-spacing: 3px !important; }
+  .brand-rx { font-size: 12px !important; }
+  .davincii-logo { font-size: 8px !important; letter-spacing: 1.5px !important; }
+  .qx-cs-val { font-size: 11px !important; }
+  .quotePx { font-size: 26px !important; }
+  .qx-topbar-center { height: 38px !important; }
+  .qx-bnav-tab { font-size: 7.5px !important; }
+  .qx-bnav-icon { font-size: 16px !important; }
 }
 
 /* ── LANDSCAPE PHONES ───────────────────────────────────────────────────── */
 @media (max-width: 768px) and (orientation: landscape) {
-  .topbar {
-    padding: 6px 14px !important;
-    gap: 6px !important;
-  }
-  .brand { height: auto !important; }
-  .qx-topbar-center { height: 28px !important; }
-  .bootBox { max-width: 50% !important; }
-  #bootSplash { padding: 10px !important; }
+  .topbar { padding: 6px 14px 0 !important; }
+  .brand { padding-bottom: 4px !important; }
+  .qx-topbar-center { height: 34px !important; }
+  .qx-bottom-nav { height: 44px !important; }
+  .qx-bnav-icon { font-size: 14px !important; }
+  .qx-bnav-tab { font-size: 7px !important; gap: 1px !important; }
 }
 
 /* ── MOBILE OVERFLOW MENU ───────────────────────────────────────────────── */
@@ -8119,39 +8311,40 @@ body.guided-active .col {
     display: flex !important;
     align-items: center;
     justify-content: center;
-    min-width: 32px !important;
-    height: 30px !important;
+    min-width: 28px !important;
+    width: 28px !important;
+    height: 28px !important;
     font-size: 16px !important;
     letter-spacing: 2px;
-    padding: 0 6px !important;
+    padding: 0 !important;
+    border-radius: 6px !important;
   }
   .qx-mob-menu {
     display: none;
     position: absolute;
-    right: 12px;
-    top: 100%;
-    margin-top: 6px;
+    right: 0;
+    top: 40px;
     background: rgba(6,10,24,.97);
-    border: 1px solid rgba(0,229,255,.20);
-    border-radius: 10px;
+    border: 1px solid rgba(0,229,255,.18);
+    border-radius: 12px;
     padding: 6px 0;
     z-index: 500;
-    box-shadow: 0 12px 40px rgba(0,0,0,.70);
-    backdrop-filter: blur(16px);
-    min-width: 150px;
+    box-shadow: 0 16px 48px rgba(0,0,0,.80);
+    backdrop-filter: blur(20px);
+    min-width: 165px;
   }
   .qx-mob-menu.show { display: block; }
   .qx-mob-item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
-    padding: 10px 16px;
+    padding: 12px 18px;
     background: none;
     border: none;
     color: rgba(232,234,240,.85);
     font-family: 'IBM Plex Sans', system-ui, sans-serif;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     text-align: left;
@@ -8162,6 +8355,89 @@ body.guided-active .col {
   }
 }
 </style>
+
+<!-- ── MOBILE BOTTOM NAVIGATION BAR ──────────────────────────────────────── -->
+<nav class="qx-bottom-nav" id="qxBottomNav">
+  <button class="qx-bnav-tab active" data-section="top">
+    <span class="qx-bnav-icon">◉</span>
+    <span>Market</span>
+  </button>
+  <button class="qx-bnav-tab" data-section="signals">
+    <span class="qx-bnav-icon">⚡</span>
+    <span>Signals</span>
+  </button>
+  <button class="qx-bnav-tab" data-section="forecast">
+    <span class="qx-bnav-icon">◎</span>
+    <span>Forecast</span>
+  </button>
+  <button class="qx-bnav-tab" data-section="performance">
+    <span class="qx-bnav-icon">▤</span>
+    <span>Track</span>
+  </button>
+  <button class="qx-bnav-tab" data-section="macro">
+    <span class="qx-bnav-icon">◈</span>
+    <span>Macro</span>
+  </button>
+</nav>
+
+<script>
+// Bottom nav — smooth scroll to card sections
+(function(){
+  if(window.innerWidth > 768) return;
+  const nav = document.getElementById('qxBottomNav');
+  if(!nav) return;
+  const cards = document.querySelectorAll('.card');
+  // Map tab names to card indices (approximate — cards render in order)
+  const sectionMap = {
+    'top': 0,       // Market State + EUR/USD
+    'signals': 2,   // Signal Bus
+    'forecast': 3,  // Forward Projection
+    'performance': 5, // Projection Accuracy
+    'macro': 8      // Macro Sentiment (approximate)
+  };
+
+  nav.querySelectorAll('.qx-bnav-tab').forEach(tab => {
+    tab.addEventListener('click', function(){
+      const section = this.dataset.section;
+      // Highlight active tab
+      nav.querySelectorAll('.qx-bnav-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      // Scroll to section
+      if(section === 'top'){
+        window.scrollTo({top: 0, behavior: 'smooth'});
+      } else {
+        const idx = sectionMap[section] || 0;
+        const target = cards[idx];
+        if(target){
+          const y = target.getBoundingClientRect().top + window.pageYOffset - 120;
+          window.scrollTo({top: y, behavior: 'smooth'});
+        }
+      }
+    });
+  });
+
+  // Auto-highlight active tab on scroll
+  let scrollTimer;
+  window.addEventListener('scroll', function(){
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function(){
+      const scrollY = window.scrollY;
+      const entries = Object.entries(sectionMap).reverse();
+      let activeSection = 'top';
+      for(const [name, idx] of entries){
+        const card = cards[idx];
+        if(card){
+          const top = card.getBoundingClientRect().top + window.pageYOffset - 200;
+          if(scrollY >= top){ activeSection = name; break; }
+        }
+      }
+      nav.querySelectorAll('.qx-bnav-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.section === activeSection);
+      });
+    }, 80);
+  }, {passive: true});
+})();
+</script>
 
 <!-- ── PWA Service Worker Registration ──────────────────────────────────── -->
 <script>
