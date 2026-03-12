@@ -5,25 +5,27 @@
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>QuadraX Dashboard</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&amp;family=IBM+Plex+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg0:#03050b;--bg1:#050814;--bg2:#070d1a;--bg3:#0a1224;
+  --bg0:#010205;--bg1:#030610;--bg2:#060a18;--bg3:#090e22;
   --surface:#111827;--surface2:#141e32;--surface3:#1a2540;
   --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.11);--border3:rgba(255,255,255,.16);
-  --green:#00d68f;--green2:#00ff9d;--amber:#f5a623;--red:#ff4757;--blue:#2979ff;--purple:#7c5cfc;--cyan:#00d4ff;--orange:#ff6b35;
-  --text:#e8eaf0;--text2:rgba(232,234,240,.70);--text3:rgba(232,234,240,.42);--text4:rgba(232,234,240,.25);
-  --mono:'JetBrains Mono',ui-monospace,monospace;--font:'Space Grotesk',ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --green:#00e5a0;--green2:#00ffa8;--amber:#ffc107;--red:#ff3448;--blue:#2196f3;--purple:#9c27ff;--cyan:#00e5ff;--orange:#ff6d00;--gold:#ffd700;--indigo:#5c6bc0;
+  --text:#e8eaf0;--text2:rgba(232,234,240,.70);--text3:rgba(232,234,240,.75);--text4:rgba(232,234,240,.55);
+  --mono:'JetBrains Mono',ui-monospace,monospace;--font:'Barlow',ui-sans-serif,system-ui,-apple-system,sans-serif;--font-display:'Bebas Neue','Barlow Condensed',sans-serif;--font-cond:'Barlow Condensed','Barlow',sans-serif;
   --r:16px;--r2:12px;--r3:8px;
-  --sh:0 24px 64px rgba(0,0,0,.70),0 8px 24px rgba(0,0,0,.40);
-  --sh2:0 8px 28px rgba(0,0,0,.45);
-  --sh3:0 2px 8px rgba(0,0,0,.30);
-  --glow-green:0 0 20px rgba(0,214,143,.18);
-  --glow-blue:0 0 20px rgba(41,121,255,.18);
-  --glow-amber:0 0 20px rgba(245,166,35,.18);
-  --glow-red:0 0 20px rgba(255,71,87,.18);
+  --sh:0 32px 80px rgba(0,0,0,.85),0 12px 32px rgba(0,0,0,.60),inset 0 1px 0 rgba(255,255,255,.04);
+  --sh2:0 12px 40px rgba(0,0,0,.65),0 4px 16px rgba(0,0,0,.45);
+  --sh3:0 4px 12px rgba(0,0,0,.40);
+  --glow-green:0 0 32px rgba(0,229,160,.30),0 0 64px rgba(0,229,160,.12);
+  --glow-blue:0 0 32px rgba(33,150,243,.30),0 0 64px rgba(33,150,243,.12);
+  --glow-amber:0 0 32px rgba(255,193,7,.30),0 0 64px rgba(255,193,7,.12);
+  --glow-red:0 0 32px rgba(255,52,72,.30),0 0 64px rgba(255,52,72,.12);
+  --glow-purple:0 0 32px rgba(156,39,255,.30),0 0 64px rgba(156,39,255,.12);
+  --glow-gold:0 0 32px rgba(255,215,0,.25);
 }
 html,body{height:100%;scroll-behavior:smooth}
 body{margin:0;font-family:var(--font);color:var(--text);background:var(--bg0);overflow-x:hidden;
@@ -144,8 +146,8 @@ body::after{
 .card .inner{padding:16px}
 .card-title{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
 .card-title h2{
-  margin:0;font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;
-  font-weight:600;font-family:var(--mono);
+  margin:0;font-size:10px;color:rgba(195,212,235,.90);letter-spacing:1.5px;text-transform:uppercase;
+  font-weight:700;font-family:var(--mono);
 }
 .card-title .hint{font-size:10px;color:var(--text4);text-align:right;max-width:360px;line-height:1.4}
 /* ── LIVE BADGE ──────────────────────────────────────── */
@@ -292,14 +294,14 @@ canvas{display:block;width:100%}
 .corrPos{color:var(--green)}.corrNeg{color:var(--red)}
 /* ── TX MATRIX ───────────────────────────────────────── */
 .txMx{width:100%;border-collapse:collapse}
-.txMx th{padding:4px;font-size:8px;color:var(--text3);text-align:center;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);font-family:var(--mono)}
-.txMx td{padding:3px 4px;text-align:center;font-family:var(--mono);font-size:9px;border:1px solid rgba(255,255,255,.03)}
-.txMx .rl{text-align:left;color:var(--text3);font-size:8.5px;padding:3px 6px}
+.txMx th{padding:4px;font-size:8px;color:rgba(190,205,225,.80);text-align:center;border-bottom:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);font-family:var(--mono);font-weight:600;letter-spacing:.5px}
+.txMx td{padding:3px 4px;text-align:center;font-family:var(--mono);font-size:9px;border:1px solid rgba(255,255,255,.06);color:rgba(220,228,240,.82)}
+.txMx .rl{text-align:left;color:rgba(178,198,225,.80);font-size:8.5px;padding:3px 6px;font-weight:500}
 /* ── LOG TABLE ───────────────────────────────────────── */
 .tableWrap{border-radius:var(--r2);background:rgba(255,255,255,.02);border:1px solid var(--border);overflow:hidden}
 table{width:100%;border-collapse:collapse;font-size:11px}
-thead th{text-align:left;padding:9px 12px;color:var(--text3);border-bottom:1px solid var(--border);background:rgba(255,255,255,.025);font-weight:700;letter-spacing:.8px;text-transform:uppercase;font-size:9px;font-family:var(--mono)}
-tbody td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text2);vertical-align:top;font-variant-numeric:tabular-nums}
+thead th{text-align:left;padding:9px 12px;color:rgba(180,198,220,.88);border-bottom:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);font-weight:700;letter-spacing:.8px;text-transform:uppercase;font-size:9px;font-family:var(--mono)}
+tbody td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.06);color:rgba(210,220,235,.85);vertical-align:top;font-variant-numeric:tabular-nums}
 tbody tr:hover{background:rgba(255,255,255,.03)}
 .scroll{overflow:auto}
 .link{color:rgba(100,170,255,.85);text-decoration:none;font-weight:600}.link:hover{text-decoration:underline}
@@ -703,10 +705,11 @@ body::after{
 }
 .bootTop{display:flex;align-items:center;gap:12px}
 .bootMark{
-  width:42px;height:42px;border-radius:14px;
+  min-width:42px;height:42px;border-radius:14px;padding:0 12px;
   display:grid;place-items:center;font-family:var(--mono);font-weight:800;font-size:12px;
-  background:linear-gradient(135deg, rgba(41,121,255,.28), rgba(0,214,143,.18));
+  background:linear-gradient(135deg, rgba(41,121,255,.28), rgba(0,229,255,.18));
   border:1px solid rgba(255,255,255,.10);
+  perspective:200px;
 }
 .bootTitle{font-size:14px;font-weight:800;letter-spacing:-.2px}
 .bootSub{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px;line-height:1.35}
@@ -714,6 +717,49 @@ body::after{
 .bootBar i{display:block;height:100%;width:0%;background:linear-gradient(90deg, rgba(41,121,255,.9), rgba(0,214,143,.9));border-radius:999px;transition:width .4s var(--ease)}
 .bootMeta{display:flex;justify-content:space-between;margin-top:10px;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.45)}
 
+
+
+/* ── HMM diagnostics ─────────────────────────────────── */
+.hmmDiagWrap{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06)}
+.hmmDiagHead{font-size:9px;color:var(--text4);text-transform:uppercase;letter-spacing:1.3px;font-weight:700;font-family:var(--mono);margin-bottom:8px}
+.hmmDiagGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+@media(max-width:1100px){.hmmDiagGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.hmmDiagGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.hmmDiagBox{padding:10px 11px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
+.hmmDiagBox .dk{font-size:8.5px;color:var(--text4);text-transform:uppercase;letter-spacing:.9px;font-weight:700;margin-bottom:4px}
+.hmmDiagBox .dv{font-size:13px;font-weight:700;font-family:var(--mono);color:var(--text);line-height:1.2}
+
+/* ── Launch refresh visual pass ──────────────────────── */
+.topbar,.card,.hero,.quoteCard,.sessLeft,.sessRight,.fpTfBox,.paBox,.intelTile,.busBanner,.riskStrip,.tmBox,.macroBox{
+  position:relative; overflow:hidden;
+}
+.card::before,.hero::before,.quoteCard::before,.sessLeft::after,.sessRight::before,.intelTile::before,.fpTfBox::before,.paBox::before{
+  content:""; position:absolute; left:0; right:0; top:0; height:1px;
+  background:linear-gradient(90deg, rgba(41,121,255,.00), rgba(110,170,255,.28), rgba(0,214,143,.18), rgba(41,121,255,.00));
+  pointer-events:none;
+}
+.card .inner{padding:17px 17px 16px !important}
+.card-title h2{color:rgba(232,234,240,.50)!important}
+.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip{
+  background:linear-gradient(180deg, rgba(20,29,53,.72), rgba(10,15,28,.80))!important;
+  border-color:rgba(255,255,255,.08)!important;
+  box-shadow:0 20px 46px rgba(0,0,0,.34)!important;
+}
+.card:hover{transform:translateY(-2px)!important}
+.stateBig{font-size:23px!important}
+.quotePx{font-size:46px!important}
+.rbig{letter-spacing:-.8px}
+.pb3Dom,.archMain,.convicRow,.paCalibRow{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04), 0 12px 26px rgba(0,0,0,.18);
+}
+.recoItem{
+  background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015))!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+.recoItem:hover{border-color:rgba(255,255,255,.12)!important}
+.tableWrap,.paLog,.eqWrap,.coneWrap,.tvWrap{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 12px 26px rgba(0,0,0,.16);
+}
 
 /* ── SESSION PLAYBOOK ─────────────────────────────────── */
 .sessGrid{
@@ -795,14 +841,20 @@ body.qx-auth-locked .wrap{display:none!important}
   color:#e8eaf0;
   font-family:'Space Grotesk',system-ui,sans-serif;
 }
-.qx-auth-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.qx-auth-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .qx-auth-mark{
-  width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
-  font-weight:700;font-family:'JetBrains Mono',monospace;font-size:12px;
-  background:linear-gradient(135deg,rgba(41,121,255,.28),rgba(0,214,143,.18));
-  border:1px solid rgba(255,255,255,.10);
+  display:flex;align-items:center;justify-content:center;
+  min-width:42px;height:24px;border-radius:6px;
+  background:transparent;border:none;
+  perspective:200px;
+  flex-shrink:0;
+  padding-bottom:8px;
 }
-.qx-auth-title{font-size:18px;font-weight:700;letter-spacing:-.3px}
+.qx-auth-title{
+  font-family:'IBM Plex Sans',system-ui,sans-serif;
+  font-size:17px;font-weight:700;letter-spacing:4px;text-transform:uppercase;
+  display:flex;align-items:baseline;gap:0;
+}
 .qx-auth-sub{font-size:11px;color:rgba(232,234,240,.60);line-height:1.45;margin-top:2px}
 .qx-auth-grid{display:grid;gap:12px;margin-top:14px}
 .qx-auth-field{display:grid;gap:6px}
@@ -845,9 +897,11 @@ body.qx-auth-locked .wrap{display:none!important}
 <div id="qxAuthGate">
   <div class="qx-auth-shell">
     <div class="qx-auth-head">
-      <div class="qx-auth-mark">4X</div>
+      <div class="qx-auth-mark">
+<span class="davincii-logo-auth" data-text="DAVINCII">DAVINCII</span>
+</div>
       <div>
-        <div class="qx-auth-title">QuadraX</div>
+        <div class="qx-auth-title"><span style="color:#dde6f0">QUADRA</span><span style="display:inline-block;width:5px"></span><span style="color:#00e5ff;text-shadow:0 0 16px rgba(0,229,255,.50)">X</span></div>
         <div class="qx-auth-sub">Enter your email and password to access the dashboard.</div>
       </div>
     </div>
@@ -880,7 +934,7 @@ body.qx-auth-locked .wrap{display:none!important}
 <div aria-hidden="false" id="bootSplash">
 <div class="bootBox">
 <div class="bootTop">
-<div class="bootMark">4X</div>
+<div class="bootMark"><span class="davincii-logo-boot">DAVINCII</span></div>
 <div>
 <div class="bootTitle">QuadraX Mission Control</div>
 <div class="bootSub">Synchronizing signals, calibrations, and regime intelligence.</div>
@@ -894,23 +948,59 @@ body.qx-auth-locked .wrap{display:none!important}
 <div class="wrap">
 <div class="topbar">
 <div class="brand">
-<div class="qxlogo">4X</div>
-<div><h1>QuadraX</h1><div class="sub">EUR/USD Intelligence Platform · HMM · PB3 · Signal Bus · Team Sync</div></div>
+<div class="qxlogo-mark" title="DaVincii — QuadraX Intelligence Platform">
+<span class="davincii-logo" data-text="DAVINCII">DAVINCII</span>
+</div>
+<div class="brand-text-block">
+  <!--
+    QUADRAX WORDMARK — styled after Image 1: "QUADRA X"
+    Bold uppercase, generous letter-spacing
+    "QUADRA" in off-white → "X" in neon lime accent
+    Vertical separator · between them for visual separation
+  -->
+  <div class="brand-wordmark">
+    <span class="brand-q">QUADRA</span><span class="brand-sep"> </span><span class="brand-rx">X</span>
+  </div>
+  <div class="sub">EUR/USD · HMM · PB3 · <span class="sub-si">Superintelligence Architecture</span></div>
+</div>
+</div>
+<!-- CENTER STAGE — fills negative space, balances header -->
+<div class="qx-topbar-center">
+  <div class="qx-center-stat" title="Edge Score — (Conviction × 0.55 + Coherence × 0.45) × (1 − Risk × 0.55). Measures actionable signal quality.">
+    <span class="qx-cs-label">Edge Score</span>
+    <span class="qx-cs-val" id="topbarEdgeScore">--</span>
+  </div>
+  <div class="qx-center-div"></div>
+  <div class="qx-center-stat" title="HMM Regime State">
+    <span class="qx-cs-label">Regime</span>
+    <span class="qx-cs-val" id="topbarRegime">--</span>
+  </div>
+  <div class="qx-center-div"></div>
+  <div class="qx-center-stat" title="Consensus Direction">
+    <span class="qx-cs-label">Consensus</span>
+    <span class="qx-cs-val" id="topbarConsensus">--</span>
+  </div>
 </div>
 <div class="top-actions">
-<div class="alertBadge" id="alertBadge">⚡<span id="alertBadgeText">Alert</span></div>
-<div class="syncBadge warming" id="syncBadge"><span class="dot amber" id="syncDot"></span><span id="syncText">Warming 0/20</span></div>
-<div class="riskPulse" title="Unified risk throttle (vol + conviction)">
-<div class="rpTop"><span class="rpLabel">RISK</span><span class="rpVal" id="riskPulseVal">--</span></div>
-<div class="rpBar"><i id="riskPulseFill"></i></div>
+<!-- STATUS CHIP: Alert + Sync merged -->
+<div class="qx-status-chip" id="alertBadge" title="Alerts and sync status">
+  <span class="qx-status-alert" id="alertBadgeText">Alert</span>
+  <span class="dot amber" id="syncDot" style="margin-left:2px"></span>
+  <span id="syncText" style="display:none">0/20</span>
 </div>
-<div class="pill"><span class="dot" id="liveDot"></span><span>LIVE</span></div>
-<div class="pill">⏱ <b id="lastUpdate">--:--:--</b></div>
-<button class="btn" id="pauseBtn">Pause</button>
-<button class="btn primary" id="syncBtn">Sync</button>
-<button class="btn" id="nightBtn">Night</button>
+<!-- RISK inline chip (no progress bar — saves width) -->
+<div class="qx-risk-chip" title="Unified risk throttle (vol + conviction)">
+  <span class="qx-risk-lbl">THROTTLE</span>
+  <span class="qx-risk-val" id="riskPulseVal">--</span>
+  <i id="riskPulseFill" style="display:none"></i><!-- hidden compat -->
+</div>
+<div class="pill qx-tf-badge" title="4-hour timeframe basis">⧖ <b>4H</b></div>
+<div class="pill"><span class="dot" id="liveDot"></span><span id="lastUpdate">--:--</span></div>
+<button class="btn" id="pauseBtn" title="Pause/Resume (P)">⏸</button>
+<button class="btn primary" id="syncBtn" title="Force sync (S)">⟳</button>
+<button class="btn" id="nightBtn" title="Night mode (N)">☾</button>
 <button class="btn primary" id="exportBtn">Export</button>
-<button class="btn" id="settingsBtn">Settings</button>
+<button class="btn" id="settingsBtn">⚙</button>
 <button class="btn" id="guideBtn">Guide</button>
 </div>
 </div>
@@ -952,6 +1042,16 @@ body.qx-auth-locked .wrap{display:none!important}
 </div>
 <div class="tlWrap"><div class="tlLabel">Regime history · <span id="timelineDepth">0</span> ticks</div><canvas class="tlCanvas" id="timelineCanvas"></canvas></div>
 <div class="probBlock"><div class="muted" style="margin-bottom:7px;font-size:11px">P(state|features) — HMM emission probs. Softmax T=1.35.</div><div id="probList"></div></div>
+<div class="hmmDiagWrap">
+  <div class="hmmDiagHead">HMM Diagnostics</div>
+  <div class="hmmDiagGrid">
+    <div class="hmmDiagBox"><div class="dk">Current Regime</div><div class="dv" id="hmmDiagCurrent">--</div></div>
+    <div class="hmmDiagBox"><div class="dk">Confidence</div><div class="dv" id="hmmDiagConf">--</div></div>
+    <div class="hmmDiagBox"><div class="dk">Predicted Next</div><div class="dv" id="hmmDiagNext">--</div></div>
+    <div class="hmmDiagBox"><div class="dk">Transition Prob</div><div class="dv" id="hmmDiagProb">--</div></div>
+    <div class="hmmDiagBox"><div class="dk">Dwell Time</div><div class="dv" id="hmmDiagDwell">--</div></div>
+  </div>
+</div>
 </div>
 <div class="quoteCard">
 <div class="quoteTop">
@@ -990,7 +1090,7 @@ body.qx-auth-locked .wrap{display:none!important}
 <div id="hurstLabel" style="font-size:12px;color:rgba(255,255,255,.55);transition:color .4s">Loading...</div>
 </div>
 <div class="hurstBar"><div class="hurstFill" id="hurstFill" style="width:50%"></div><div class="hurstTick"></div></div>
-<div style="display:flex;justify-content:space-between;font-size:8.5px;color:rgba(255,255,255,.28)">
+<div style="display:flex;justify-content:space-between;font-size:8.5px;color:rgba(255,255,255,.65)">
 <span>MEAN-REVERT</span><span>RANDOM (0.5)</span><span>TRENDING</span>
 </div>
 <div class="qm" id="hurstMeta">H&gt;0.55: trend-follow — H&lt;0.45: fade extremes — H=0.5: no edge</div>
@@ -1034,11 +1134,11 @@ body.qx-auth-locked .wrap{display:none!important}
 </div>
 </div>
 <div style="display:flex;gap:5px;margin-top:3px">
-<div style="flex:1;font-size:8.5px;color:rgba(255,255,255,.35);text-align:center">AC1</div>
-<div style="flex:1;font-size:8.5px;color:rgba(255,255,255,.35);text-align:center">AC2</div>
-<div style="flex:1;font-size:8.5px;color:rgba(255,255,255,.35);text-align:center">AC3</div>
-<div style="flex:1;font-size:8.5px;color:rgba(255,255,255,.35);text-align:center">AC4</div>
-<div style="flex:1;font-size:8.5px;color:rgba(255,255,255,.35);text-align:center">AC5</div>
+<div style="flex:1;font-size:8.5px;color:rgba(255,255,255,.68);text-align:center">AC1</div>
+<div style="flex:1;font-size:8.5px;color:rgba(255,255,255,.68);text-align:center">AC2</div>
+<div style="flex:1;font-size:8.5px;color:rgba(255,255,255,.68);text-align:center">AC3</div>
+<div style="flex:1;font-size:8.5px;color:rgba(255,255,255,.68);text-align:center">AC4</div>
+<div style="flex:1;font-size:8.5px;color:rgba(255,255,255,.68);text-align:center">AC5</div>
 </div>
 </div>
 <div style="min-width:130px">
@@ -1129,8 +1229,8 @@ body.qx-auth-locked .wrap{display:none!important}
 <div class="fpGrid" style="grid-template-columns:repeat(4,1fr)">
 <div class="fpBox"><div class="k">Trade Bias</div><div class="v" id="tradeBias">--</div><div class="meta" id="tradeBiasMeta">--</div></div>
 <div class="fpBox"><div class="k">Decision Conf</div><div class="v" id="decConf">--</div><div class="meta" id="decConfMeta">Low agreement</div></div>
-<div class="fpBox"><div class="k">Stop Distance</div><div class="v" id="stopDist">--</div><div class="meta" id="stopDistMeta">Risk per entry</div></div>
-<div class="fpBox"><div class="k">R/R Daily</div><div class="v" id="rrRatio">--</div><div class="meta" id="rrRatioMeta">1d target ÷ stop</div></div>
+<div class="fpBox"><div class="k">Momentum</div><div class="v" id="momScoreBox">--</div><div class="meta" id="momScoreMeta">Direction alignment</div></div>
+<div class="fpBox"><div class="k">Regime Age</div><div class="v" id="regimeAgeBox">--</div><div class="meta" id="regimeAgeMeta">Ticks in current state</div></div>
 </div>
 <div class="fpTfGrid">
 <div class="fpTfBox" id="fpTfBox1h">
@@ -1171,16 +1271,15 @@ body.qx-auth-locked .wrap{display:none!important}
 <div class="dayRow">
 <div><div style="font-size:10.5px;color:rgba(255,255,255,.46);margin-bottom:3px">TODAY</div><div id="currentDayName" style="font-size:20px;font-weight:700;font-family:var(--mono)">--</div><div id="currentSessionLabel" style="font-size:10.5px;color:rgba(255,255,255,.50);margin-top:3px">Session: --</div></div>
 <div style="flex:1;max-width:330px"><div style="font-size:10.5px;color:rgba(255,255,255,.46);margin-bottom:3px">24H EFFECT</div><div class="smallNote" id="dayEffectNote">--</div></div>
-<div><div class="dayBadge" id="sessionOverlapBadge">--</div><div id="sessionMinsLeft" style="font-size:10px;color:rgba(255,255,255,.42);margin-top:5px">--</div></div>
+<div><div class="dayBadge" id="sessionOverlapBadge">--</div><div id="sessionMinsLeft" style="font-size:10px;color:rgba(220,232,248,.74);margin-top:5px">--</div></div>
 </div>
 </div></div>
 <div class="card"><div class="inner">
-<div class="card-title"><h2>Projection Accuracy · Adaptive Learning</h2><div class="hint">Every LONG/SHORT call is scored at +4H. Range hit rate drives cone calibration. Stop rate tracks discipline. R/R ratio measures setup quality.</div></div>
-<div class="paGrid" style="grid-template-columns:repeat(5,1fr)">
+<div class="card-title"><h2>Projection Accuracy · Adaptive Learning</h2><div class="hint">Every BUY/SELL call is scored at +4H. Direction hit drives bias calibration. Range hit drives cone width. Avg Exit Move tracks pips in the predicted direction at the 4H mark.</div></div>
+<div class="paGrid" style="grid-template-columns:repeat(4,1fr)">
 <div class="paBox hero"><div class="k">4H Dir Hit</div><div class="v" id="paDirHit">--</div><div class="meta" id="paDirHitMeta">n=0 scored</div></div>
 <div class="paBox"><div class="k">4H Range Hit</div><div class="v" id="pa1dRng">--</div><div class="meta" id="pa1dRngMeta">n=0 scored</div></div>
-<div class="paBox"><div class="k">Avg R/R</div><div class="v" id="paRR">--</div><div class="meta" id="paRRMeta">4H range ÷ stop</div></div>
-<div class="paBox"><div class="k">Stop Hit Rate</div><div class="v" id="pa1dStop">--</div><div class="meta" id="pa1dStopMeta">Stop trigger rate</div></div>
+<div class="paBox"><div class="k">Avg Exit Move</div><div class="v" id="paRR">--</div><div class="meta" id="paRRMeta">pips in predicted dir</div></div>
 <div class="paBox"><div class="k">Logged / Resolved</div><div class="v" id="paTotalN">0</div><div class="meta" id="paTotalMeta">0 resolved, 0 pending</div></div>
 </div>
 <div class="paCalibRow" id="paCalibRow" style="background:rgba(8,20,52,.28);border:1px solid rgba(180,220,255,.10)">
@@ -1191,9 +1290,9 @@ body.qx-auth-locked .wrap{display:none!important}
 </div>
 <div class="paLog">
 <div class="paLogLabel">Projection log — last 100 · scored at +4H</div>
-<div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Date</th><th>Entry</th><th>Stop</th><th>Exit 4H</th><th>Bias</th><th>Dir</th><th>4H Rng</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
+<div class="scroll" style="max-height:175px"><table class="paLogTable"><thead><tr><th>Date</th><th>Entry</th><th>Exit 4H</th><th>Bias</th><th>Dir</th><th>Move</th></tr></thead><tbody id="paLogBody"></tbody></table></div>
 </div>
-<div class="smallNote" style="margin-top:6px">Direction hit = called direction correctly at +4H. Range hit = price stayed inside projected ±pip cone. Need 5+ resolved for adaptive learning, 10+ for full calibration.</div>
+<div class="smallNote" style="margin-top:6px">Direction hit = called direction correctly at +4H. Dir = projected pip target (+ for BUY, − for SELL). Move = IN if direction correct at +4H, OUT if not. Need 5+ resolved for adaptive learning, 10+ for full calibration.</div>
 <div style="margin-top:14px;border-top:1px solid rgba(180,220,255,.08);padding-top:12px">
 <div class="card-title" style="padding:0 0 8px"><h3 style="font-size:11px;font-weight:600;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.7px;margin:0">Adaptive Learning Engine — Self-Calibrating from Live Outcomes</h3></div>
 <div class="fcastGrid">
@@ -1280,7 +1379,6 @@ body.qx-auth-locked .wrap{display:none!important}
       Session logic: Asia drift, London open break, NY continuation, overlap volatility, post-fix decay. Bus cadence: 15m.
     </div>
 </div></div>
-<div class="card"><div class="inner riskLevel"><div class="rlabel">Risk Level</div><div class="rbig" id="riskBig">--</div><div class="rrule" id="riskRule">Policy: state-aware sizing and entry gating</div></div></div>
 <div class="card"><div class="inner">
 <div class="card-title">
 <h2>Signal Intelligence · Command Layer</h2>
@@ -1377,11 +1475,11 @@ body.qx-auth-locked .wrap{display:none!important}
 </div>
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
 <span class="liveBadge stale" id="teNewsBadge">LOADING</span>
-<span id="teNewsCount" style="font-size:10px;color:rgba(255,255,255,.38)">Fetching...</span>
+<span id="teNewsCount" style="font-size:10px;color:rgba(220,232,248,.68)">Fetching...</span>
 <a href="https://tradingeconomics.com/" rel="noopener noreferrer" style="font-size:10px;color:rgba(180,220,255,.55);margin-left:auto;text-decoration:none" target="_blank">tradingeconomics.com →</a>
 </div>
 <div id="teNewsBody" style="max-height:400px;overflow-y:auto">
-<div style="color:rgba(255,255,255,.35);font-size:11px;padding:8px 0">Loading news from Trading Economics...</div>
+<div style="color:rgba(255,255,255,.62);font-size:11px;padding:8px 0">Loading news from Trading Economics...</div>
 </div>
 <div class="smallNote" style="margin-top:5px">Refreshes every 10 minutes. Categorized by currency relevance (USD / EUR / GBP / MKT). Click to open full article.</div>
 </div></div>
@@ -1414,7 +1512,7 @@ body.qx-auth-locked .wrap{display:none!important}
 <div class="sh">🔒 Team Sync — Firestore + Auth</div>
 <div class="sd" style="line-height:1.65"><b>How it works:</b> MASTER computes state and writes to Firestore every tick. All Readers receive an instant push (onSnapshot) the moment MASTER writes — no polling, no missed ticks, identical data guaranteed.<br/><br/><b>Roles:</b> Run the one-time Admin SDK script to set <code>role:'MASTER'</code> on your Firebase Auth UID. All other accounts auto-become Readers.<br/><br/><b>Firestore security rules:</b><br/><code>match /quadrax/state { allow read: if request.auth != null; allow write: if request.auth.token.role == 'MASTER'; }</code></div>
 <div class="field" style="margin-top:10px"><label>Firebase Project <span class="vTag" style="background:rgba(0,214,143,.12);color:rgba(0,214,143,.90);border:1px solid rgba(0,214,143,.25);padding:2px 7px;border-radius:999px;font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase">Configured</span></label>
-<input id="fbConfigInput" type="text" readonly value="quadrax-personal-prod" style="width:100%;font-family:monospace;font-size:11px;background:rgba(0,0,0,.25);border:1px solid rgba(180,220,255,.10);border-radius:5px;color:rgba(180,220,255,.55);padding:8px;box-sizing:border-box;cursor:default" />
+<input id="fbConfigInput" type="text" readonly value="%%FB_PROJECT_ID%%" style="width:100%;font-family:monospace;font-size:11px;background:rgba(0,0,0,.25);border:1px solid rgba(180,220,255,.10);border-radius:5px;color:rgba(180,220,255,.55);padding:8px;box-sizing:border-box;cursor:default" />
 <div class="smallNote" style="margin-top:3px">Firebase project is hardcoded in this build. Only email and password are required to connect.</div>
 </div>
 <div class="fieldRow" style="margin-top:8px">
@@ -1438,7 +1536,7 @@ body.qx-auth-locked .wrap{display:none!important}
 <b>QuadraX</b> is a single-decision system built around a daily cadence.
         Six independent signal layers (HMM regime, Quant engine, PB3, FX confluence, Macro transmission, Archetype classifier) are synthesised into one direction, conviction score and risk throttle by the Unified Signal Bus.
         All timeframe forecast cards show the same directional call — disagreement is a system error, not a signal.
-        Projection accuracy, adaptive learning, signal performance, and R/R are all scored and tracked at <b>+4H resolution</b>. Projection cadence is daily.
+        Projection accuracy, adaptive learning, and signal performance are all scored and tracked at <b>+4H resolution</b>. Projection cadence is daily.
       </div>
 <div class="grid" style="grid-template-columns:1.1fr .9fr;gap:14px">
 <!-- Left: regime table -->
@@ -1465,13 +1563,13 @@ body.qx-auth-locked .wrap{display:none!important}
 <div style="margin-bottom:7px"><span style="color:rgba(100,200,255,.90);font-weight:700">Unified Signal Bus</span><br/>
             Single source of truth. 6 signals vote direction. Bus outputs: Consensus dir, Conviction %, Coherence %, Risk Throttle %, and 3-TF forecast (1h/4h/1d). Weekly removed — daily cadence only.</div>
 <div style="margin-bottom:7px"><span style="color:rgba(100,200,255,.90);font-weight:700">Forward Projection · Cone</span><br/>
-            Cone now shows <b>three horizons</b>: 1h (bright inner), 4h (mid zone), 1d (faded outer, dashed boundary). New boxes: <b>Move Range 1D</b>, <b>Stop Distance</b> (r1×0.75, min 8p), <b>R/R Daily</b> (1d÷stop — green ≥3:1, red &lt;1.5:1).</div>
+            Cone now shows <b>three horizons</b>: 1h (bright inner), 4h (mid zone), 1d (faded outer, dashed boundary). Boxes now summarise <b>Trade Bias</b>, <b>Decision Confidence</b>, <b>Momentum</b>, and <b>Regime Age</b>. Targets are evaluated against the <b>4H exit price</b>, not stop-loss triggers.</div>
 <div style="margin-bottom:7px"><span style="color:rgba(100,200,255,.90);font-weight:700">Projection Accuracy · Adaptive Learning</span><br/>
-            Every LONG/SHORT call scored at <b>+4H</b>. Panel: Daily Range Hit (target 60–80%), Daily Stop Hit, <b>Avg R/R</b> across resolved calls. Direction Hit removed — Range Hit is the reliable calibration metric. Adaptive learning activates at 5+ 4H resolved.</div>
+            Every BUY/SELL call is scored at <b>+4H</b>. Panel: <b>4H Direction Hit</b>, <b>4H Range Hit</b> (target 60–80%), and <b>Avg Exit Move</b> in the predicted direction. Adaptive learning activates at 5+ resolved 4H outcomes.</div>
 <div style="margin-bottom:7px"><span style="color:rgba(100,200,255,.90);font-weight:700">Signal Calibration Summary (was Direction Learning)</span><br/>
-            Now shows: Bias Weight, <b>Sharpe Adjustment</b> (new — Sharpe quality multiplier), <b>Avg R/R</b>, and <b>Recent Streak</b> (e.g. "IN 4 of last 10"). Cone width and bias confidence both adapt from daily rates.</div>
+            Now shows: Bias Weight, <b>Sharpe Adjustment</b>, <b>Avg Exit Move</b>, and <b>Recent Streak</b>. Cone width and bias confidence adapt from 4H direction/range outcomes — no stop-loss analytics in this build.</div>
 <div><span style="color:rgba(100,200,255,.90);font-weight:700">Signal Performance · Rolling Sharpe</span><br/>
-            Sharpe annualized to <b>252 daily periods</b>. Win rate, P&amp;L, equity curve all from 1D outcomes. Target ≥2.5. Needs 20+ closed calls.</div>
+            Sharpe annualized to <b>252 daily periods</b>. Win rate, P&amp;L, equity curve and exit-move quality all derive from resolved 4H forecast outcomes. Target ≥2.5. Needs 20+ closed calls.</div>
 </div>
 </div></div>
 </div>
@@ -1556,8 +1654,8 @@ The <b>Cost Gate</b> is the entry gatekeeper. It computes a real-time <i>edge sc
 <div style="color:rgba(255,255,255,.60)">Bus consensus + conviction.<br/>Below 40% = no trade.</div>
 </div>
 <div style="background:rgba(21,101,192,.12);border:1px solid rgba(41,121,255,.25);border-radius:6px;padding:10px;text-align:center">
-<div style="font-weight:700;color:rgba(100,180,255,.95);margin-bottom:4px">④ R/R FILTER</div>
-<div style="color:rgba(255,255,255,.60)">R/R Daily ≥3:1 + Stop ≤20p.<br/>Below 1.5:1 → pass setup.</div>
+<div style="font-weight:700;color:rgba(100,180,255,.95);margin-bottom:4px">④ CONVICTION FILTER</div>
+<div style="color:rgba(255,255,255,.60)">Dir Hit ≥55% + Range Hit 60–80%.<br/>Momentum score rising → enter.</div>
 </div>
 <div style="background:rgba(21,101,192,.12);border:1px solid rgba(41,121,255,.25);border-radius:6px;padding:10px;text-align:center">
 <div style="font-weight:700;color:rgba(100,180,255,.95);margin-bottom:4px">⑤ CALIBRATION</div>
@@ -2012,13 +2110,13 @@ const V28=(()=> {
       recos.push(makeReco({
         side:"WAIT",
         title:"Risk Action",
-        meta:`If already in position: tighten stop, cut size in ${sess.label} spread environment.`,
+        meta:`If already in position: reduce size, protect gains in ${sess.label} spread environment.`,
         score: Math.min(score, 60),
         badge:"RISK"
       }));
     } else {
       // 3–5 structured recos per session (not quota based; this is a "top set" list).
-      const dirTxt = call==="BUY"?"Long bias":"Short bias";
+      const dirTxt = call==="BUY"?"Buy signal":"Sell signal";
       const volTxt = vr>=1.35?"high vol":"normal vol";
       const primary = sess.key==="LON_OPEN"||sess.key==="NY_OVER" ? "Breakout / Continuation" : "Pullback / Fade";
       const secondary = sess.key.startsWith("ASIA") ? "Range Mean-Revert" : "Trend Add-on";
@@ -2042,7 +2140,7 @@ const V28=(()=> {
         title:"Fail Condition / Kill Switch",
         meta:`If spread spikes or regime confidence drops <35%, flatten. This is the bus discipline.`,
         score: Math.max(score-10, 50),
-        badge:"STOP"
+        badge:"EXIT"
       }));
       // optional 4th/5th if conviction strong
       if(conviction>=0.65){
@@ -2058,7 +2156,7 @@ const V28=(()=> {
         recos.push(makeReco({
           side:"WAIT",
           title:"Volatility Override",
-          meta:`Vol regime elevated (${vr.toFixed(1)}x). Cap leverage, widen stops, reduce frequency.`,
+          meta:`Vol regime elevated (${vr.toFixed(1)}x). Cap leverage, cut size, reduce frequency.`,
           score: 58,
           badge:"VR"
         }));
@@ -2103,6 +2201,17 @@ function updateLegendaryVisuals(q){
 <script>
 (function(){"use strict";
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+  // Display translation — maps engine values (LONG/SHORT) to user-facing (BUY/SELL)
+  function dispBias(b){ return b==='LONG'?'BUY':b==='SHORT'?'SELL':b||'--'; }
+  function currentHMMDiagnostics(){
+    return {
+      currentRegime: ($('hmmDiagCurrent')?.textContent||'--'),
+      regimeConfidence: ($('hmmDiagConf')?.textContent||'--'),
+      predictedNextRegime: ($('hmmDiagNext')?.textContent||'--'),
+      transitionProbability: ($('hmmDiagProb')?.textContent||'--'),
+      dwellTime: ($('hmmDiagDwell')?.textContent||'--')
+    };
+  }
 const fmtTime=ms=>new Date(ms).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"});
 const fmtTS=ms=>new Date(ms).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
 const bp=x=>x*10000;
@@ -2367,16 +2476,48 @@ const HeadlinesFeed=(()=>{
 })();
 
 const Engine=(()=>{
-  const HN=80,MW=8,VW=18,HT=4,PT=1.35,MSW=10,WARMUP=20;
-  let tickN=0,regAge=0,lastPol=null;let prices=[],returns=[];let polState=null,hold=0;
-  // Seed TM with weak priors so it renders on first tick (self-transitions most likely)
-  let TM=Array.from({length:8},(_,i)=>new Array(8).fill(0).map((_,j)=>i===j?2:0.1));let prevPol=null;
+  const HN=80,MW=8,VW=18,HT=2,PT=1.35,MSW=10,WARMUP=20;
+  let tickN=0,regAge=0,lastPol=null;let prices=[],returns=[];let polState=null,pendingState=null,hold=0;
+  // TM: flat uniform priors — real observed transitions build it up from scratch
+  // Realistic EUR/USD regime transition priors (row = from, col = to, normalized by drawTM)
+  // Based on: mean-rev dominance, trend continuation, rare shock states resolving to S1/S4
+  let TM=[
+    [9, 1, 4, 3, 1, 1, 2, 0.5],  // S1 Mean-Rev: self-loop, often→S3/S4
+    [5, 4, 4, 2, 2, 1, 1, 0.5],  // S2 Liq Vacuum: resolves→S1/S3
+    [5, 1, 8, 4, 1, 1, 2, 0.5],  // S3 Slow Drift: self-loop, stays or→S1/S4
+    [4, 1, 3, 7, 2, 1, 2, 1],    // S4 Strong Trend: continues, reverts→S1/S3
+    [6, 1, 2, 4, 3, 2, 1, 1],    // S5 Stop Cascade: resolves→S1/S4
+    [5, 1, 2, 5, 2, 3, 1, 1],    // S6 News Shock: resolves→S1/S4
+    [5, 2, 4, 2, 1, 1, 4, 1],    // S7 Dealer Unwind: resolves→S1/S3
+    [6, 1, 1, 3, 4, 2, 1, 2]     // S8 Panic/Forced: resolves→S1/S5
+  ];let prevPol=null;
   const softmax=lg=>{const m=Math.max(...lg),e=lg.map(v=>Math.exp((v-m)/PT)),s=e.reduce((a,b)=>a+b,0)||1;return e.map(v=>v/s);};
   function feats(){if(prices.length<3)return null;const p=prices.at(-1),pp=prices.at(-2),r=pp?p-pp:0;const mb=prices[Math.max(0,prices.length-1-MW)],mom=mb?p-mb:0;const rr=returns.slice(-VW),avg=rr.length?rr.reduce((a,b)=>a+Math.abs(b),0)/rr.length:0;const volx=clamp(avg/0.00015,0,5),shock=Math.abs(r)>0.0007?1:0;const rrm=returns.slice(-MSW),md=Math.sign(mom);const momScore=rrm.length>0?rrm.filter(v=>Math.sign(v)===md).length/rrm.length:0.5;return{p,r,mom,volx,shock,momScore};}
-  function scoreStates(f){const mb=Math.abs(bp(f.mom)),rb=Math.abs(bp(f.r)),v=f.volx;const sc=returns.slice(-10);const sig=sc.length<6?0:sc.reduce((c,_,i)=>i>0&&Math.sign(sc[i])!==Math.sign(sc[i-1])?c+1:c,0);return softmax([2.4-.7*v-.04*mb,1.1+.55*v-.03*mb,1.6-.25*v-.02*mb,.9+.25*v+.045*mb,-.2+.55*v+.02*mb+.04*rb,-.4+(f.shock?3:0)+.2*v,.3+.18*v+.35*clamp(sig/6,0,1)-.02*mb,-.8+.95*Math.max(0,v-2.2)+.04*rb+(f.shock?.6:0)]);}
+  function scoreStates(f){
+    const mb=Math.abs(bp(f.mom)),rb=Math.abs(bp(f.r)),v=f.volx,ms=f.momScore;
+    const sc=returns.slice(-10);
+    const sig=sc.length<6?0:sc.reduce((c,_,i)=>i>0&&Math.sign(sc[i])!==Math.sign(sc[i-1])?c+1:c,0);
+    return softmax([
+      0.6+1.2*clamp(sig/7,0,1)-0.4*v-0.03*mb-0.30*ms,  // S1 Mean-Rev: only when sign-changes high + vol low
+      0.4-0.5*v-0.04*mb,                                  // S2 Liq Vacuum: only in extremely quiet markets
+      1.1+0.30*ms-0.15*v-0.025*mb,                       // S3 Slow Drift: default active-session state
+      0.4+0.40*v+0.060*mb+0.30*ms,                       // S4 Strong Trend: vol + momentum aligned
+      -0.6+0.65*v+0.03*mb+0.05*rb,                       // S5 Stop Cascade: high vol + return impulse
+      -0.6+(f.shock?4.0:0)+0.30*v,                       // S6 News Shock: shock events only
+      -0.3+0.25*v+0.35*clamp(sig/6,0,1)-0.25*ms,        // S7 Dealer Unwind: chop + moderate vol
+      -1.8+1.2*Math.max(0,v-2)+0.05*rb+(f.shock?0.8:0)  // S8 Panic/Forced: extreme vol only
+    ]);
+  }
   const pick=probs=>{let b=0;for(let i=1;i<probs.length;i++)if(probs[i]>probs[b])b=i;return b+1;};
   const conf=(probs,s)=>{const sorted=[...probs].sort((a,b)=>b-a);return clamp(probs[s-1]*.7+(sorted[0]-(sorted[1]||0))*.3,0,1);};
-  function updatePol(det){if(polState==null){polState=det;hold=0;return{policy:polState,hold};}if(det===polState){hold=0;return{policy:polState,hold};}hold++;if(hold>=HT){polState=det;hold=0;return{policy:polState,hold};}return{policy:polState,hold};}
+  function updatePol(det){
+    if(polState==null){polState=det;pendingState=det;hold=0;return{policy:polState,hold};}
+    if(det===polState){hold=0;pendingState=polState;return{policy:polState,hold};}
+    // Accumulate hold only for the same candidate; a different candidate resets the counter
+    if(det===pendingState){hold++;}else{pendingState=det;hold=1;}
+    if(hold>=HT){polState=det;pendingState=det;hold=0;}
+    return{policy:polState,hold};
+  }
   const transRow=si=>{const row=TM[si],total=row.reduce((a,b)=>a+b,0);return total>0?row.map(v=>v/total):new Array(8).fill(.125);};
   function predictNext(pol){const row=transRow(pol-1);let bi=0;for(let i=1;i<row.length;i++)if(row[i]>row[bi])bi=i;return{state:bi+1,prob:row[bi]};}
   function step(price){tickN++;const p=Number(price);if(!Number.isFinite(p)||p<=0)return null;const prev=prices.length?prices.at(-1):null;prices.push(p);if(prices.length>HN)prices.shift();if(prev!=null){returns.push(p-prev);if(returns.length>HN)returns.shift();}const f=feats();if(!f)return null;const probs=scoreStates(f),det=pick(probs),pr=updatePol(det),pol=pr.policy;if(prevPol!=null&&prevPol!==pol)TM[prevPol-1][pol-1]++;if(prevPol!==pol)prevPol=pol;regAge=(lastPol===pol)?regAge+1:0;lastPol=pol;return{tickN,features:f,probs,detector:det,policy:pol,hold:pr.hold,conf:conf(probs,pol),regimeAge:regAge,momScore:f.momScore,predictedNext:predictNext(pol),TM,warmed:tickN>=WARMUP};}
@@ -2436,19 +2577,24 @@ const ProjTracker=(()=>{
   const MIN_N=5;
   let log=loadArr(KEY.proj,[]).slice(-200).map(p=>{
     // normalize/migrate older entries so new UI fields populate
-    const o={outcome1h:null,outcome4h:null,outcome1d:null,stopSpot:null,r1d:null,...p};
+    const o={outcome1h:null,outcome4h:null,outcome1d:null,r1d:null,...p};
     const spotN=Number(o.spot);
     const r1N=Number(o.r1);
     const r4N=Number(o.r4);
     if(o.r1d==null && Number.isFinite(r4N)) o.r1d=Math.max(10, Math.round(r4N*2.5));
-    // Backfill stopSpot if missing. Uses r1 * 0.75 with an 8 pip floor (same as new logging).
-    if(o.stopSpot==null && Number.isFinite(spotN)){
-      const stopPips = Math.max(8, Math.round((Number.isFinite(r1N)?r1N:0)*0.75));
-      const stopSpot = (o.bias==="LONG") ? (spotN - stopPips/10000) : (o.bias==="SHORT") ? (spotN + stopPips/10000) : null;
-      if(stopSpot!=null) o.stopSpot=stopSpot;
-    }
+    // v39 migration: re-score dirHit/rngHit with corrected logic
+    ['outcome1h','outcome4h','outcome1d'].forEach(k=>{
+      if(o[k]&&o[k].movePips!=null&&(o.bias==='LONG'||o.bias==='SHORT')){
+        const mv=Number(o[k].movePips);
+        const signed=(o.bias==='LONG'?1:-1)*mv;
+        const tgt=k==='outcome1h'?Number(o.r1)||0:k==='outcome4h'?Number(o.r4)||0:Number(o.r1d)||Math.max(10,Math.round((Number(o.r4)||0)*2.5));
+        o[k].dirHit=signed>0;
+        o[k].rngHit=(signed>0)&&(Math.abs(mv)<=tgt);
+      }
+    });
     return o;
   }); // normalize older entries so newer UI fields populate
+  save(KEY.proj,log.slice(-200)); // persist v39 migration
   let calibMult=Number(settings.calibMult)||1.0;
   let biasConfAdj=Number(settings.biasConfAdj)||1.0;
   let sharpeAdj=Number(settings.sharpeAdj)||1.0
@@ -2521,9 +2667,7 @@ const ProjTracker=(()=>{
     const last=log.length?log.at(-1):null;
     if(last&&(Date.now()-last.ts)<60*60*1000)return;
     const r1d = _r1dArg||Math.max(10, Math.round((r4||0)*2.5));
-    const stopPips = Math.max(8, Math.round((r1||0)*0.75));
-    const stopSpot = bias==="LONG" ? (spot - stopPips/10000) : (spot + stopPips/10000);
-    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,r1d,stopSpot,policy,outcome1h:null,outcome4h:null,outcome1d:null});
+    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,r1d,policy,outcome1h:null,outcome4h:null,outcome1d:null});
     if(log.length>200)log=log.slice(-200);
     _persist();
   }
@@ -2532,90 +2676,25 @@ const ProjTracker=(()=>{
     if(!Number.isFinite(currentSpot))return;
     const now=Date.now();let changed=false;
 
-    function firstHitInCandle(c, side, stopSpot, targetSpot){
-      if(!c||!Number.isFinite(stopSpot)||!Number.isFinite(targetSpot))return null;
-      if(side==="LONG"){
-        const hitStop=(c.l<=stopSpot);
-        const hitTarget=(c.h>=targetSpot);
-        if(hitStop&&hitTarget)return "BOTH";
-        if(hitStop)return "STOP";
-        if(hitTarget)return "TARGET";
-      }else if(side==="SHORT"){
-        const hitStop=(c.h>=stopSpot);
-        const hitTarget=(c.l<=targetSpot);
-        if(hitStop&&hitTarget)return "BOTH";
-        if(hitStop)return "STOP";
-        if(hitTarget)return "TARGET";
-      }
-      return null;
-    }
-
-    function resolveHorizon(p, horizonMins, targetPips, key){
+    function resolveHorizon(p,horizonMins,targetPips,key){
+      // Pure time-based exit: evaluate forecast at horizon, no stop logic
       if(p[key]!==null)return;
-      const horizonMs=horizonMins*60*1000;
       const ageMins=(now-p.ts)/60000;
+      if(ageMins<horizonMins)return;
       const side=p.bias;
       if(side!=="LONG"&&side!=="SHORT")return;
-
       const spot0=Number(p.spot);
       if(!Number.isFinite(spot0))return;
-
-      const stopSpot=Number.isFinite(Number(p.stopSpot))?Number(p.stopSpot):null;
-      const tgtSpot=(side==="LONG")?(spot0+targetPips/10000):(spot0-targetPips/10000);
-
-      let event=null;
-      let exitSpot=null;
-      const endScanTs=Math.min(now, p.ts+horizonMs);
-
-      try{
-        const candles=(typeof CandleStore!=="undefined"&&CandleStore.scan)?CandleStore.scan(p.ts,endScanTs):[];
-        for(const c of candles){
-          if(stopSpot==null)break;
-          const hit=firstHitInCandle(c,side,stopSpot,tgtSpot);
-          if(hit){
-            const resolved=(hit==="BOTH")?"STOP":hit;
-            event=resolved;
-            exitSpot=(resolved==="STOP")?stopSpot:tgtSpot;
-            break;
-          }
-        }
-      }catch(e){}
-
-      if(!event && p.stopHit===true && stopSpot!=null){
-        event="STOP";
-        exitSpot=stopSpot;
-      }
-
-      if(event && exitSpot!=null){
-        const movePips=(exitSpot-spot0)*10000;
-        const signed=(side==="LONG"?1:-1)*movePips;
-        const dirOk=signed>0;
-        const stopEvent=(event==="STOP");
-        const rngOk=stopEvent?false:(Math.abs(movePips)<=targetPips);
-        p[key]={dirHit:dirOk,rngHit:rngOk,movePips,exitSpot,stopHit:stopEvent,targetHit:(event==="TARGET"),event};
-        if(event==="STOP" && p.stopHit!==true){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=exitSpot;}
-        if(event==="TARGET" && p.targetHit!==true){p.targetHit=true;p.targetHitTs=now;p.targetHitSpot=exitSpot;}
-        changed=true;
-        return;
-      }
-
-      if(ageMins>=horizonMins){
-        const movePips=(currentSpot-spot0)*10000;
-        const signed=(side==="LONG"?1:-1)*movePips;
-        const dirOk=signed>0;
-        p[key]={dirHit:dirOk,rngHit:Math.abs(movePips)<=targetPips,movePips,exitSpot:currentSpot,stopHit:false,targetHit:false,event:"TIME"};
-        changed=true;
-      }
+      const movePips=(currentSpot-spot0)*10000;
+      const signed=(side==="LONG"?1:-1)*movePips;
+      const dirOk=signed>0;
+      p[key]={dirHit:dirOk,rngHit:dirOk&&Math.abs(movePips)<=targetPips,movePips,exitSpot:currentSpot,event:"TIME"};
+      changed=true;
     }
 
     log.forEach(p=>{
       if(!p||!Number.isFinite(Number(p.spot)))return;
       const ageMins=(now-p.ts)/60000;
-
-      if(!p.stopHit && Number.isFinite(Number(p.stopSpot))){
-        if(p.bias==="LONG" && currentSpot<=p.stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
-        if(p.bias==="SHORT" && currentSpot>=p.stopSpot){p.stopHit=true;p.stopHitTs=now;p.stopHitSpot=currentSpot;changed=true;}
-      }
 
       if(ageMins>=1){
         resolveHorizon(p,60,Number(p.r1)||0,"outcome1h");
@@ -2641,7 +2720,6 @@ const ProjTracker=(()=>{
       n1d:r1d.length,
       dir1dRate:r1d.length?r1d.filter(p=>p.outcome1d.dirHit).length/r1d.length:null,
       rng1dRate:r1d.length?r1d.filter(p=>p.outcome1d.rngHit).length/r1d.length:null,
-      stopRate4h:r4.length?r4.filter(p=>p.stopHit===true).length/r4.length:null,
       total:log.length,
       pending:log.filter(p=>p.outcome4h===null).length, // 4H-resolution tracking
     };
@@ -2849,7 +2927,7 @@ const TENewsFeed=(()=>{
   }
   function render(){
     const el=$("teNewsBody");if(!el)return;
-    if(!articles.length){el.innerHTML="<div style='color:rgba(255,255,255,.35);font-size:11px;padding:8px'>Loading Trading Economics news...</div>";return;}
+    if(!articles.length){el.innerHTML="<div style='color:rgba(220,232,248,.65);font-size:11px;padding:8px'>Loading Trading Economics news...</div>";return;}
     const now=Date.now();
     el.innerHTML=articles.slice(0,15).map(a=>{
       const ageMins=Math.round((now-a.ts)/60000);
@@ -2859,7 +2937,7 @@ const TENewsFeed=(()=>{
         +"<div class='teNewsItem'>"
         +"<div class='teNewsTime'>"+ageStr+" \u2014 Trading Economics</div>"
         +"<div class='teNewsTitle'>"+a.title+"</div>"
-        +(a.desc?"<div style='font-size:9.5px;color:rgba(255,255,255,.38);margin-top:2px'>"+a.desc+"</div>":"")
+        +(a.desc?"<div style='font-size:9.5px;color:rgba(220,232,248,.68);margin-top:2px'>"+a.desc+"</div>":"")
         +"<span class='teNewsCategory "+cat+"'>"+cat+"</span>"
         +"</div></a>";
     }).join("");
@@ -3553,7 +3631,7 @@ function injectSignalStats(state,sigStats){
   // Full projection stats — 1h/4h/1d only
   const projS=ProjTracker.getStats();  state.projDir1h=projS.dir1hRate;state.projRng1h=projS.rng1hRate;state.projN1h=projS.n1h;
   state.projDir4h=projS.dir4hRate;state.projRng4h=projS.rng4hRate;state.projN4h=projS.n4h;
-  state.projDir1d=projS.dir1dRate;state.projRng1d=projS.rng1dRate;state.projN1d=projS.n1d||0;state.projStop4h=projS.stopRate4h;
+  state.projDir1d=projS.dir1dRate;state.projRng1d=projS.rng1dRate;state.projN1d=projS.n1d||0;
   state.projTotal=projS.total;state.projPending=projS.pending;
   state.projCalibMult=ProjTracker.getCalibMult();
   state.projBiasAdj=ProjTracker.getBiasConfAdj();
@@ -3573,12 +3651,18 @@ function applyFullStateToUI(st){
   if(st.signalBus){ try{ updateSignalBusUI(st.signalBus);}catch(e){ console.warn('[QuadraX] updateSignalBusUI failed',e);} }
   // Regime
   $("policyStateTitle").textContent="Policy State: S"+st.policy+" "+st.stateName;
-  $("policyStateDesc").textContent=st.stateDesc+(FirebaseSync.isReader&&st.masterId?" [FS MASTER "+st.masterId.slice(0,6)+"]":"");
+  var tbR=$('topbarRegime');if(tbR)tbR.textContent='S'+st.policy+' '+st.stateName;
+  $("policyStateDesc").textContent=st.stateDesc;
   $("detectorChip").textContent="S"+st.detector;$("policyChip").textContent="S"+st.policy;
   $("confChip").textContent=st.conf!=null?(st.conf*100).toFixed(1)+"%":"--";$("hystChip").textContent=st.detector===st.policy?"stable":"holding";
   $("ageChip").textContent=String(st.regimeAge);$("tickChip").textContent=st.tickN+"/"+Engine.WARMUP;
   $("momChip").textContent=Math.round(st.momScore*100)+"%";
   $("nextStateChip").textContent=st.predictedNext?"S"+st.predictedNext.state+" ("+Math.round(st.predictedNext.prob*100)+"%)": "--";
+  if($("hmmDiagCurrent")) $("hmmDiagCurrent").textContent="S"+st.policy+" "+(st.stateName||"--");
+  if($("hmmDiagConf")) $("hmmDiagConf").textContent=st.conf!=null?Math.round(st.conf*100)+"%":"--";
+  if($("hmmDiagNext")) $("hmmDiagNext").textContent=st.predictedNext?"S"+st.predictedNext.state:"--";
+  if($("hmmDiagProb")) $("hmmDiagProb").textContent=st.predictedNext&&st.predictedNext.prob!=null?Math.round(st.predictedNext.prob*100)+"%":"--";
+  if($("hmmDiagDwell")) $("hmmDiagDwell").textContent=(st.regimeAge!=null?String(st.regimeAge):"--")+" ticks";
   if(probEls.length===8&&st.probs?.length===8)
     st.probs.forEach((p,i)=>{probEls[i].bar.style.width=clamp(p*100,0,100)+"%";probEls[i].bar.style.background=STATES[i].color;probEls[i].val.textContent=(p*100).toFixed(1)+"%";});
   if(st.recentStates?.length){drawTimeline($("timelineCanvas"),st.recentStates);const td=$("timelineDepth");if(td)td.textContent=st.recentStates.length;}
@@ -3624,11 +3708,10 @@ function applyFullStateToUI(st){
   if(ab)ab.innerHTML="EUR/USD Bias: <b class='"+(st.archBias==="BEARISH"?"neg":st.archBias==="BULLISH"?"pos":"")+"'>"+st.archBias+"</b>";
   if(an)an.textContent=st.archNote||"";if(aa)aa.textContent=st.archAnalog||"";
   // Projection
-  const tb=$("tradeBias");if(tb){tb.textContent=st.bias;tb.classList.remove("pos","neg");if(st.bias==="LONG")tb.classList.add("pos");if(st.bias==="SHORT")tb.classList.add("neg");}
+  const tb=$("tradeBias");if(tb){tb.textContent=dispBias(st.bias);tb.classList.remove("pos","neg");if(st.bias==="LONG")tb.classList.add("pos");if(st.bias==="SHORT")tb.classList.add("neg");}
   const tbm=$("tradeBiasMeta");if(tbm)tbm.textContent=(st.txBias||"--")+" | Event "+Math.round((st.eRisk??0)*100)+"%";
   // Target prices for FP TF boxes
   const _r1d=st.r1d||Math.round((st.r4||0)*2.5);
-  const sdEl=$("stopDist"),sdm=$("stopDistMeta"),rrEl=$("rrRatio"),rrm=$("rrRatioMeta");
   {const isL=st.bias==="LONG",isS=st.bias==="SHORT";
    const tgt1h=st.spotPrice&&st.r1?((isL?st.spotPrice+st.r1/10000:isS?st.spotPrice-st.r1/10000:st.spotPrice)).toFixed(5):"--";
    const tgt4h=st.spotPrice&&st.r4?((isL?st.spotPrice+st.r4/10000:isS?st.spotPrice-st.r4/10000:st.spotPrice)).toFixed(5):"--";
@@ -3637,15 +3720,16 @@ function applyFullStateToUI(st){
    if(r1el)r1el.textContent="Target: "+tgt1h;
    if(r4el)r4el.textContent="Target: "+tgt4h;
    if(r1del)r1del.textContent="Target: "+tgtDay;
-   // Update TF box classes for visual state
    ["fpTfBox1h","fpTfBox4h","fpTfBox1d"].forEach(id=>{const b=$(id);if(!b)return;b.classList.remove("long","short");if(isL)b.classList.add("long");else if(isS)b.classList.add("short");});
   }
-  const _stopPips=Math.max(8,Math.round((st.r1||0)*0.75));
-  if(sdEl){sdEl.textContent=_stopPips+"p";sdEl.classList.remove("pos","neg");if(_stopPips<=12)sdEl.classList.add("pos");else if(_stopPips>=25)sdEl.classList.add("neg");}
-  if(sdm){let _sl="--";if(st.spotPrice&&_stopPips){if(st.bias==="LONG")_sl=(st.spotPrice-_stopPips/10000).toFixed(5);else if(st.bias==="SHORT")_sl=(st.spotPrice+_stopPips/10000).toFixed(5);}sdm.textContent=_sl+" level";}
-  const _rr=_stopPips>0?(_r1d/_stopPips):null;
-  if(rrEl){rrEl.textContent=_rr?_rr.toFixed(1)+":1":"--";rrEl.classList.remove("pos","neg");if(_rr>=3.0)rrEl.classList.add("pos");else if(_rr<1.5)rrEl.classList.add("neg");}
-  if(rrm)rrm.textContent=_rr>=3.0?"Favorable setup":_rr>=2.0?"Acceptable":_rr<1.5?"Poor — size down":"--";
+  // Momentum score (replaces Stop Distance)
+  const msb=$("momScoreBox"),msbm=$("momScoreMeta");
+  if(msb){const ms=st.momScore!=null?Math.round(st.momScore*100)+"%":"--";msb.textContent=ms;msb.classList.remove("pos","neg");if((st.momScore||0)>=0.65)msb.classList.add("pos");else if((st.momScore||0)<0.40)msb.classList.add("neg");}
+  if(msbm)msbm.textContent=st.bias&&st.momScore!=null?(Math.round(st.momScore*100)+"% aligned "+dispBias(st.bias)):"Awaiting data";
+  // Regime Age (replaces R/R Daily)
+  const rab=$("regimeAgeBox"),rabm=$("regimeAgeMeta");
+  if(rab){rab.textContent=(st.regimeAge!=null?st.regimeAge:"--")+" tks";rab.classList.remove("pos","neg");if((st.regimeAge||0)>=15)rab.classList.add("pos");}
+  if(rabm)rabm.textContent=st.stateName?("S"+st.policy+" "+st.stateName):"Warming up";
   const dc=$("decConf"),dcm=$("decConfMeta");if(dc){dc.textContent=(st.decPct??0)+"%";dc.classList.remove("pos","neg");if(st.decPct>=55)dc.classList.add("pos");if(st.decPct<=30)dc.classList.add("neg");}
   if(dcm)dcm.textContent=(st.decPct??0)>=55?"Higher agreement":(st.decPct??0)>=40?"Mixed signals":"Caution";
   const cm=$("calibMult");if(cm)cm.textContent=(st.calibMult||1).toFixed(2);
@@ -3682,19 +3766,15 @@ function applyFullStateToUI(st){
     const pdm=$("paDirHitMeta");if(pdm)pdm.textContent="n="+(st.projN4h||0)+" scored";
     // Range hit
     setV("pa1dRng",fmt(st.projRng4h),(st.projRng4h||0)>=0.60&&(st.projRng4h||0)<=0.82,(st.projRng4h!=null)&&(st.projRng4h<0.45||st.projRng4h>0.88));
-    // Stop hit
-    setV("pa1dStop",fmt(st.projStop4h),(st.projStop4h!=null)&&st.projStop4h<0.25,(st.projStop4h||0)>0.45);
-    {const rEntries=(st.projLogEntries||[]).filter(p=>p.outcome4h!==null&&p.r1d);
-     const avgRR=rEntries.length?rEntries.reduce((acc,p)=>{const r1d=p.r1d||Math.max(10,Math.round((p.r4||0)*2.5));const sp=Math.max(8,Math.round((p.r1||0)*0.75));return acc+r1d/sp;},0)/rEntries.length:null;
-     setV("paRR",avgRR?avgRR.toFixed(1)+":1":"--",avgRR!=null&&avgRR>=3.0,avgRR!=null&&avgRR<1.5);
-     const prrm=$("paRRMeta");if(prrm)prrm.textContent=avgRR?"avg over "+rEntries.length+" calls":"No 4H data";}
+    {const rEntries=(st.projLogEntries||[]).filter(p=>p.outcome4h!==null);
+     const avgMove=rEntries.length?rEntries.reduce((acc,p)=>{const mv=p.outcome4h?.movePips;const fav=(p.bias==="LONG"?mv>0:mv<0);return acc+(fav?Math.abs(mv):0);},0)/rEntries.length:null;
+     setV("paRR",avgMove!=null?Math.round(avgMove)+"p":"--",avgMove!=null&&avgMove>=8,false);
+     const prrm=$("paRRMeta");if(prrm)prrm.textContent=avgMove!=null?"avg over "+rEntries.length+" calls":"No 4H data";}
     setV("paCalibMult",(st.projCalibMult||1).toFixed(3)+"x",Math.abs((st.projCalibMult||1)-1)<0.05,false);
     const ptn=$("paTotalN"),ptm=$("paTotalMeta");
     if(ptn)ptn.textContent=String(st.projTotal||0);
     if(ptm)ptm.textContent=((st.projTotal||0)-(st.projPending||0))+" resolved, "+(st.projPending||0)+" pending";
-    const mr=$("pa1dRngMeta"),ms=$("pa1dStopMeta");
-    if(mr)mr.textContent="n="+(st.projN4h||0)+" scored";
-    if(ms)ms.textContent=(st.projN4h||0)>0?Math.round((st.projStop4h||0)*(st.projN4h||0))+" of "+(st.projN4h||0)+" stopped":"No 4H data";
+    const mr=$("pa1dRngMeta");if(mr)mr.textContent="n="+(st.projN4h||0)+" scored";
     const ready=(st.projN1d||0)>=10;
     const ps=$("paStatus");if(ps)ps.textContent=ready?"Active — "+(st.projN4h)+" 4H resolved":"Collecting on MASTER ("+(st.projN4h||0)+"/10)";
     const pca=$("paConeAdj"),cm=st.projCalibMult||1;
@@ -3706,25 +3786,23 @@ function applyFullStateToUI(st){
         plb.innerHTML=(st.projLogEntries||[]).slice(-100).reverse().map(p=>{
           const d4h=p.outcome4h;
           const cls=v=>v===null?"pending":v?"hit":"miss";
-          const rtxt=o=>o===null?"...":(o.stopHit?"OUT":(o.rngHit?"IN":"OUT"));
           const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
-          const stopBase=(p.stopSpot!=null&&Number.isFinite(Number(p.stopSpot)))?Number(p.stopSpot).toFixed(5):"--";
-          const stop=p.stopHit?(stopBase+" ▸"):stopBase;
           const e4h=(d4h?.exitSpot!=null&&Number.isFinite(d4h.exitSpot))?d4h.exitSpot.toFixed(5):"pend";
           const r4h=p.r4||0;
-          const mv=(d4h&&d4h.movePips!=null&&Number.isFinite(Number(d4h.movePips)))?Number(d4h.movePips):null;
-          const mvTxt=(mv===null)?"--":((mv>=0?"+":"")+Math.round(mv)+"p");
-          const favorable=(mv!==null)&&((p.bias==="LONG"&&mv>0)||(p.bias==="SHORT"&&mv<0));
-          const mvColor=(mv===null)?"var(--text3)":(favorable?"var(--green)":"var(--red)");
+          const dirSign=p.bias==="LONG"?1:-1;
+          const dirTxt=r4h?(dirSign>=0?"+":"-")+Math.round(r4h)+"p":"--";
+          const dirColor=p.bias==="LONG"?"var(--green)":"var(--red)";
+          const moveResult=d4h===null?null:d4h.dirHit;
+          const moveTxt=moveResult===null?"...":moveResult?"IN":"OUT";
+          const moveColor=moveResult===null?"var(--text3)":(moveResult?"var(--green)":"var(--red)");
 
           return"<tr>"
             +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
             +"<td style='font-family:var(--mono);font-size:10px'>"+(p.spot?p.spot.toFixed(5):"--")+"</td>"
-            +"<td style='font-family:var(--mono);font-size:10px;color:"+(p.stopHit?"var(--red)":"var(--text3)")+"'>"+stop+"</td>"
             +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e4h+"</td>"
-            +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
-            +"<td style='font-family:var(--mono);color:"+mvColor+"'>"+mvTxt+"</td>"
-            +"<td class='"+cls(d4h?.rngHit??null)+"'>"+rtxt(d4h)+"</td>"
+            +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+dispBias(p.bias)+"</td>"
+            +"<td style='font-family:var(--mono);color:"+dirColor+"'>"+dirTxt+"</td>"
+            +"<td style='font-family:var(--mono);font-weight:600;color:"+moveColor+"'>"+moveTxt+"</td>"
             +"</tr>";
         }).join("");
       }
@@ -3749,7 +3827,8 @@ function applyFullStateToUI(st){
   }
   // Signal Bus for READER
   if(st.busDir){
-    const bd=$("busDir");if(bd){bd.textContent=st.busDir;bd.style.color=st.busDir==="LONG"?"rgba(0,214,143,.95)":st.busDir==="SHORT"?"rgba(255,71,87,.90)":"rgba(180,220,255,.65)";}
+    const bd=$("busDir");if(bd){bd.textContent=dispBias(st.busDir);
+  var tbC=$('topbarConsensus');if(tbC)tbC.textContent=dispBias(st.busDir);bd.style.color=st.busDir==="LONG"?"rgba(0,214,143,.95)":st.busDir==="SHORT"?"rgba(255,71,87,.90)":"rgba(180,220,255,.65)";}
     const br=$("busRisk");if(br){br.textContent=(st.busRiskPct??'--')+"%";br.style.color=(st.busRiskPct??0)>=75?"rgba(0,214,143,.90)":(st.busRiskPct??0)>=40?"rgba(255,176,32,.85)":"rgba(255,71,87,.80)";}
     const bc=$("busConvPct");if(bc)bc.textContent=(st.busConvPct??'--')+"%";
     // Populate tf boxes from bus forecasts
@@ -3960,7 +4039,7 @@ function updateForecastUI(daily){
   // Daily
   setT("dailyFcastPrice",daily.target);
   const dbEl=$("dailyFcastBias");
-  if(dbEl){dbEl.className="fcastBias "+(daily.bias==="LONG"?"long":daily.bias==="SHORT"?"short":"neutral");dbEl.innerHTML=(daily.bias==="LONG"?"&#9650; LONG 4H":daily.bias==="SHORT"?"&#9660; SHORT 4H":"&#9644; NEUTRAL 4H");}
+  if(dbEl){dbEl.className="fcastBias "+(daily.bias==="LONG"?"long":daily.bias==="SHORT"?"short":"neutral");dbEl.innerHTML=(daily.bias==="LONG"?"&#9650; BUY 4H":daily.bias==="SHORT"?"&#9660; SELL 4H":"&#9644; NEUTRAL 4H");}
   const dBar=$("dailyFcastBar");if(dBar){dBar.style.width=daily.confidence+"%";dBar.style.background=daily.bias==="LONG"?"rgba(0,214,143,.82)":daily.bias==="SHORT"?"rgba(255,71,87,.82)":"rgba(180,220,255,.35)";}
   setT("dailyFcastConf",daily.confidence+"% confidence");
   setT("dailyFcastRange",fmtSignedPips(daily.dir||daily.bias||daily.direction,daily.range));
@@ -3991,14 +4070,11 @@ function updateProjAccuracyUI(){
   // Range hit
   setV("pa1dRng",fmt(s.rng4hRate),(s.rng4hRate||0)>=0.60&&(s.rng4hRate||0)<=0.82,(s.rng4hRate!=null)&&(s.rng4hRate<0.45||s.rng4hRate>0.88));
   const mr=$("pa1dRngMeta");if(mr)mr.textContent="n="+(s.n4h||0)+" scored";
-  // Stop hit
-  setV("pa1dStop",fmt(s.stopRate4h),(s.stopRate4h!=null)&&s.stopRate4h<0.25,(s.stopRate4h||0)>0.45);
-  const ms=$("pa1dStopMeta");if(ms)ms.textContent=(s.n4h||0)>0?Math.round((s.stopRate4h||0)*(s.n4h||0))+" of "+(s.n4h||0)+" stopped":"No 4H data";
-  // R/R — from 4H resolved entries
-  {const lg=ProjTracker.getLog(),resolved=lg.filter(p=>p.outcome4h!==null&&p.r4);
-   const avgRR=resolved.length?resolved.reduce((acc,p)=>{const r4=p.r4||10;const sp=Math.max(8,Math.round((p.r1||0)*0.75)||8);return acc+r4/sp;},0)/resolved.length:null;
-   setV("paRR",avgRR?avgRR.toFixed(1)+":1":"--",avgRR!=null&&avgRR>=2.5,avgRR!=null&&avgRR<1.5);
-   const prrm=$("paRRMeta");if(prrm)prrm.textContent=avgRR?"avg over "+resolved.length+" calls":"No 4H data";}
+  // Avg Exit Move (replaces R/R which depended on stop distance)
+  {const lg=ProjTracker.getLog(),resolved=lg.filter(p=>p.outcome4h!==null);
+   const avgMove=resolved.length?resolved.reduce((acc,p)=>{const mv=p.outcome4h?.movePips;const fav=(p.bias==="LONG"?mv>0:mv<0);return acc+(fav?Math.abs(mv):0);},0)/resolved.length:null;
+   setV("paRR",avgMove!=null?Math.round(avgMove)+"p":"--",avgMove!=null&&avgMove>=8,false);
+   const prrm=$("paRRMeta");if(prrm)prrm.textContent=avgMove!=null?"avg over "+resolved.length+" calls":"No 4H data";}
   // Calib mult
   setV("paCalibMult",cm.toFixed(3)+"x",Math.abs(cm-1)<0.05,false);
   const pcm=$("paCalibMeta");if(pcm)pcm.textContent=cm>1.05?"Widening cone":cm<0.95?"Tightening cone":"Well-calibrated";
@@ -4028,30 +4104,26 @@ function updateProjAccuracyUI(){
   // Log table — 7 cols with direction hit column
   const plb=$("paLogBody");if(!plb)return;
   const lg3=ProjTracker.getLog();
-  if(!lg3.length){plb.innerHTML="<tr><td colspan='7' class='pending'>No projections logged yet.</td></tr>";return;}
+  if(!lg3.length){plb.innerHTML="<tr><td colspan='6' class='pending'>No projections logged yet.</td></tr>";return;}
   plb.innerHTML=lg3.slice(-100).reverse().map(p=>{
     const d4h=p.outcome4h;
-    const cls=v=>v===null?"pending":v?"hit":"miss";
-    const rtxt=o=>o===null?"...":(o.stopHit?"OUT":(o.rngHit?"IN":"OUT"));
-    const dtxt=o=>o===null?"...":o.dirHit?"✓":"✗";
     const dateStr=new Date(p.ts).toLocaleDateString([],{month:"2-digit",day:"2-digit"})+" "+fmtTS(p.ts);
-    const stopBase=(p.stopSpot!=null&&Number.isFinite(Number(p.stopSpot)))?Number(p.stopSpot).toFixed(5):"--";
-    const stop=p.stopHit?(stopBase+" ▸"):stopBase;
     const e4h=(d4h?.exitSpot!=null&&Number.isFinite(d4h.exitSpot))?d4h.exitSpot.toFixed(5):"pend";
     const r4h=p.r4||0;
-          const mv=(d4h&&d4h.movePips!=null&&Number.isFinite(Number(d4h.movePips)))?Number(d4h.movePips):null;
-          const mvTxt=(mv===null)?"--":((mv>=0?"+":"")+Math.round(mv)+"p");
-          const favorable=(mv!==null)&&((p.bias==="LONG"&&mv>0)||(p.bias==="SHORT"&&mv<0));
-          const mvColor=(mv===null)?"var(--text3)":(favorable?"var(--green)":"var(--red)");
+    const dirSign=p.bias==="LONG"?1:-1;
+    const dirTxt=r4h?(dirSign>=0?"+":"-")+Math.round(r4h)+"p":"--";
+    const dirColor=p.bias==="LONG"?"var(--green)":"var(--red)";
+    const moveResult=d4h===null?null:d4h.dirHit;
+    const moveTxt=moveResult===null?"...":moveResult?"IN":"OUT";
+    const moveColor=moveResult===null?"var(--text3)":(moveResult?"var(--green)":"var(--red)");
 
     return"<tr>"
       +"<td style='white-space:nowrap;font-size:10px'>"+dateStr+"</td>"
       +"<td style='font-family:var(--mono);font-size:10px'>"+(p.spot?p.spot.toFixed(5):"--")+"</td>"
-      +"<td style='font-family:var(--mono);font-size:10px;color:"+(p.stopHit?"var(--red)":"var(--text3)")+"'>"+stop+"</td>"
       +"<td style='font-family:var(--mono);font-size:10px;color:var(--text3)'>"+e4h+"</td>"
-      +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+p.bias+"</td>"
-      +"<td style='font-family:var(--mono);color:"+mvColor+"'>"+mvTxt+"</td>"
-      +"<td class='"+cls(d4h?.rngHit??null)+"'>"+rtxt(d4h)+"</td>"
+      +"<td class='"+(p.bias==="LONG"?"pos":"neg")+"'>"+dispBias(p.bias)+"</td>"
+      +"<td style='font-family:var(--mono);color:"+dirColor+"'>"+dirTxt+"</td>"
+      +"<td style='font-family:var(--mono);font-weight:600;color:"+moveColor+"'>"+moveTxt+"</td>"
       +"</tr>";
   }).join("");
 }
@@ -4160,7 +4232,7 @@ function updateCorrUI(corrs){const assets=[{key:"OIL",label:"Brent (BZ=F)",dir:"
 let lastAlertAt=0;
 function checkAlerts(r1,bias){const thresh=Number(settings.alertThreshPips)||0;if(thresh>0&&r1>=thresh){if(Date.now()-lastAlertAt<300000)return;lastAlertAt=Date.now();const ab=$("alertBadge"),at=$("alertBadgeText");if(ab)ab.classList.add("show");if(at)at.textContent="1h range "+r1+"p >= "+thresh+"p";setTimeout(()=>{const ab2=$("alertBadge");if(ab2)ab2.classList.remove("show");},30000);if("Notification"in window&&Notification.permission==="granted"){try{new Notification("QuadraX Alert",{body:"1h range "+r1+"p. Bias: "+bias,tag:"qx-alert"});}catch{}}}}
 let nightMode=false;
-function toggleNight(){nightMode=!nightMode;document.body.classList.toggle("night",nightMode);const nb=$("nightBtn");if(nb){nb.classList.toggle("night-active",nightMode);nb.textContent=nightMode?"Day":"Night";}}
+function toggleNight(){nightMode=!nightMode;document.body.classList.toggle("night",nightMode);const nb=$("nightBtn");if(nb){nb.classList.toggle("night-active",nightMode);nb.textContent=nightMode?"☀":"☾";}}
 function exportSnapshot(){const url=URL.createObjectURL(new Blob([JSON.stringify({timestamp:new Date().toISOString(),version:"v5",state:lastFullState,projAccuracy:ProjTracker.getStats(),calibMult:ProjTracker.getCalibMult()},null,2)],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download="quadrax-v5-snap-"+Date.now()+".json";a.click();URL.revokeObjectURL(url);}
 
 let lastSpot=null,lastFullState=null,paused=false,syncing=false;
@@ -4307,12 +4379,12 @@ if(saveBtn)saveBtn.addEventListener("click",async()=>{
     if(valid===false&&!confirm("API key appears invalid. Save anyway?"))return;}
   // ── Firebase config: hardcoded in this build — no user input needed ──────
   const fbConfig = {
-    apiKey:            "AIzaSyC3iv5WcVeXPWGnkci4FbScRO0YJPieGSU",
-    authDomain:        "quadrax-personal-prod.firebaseapp.com",
-    projectId:         "quadrax-personal-prod",
-    storageBucket:     "quadrax-personal-prod.firebasestorage.app",
-    messagingSenderId: "231279443536",
-    appId:             "1:231279443536:web:908d321616568939ec1b55"
+    apiKey:            "%%FB_API_KEY%%",
+    authDomain:        "%%FB_AUTH_DOMAIN%%",
+    projectId:         "%%FB_PROJECT_ID%%",
+    storageBucket:     "%%FB_STORAGE_BUCKET%%",
+    messagingSenderId: "%%FB_MESSAGING_SENDER_ID%%",
+    appId:             "%%FB_APP_ID%%"
   };
   // ── Save all settings ────────────────────────────────────────────────────
   const poll=Number($("pollInput")?.value||12000),thresh=Number($("alertThreshInput")?.value||0),depth=Number($("histDepthInput")?.value||60);
@@ -4338,14 +4410,14 @@ if(saveBtn)saveBtn.addEventListener("click",async()=>{
   }
 });
 const pBtn=$("pauseBtn"),nBtn=$("nightBtn"),eBtn=$("exportBtn"),syncBtn=$("syncBtn");
-if(pBtn)pBtn.addEventListener("click",()=>{paused=!paused;pBtn.textContent=paused?"Resume":"Pause";const ss=$("sysStatus");if(ss)ss.textContent=paused?"PAUSED":"LIVE";const ld=$("liveDot");if(ld)ld.classList.toggle("amber",paused);});
+if(pBtn)pBtn.addEventListener("click",()=>{paused=!paused;pBtn.textContent=paused?"▶":"⏸";const ss=$("sysStatus");if(ss)ss.textContent=paused?"PAUSED":"LIVE";const ld=$("liveDot");if(ld)ld.classList.toggle("amber",paused);});
 if(nBtn)nBtn.addEventListener("click",toggleNight);
 if(eBtn)eBtn.addEventListener("click",exportSnapshot);
 if(syncBtn)syncBtn.addEventListener("click",async()=>{
   if(FirebaseSync.isReader){const sb=$("syncBadge");if(sb)sb.classList.add("pulse");setTimeout(()=>{if(sb)sb.classList.remove("pulse");},2000);return;}
-  if(syncing)return;syncing=true;syncBtn.textContent="Syncing...";syncBtn.classList.add("syncing");
+  if(syncing)return;syncing=true;syncBtn.textContent="⟳";syncBtn.classList.add("syncing");
   try{await Promise.allSettled([SpotFeed.tick(onSpotUpdate),MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()]);}
-  finally{syncing=false;syncBtn.textContent="Sync";syncBtn.classList.remove("syncing");}
+  finally{syncing=false;syncBtn.textContent="⟳";syncBtn.classList.remove("syncing");}
 });
 window.addEventListener("keydown",e=>{if(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")return;const k=e.key.toLowerCase();if(k==="p"&&pBtn)pBtn.click();else if(k==="s"&&syncBtn)syncBtn.click();else if(k==="n")toggleNight();else if(k==="x")exportSnapshot();else if(k==="?"){const kh=$("kbHint");if(kh)kh.classList.toggle("show");}});
 const tvf=$("tvFrame");if(tvf){let tvLoaded=false;tvf.addEventListener("load",()=>{tvLoaded=true;});setTimeout(()=>{if(!tvLoaded){const fb=$("tvFallback");if(fb)fb.classList.add("show");}},9000);}
@@ -4367,12 +4439,12 @@ async function start(){
   const __BAKED_CONFIG = (()=>{
     try{
       return {
-        apiKey:            "AIzaSyC3iv5WcVeXPWGnkci4FbScRO0YJPieGSU",
-        authDomain:        "quadrax-personal-prod.firebaseapp.com",
-        projectId:         "quadrax-personal-prod",
-        storageBucket:     "quadrax-personal-prod.firebasestorage.app",
-        messagingSenderId: "231279443536",
-        appId:             "1:231279443536:web:908d321616568939ec1b55"
+        apiKey:            "%%FB_API_KEY%%",
+        authDomain:        "%%FB_AUTH_DOMAIN%%",
+        projectId:         "%%FB_PROJECT_ID%%",
+        storageBucket:     "%%FB_STORAGE_BUCKET%%",
+        messagingSenderId: "%%FB_MESSAGING_SENDER_ID%%",
+        appId:             "%%FB_APP_ID%%"
       };
     }catch(e){ return null; }
   })();
@@ -4628,15 +4700,8 @@ thead th,.paLogTable th{padding:7px 9px!important}
   const txt = (id)=>($(id)?.textContent||"").trim();
 
   function ensureEdgeMeter(){
-    const actions = document.querySelector(".top-actions");
-    if(!actions || $("qxEdgeMeter")) return;
-    const node = document.createElement("div");
-    node.className = "qx-edgeMeter";
-    node.id = "qxEdgeMeter";
-    node.innerHTML = '<div class="l">Edge Score</div><div class="v" id="qxEdgeVal">--</div><div class="b"><i id="qxEdgeFill"></i></div>';
-    const riskPulse = document.querySelector(".riskPulse");
-    if(riskPulse && riskPulse.nextSibling) actions.insertBefore(node, riskPulse.nextSibling);
-    else actions.prepend(node);
+    // Disabled — Edge Score now shown in center stage topbar panel
+    // qxEdgeVal / qxEdgeFill still updated below; mirrored to topbarEdgeScore
   }
 
   function ensureSignalLights(){
@@ -4738,6 +4803,7 @@ thead th,.paLogTable th{padding:7px 9px!important}
     const edge = Math.max(0, Math.min(1, (c*0.55 + h*0.45) * (1-r*0.55)));
     const val = $('qxEdgeVal'), fill = $('qxEdgeFill');
     if(val) val.textContent = Math.round(edge*100) + '%';
+    var tbE=$('topbarEdgeScore');if(tbE){tbE.textContent=Math.round(edge*100)+'%';tbE.style.color=edge>0.55?'rgba(0,229,255,.92)':edge>0.30?'rgba(255,210,140,.92)':'rgba(255,140,140,.88)';}
     if(fill) fill.style.width = (edge*100).toFixed(0) + '%';
   }
 
@@ -4827,12 +4893,12 @@ thead th,.paLogTable th{padding:7px 9px!important}
   // Firebase security is enforced by Auth (email/password) + Firestore security rules,
   // not by keeping the config secret. This is standard Firebase practice.
   const FIREBASE_CONFIG = {
-    apiKey:            "AIzaSyC3iv5WcVeXPWGnkci4FbScRO0YJPieGSU",
-    authDomain:        "quadrax-personal-prod.firebaseapp.com",
-    projectId:         "quadrax-personal-prod",
-    storageBucket:     "quadrax-personal-prod.firebasestorage.app",
-    messagingSenderId: "231279443536",
-    appId:             "1:231279443536:web:908d321616568939ec1b55"
+    apiKey:            "%%FB_API_KEY%%",
+    authDomain:        "%%FB_AUTH_DOMAIN%%",
+    projectId:         "%%FB_PROJECT_ID%%",
+    storageBucket:     "%%FB_STORAGE_BUCKET%%",
+    messagingSenderId: "%%FB_MESSAGING_SENDER_ID%%",
+    appId:             "%%FB_APP_ID%%"
   };
   // ───────────────────────────────────────────────────────────────────────────
 
@@ -4905,5 +4971,2792 @@ thead th,.paLogTable th{padding:7px 9px!important}
 })();
 </script>
 
+
+<!-- Vertus-style client launch refinement: hierarchy, reordering, premium visuals, guide cleanup.
+     Visual/layout-only. No engine, sync, or model logic changes. -->
+<style id="qx-vertus-premium-refine">
+:root{
+  --qx-prem-a: rgba(104,170,255,.34);
+  --qx-prem-b: rgba(0,214,143,.24);
+  --qx-prem-c: rgba(36,92,255,.18);
+}
+
+/* stronger premium skin */
+body::before{
+  content:"";
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(1100px 480px at 12% -6%, var(--qx-prem-c), transparent 62%),
+    radial-gradient(900px 360px at 100% 8%, var(--qx-prem-b), transparent 58%),
+    radial-gradient(800px 420px at 52% 100%, rgba(0,88,255,.08), transparent 66%);
+  opacity:.95;
+}
+.wrap{position:relative; z-index:1; max-width:1640px!important; padding:14px 16px 48px!important}
+.grid{gap:14px!important}
+.stack{gap:14px!important}
+.card,.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip,.fcastBox,.sharpeBox{
+  background:linear-gradient(180deg, rgba(16,25,46,.90), rgba(8,13,25,.92))!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 22px 56px rgba(0,0,0,.34)!important;
+}
+.card::before,.hero::before,.quoteCard::before,.sessLeft::before,.sessRight::before,.intelTile::before,.fpTfBox::before,.paBox::before{
+  content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 20%),
+    radial-gradient(600px 160px at 0% -20%, var(--qx-prem-a), transparent 70%),
+    radial-gradient(480px 160px at 100% -20%, var(--qx-prem-b), transparent 70%);
+  opacity:1;
+}
+.topbar{
+  background:linear-gradient(180deg, rgba(15,24,43,.92), rgba(8,13,25,.94))!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 20px 50px rgba(0,0,0,.34)!important;
+}
+.card .inner{padding:16px!important}
+.card-title{margin-bottom:10px!important}
+.card-title h2{
+  font-size:10px!important;
+  letter-spacing:1.8px!important;
+  color:rgba(232,234,240,.50)!important;
+}
+.card-title .hint{
+  max-width:480px!important;
+  font-size:10px!important;
+  line-height:1.45!important;
+  color:rgba(232,234,240,.40)!important;
+}
+.stateBig{font-size:24px!important; letter-spacing:-.5px}
+.quotePx{font-size:48px!important; letter-spacing:-1px}
+
+/* section tags */
+.qxStage{
+  display:inline-flex; align-items:center; gap:7px;
+  margin:0 0 10px 0; padding:5px 10px;
+  border-radius:999px; background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.08);
+  font-size:8.5px; font-family:var(--mono); text-transform:uppercase;
+  color:rgba(232,234,240,.56); letter-spacing:1px; font-weight:700;
+}
+.qxStage i{
+  width:6px;height:6px;border-radius:50%;
+  background:linear-gradient(135deg, rgba(104,170,255,.95), rgba(0,214,143,.92));
+  box-shadow:0 0 10px rgba(104,170,255,.38);
+}
+
+/* compact reference chart card */
+.qx-tv-reference .tvWrap{
+  min-height:96px!important;
+  display:flex!important; align-items:center; justify-content:center;
+}
+.qx-tv-reference .tvWrap iframe{display:none!important}
+.qx-tv-reference #tvFallback{
+  display:flex!important; position:static!important; inset:auto!important; background:none!important;
+  flex-direction:column; align-items:center; justify-content:center; gap:8px;
+  min-height:96px!important;
+}
+.qx-tv-reference #tvFallback > div:first-child{display:none!important}
+.qx-tv-reference .smallNote,.qx-tv-reference .foot{display:none!important}
+.qx-tv-reference .card-title .hint{max-width:none!important}
+.qx-tv-reference .tvWrap .link{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:12px 18px; border-radius:999px;
+  background:linear-gradient(135deg, rgba(41,121,255,.30), rgba(0,214,143,.18));
+  border:1px solid rgba(255,255,255,.10); color:#eef7ff!important; font-weight:700;
+  text-decoration:none!important; box-shadow:0 16px 34px rgba(0,0,0,.22);
+}
+
+/* reveal macro / matrix prominently */
+.qx-priority .card-title h2{color:rgba(232,234,240,.62)!important}
+.qx-priority .card-title .hint{color:rgba(232,234,240,.46)!important}
+.qx-priority .inner{padding:17px!important}
+
+/* guide modal cleanup */
+#guideBack .modal{max-width:1180px!important; width:min(1180px,94vw)!important}
+#guideBack .mBody > .grid{
+  grid-template-columns:1.12fr .88fr!important;
+  gap:14px!important;
+}
+#guideBack .scroll{
+  max-height:none!important;
+  overflow:visible!important;
+}
+#guideBack .card{height:100%!important}
+#guideBack table.paLogTable{table-layout:fixed; width:100%}
+#guideBack table.paLogTable th,#guideBack table.paLogTable td{font-size:9px!important}
+#guideBack .smallNote{line-height:1.55!important}
+
+/* Collapsed research should still show content when prioritized */
+.qx-force-open.qx-collapsible.qx-collapsed .qx-collapse-target{
+  max-height:1200px!important;
+  opacity:1!important;
+}
+.qx-force-open.qx-collapsible.qx-collapsed .card-title::after{content:"Visible"!important}
+
+/* Better visual flow for hero cards */
+.convicRow,.busBanner,.riskStrip,.fpBox{
+  background:linear-gradient(180deg, rgba(15,26,48,.92), rgba(10,15,29,.92))!important;
+  border-color:rgba(255,255,255,.09)!important;
+}
+</style>
+
+<script id="qx-vertus-premium-refine-script">
+(function(){
+  function cards(){
+    return Array.prototype.slice.call(document.querySelectorAll('.card'));
+  }
+  function getTitle(card){
+    var h2 = card && card.querySelector('.card-title h2');
+    return h2 ? h2.textContent.trim() : '';
+  }
+  function findCardContains(txt){
+    return cards().find(function(c){ return getTitle(c).toLowerCase().indexOf(txt.toLowerCase()) !== -1; });
+  }
+  function stage(card, label){
+    if(!card || card.querySelector('.qxStage')) return;
+    var inner = card.querySelector('.inner');
+    var title = card.querySelector('.card-title');
+    if(!inner || !title) return;
+    var tag = document.createElement('div');
+    tag.className = 'qxStage';
+    tag.innerHTML = '<i></i><span>'+label+'</span>';
+    inner.insertBefore(tag, title);
+  }
+  function stacks(){
+    return Array.prototype.slice.call(document.querySelectorAll('.grid > .stack'));
+  }
+  function moveCardToStack(card, stack, afterTitleContains){
+    if(!card || !stack) return;
+    if(afterTitleContains){
+      var siblings = Array.prototype.slice.call(stack.children);
+      var anchor = siblings.find(function(c){ return getTitle(c).toLowerCase().indexOf(afterTitleContains.toLowerCase()) !== -1; });
+      if(anchor && anchor.nextSibling){
+        stack.insertBefore(card, anchor.nextSibling);
+      }else{
+        stack.appendChild(card);
+      }
+    } else {
+      stack.insertBefore(card, stack.firstChild);
+    }
+  }
+  function uncollapse(card){
+    if(!card) return;
+    card.classList.add('qx-force-open','qx-priority');
+    card.classList.remove('qx-collapsed');
+  }
+  function compactTV(card){
+    if(!card) return;
+    card.classList.add('qx-tv-reference');
+  }
+  function refineGuide(){
+    // nothing dynamic needed besides CSS, but ensure left card gets available height
+    var gb = document.getElementById('guideBack');
+    if(!gb) return;
+    var regimeCard = Array.prototype.slice.call(gb.querySelectorAll('.card')).find(function(c){
+      return c.textContent.indexOf('Hidden Market Regime') !== -1;
+    });
+    if(regimeCard){
+      regimeCard.style.minHeight = '0';
+    }
+  }
+
+  function reorder(){
+    var ss = stacks();
+    if(ss.length < 2) return;
+    var left = ss[0], right = ss[1];
+
+    var market = findCardContains('Current Market State');
+    var qedge = findCardContains('Quantitative Edge');
+    var bus = findCardContains('Unified Signal Bus');
+    var forecast = findCardContains('Forward Projection');
+    var sessPlay = findCardContains('Session Playbook');
+    var macro = findCardContains('Macro Drivers');
+    var hmm = findCardContains('HMM Transition Matrix');
+    var daily = findCardContains('Daily EUR/USD Trend');
+    var signalIntel = findCardContains('Signal Intelligence');
+    var projAcc = findCardContains('Projection Accuracy');
+    var sharpe = findCardContains('Signal Performance');
+    var sessIntel = findCardContains('Session Intelligence');
+
+    // Left narrative flow
+    moveCardToStack(market, left, null);
+    moveCardToStack(qedge, left, 'Current Market State');
+    moveCardToStack(bus, left, 'Quantitative Edge');
+    moveCardToStack(forecast, left, 'Unified Signal Bus');
+    moveCardToStack(projAcc, left, 'Forward Projection');
+    moveCardToStack(sharpe, left, 'Projection Accuracy');
+    moveCardToStack(daily, left, 'Signal Performance');
+
+    // Right decision + research flow
+    moveCardToStack(macro, right, null);
+    moveCardToStack(hmm, right, 'Macro Drivers');
+    moveCardToStack(sessPlay, right, 'HMM Transition Matrix');
+    moveCardToStack(signalIntel, right, 'Session Playbook');
+    moveCardToStack(sessIntel, right, 'Signal Intelligence');
+
+    // Tags
+    stage(market, 'Market Intelligence');
+    stage(macro, 'Macro Intelligence');
+    stage(hmm, 'Transition Intelligence');
+    stage(qedge, 'Signal Intelligence');
+    stage(bus, 'Consensus Intelligence');
+    stage(forecast, 'Forecast Intelligence');
+    stage(projAcc, 'Performance Intelligence');
+    stage(sessPlay, 'Decision');
+    stage(signalIntel, 'Execution');
+    stage(daily, 'Reference');
+
+    // Ensure macro / matrix are visible and prioritized
+    uncollapse(macro);
+    uncollapse(hmm);
+
+    // Compact chart reference
+    compactTV(daily);
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    reorder();
+    refineGuide();
+  });
+})();
+</script>
+
+
+<!-- Final premium pass: remove separate TV reference card, add RSI + compact TV link to quote card,
+     strengthen premium visual language. No core sync/HMM/projection contract changes. -->
+<style id="qx-final-premium-pass">
+:root{
+  --qx-fina: rgba(88,153,255,.34);
+  --qx-finb: rgba(0,214,143,.22);
+  --qx-finc: rgba(130,110,255,.18);
+}
+body::after{
+  content:"";
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(1200px 420px at 8% 0%, var(--qx-fina), transparent 60%),
+    radial-gradient(900px 320px at 92% 8%, var(--qx-finb), transparent 58%),
+    radial-gradient(900px 360px at 50% 100%, var(--qx-finc), transparent 60%);
+  opacity:.70;
+}
+.topbar,.card,.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip{
+  box-shadow:0 24px 64px rgba(0,0,0,.36)!important;
+}
+.card-title .hint{max-width:520px!important}
+.quoteCard{
+  background:
+    linear-gradient(180deg, rgba(17,28,53,.92), rgba(8,13,25,.94))!important;
+}
+.quoteTop{margin-bottom:4px!important}
+.quoteSym .sym{
+  letter-spacing:-.8px;
+  text-shadow:0 0 24px rgba(88,153,255,.12);
+}
+.quoteMetaRow{margin-bottom:2px!important}
+.tickChart{margin:8px 0 2px!important}
+.quoteBadges{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  flex-wrap:wrap!important;
+}
+.qx-quoteLeft,.qx-quoteRight{
+  display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+}
+.qx-miniLink{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:6px 10px; border-radius:999px;
+  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(135deg, rgba(41,121,255,.18), rgba(0,214,143,.12));
+  color:#eef7ff!important; font-size:10px; font-weight:700; text-decoration:none!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.18);
+}
+.qx-miniLink:hover{border-color:rgba(255,255,255,.18)!important}
+.qx-rsiTag{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; border-radius:999px;
+  border:1px solid rgba(255,255,255,.09);
+  background:rgba(255,255,255,.04);
+  color:rgba(232,239,255,.90);
+  font-size:10px; font-weight:700; font-family:var(--mono);
+}
+.qx-rsiTag b{font-weight:700}
+.qx-rsiTag em{font-style:normal; opacity:.66; font-weight:600}
+.qx-neoSub{
+  color:rgba(232,234,240,.42)!important;
+  text-transform:none!important;
+}
+.brand .sub{
+  color:rgba(232,234,240,.42)!important;
+  letter-spacing:.2px!important;
+}
+.qx-premTag{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:6px 11px; border-radius:999px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.035);
+  font-size:8.5px; font-family:var(--mono); letter-spacing:1px; text-transform:uppercase;
+  color:rgba(232,234,240,.54); font-weight:700;
+}
+.qx-premTag i{
+  display:inline-block; width:6px; height:6px; border-radius:50%;
+  background:linear-gradient(135deg, rgba(88,153,255,.98), rgba(0,214,143,.95));
+  box-shadow:0 0 12px rgba(88,153,255,.35);
+}
+.qx-premGlow{
+  position:relative;
+}
+.qx-premGlow::after{
+  content:""; position:absolute; inset:auto 14px 0 14px; height:1px; pointer-events:none;
+  background:linear-gradient(90deg, rgba(255,255,255,0), rgba(140,190,255,.30), rgba(0,214,143,.20), rgba(255,255,255,0));
+}
+.qx-hideCard{display:none!important}
+.qx-market .card-title h2,
+.qx-signal .card-title h2,
+.qx-bus .card-title h2,
+.qx-forecast .card-title h2{
+  color:rgba(232,234,240,.60)!important;
+}
+.qx-market .card-title .hint,
+.qx-signal .card-title .hint,
+.qx-bus .card-title .hint,
+.qx-forecast .card-title .hint{
+  color:rgba(232,234,240,.44)!important;
+}
+</style>
+
+<script id="qx-final-premium-pass-script">
+(function(){
+  var rsiState = { lastFetch:0, value:null, source:'--', history:[] };
+
+  function getSettings(){
+    try{
+      return JSON.parse(localStorage.getItem('qx_s_v5') || '{}') || {};
+    }catch(e){ return {}; }
+  }
+
+  function findCardContains(txt){
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+    return cards.find(function(c){
+      var h2 = c.querySelector('.card-title h2');
+      return h2 && h2.textContent.toLowerCase().indexOf(txt.toLowerCase()) !== -1;
+    });
+  }
+
+  function addPremiumTag(card, label){
+    if(!card || card.querySelector('.qx-premTag') || card.querySelector('.qxStage')) return;
+    var inner = card.querySelector('.inner');
+    var title = card.querySelector('.card-title');
+    if(!inner || !title) return;
+    var tag = document.createElement('div');
+    tag.className = 'qx-premTag';
+    tag.innerHTML = '<i></i><span>'+label+'</span>';
+    inner.insertBefore(tag, title);
+    card.classList.add('qx-premGlow');
+  }
+
+  function hideDailyReferenceCard(){
+    var daily = findCardContains('Daily EUR/USD Trend');
+    if(daily) daily.classList.add('qx-hideCard');
+  }
+
+  function decorateCards(){
+    var market = findCardContains('Current Market State');
+    var signal = findCardContains('Quantitative Edge');
+    var bus = findCardContains('Unified Signal Bus');
+    var forecast = findCardContains('Forward Projection');
+    [market, signal, bus, forecast].forEach(function(c){ if(c) c.classList.add('qx-market'); });
+    if(signal) signal.classList.add('qx-signal');
+    if(bus) bus.classList.add('qx-bus');
+    if(forecast) forecast.classList.add('qx-forecast');
+
+    addPremiumTag(market, 'Market Intelligence');
+    addPremiumTag(findCardContains('Macro Drivers'), 'Macro Intelligence');
+    addPremiumTag(findCardContains('HMM Transition Matrix'), 'Transition Intelligence');
+    addPremiumTag(signal, 'Signal Intelligence');
+    addPremiumTag(bus, 'Consensus Intelligence');
+    addPremiumTag(forecast, 'Forecast Intelligence');
+    addPremiumTag(findCardContains('Projection Accuracy'), 'Performance Intelligence');
+  }
+
+  function strengthenBrandLanguage(){
+    var sub = document.querySelector('.brand .sub');
+    if(sub){
+      // sub preserved — inline brand text is set in HTML
+    }
+    var hints = document.querySelectorAll('.card-title .hint');
+    hints.forEach(function(h){
+      if(h.textContent.indexOf('Unified Signal Bus') !== -1){
+        h.textContent = 'Regime intelligence (1H) + Signal Edge (15m) + Structure (4H) fused by the Unified Signal Bus. Recommendations are execution-aware and only print when edge clears cost.';
+      }
+      if(h.textContent.indexOf('8-state HMM') !== -1){
+        h.textContent = '8-state probabilistic regime intelligence. Same EUR/USD feed = identical state across devices after warmup. Built for partner-grade decision clarity.';
+      }
+    });
+  }
+
+  function ensureQuoteExtras(){
+    var badges = document.querySelector('.quoteCard .quoteBadges');
+    if(!badges) return;
+
+    if(!document.getElementById('qxQuoteLeft')){
+      var left = document.createElement('div');
+      left.className = 'qx-quoteLeft';
+      left.id = 'qxQuoteLeft';
+      while(badges.firstChild){
+        left.appendChild(badges.firstChild);
+      }
+      badges.appendChild(left);
+    }
+    if(!document.getElementById('qxQuoteRight')){
+      var right = document.createElement('div');
+      right.className = 'qx-quoteRight';
+      right.id = 'qxQuoteRight';
+      right.innerHTML = '<span class="qx-rsiTag" id="qxRsiTag">RSI 14 <b id="qxRsiVal">--</b> <em id="qxRsiState">--</em></span><a class="qx-miniLink" id="qxTvMini" href="https://www.tradingview.com/chart/?symbol=FX%3AEURUSD" target="_blank" rel="noopener noreferrer">TradingView ↗</a>';
+      badges.appendChild(right);
+    }
+  }
+
+  function calcLocalRSI(vals, period){
+    if(!vals || vals.length < period + 1) return null;
+    var gains = 0, losses = 0;
+    for(var i = vals.length - period; i < vals.length; i++){
+      var diff = vals[i] - vals[i-1];
+      if(diff > 0) gains += diff;
+      else losses += Math.abs(diff);
+    }
+    var avgGain = gains / period, avgLoss = losses / period;
+    if(avgLoss === 0) return 100;
+    var rs = avgGain / avgLoss;
+    return 100 - (100 / (1 + rs));
+  }
+
+  async function fetchTwelveDataRSI(){
+    var settings = getSettings();
+    var key = (settings.twelvedataKey || '').trim();
+    if(!key) return false;
+    if(Date.now() - rsiState.lastFetch < 60000) return true;
+    try{
+      var url = 'https://api.twelvedata.com/rsi?symbol=EUR/USD&interval=15min&time_period=14&series_type=close&apikey=' + encodeURIComponent(key) + '&outputsize=1';
+      var res = await fetch(url, { cache:'no-store' });
+      if(!res.ok) return false;
+      var json = await res.json();
+      var v = null;
+      if(json && Array.isArray(json.values) && json.values[0] && json.values[0].rsi != null){
+        v = Number(json.values[0].rsi);
+      } else if(json && json.value != null){
+        v = Number(json.value);
+      }
+      if(!Number.isFinite(v)) return false;
+      rsiState.value = v;
+      rsiState.source = 'TwelveData';
+      rsiState.lastFetch = Date.now();
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  function updateRSILocalHistory(){
+    var pxEl = document.getElementById('fxSpotPrice');
+    if(!pxEl) return;
+    var v = Number((pxEl.textContent || '').replace(/[^0-9.\\-]/g,''));
+    if(!Number.isFinite(v) || v <= 0) return;
+    var h = rsiState.history;
+    if(!h.length || Math.abs(h[h.length-1] - v) > 0){
+      h.push(v);
+      if(h.length > 120) h.shift();
+    }
+    if(rsiState.value == null){
+      var r = calcLocalRSI(h, 14);
+      if(Number.isFinite(r)){
+        rsiState.value = r;
+        rsiState.source = 'Local';
+      }
+    }
+  }
+
+  function updateRSIVisual(){
+    var valEl = document.getElementById('qxRsiVal');
+    var stEl = document.getElementById('qxRsiState');
+    if(!valEl || !stEl) return;
+    var v = rsiState.value;
+    if(!Number.isFinite(v)){
+      valEl.textContent = '--';
+      stEl.textContent = '--';
+      return;
+    }
+    valEl.textContent = v.toFixed(1);
+    var state = v >= 70 ? 'HOT' : v <= 30 ? 'WASHOUT' : v >= 55 ? 'BULLISH' : v <= 45 ? 'BEARISH' : 'BALANCED';
+    stEl.textContent = state;
+  }
+
+  function checkMatrixCoherence(){
+    var current = (document.getElementById('policyChip')?.textContent || '').trim();
+    var next = (document.getElementById('nextStateChip')?.textContent || '').trim();
+    // No mutation; this is just here so the rendered state is observed together in one place
+    return { current: current, next: next };
+  }
+
+  async function loop(){
+    ensureQuoteExtras();
+    updateRSILocalHistory();
+    await fetchTwelveDataRSI();
+    updateRSIVisual();
+    checkMatrixCoherence();
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    hideDailyReferenceCard();
+    decorateCards();
+    strengthenBrandLanguage();
+    ensureQuoteExtras();
+    updateRSIVisual();
+    setInterval(loop, 1500);
+  });
+})();
+</script>
+
+
+<!-- Million-dollar launch polish: compact hierarchy, premium visual system, reordered cards, matrix context.
+     Layout-only with explanatory matrix context; no core engine or sync logic changes. -->
+<style id="qx-million-launch-style">
+:root{
+  --qx-glow-a: rgba(82, 156, 255, .34);
+  --qx-glow-b: rgba(0, 214, 143, .22);
+  --qx-card-bg: linear-gradient(180deg, rgba(14,22,40,.92), rgba(7,11,21,.95));
+}
+body::before{
+  content:"";
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(1200px 420px at 10% -10%, rgba(55,108,255,.18), transparent 60%),
+    radial-gradient(980px 360px at 100% 5%, rgba(0,214,143,.10), transparent 58%),
+    radial-gradient(860px 300px at 50% 110%, rgba(100,140,255,.08), transparent 68%);
+  opacity:1;
+}
+.wrap{position:relative; z-index:1; max-width:1640px!important; padding:14px 16px 48px!important}
+.grid{gap:12px!important}
+.stack{gap:12px!important}
+.card,.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskItem,.sharpeBox{
+  background:var(--qx-card-bg)!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.30)!important;
+  border-radius:16px!important;
+}
+.card::before,.hero::before,.quoteCard::before,.sessLeft::before,.sessRight::before,.fpTfBox::before,.paBox::before{
+  content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 20%),
+    radial-gradient(680px 180px at 0% -20%, var(--qx-glow-a), transparent 72%),
+    radial-gradient(520px 160px at 100% -20%, var(--qx-glow-b), transparent 70%);
+}
+.topbar{
+  background:linear-gradient(180deg, rgba(14,22,40,.94), rgba(8,11,20,.95))!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.32)!important;
+  border-radius:18px!important;
+}
+.card .inner{padding:14px!important}
+.card-title{margin-bottom:9px!important}
+.card-title h2{
+  font-size:10px!important; letter-spacing:1.65px!important;
+  color:rgba(232,234,240,.52)!important;
+}
+.card-title .hint{
+  font-size:10px!important; line-height:1.42!important;
+  color:rgba(232,234,240,.40)!important;
+  max-width:440px!important;
+}
+.stateBig{font-size:24px!important; letter-spacing:-.5px}
+.quotePx{font-size:48px!important; letter-spacing:-1px}
+.smallNote,.muted,.meta,.bm,.fm,.rm,.aNote,.aAnalog,.teNewsTitle{line-height:1.42!important}
+.probBlock{margin-top:8px!important}
+.probRow{padding:2px 0!important}
+
+/* tighter major windows */
+.hero,.quoteCard,.sessLeft,.sessRight,.fpBox,.riskStrip,.convicRow,.busBanner{padding:14px!important}
+#coneCanvas{height:178px!important}
+#equityCanvas{height:84px!important}
+.paGrid{gap:8px!important; margin-bottom:10px!important}
+.sharpeGrid{gap:8px!important; margin-bottom:10px!important}
+.paBox,.sharpeBox,.macroBox,.tmBox,.riskItem,.fpTfBox,.tfBox,.qx-stat{padding:10px!important}
+.tableWrap table tbody td,.paLogTable td{padding:6px 8px!important}
+thead th,.paLogTable th{padding:7px 8px!important}
+.eqLabel{padding:7px 10px 3px!important}
+
+/* section badges */
+.qxStage{
+  display:inline-flex; align-items:center; gap:7px;
+  margin:0 0 8px 0; padding:5px 10px;
+  border-radius:999px; border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.035);
+  color:rgba(232,234,240,.60); font-size:8.5px;
+  font-weight:700; text-transform:uppercase; letter-spacing:1px; font-family:var(--mono);
+}
+.qxStage i{
+  width:6px;height:6px;border-radius:50%;
+  background:linear-gradient(135deg, rgba(82,156,255,.95), rgba(0,214,143,.92));
+  box-shadow:0 0 10px rgba(82,156,255,.36);
+}
+
+/* transition context */
+.qxMxContext{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  margin:0 0 10px 0; padding:8px 10px; border-radius:12px;
+  background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07);
+}
+.qxMxContext .lab{
+  font-size:8.5px; text-transform:uppercase; letter-spacing:.9px;
+  color:rgba(232,234,240,.46); font-family:var(--mono); font-weight:700;
+}
+.qxMxContext .val{
+  font-size:12px; font-family:var(--mono); font-weight:700; color:#fff;
+}
+.qxMxContext .sep{
+  width:1px;height:16px;background:rgba(255,255,255,.08);
+}
+.qxMxExplain{
+  margin-top:8px; font-size:10px; color:rgba(232,234,240,.48); line-height:1.45;
+}
+
+/* quote card refinement */
+.quoteCard{padding:14px!important}
+.quotePx{margin-bottom:8px!important}
+.qx-tv-mini{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:8px 12px; border-radius:999px;
+  background:linear-gradient(135deg, rgba(41,121,255,.24), rgba(0,214,143,.18));
+  border:1px solid rgba(255,255,255,.10); color:#eef7ff!important; text-decoration:none!important;
+  font-weight:700; font-size:11px; box-shadow:0 12px 26px rgba(0,0,0,.18);
+}
+.qx-tv-mini:hover{filter:brightness(1.06)}
+.qx-quoteLinkRow{display:flex;justify-content:flex-end;margin-top:8px}
+
+/* compact or hide low-priority cards */
+.qx-hidden-card{display:none!important}
+
+/* guide modal fix */
+#guideBack .modal{max-width:1180px!important;width:min(1180px,94vw)!important}
+#guideBack .scroll{max-height:none!important; overflow:visible!important}
+#guideBack .mBody > .grid{grid-template-columns:1.15fr .85fr!important; gap:14px!important}
+
+/* make reference chart gone */
+.qx-remove-reference{display:none!important}
+</style>
+
+<script id="qx-million-launch-script">
+(function(){
+  function cards(){ return Array.prototype.slice.call(document.querySelectorAll('.card')); }
+  function getTitle(card){ var h=card && card.querySelector('.card-title h2'); return h ? h.textContent.trim() : ''; }
+  function find(title){ return cards().find(function(c){ return getTitle(c).toLowerCase().indexOf(title.toLowerCase()) !== -1; }); }
+  function stacks(){ return Array.prototype.slice.call(document.querySelectorAll('.grid > .stack')); }
+  function addStage(card,label){
+    if(!card || card.querySelector('.qxStage')) return;
+    var inner=card.querySelector('.inner'), title=card.querySelector('.card-title');
+    if(!inner || !title) return;
+    var tag=document.createElement('div');
+    tag.className='qxStage';
+    tag.innerHTML='<i></i><span>'+label+'</span>';
+    inner.insertBefore(tag,title);
+  }
+  function move(card, stack, beforeCard){
+    if(!card || !stack) return;
+    if(beforeCard && beforeCard.parentNode===stack){
+      stack.insertBefore(card, beforeCard);
+    } else {
+      stack.appendChild(card);
+    }
+  }
+  function hide(card){ if(card) card.classList.add('qx-hidden-card'); }
+  function quoteTradingViewLink(){
+    var quote = find('Current Market State');
+    if(!quote) return;
+    var existing = document.querySelector('.qx-tv-mini');
+    if(existing) return;
+    var link = document.getElementById('tvLink');
+    if(!link) return;
+    var row=document.createElement('div');
+    row.className='qx-quoteLinkRow';
+    var a=document.createElement('a');
+    a.className='qx-tv-mini';
+    a.href=link.href || link.getAttribute('href') || '#';
+    a.target='_blank'; a.rel='noopener';
+    a.textContent='TradingView ↗';
+    row.appendChild(a);
+    var quoteCard=quote.querySelector('.quoteCard');
+    if(quoteCard) quoteCard.appendChild(row);
+  }
+  function addMatrixContext(){
+    var card=find('HMM Transition Matrix');
+    if(!card || card.querySelector('.qxMxContext')) return;
+    var inner=card.querySelector('.inner');
+    var title=card.querySelector('.card-title');
+    if(!inner || !title) return;
+    var current=(document.getElementById('hmmDiagCurrent')?.textContent||document.getElementById('policyTitle')?.textContent||'--').replace(/Policy State:\s*/,'').trim();
+    var next=(document.getElementById('hmmDiagNext')?.textContent||'--').trim();
+    var prob=(document.getElementById('hmmDiagProb')?.textContent||'--').trim();
+    var wrap=document.createElement('div');
+    wrap.className='qxMxContext';
+    wrap.innerHTML=
+      '<span class="lab">Current</span><span class="val">'+current+'</span>'+
+      '<span class="sep"></span><span class="lab">Transition Watch</span><span class="val">'+next+'</span>'+
+      '<span class="sep"></span><span class="lab">Probability</span><span class="val">'+prob+'</span>';
+    title.insertAdjacentElement('afterend',wrap);
+    var note=document.createElement('div');
+    note.className='qxMxExplain';
+    note.textContent='Current regime describes the market now. Transition watch shows the highest-probability next-state path, so S1 now with S3 next is coherent rather than contradictory.';
+    wrap.insertAdjacentElement('afterend', note);
+  }
+  function reorder(){
+    var ss=stacks(); if(ss.length<2) return;
+    var left=ss[0], right=ss[1];
+
+    var market=find('Current Market State');
+    var qedge=find('Quantitative Edge');
+    var bus=find('Unified Signal Bus');
+    var forecast=find('Forward Projection');
+    var proj=find('Projection Accuracy');
+    var sharpe=find('Signal Performance');
+    var session=find('Session Intelligence');
+    var play=find('Session Playbook');
+    var sigInt=find('Signal Intelligence');
+    var pb3=find('PB3 Behavioral Model');
+    var event=find('Event Archetype Classifier');
+    var macro=find('Macro Drivers');
+    var trans=find('Transmission Mechanism');
+    var corr=find('Correlation Significance Matrix');
+    var hmm=find('HMM Transition Matrix');
+    var wcal=find('World Events Calendar');
+    var te=find('Trading Economics');
+    var heads=find('Live Headlines');
+    var daily=find('Daily EUR/USD Trend');
+
+    // LEFT: Market → Signal → Consensus → Forecast → Session → TE News
+    move(market,left,left.firstChild);
+    move(qedge,left,null);
+    move(bus,left,null);
+    move(forecast,left,null);
+    move(session,left,null);
+    move(te,left,null);        // Trading Economics below Session
+
+    // RIGHT: Transition → Transmission → Macro → Signal → Calendar → Playbook → Proj Accuracy → Signal Performance
+    move(hmm,right,null);      // Transition Intelligence (top)
+    move(trans,right,null);    // Transmission Mechanism
+    move(macro,right,null);    // Macro Intelligence
+    move(sigInt,right,null);   // Signal Intelligence (Execution Layer)
+    move(wcal,right,null);     // Market Calendar — between Execution and Decision
+    move(play,right,null);     // Session Playbook (Decision Layer)
+    move(proj,right,null);     // Projection Accuracy
+    move(sharpe,right,null);   // Signal Performance
+
+    // hide true reference-only panels
+    [daily,pb3,event,corr,heads].forEach(hide);
+
+    // stages
+    addStage(market,'Market Intelligence');
+    addStage(macro,'Macro Intelligence');
+    addStage(trans,'Transmission Intelligence');
+    addStage(hmm,'Transition Intelligence');
+    addStage(qedge,'Signal Intelligence');
+    addStage(bus,'Consensus Intelligence');
+    addStage(forecast,'Forecast Intelligence');
+    addStage(proj,'Calibration Intelligence');
+    addStage(sharpe,'Performance Intelligence');
+    addStage(sigInt,'Execution Layer');
+    addStage(wcal,'Market Calendar');
+    addStage(play,'Decision Layer');
+    addStage(session,'Session Intelligence');
+    addStage(te,'Live Newsfeed');
+  }
+  function tightenText(){
+    var hints=document.querySelectorAll('.card-title .hint');
+    hints.forEach(function(h){
+      if(!h.textContent) return;
+      h.textContent = h.textContent
+        .replace('Single source of truth. ','')
+        .replace('One glance: ','')
+        .replace('Built for fast human decisions.','')
+        .trim();
+    });
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    reorder();
+    quoteTradingViewLink();
+    addMatrixContext();
+    tightenText();
+  });
+})();
+</script>
+
+
+<style id="qx-final-it-factor">
+/* Premium, denser right-rail and stronger product styling */
+:root{
+  --qx-neon-a: rgba(105,166,255,.34);
+  --qx-neon-b: rgba(0,214,143,.24);
+  --qx-neon-c: rgba(140,90,255,.16);
+}
+body::after{
+  content:"";
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(900px 280px at 8% -2%, var(--qx-neon-a), transparent 62%),
+    radial-gradient(700px 240px at 96% 8%, var(--qx-neon-b), transparent 58%),
+    radial-gradient(760px 300px at 55% 100%, var(--qx-neon-c), transparent 65%);
+  opacity:.9;
+}
+.wrap{max-width:1640px!important; padding:14px 14px 44px!important}
+.grid,.stack{gap:12px!important}
+.topbar{
+  background:linear-gradient(180deg, rgba(15,24,44,.94), rgba(8,13,25,.95))!important;
+  box-shadow:0 24px 58px rgba(0,0,0,.34)!important;
+}
+.brand .sub{
+  font-size:9px!important;
+  color:rgba(232,234,240,.44)!important;
+}
+.qxSuperPill{
+  display:inline-flex; align-items:center; gap:6px;
+  margin-left:10px; padding:5px 10px;
+  border-radius:999px; background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.08);
+  color:rgba(232,234,240,.56);
+  font-size:8.5px; letter-spacing:1px; font-family:var(--mono); text-transform:uppercase;
+}
+.qxSuperPill i{
+  width:6px;height:6px;border-radius:50%;
+  background:linear-gradient(135deg, rgba(105,166,255,.95), rgba(0,214,143,.92));
+  box-shadow:0 0 10px rgba(105,166,255,.36);
+}
+
+/* globally denser */
+.card .inner{padding:15px!important}
+.card-title{margin-bottom:9px!important}
+.card-title h2{font-size:9.8px!important; letter-spacing:1.75px!important}
+.card-title .hint{font-size:10px!important; line-height:1.42!important}
+.smallNote,.muted,.meta,.bm,.fm,.rm,.aNote,.aAnalog{line-height:1.42!important}
+.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip{
+  border-radius:16px!important;
+}
+.card,.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip{
+  box-shadow:0 18px 46px rgba(0,0,0,.30)!important;
+}
+.card::before,.hero::before,.quoteCard::before,.sessLeft::before,.sessRight::before,.intelTile::before,.fpTfBox::before,.paBox::before{
+  content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 20%),
+    radial-gradient(560px 150px at 0% -18%, var(--qx-neon-a), transparent 72%),
+    radial-gradient(420px 130px at 100% -20%, var(--qx-neon-b), transparent 72%);
+  opacity:1;
+}
+
+/* Right rail compacting */
+.qx-right-compact .card{min-height:auto!important; height:auto!important}
+.qx-right-compact .inner{min-height:auto!important; height:auto!important; padding:14px!important}
+.qx-right-compact .card-title{margin-bottom:8px!important}
+.qx-right-compact .macroGrid{gap:8px!important}
+.qx-right-compact .macroBox,.qx-right-compact .tmBox{min-height:auto!important; padding:9px 10px!important}
+.qx-right-compact .tmGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important; gap:8px!important}
+.qx-right-compact .tmGrid .macroBox{grid-column:auto!important}
+.qx-right-compact .macroBox[style*="grid-column:1/span 2"]{grid-column:1 / span 2!important}
+.qx-right-compact .riskLevel{
+  display:grid!important; grid-template-columns:1.15fr .85fr .85fr; gap:8px; align-items:start;
+  min-height:auto!important; padding:15px!important;
+}
+.qx-right-compact .riskLevel .rlabel{grid-column:1 / span 3}
+.qx-right-compact .riskLevel .rbig{margin-top:0!important}
+.qxRiskMini{
+  padding:10px 11px; border-radius:12px;
+  background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07);
+}
+.qxRiskMini .k{
+  font-size:8px; text-transform:uppercase; letter-spacing:1px; color:rgba(232,234,240,.46); font-family:var(--mono)
+}
+.qxRiskMini .v{
+  margin-top:4px; font-size:12px; font-weight:700; font-family:var(--mono); color:#fff;
+}
+.qx-right-compact .intelGrid{gap:8px!important}
+.qx-right-compact .intelTile{padding:10px!important}
+.qx-right-compact #orbCanvas,.qx-right-compact #radarCanvas{height:150px!important}
+.qx-right-compact .hmmDiagGrid{gap:8px!important}
+.qx-right-compact .qxMxContext{margin-bottom:8px!important}
+.qx-right-compact .qxMxExplain{margin-bottom:8px!important}
+.qx-right-compact table{margin-bottom:0!important}
+.qx-right-compact .pb3Grid,.qx-right-compact .alGrid{gap:8px!important}
+.qx-right-compact .smallNote:last-child{margin-top:8px!important}
+
+/* Transition strip stronger */
+.qxMxContext{
+  display:grid!important;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px!important;
+  padding:8px!important;
+}
+.qxMxCell{
+  padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.028); border:1px solid rgba(255,255,255,.06);
+}
+.qxMxCell .lab{
+  display:block; font-size:8px; text-transform:uppercase; letter-spacing:1px; color:rgba(232,234,240,.46); font-family:var(--mono);
+}
+.qxMxCell .val{
+  display:block; margin-top:3px; font-size:13px; font-weight:700; color:#fff; font-family:var(--mono)
+}
+
+/* Signal card stronger */
+.qx-command-card .card-title h2,
+.qx-matrix-card .card-title h2,
+.qx-macro-card .card-title h2,
+.qx-tm-card .card-title h2{
+  color:rgba(232,234,240,.62)!important;
+}
+.qx-command-card .card-title .hint,
+.qx-matrix-card .card-title .hint,
+.qx-macro-card .card-title .hint,
+.qx-tm-card .card-title .hint{
+  color:rgba(232,234,240,.46)!important;
+}
+.qx-command-card .intelTile{
+  background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015))!important;
+}
+
+/* Remove dead-space chart reference if still present */
+.qx-hide-card{display:none!important}
+</style>
+
+<script id="qx-final-it-factor-script">
+(function(){
+  function cards(){ return Array.prototype.slice.call(document.querySelectorAll('.card')); }
+  function title(card){
+    var h = card && card.querySelector('.card-title h2');
+    return h ? h.textContent.trim() : '';
+  }
+  function find(txt){
+    return cards().find(function(c){ return title(c).toLowerCase().indexOf(txt.toLowerCase()) !== -1; });
+  }
+  function addBrandPill(){
+    // Market Superintelligence is now inline in the sub text — no-op
+  }
+  function compactRightRail(){
+    var macro = find('Macro Drivers');
+    var tm = find('Transmission Mechanism');
+    var matrix = find('HMM Transition Matrix');
+    var risk = Array.prototype.slice.call(document.querySelectorAll('.card .riskLevel')).map(function(x){return x.closest('.card')})[0];
+    var cmd = find('Signal Intelligence');
+    [macro,tm,matrix,risk,cmd].forEach(function(card){
+      if(card) card.classList.add('qx-right-compact');
+    });
+    if(macro) macro.classList.add('qx-macro-card');
+    if(tm) tm.classList.add('qx-tm-card');
+    if(matrix) matrix.classList.add('qx-matrix-card');
+    if(cmd) cmd.classList.add('qx-command-card');
+
+    // hide the separate TV reference card if still visible
+    var daily = find('Daily EUR/USD Trend');
+    if(daily) daily.classList.add('qx-hide-card');
+  }
+  function fillRiskCard(){
+    var riskInner = document.querySelector('.riskLevel');
+    if(!riskInner || riskInner.querySelector('.qxRiskMini')) return;
+    var b1 = document.createElement('div');
+    b1.className = 'qxRiskMini';
+    b1.innerHTML = '<div class="k">Current Regime</div><div class="v" id="qxRiskRegime">--</div>';
+    var b2 = document.createElement('div');
+    b2.className = 'qxRiskMini';
+    b2.innerHTML = '<div class="k">Transition Watch</div><div class="v" id="qxRiskNext">--</div>';
+    var b3 = document.createElement('div');
+    b3.className = 'qxRiskMini';
+    b3.innerHTML = '<div class="k">Probability</div><div class="v" id="qxRiskProb">--</div>';
+    riskInner.appendChild(b1); riskInner.appendChild(b2); riskInner.appendChild(b3);
+  }
+  function updateTransitionContext(){
+    var current = (document.getElementById('hmmDiagCurrent')?.textContent || document.getElementById('policyStateTitle')?.textContent || '--').replace(/^Policy State:\s*/,'').trim();
+    var nextRaw = (document.getElementById('hmmDiagNext')?.textContent || document.getElementById('nextStateChip')?.textContent || '--').trim();
+    var probRaw = (document.getElementById('hmmDiagProb')?.textContent || '--').trim();
+
+    var next = nextRaw;
+    var prob = probRaw;
+    var m = nextRaw.match(/(S\d+).*?(\d+%)/i);
+    if(m){
+      next = m[1];
+      if(prob === '--') prob = m[2];
+    }
+
+    var wrap = document.querySelector('.qxMxContext');
+    if(wrap){
+      wrap.innerHTML =
+        '<div class="qxMxCell"><span class="lab">Current Regime</span><span class="val">'+(current||'--')+'</span></div>'+
+        '<div class="qxMxCell"><span class="lab">Transition Watch</span><span class="val">'+(next||'--')+'</span></div>'+
+        '<div class="qxMxCell"><span class="lab">Transition Probability</span><span class="val">'+(prob||'--')+'</span></div>';
+    }
+
+    var r1=document.getElementById('qxRiskRegime');
+    var r2=document.getElementById('qxRiskNext');
+    var r3=document.getElementById('qxRiskProb');
+    if(r1) r1.textContent=current||'--';
+    if(r2) r2.textContent=next||'--';
+    if(r3) r3.textContent=prob||'--';
+  }
+  function reorderForFlow(){
+    var stacks = Array.prototype.slice.call(document.querySelectorAll('.grid > .stack'));
+    if(stacks.length < 2) return;
+    var left = stacks[0], right = stacks[1];
+    var market = find('Current Market State');
+    var qedge = find('Quantitative Edge');
+    var bus = find('Unified Signal Bus');
+    var forecast = find('Forward Projection');
+    var proj = find('Projection Accuracy');
+    var perf = find('Signal Performance');
+    var macro = find('Macro Drivers');
+    var tm = find('Transmission Mechanism');
+    var matrix = find('HMM Transition Matrix');
+    var cmd = find('Signal Intelligence');
+    function move(card, stack, afterTxt){
+      if(!card||!stack) return;
+      if(afterTxt){
+        var anchor = Array.prototype.slice.call(stack.children).find(function(c){ return title(c).toLowerCase().indexOf(afterTxt.toLowerCase())!==-1;});
+        if(anchor && anchor.nextSibling) stack.insertBefore(card, anchor.nextSibling);
+        else stack.appendChild(card);
+      } else stack.insertBefore(card, stack.firstChild);
+    }
+    move(market,left,null);
+    move(qedge,left,'Current Market State');
+    move(bus,left,'Quantitative Edge');
+    move(forecast,left,'Unified Signal Bus');
+    move(proj,left,'Forward Projection');
+    move(perf,left,'Projection Accuracy');
+
+    move(macro,right,null);
+    move(tm,right,'Macro Drivers');
+    move(matrix,right,'Transmission Mechanism');
+    move(cmd,right,'HMM Transition Matrix');
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    addBrandPill();
+    reorderForFlow();
+    compactRightRail();
+    fillRiskCard();
+    updateTransitionContext();
+    setInterval(updateTransitionContext, 1200);
+  });
+})();
+</script>
+
+
+<!-- Final balance + sticky topbar + luxe texture pass. Visual-only. -->
+<style id="qx-final-balance-luxe">
+:root{
+  --qx-velvet-a: rgba(8,18,40,.92);
+  --qx-velvet-b: rgba(5,10,22,.96);
+  --qx-luxe-line: rgba(255,255,255,.09);
+  --qx-luxe-blue: rgba(86,147,255,.26);
+  --qx-luxe-teal: rgba(0,214,143,.18);
+  --qx-luxe-violet: rgba(120,92,255,.16);
+}
+
+/* sticky/freeze-pane topbar */
+.topbar{
+  position:sticky!important;
+  top:0!important;
+  z-index:500!important;
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  margin-bottom:12px!important;
+}
+
+/* stronger luxury texture */
+body::before{
+  content:"";
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(1400px 540px at 8% -8%, var(--qx-luxe-violet), transparent 58%),
+    radial-gradient(1200px 420px at 100% 4%, var(--qx-luxe-teal), transparent 54%),
+    radial-gradient(900px 360px at 50% 100%, rgba(31,88,255,.08), transparent 62%);
+  opacity:.95;
+}
+body::after{
+  content:"";
+  position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.13;
+  background-image:
+    linear-gradient(135deg, rgba(255,255,255,.028) 0%, transparent 18%, rgba(255,255,255,.02) 36%, transparent 54%, rgba(255,255,255,.016) 72%, transparent 100%);
+  mix-blend-mode:screen;
+}
+.wrap{position:relative; z-index:1; max-width:1660px!important; padding:12px 16px 44px!important}
+.grid{gap:12px!important}
+.stack{gap:12px!important}
+
+.card,.hero,.quoteCard,.sessLeft,.sessRight,.intelTile,.tmBox,.macroBox,.fpTfBox,.paBox,.riskStrip,.fcastBox,.sharpeBox{
+  background:
+    linear-gradient(180deg, var(--qx-velvet-a), var(--qx-velvet-b))!important;
+  border:1px solid var(--qx-luxe-line)!important;
+  box-shadow:
+    0 26px 60px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.03)!important;
+}
+.card::before,.hero::before,.quoteCard::before,.sessLeft::before,.sessRight::before,.intelTile::before,.fpTfBox::before,.paBox::before{
+  content:"";
+  position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 18%),
+    radial-gradient(600px 150px at 0% -12%, var(--qx-luxe-blue), transparent 70%),
+    radial-gradient(520px 150px at 100% -12%, var(--qx-luxe-teal), transparent 72%);
+  opacity:1;
+}
+.card::after{
+  content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+  background-image:
+    linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.012) 1px, transparent 1px);
+  background-size:22px 22px;
+  opacity:.05;
+}
+
+.card .inner{padding:14px 14px 13px!important}
+.card-title{margin-bottom:9px!important}
+.card-title h2{font-size:10px!important; letter-spacing:1.8px!important}
+.card-title .hint{font-size:10px!important; line-height:1.42!important; color:rgba(232,234,240,.40)!important}
+.stateBig{font-size:23px!important}
+.quotePx{font-size:46px!important}
+
+/* Compress problem right-rail cards */
+.qx-ultra-compact .card-title .hint{max-width:none!important}
+.qx-ultra-compact .inner{padding:12px 13px 12px!important}
+.qx-ultra-compact .smallNote,.qx-ultra-compact .muted{line-height:1.36!important}
+.qx-ultra-compact .tmGrid,.qx-ultra-compact .macroGrid,.qx-ultra-compact .intelGrid,.qx-ultra-compact .qeGrid{gap:8px!important}
+.qx-ultra-compact .macroBox,.qx-ultra-compact .tmBox,.qx-ultra-compact .intelTile{padding:10px 11px!important}
+.qx-ultra-compact .card-title{margin-bottom:7px!important}
+.qx-ultra-compact .card-title h2{font-size:9px!important}
+.qx-ultra-compact .card-title .hint{font-size:9.5px!important}
+.qx-ultra-compact .rbig{font-size:26px!important}
+.qx-ultra-compact .archMain{padding:10px 11px!important}
+.qx-ultra-compact .tmBar,.qx-ultra-compact .pbar{height:3px!important}
+
+/* Balance left/right by moving a few modules and removing dead space */
+.qx-rebalanced .card{min-height:auto!important}
+.qx-rebalanced .tableWrap,.qx-rebalanced .paLog,.qx-rebalanced .eqWrap{min-height:auto!important}
+.qx-rebalanced .tvWrap{min-height:88px!important}
+
+/* remove risk-level card entirely */
+.qx-hidden-card{display:none!important}
+
+/* more impactful badges */
+.qxStage{
+  background:rgba(255,255,255,.04)!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.16);
+}
+
+/* premium brand treatment */
+.brand .name{font-size:15px!important; letter-spacing:-.35px!important}
+.brand .sub{color:rgba(232,234,240,.46)!important}
+.qx-brandSuper{
+  display:inline-flex; align-items:center; gap:6px; margin-top:3px;
+  padding:4px 8px; border-radius:999px;
+  font-family:var(--mono); font-size:8px; letter-spacing:1px; text-transform:uppercase;
+  color:rgba(232,234,240,.62);
+  background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.08);
+}
+.qx-brandSuper i{
+  width:6px;height:6px;border-radius:50%;
+  background:linear-gradient(135deg, rgba(86,147,255,.98), rgba(0,214,143,.92));
+  box-shadow:0 0 12px rgba(86,147,255,.34);
+}
+
+/* cleaner hover polish */
+.card:hover{transform:translateY(-2px)!important}
+.btn{box-shadow:0 10px 24px rgba(0,0,0,.18)}
+</style>
+
+<script id="qx-final-balance-luxe-script">
+(function(){
+  function cards(){ return Array.prototype.slice.call(document.querySelectorAll('.card')); }
+  function title(card){
+    var h2 = card && card.querySelector('.card-title h2');
+    return h2 ? h2.textContent.trim() : '';
+  }
+  function findCard(txt){
+    return cards().find(function(c){ return title(c).toLowerCase().indexOf(txt.toLowerCase()) !== -1; });
+  }
+  function stacks(){ return Array.prototype.slice.call(document.querySelectorAll('.grid > .stack')); }
+  function moveAfter(card, stack, anchorTxt){
+    if(!card || !stack) return;
+    var arr = Array.prototype.slice.call(stack.children);
+    var anchor = arr.find(function(c){ return title(c).toLowerCase().indexOf(anchorTxt.toLowerCase()) !== -1; });
+    if(anchor && anchor.nextSibling) stack.insertBefore(card, anchor.nextSibling);
+    else stack.appendChild(card);
+  }
+  function moveTop(card, stack){
+    if(card && stack) stack.insertBefore(card, stack.firstChild);
+  }
+  function compact(card){
+    if(card) card.classList.add('qx-ultra-compact');
+  }
+  function hide(card){
+    if(card) card.classList.add('qx-hidden-card');
+  }
+  // addBrandPill removed — first pill (qxSuperPill) is kept
+  function rebalance(){
+    var ss = stacks();
+    if(ss.length < 2) return;
+    var left = ss[0], right = ss[1];
+    left.classList.add('qx-rebalanced');
+    right.classList.add('qx-rebalanced');
+
+    var risk = findCard('Risk Level');
+    var matrix = findCard('HMM Transition Matrix');
+    var trans = findCard('Transmission Mechanism');
+    var macroCard = findCard('Macro Drivers');
+    var signalIntel = findCard('Signal Intelligence');
+    var sessionPlay = findCard('Session Playbook');
+    var projAcc = findCard('Projection Accuracy');
+    var performance = findCard('Signal Performance');
+    var sessionIntel = findCard('Session Intelligence');
+    var qedge = findCard('Quantitative Edge');
+    var bus = findCard('Unified Signal Bus');
+    var wcalCard = findCard('World Events Calendar');
+    var teCard = findCard('Trading Economics');
+
+    hide(risk);
+
+    // RIGHT: Transition → Transmission → Macro → Signal → Playbook → Proj Accuracy → Performance
+    moveTop(matrix, right);
+    moveAfter(trans, right, 'HMM Transition Matrix');
+    moveAfter(macroCard, right, 'Transmission Mechanism');
+    moveAfter(signalIntel, right, 'Macro Drivers');
+    moveAfter(sessionPlay, right, 'Signal Intelligence');
+    if(projAcc){ projAcc.classList.remove('qx-hidden-card'); moveAfter(projAcc, right, 'Session Playbook'); }
+    if(performance){ performance.classList.remove('qx-hidden-card'); moveAfter(performance, right, 'Projection Accuracy'); }
+
+    // LEFT: Session → TE News below main flow
+    if(sessionIntel) moveAfter(sessionIntel, left, 'Forward Projection');
+    if(teCard){ teCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(teCard, left, 'Session Intelligence'); }
+    // RIGHT: Market Calendar between Execution (Signal Intelligence) and Decision (Session Playbook)
+    if(wcalCard){ wcalCard.classList.remove('qx-hidden-card','qx-hide-card'); moveAfter(wcalCard, right, 'Signal Intelligence · Command Layer'); }
+
+    compact(matrix); compact(trans); compact(macroCard); compact(signalIntel); compact(sessionPlay);
+    compact(sessionIntel); compact(qedge); compact(bus);
+    if(wcalCard) compact(wcalCard);
+    if(teCard) compact(teCard);
+    if(projAcc) compact(projAcc);
+    if(performance) compact(performance);
+    if(wcalCard) compact(wcalCard);
+
+    // Eliminate all min-height spacers on left side too
+    Array.prototype.slice.call(left.children).forEach(function(card){
+      card.style.minHeight = '0';
+      card.querySelectorAll('[style*="min-height"]').forEach(function(el){ el.style.minHeight = '0'; });
+      card.querySelectorAll('.tvWrap,.tableWrap,.eqWrap,.paLog,.coneWrap,.minHack').forEach(function(el){ el.style.minHeight='0'; });
+    });
+
+    // remove any preserved empty min-heights on right-side panels
+    [trans, matrix, signalIntel, sessionPlay, projAcc, performance].forEach(function(card){
+      if(!card) return;
+      card.style.minHeight = '0';
+      var targets = card.querySelectorAll('.tvWrap,.tableWrap,.eqWrap,.paLog,.coneWrap');
+      targets.forEach(function(t){ t.style.minHeight = '0'; });
+    });
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    rebalance();
+  });
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+<style id="qx-deep-terminal">
+/*
+╔═══════════════════════════════════════════════════════════════════════════╗
+║  QUADRAX  ·  DEEP TERMINAL  ·  v39-davincii-cyan                           ║
+║  "Future Dust" + Electric Cyan — institutional precision meets             ║
+║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+
+/* ────────────────────────────────────────────
+   DEEP TERMINAL TOKENS
+──────────────────────────────────────────── */
+:root {
+  /* "Future Dust" backgrounds */
+  --dt-bg0:   #060b12;    /* page void */
+  --dt-bg1:   #0b1420;    /* card surface */
+  --dt-bg2:   #101c2c;    /* raised element */
+  --dt-bg3:   #152233;    /* hover / active */
+  --dt-bg4:   #0d1929;    /* deep inset */
+
+  /* Electric Cyan — the single hero accent */
+  --dt-cyan:  #00e5ff;
+  --dt-cyan2: #40efff;
+  --dt-cyan3: rgba(0,229,255,.55);
+
+  /* Neon Lime — positive/growth only */
+  --dt-lime:  #00e676;
+  --dt-lime2: #69ff9e;
+
+  /* Amber — warning/action */
+  --dt-amber: #ffab00;
+  --dt-amber2:#ffc740;
+
+  /* Red — danger only */
+  --dt-red:   #ff3d57;
+  --dt-red2:  #ff6b7a;
+
+  /* Text — off-white system */
+  --dt-t1:  #dde6f0;    /* primary — never pure white */
+  --dt-t2:  #aebcce;    /* secondary */
+  --dt-t3:  #6a7f9a;    /* labels / ghost */
+  --dt-t4:  #2a3a52;    /* structural separators */
+
+  /* Borders — barely there */
+  --dt-b1:  rgba(0,229,255,.10);
+  --dt-b2:  rgba(0,229,255,.06);
+  --dt-b3:  rgba(0,229,255,.03);
+
+  /* Typography */
+  --dt-ui:   'IBM Plex Sans', ui-sans-serif, sans-serif;
+  --dt-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* Glow — one accent, used sparingly */
+  --dt-glow: 0 0 20px rgba(0,229,255,.18), 0 0 50px rgba(0,229,255,.08);
+  --dt-glow-sm: 0 0 12px rgba(0,229,255,.22);
+}
+
+/* Push these to override previous blocks */
+:root {
+  --t-ui:   var(--dt-ui) !important;
+  --t-mono: var(--dt-mono) !important;
+  --sq-display: var(--dt-ui) !important;
+  --sq-body: var(--dt-ui) !important;
+  --sq-mono: var(--dt-mono) !important;
+}
+
+/* ────────────────────────────────────────────
+   BODY — FUTURE DUST VOID
+──────────────────────────────────────────── */
+body {
+  font-family: var(--dt-ui) !important;
+  background: var(--dt-bg0) !important;
+  color: var(--dt-t1) !important;
+  -webkit-font-smoothing: antialiased !important;
+  font-variant-numeric: tabular-nums !important;
+}
+body::before, body::after { display: none !important; }
+
+/* ────────────────────────────────────────────
+   TOPBAR — SINGLE-ROW COMMAND LINE
+──────────────────────────────────────────── */
+.topbar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  padding: 10px 18px !important;
+  background: rgba(4,8,16,.96) !important;
+  border: none !important;
+  border-bottom: 1px solid var(--dt-b1) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 1px 0 rgba(0,229,255,.06), 0 4px 24px rgba(0,0,0,.80) !important;
+  backdrop-filter: none !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 200 !important;
+}
+/* kill previous spectrum line */
+.topbar::after, .topbar::before { display: none !important; }
+
+/* ────────────────────────────────────────────
+   LOGO MARK — DAVINCII ANIMATED TEXT (CYAN)
+──────────────────────────────────────────── */
+.qxlogo-mark {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  perspective: 180px;
+  transition: filter .25s ease;
+}
+.qxlogo-mark:hover .davincii-logo {
+  text-shadow: 0 0 18px rgba(0,229,255,.70), 0 0 36px rgba(0,229,255,.30);
+}
+
+/* DAVINCII 3D animated text — header */
+.davincii-logo {
+  font-family: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  color: #e8eef6;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(0,229,255,.40), 0 0 28px rgba(0,229,255,.15);
+  position: relative;
+  display: inline-block;
+  animation: dv3d 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+  user-select: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+.davincii-logo::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0; top: 100%;
+  transform: scaleY(-1) translateY(-1px);
+  opacity: 0.12;
+  color: #00e5ff;
+  filter: blur(1.5px);
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.35), transparent 70%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.35), transparent 70%);
+}
+
+/* Auth / login screen DAVINCII — slightly larger */
+.davincii-logo-auth {
+  font-family: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: #e8eef6;
+  text-transform: uppercase;
+  text-shadow: 0 0 14px rgba(0,229,255,.45), 0 0 32px rgba(0,229,255,.18);
+  position: relative;
+  display: inline-block;
+  animation: dv3d 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+  user-select: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+.davincii-logo-auth::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0; top: 100%;
+  transform: scaleY(-1) translateY(-1px);
+  opacity: 0.15;
+  color: #00e5ff;
+  filter: blur(2px);
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.4), transparent 65%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.4), transparent 65%);
+}
+
+/* Boot splash DAVINCII */
+.davincii-logo-boot {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #e8eef6;
+  text-shadow: 0 0 10px rgba(0,229,255,.35);
+  animation: dv3d 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+  user-select: none;
+  display: inline-block;
+}
+
+/* 3D rotation keyframes — subtle oscillating perspective */
+@keyframes dv3d {
+  0%   { transform: rotateY(-12deg) rotateX(2deg); }
+  25%  { transform: rotateY(6deg) rotateX(-1deg); }
+  50%  { transform: rotateY(12deg) rotateX(2deg); }
+  75%  { transform: rotateY(-6deg) rotateX(-1deg); }
+  100% { transform: rotateY(-12deg) rotateX(2deg); }
+}
+
+/* ────────────────────────────────────────────
+   BRAND TEXT BLOCK
+──────────────────────────────────────────── */
+.brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-width: unset !important;
+  flex-shrink: 0 !important;
+}
+.brand-text-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* QUADRAX Wordmark — styled after Image 1: "QUADRA X" bold spaced typography */
+.brand-wordmark {
+  font-family: var(--dt-ui) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  letter-spacing: 5px !important;
+  text-transform: uppercase !important;
+  line-height: 1 !important;
+  user-select: none !important;
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 0 !important;
+}
+/* "QUADRA" — solid institutional white */
+.brand-q {
+  color: var(--dt-t1) !important;
+  letter-spacing: 5px !important;
+}
+/* Space separator */
+.brand-sep {
+  display: inline-block !important;
+  width: 6px !important;
+}
+/* "X" — cyan, matching the DAVINCII accent */
+.brand-rx {
+  color: #00e5ff !important;
+  text-shadow: 0 0 16px rgba(0,229,255,.50), 0 0 40px rgba(0,229,255,.20) !important;
+  letter-spacing: 1px !important;
+  font-size: 17px !important;
+}
+
+/* Override old h1 brand just in case */
+.brand h1 {
+  font-family: var(--dt-ui) !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  letter-spacing: 4px !important;
+  color: var(--dt-t1) !important;
+  -webkit-text-fill-color: var(--dt-t1) !important;
+  background: none !important;
+  text-shadow: none !important;
+  filter: none !important;
+  animation: none !important;
+}
+
+/* Sub — single condensed info line */
+.brand .sub {
+  font-family: var(--dt-ui) !important;
+  font-size: 9px !important;
+  font-weight: 400 !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  color: rgba(130,155,185,.82) !important;
+  margin-top: 0 !important;
+  white-space: nowrap !important;
+  line-height: 1.2 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+/* Market Superintelligence inline badge */
+.sub-si {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 1px 7px !important;
+  background: rgba(0,229,255,.05) !important;
+  border: 1px solid rgba(0,229,255,.22) !important;
+  border-radius: 3px !important;
+  font-size: 8px !important;
+  font-weight: 600 !important;
+  letter-spacing: 2px !important;
+  color: #00e5ff !important;
+  text-transform: uppercase !important;
+  font-family: var(--dt-ui) !important;
+}
+.sub-si-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: #00e5ff;
+  box-shadow: 0 0 6px rgba(0,229,255,.85);
+  animation: cyanPulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes limePulse {
+  0%,100% { opacity: .7; box-shadow: 0 0 5px rgba(105,255,158,.65); }
+  50%      { opacity: 1;  box-shadow: 0 0 12px rgba(105,255,158,1.0); }
+}
+@keyframes cyanPulse {
+  0%,100% { opacity: .7; box-shadow: 0 0 4px rgba(0,229,255,.60); }
+  50%      { opacity: 1;  box-shadow: 0 0 10px rgba(0,229,255,.95); }
+}
+
+/* Kill old qxlogo if it appears */
+.qxlogo {
+  font-family: var(--dt-mono) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--dt-cyan) !important;
+  -webkit-text-fill-color: var(--dt-cyan) !important;
+  background: rgba(0,229,255,.06) !important;
+  border: 1px solid var(--dt-b1) !important;
+  box-shadow: var(--dt-glow-sm) !important;
+}
+
+/* ────────────────────────────────────────────
+   TOPBAR ACTIONS — COMPACT SINGLE ROW
+──────────────────────────────────────────── */
+.top-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-wrap: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+/* Buttons — clean terminal style */
+.btn {
+  font-family: var(--dt-mono) !important;
+  font-size: 9px !important;
+  font-weight: 500 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid var(--dt-b1) !important;
+  color: rgba(175,195,225,.88) !important;
+  border-radius: 4px !important;
+  transition: all .15s ease !important;
+  padding: 5px 10px !important;
+  height: 26px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+.btn:hover {
+  background: rgba(0,229,255,.06) !important;
+  border-color: rgba(0,229,255,.30) !important;
+  color: var(--dt-cyan) !important;
+}
+.btn.primary {
+  background: rgba(0,229,255,.08) !important;
+  border-color: rgba(0,229,255,.28) !important;
+  color: var(--dt-cyan) !important;
+}
+.btn.primary:hover {
+  background: rgba(0,229,255,.14) !important;
+  border-color: rgba(0,229,255,.50) !important;
+  box-shadow: var(--dt-glow-sm) !important;
+}
+
+/* Pills — compact */
+.pill {
+  font-family: var(--dt-mono) !important;
+  font-size: 8.5px !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid var(--dt-b1) !important;
+  color: rgba(165,185,215,.82) !important;
+  padding: 4px 8px !important;
+  height: 26px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+
+/* LIVE dot */
+.dot {
+  background: var(--dt-lime) !important;
+  width: 6px !important; height: 6px !important;
+  box-shadow: 0 0 8px rgba(0,230,118,.65) !important;
+  animation: livePulse 2s ease-in-out infinite !important;
+}
+@keyframes livePulse {
+  0%,100% { box-shadow: 0 0 6px rgba(0,230,118,.50); }
+  50%     { box-shadow: 0 0 14px rgba(0,230,118,.85); }
+}
+.dot.amber { background: var(--dt-amber) !important; box-shadow: none !important; animation: none !important; }
+.dot.red   { background: var(--dt-red) !important;   box-shadow: none !important; animation: none !important; }
+
+/* 4H badge */
+.qx-tf-badge {
+  font-family: var(--dt-mono) !important;
+  font-size: 8.5px !important;
+  letter-spacing: 1px !important;
+  background: rgba(255,171,0,.05) !important;
+  border: 1px solid rgba(255,171,0,.20) !important;
+  color: var(--dt-amber2) !important;
+  height: 26px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Sync badge */
+.syncBadge {
+  font-family: var(--dt-mono) !important;
+  font-size: 8.5px !important;
+  letter-spacing: .5px !important;
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid rgba(255,171,0,.14) !important;
+  color: var(--dt-t3) !important;
+  padding: 4px 8px !important;
+  height: 26px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  border-radius: 4px !important;
+}
+
+/* Risk Pulse compact */
+.riskPulse {
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid var(--dt-b1) !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+  height: 26px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+.rpTop { gap: 6px !important; }
+.rpBar i { border-radius: 1px !important; }
+
+/* Alert badge */
+.alertBadge {
+  font-family: var(--dt-mono) !important;
+  font-size: 8.5px !important;
+  letter-spacing: .5px !important;
+  height: 26px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* ────────────────────────────────────────────
+   INTELLIGENCE BADGES (card layer labels)
+──────────────────────────────────────────── */
+.qxStage, .qx-premTag {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 2px 10px 2px 8px !important;
+  margin-bottom: 8px !important;
+  border-radius: 3px !important;
+  background: rgba(0,229,255,.04) !important;
+  border: 1px solid rgba(0,229,255,.14) !important;
+  border-left: 2px solid rgba(0,229,255,.60) !important;
+  font-family: var(--dt-ui) !important;
+  font-size: 8px !important;
+  font-weight: 600 !important;
+  letter-spacing: 2.5px !important;
+  text-transform: uppercase !important;
+  color: rgba(0,229,255,.85) !important;
+  box-shadow: none !important;
+}
+.qxStage i, .qx-premTag i {
+  width: 4px; height: 4px;
+  border-radius: 50% !important;
+  background: var(--dt-cyan) !important;
+  box-shadow: 0 0 6px rgba(0,229,255,.75) !important;
+  animation: cyanPulse 2.5s ease-in-out infinite !important;
+  flex-shrink: 0;
+}
+.qxSuperPill {
+  display: none !important; /* now inline in sub */
+}
+
+/* ────────────────────────────────────────────
+   CARDS
+──────────────────────────────────────────── */
+.card {
+  background: var(--dt-bg1) !important;
+  border: 1px solid var(--dt-b2) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,.50), 0 1px 3px rgba(0,0,0,.35) !important;
+  position: relative; overflow: hidden;
+  transition: border-color .15s ease !important;
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg,
+    transparent, rgba(0,229,255,.12) 40%, rgba(0,229,255,.06) 70%, transparent);
+  pointer-events: none;
+}
+.card::after { display: none !important; }
+.card > .inner { position: relative; z-index: 1; }
+.card:hover {
+  border-color: rgba(0,229,255,.14) !important;
+}
+
+/* ────────────────────────────────────────────
+   CARD TITLES
+──────────────────────────────────────────── */
+.card-title h2 {
+  font-family: var(--dt-ui) !important;
+  font-size: 9.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 2.5px !important;
+  text-transform: uppercase !important;
+  color: var(--dt-t2) !important;
+}
+.card-title .hint {
+  font-family: var(--dt-ui) !important;
+  font-size: 10px !important;
+  font-weight: 400 !important;
+  color: var(--dt-t3) !important;
+  line-height: 1.5 !important;
+}
+
+/* ────────────────────────────────────────────
+   DATA TYPOGRAPHY
+──────────────────────────────────────────── */
+.quotePx {
+  font-family: var(--dt-mono) !important;
+  font-size: 44px !important;
+  font-weight: 400 !important;
+  letter-spacing: -2px !important;
+  color: var(--dt-t1) !important;
+  -webkit-text-fill-color: var(--dt-t1) !important;
+  background: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+  font-variant-numeric: tabular-nums !important;
+}
+.stateBig {
+  font-family: var(--dt-ui) !important;
+  font-size: 21px !important;
+  font-weight: 600 !important;
+  letter-spacing: .5px !important;
+  text-shadow: none !important;
+}
+.busBannerDir {
+  font-family: var(--dt-ui) !important;
+  font-size: 40px !important;
+  font-weight: 700 !important;
+  letter-spacing: 5px !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+.fpBox .v, .fpTfRange,
+.paBox .v, .qeBox .qv, .sharpeBox .v, .fcastBox .fv, .macroBox .v, .convicText .cv {
+  font-family: var(--dt-mono) !important;
+  font-variant-numeric: tabular-nums !important;
+  color: var(--dt-t1) !important;
+  -webkit-text-fill-color: var(--dt-t1) !important;
+  background: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+/* Labels */
+.k, .rlabel, .sec-label, .fpTfLabel, .rpLabel, .bk, .dk, .rk, .tlLabel, .sName {
+  font-family: var(--dt-ui) !important;
+  font-size: 8px !important;
+  font-weight: 500 !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  color: var(--dt-t3) !important;
+}
+
+/* ────────────────────────────────────────────
+   STATE COLORS
+──────────────────────────────────────────── */
+.pos, .up { color: var(--dt-lime2) !important; text-shadow: none !important; }
+.neg, .dn { color: var(--dt-red2) !important;  text-shadow: none !important; }
+.warn      { color: var(--dt-amber2) !important; text-shadow: none !important; }
+
+/* ────────────────────────────────────────────
+   DATA PANELS
+──────────────────────────────────────────── */
+.hero, .busBanner,
+.macroBox, .fpBox, .paBox, .tmBox, .pb3Top, .sharpeBox,
+.qeBox, .busBox, .sessBox, .sessLeft, .sessRight, .intelTile {
+  background: var(--dt-bg2) !important;
+  border: 1px solid var(--dt-b2) !important;
+  border-radius: 6px !important;
+}
+.hero::before, .hero::after,
+.busBanner::before, .busBanner::after,
+.intelTile::before { display: none !important; }
+
+/* ────────────────────────────────────────────
+   CHIPS / BADGES
+──────────────────────────────────────────── */
+.chip {
+  font-family: var(--dt-ui) !important;
+  font-size: 9px !important;
+  background: var(--dt-bg2) !important;
+  border: 1px solid var(--dt-b1) !important;
+  border-radius: 3px !important;
+  color: var(--dt-t2) !important;
+}
+.chip b { font-family: var(--dt-mono) !important; color: var(--dt-t1) !important; }
+.pillTag, .dayBadge {
+  font-family: var(--dt-ui) !important;
+  font-size: 8.5px !important;
+  letter-spacing: 1.5px !important;
+  background: var(--dt-bg2) !important;
+  border-color: var(--dt-b1) !important;
+  color: var(--dt-t3) !important;
+}
+.liveBadge { font-family: var(--dt-mono) !important; font-size: 8px !important; letter-spacing: 1px !important; background: var(--dt-bg2) !important; border-color: var(--dt-b1) !important; color: var(--dt-t3) !important; }
+.liveBadge.live { background: rgba(0,230,118,.06) !important; color: var(--dt-lime2) !important; border-color: rgba(0,230,118,.20) !important; }
+
+/* ────────────────────────────────────────────
+   TABLES
+──────────────────────────────────────────── */
+thead th {
+  font-family: var(--dt-ui) !important;
+  font-size: 8px !important;
+  font-weight: 600 !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  color: var(--dt-t3) !important;
+  background: rgba(0,0,0,.25) !important;
+  border-bottom: 1px solid var(--dt-b1) !important;
+}
+td {
+  font-family: var(--dt-mono) !important;
+  font-size: 10px !important;
+  color: var(--dt-t2) !important;
+  border-color: var(--dt-b3) !important;
+  font-variant-numeric: tabular-nums !important;
+}
+tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
+.txMx .rl { font-family: var(--dt-ui) !important; font-size: 8px !important; color: var(--dt-t3) !important; }
+.txMx th  { font-family: var(--dt-ui) !important; letter-spacing: 1.5px !important; color: var(--dt-t3) !important; background: rgba(0,0,0,.20) !important; }
+
+/* ────────────────────────────────────────────
+   NEWSFEED
+──────────────────────────────────────────── */
+.teNewsItem { border-bottom: 1px solid var(--dt-b3) !important; }
+.teNewsItem:hover { background: rgba(0,229,255,.025) !important; }
+.teNewsTime { font-family: var(--dt-mono) !important; font-size: 8px !important; color: var(--dt-t3) !important; letter-spacing: 1px !important; text-transform: uppercase !important; }
+.teNewsTitle { font-family: var(--dt-ui) !important; font-size: 11px !important; font-weight: 400 !important; color: var(--dt-t2) !important; line-height: 1.5 !important; }
+.teNewsCategory.USD { background: rgba(0,229,255,.08) !important; color: var(--dt-cyan) !important; border: 1px solid rgba(0,229,255,.20) !important; font-family: var(--dt-ui) !important; font-size: 7.5px !important; letter-spacing: 1.5px !important; font-weight: 600 !important; }
+.teNewsCategory.EUR { background: rgba(0,230,118,.06) !important; color: var(--dt-lime2) !important; border: 1px solid rgba(0,230,118,.18) !important; }
+
+/* ────────────────────────────────────────────
+   MISC
+──────────────────────────────────────────── */
+.qxMxCell { background: var(--dt-bg2) !important; border: 1px solid var(--dt-b2) !important; }
+.qxMxCell .lab { font-family: var(--dt-ui) !important; font-size: 8px !important; letter-spacing: 1.5px !important; color: var(--dt-t3) !important; }
+.qxMxCell .val { font-family: var(--dt-mono) !important; color: var(--dt-t1) !important; font-variant-numeric: tabular-nums !important; }
+.smallNote, .muted { font-family: var(--dt-ui) !important; color: var(--dt-t3) !important; }
+.foot { font-family: var(--dt-ui) !important; color: var(--dt-t4) !important; }
+.riskItem { border-color: var(--dt-b3) !important; }
+.rv { font-family: var(--dt-mono) !important; color: var(--dt-t1) !important; font-variant-numeric: tabular-nums !important; }
+.staleWarning, #staleWarn { background: rgba(255,61,85,.07) !important; border: 1px solid rgba(255,61,85,.22) !important; animation: dtStale 2s ease-in-out infinite !important; }
+@keyframes dtStale { 0%,100% { opacity: 1; } 50% { opacity: .65; } }
+.probBar > div { border-radius: 2px !important; filter: none !important; box-shadow: none !important; }
+.tlLabel { font-family: var(--dt-mono) !important; font-size: 8px !important; color: var(--dt-t3) !important; letter-spacing: 1px !important; }
+
+/* Grid */
+.grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px !important; padding: 12px !important; align-items: start !important; }
+.stack { display: flex; flex-direction: column; gap: 10px; }
+.stack .card { flex-shrink: 0; margin: 0 !important; }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,229,255,.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,229,255,.35); }
+
+/* Selection */
+::selection { background: rgba(0,229,255,.20); color: var(--dt-t1); }
+
+/* Tabular nums global */
+.v, .fv, .qv, .cv, .rv, td, .fpBox, .paBox, .macroBox, .sharpeBox, .qeBox, .quotePx, .fcastBox { font-variant-numeric: tabular-nums !important; }
+
+</style>
+
+
+
+
+
+
+<style id="qx-header-signature">
+/*
+╔══════════════════════════════════════════════════════════════════════╗
+║  QUADRAX · SIGNATURE TOPBAR                                          ║
+║  The topbar IS the terminal. It breathes, it watches, it reports.   ║
+║  One glance = full situational awareness.                            ║
+╚══════════════════════════════════════════════════════════════════════╝
+*/
+
+/* ── TOPBAR: scanline + accent rule at top ─────────────────────────── */
+.topbar {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 200 !important;
+  display: grid !important;
+  grid-template-columns: auto 1fr auto !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 0 18px !important;
+  height: 52px !important;
+  background: rgba(4, 9, 18, 0.98) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(0, 229, 255, 0.08) !important;
+  border-radius: 0 !important;
+  box-shadow:
+    0 0 0 1px rgba(0, 229, 255, 0.04),
+    0 8px 32px rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: none !important;
+  overflow: hidden !important;
+}
+
+/* Accent line across very top — "terminal power on" indicator */
+.topbar::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important; left: 0 !important; right: 0 !important;
+  height: 1.5px !important;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0,229,255,0.0) 5%,
+    rgba(0,229,255,0.70) 30%,
+    rgba(0,229,255,0.90) 50%,
+    rgba(0,229,255,0.70) 70%,
+    rgba(0,229,255,0.0) 95%,
+    transparent 100%
+  ) !important;
+  display: block !important;
+  animation: headerBeam 6s ease-in-out infinite !important;
+}
+@keyframes headerBeam {
+  0%,100% { opacity: 0.55; }
+  50%      { opacity: 1.00; }
+}
+.topbar::after { display: none !important; }
+
+/* ── BRAND ─────────────────────────────────────────────────────────── */
+.brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-shrink: 0 !important;
+  height: 52px !important;
+}
+
+/* Left-edge accent bar on brand block */
+.brand::before {
+  content: '' !important;
+  position: absolute !important;
+  left: 0 !important; top: 8px !important; bottom: 8px !important;
+  width: 2px !important;
+  background: linear-gradient(180deg, transparent, #00e5ff, transparent) !important;
+  border-radius: 2px !important;
+  display: block !important;
+}
+
+.brand-text-block {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+}
+
+/* DAVINCII logo mark — separator + flow */
+.qxlogo-mark {
+  padding-right: 10px !important;
+  margin-right: 2px !important;
+  border-right: 1px solid rgba(0,229,255,.18) !important;
+  overflow: visible !important;
+  padding-bottom: 6px !important;
+}
+
+/* QUADRA X wordmark — wider tracking, stronger */
+.brand-wordmark {
+  font-family: 'IBM Plex Sans', ui-sans-serif, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: 6px !important;
+  text-transform: uppercase !important;
+  line-height: 1 !important;
+  user-select: none !important;
+}
+.brand-q { color: #d8e6f5 !important; }
+.brand-rx {
+  color: #00e5ff !important;
+  text-shadow: 0 0 18px rgba(0,229,255,.55), 0 0 40px rgba(0,229,255,.18) !important;
+  letter-spacing: 2px !important;
+  font-size: 15px !important;
+}
+
+/* Sub line — lean & informational */
+.brand .sub {
+  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-size: 8.5px !important;
+  font-weight: 400 !important;
+  letter-spacing: 2.5px !important;
+  text-transform: uppercase !important;
+  color: rgba(100, 130, 168, 0.80) !important;
+  white-space: nowrap !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+}
+
+/* SUPERINTELLIGENCE ARCHITECTURE badge — no dot, clean label */
+.sub-si {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 2px 8px !important;
+  background: rgba(0,229,255,.05) !important;
+  border: 1px solid rgba(0,229,255,.22) !important;
+  border-left: 2px solid rgba(0,229,255,.65) !important;
+  border-radius: 2px !important;
+  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-size: 7.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 2.5px !important;
+  color: rgba(0,229,255,.80) !important;
+  text-transform: uppercase !important;
+}
+
+/* ── CENTER STAGE — instrument cluster ────────────────────────────── */
+.qx-topbar-center {
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+  height: 36px !important;
+  background: rgba(255,255,255,.018) !important;
+  border: 1px solid rgba(255,255,255,.06) !important;
+  border-radius: 5px !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* Subtle cyan shimmer on center panel */
+.qx-topbar-center::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(0,229,255,.025) 50%, transparent 100%) !important;
+  pointer-events: none !important;
+}
+
+.qx-center-stat {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  padding: 0 24px !important;
+  position: relative !important;
+  cursor: default !important;
+  transition: background .15s ease !important;
+}
+.qx-center-stat:hover {
+  background: rgba(0,229,255,.04) !important;
+}
+
+.qx-cs-label {
+  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-size: 6.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 2.5px !important;
+  text-transform: uppercase !important;
+  color: rgba(90, 118, 158, 0.80) !important;
+  line-height: 1 !important;
+}
+.qx-cs-val {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: rgba(205, 222, 242, 0.95) !important;
+  line-height: 1 !important;
+  font-variant-numeric: tabular-nums !important;
+  white-space: nowrap !important;
+  letter-spacing: .5px !important;
+}
+
+.qx-center-div {
+  width: 1px !important;
+  margin: 7px 0 !important;
+  background: rgba(255,255,255,.07) !important;
+  flex-shrink: 0 !important;
+}
+
+/* ── ACTIONS ─────────────────────────────────────────────────────── */
+.top-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  flex-wrap: nowrap !important;
+  flex-shrink: 0 !important;
+  overflow: visible !important;
+}
+
+/* Status chip — ALERT only, no counter */
+.qx-status-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 9px !important;
+  height: 28px !important;
+  background: rgba(255,171,0,.05) !important;
+  border: 1px solid rgba(255,171,0,.20) !important;
+  border-radius: 4px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 8.5px !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+}
+.qx-status-alert { color: rgba(255,190,60,.95) !important; font-weight: 600 !important; }
+.qx-status-div   { display: none !important; }
+.qx-status-sync  { display: none !important; }
+
+/* Risk chip */
+.qx-risk-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 0 9px !important;
+  height: 28px !important;
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 4px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  white-space: nowrap !important;
+}
+.qx-risk-lbl {
+  font-size: 7px !important;
+  letter-spacing: 1.5px !important;
+  text-transform: uppercase !important;
+  color: rgba(130,155,185,.72) !important;
+}
+.qx-risk-val {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: rgba(215,228,244,.95) !important;
+  font-variant-numeric: tabular-nums !important;
+  min-width: 28px !important;
+  text-align: right !important;
+}
+
+/* Pills */
+.pill {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 8.5px !important;
+  letter-spacing: .8px !important;
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  color: rgba(155,175,205,.82) !important;
+  padding: 0 8px !important;
+  height: 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  white-space: nowrap !important;
+  border-radius: 4px !important;
+}
+.qx-tf-badge {
+  background: rgba(255,171,0,.05) !important;
+  border-color: rgba(255,171,0,.18) !important;
+  color: rgba(255,200,80,.88) !important;
+}
+
+/* Buttons — compact icon style */
+.btn {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important;
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  color: rgba(160,182,215,.88) !important;
+  border-radius: 4px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  padding: 0 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all .15s ease !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  cursor: pointer !important;
+}
+.btn:hover {
+  background: rgba(0,229,255,.06) !important;
+  border-color: rgba(0,229,255,.28) !important;
+  color: #00e5ff !important;
+}
+.btn.primary {
+  background: rgba(0,229,255,.07) !important;
+  border-color: rgba(0,229,255,.25) !important;
+  color: rgba(0,229,255,.92) !important;
+}
+.btn.primary:hover {
+  background: rgba(0,229,255,.13) !important;
+  border-color: rgba(0,229,255,.45) !important;
+}
+/* Export — keep word, wider */
+.btn[id="exportBtn"] {
+  font-size: 8.5px !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  padding: 0 11px !important;
+}
+/* Guide — keep word, visible */
+.btn[id="guideBtn"] {
+  font-size: 8.5px !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  padding: 0 10px !important;
+}
+/* Icon buttons fixed size */
+.btn[id="pauseBtn"],
+.btn[id="syncBtn"],
+.btn[id="nightBtn"],
+.btn[id="settingsBtn"] {
+  width: 28px !important;
+  min-width: 28px !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+}
+
+/* LIVE dot */
+.dot {
+  width: 6px !important; height: 6px !important;
+  border-radius: 50% !important;
+  background: #00e676 !important;
+  box-shadow: 0 0 8px rgba(0,230,118,.70) !important;
+  animation: livePulse 2s ease-in-out infinite !important;
+  flex-shrink: 0 !important;
+}
+.dot.amber {
+  background: rgba(255,171,0,.85) !important;
+  box-shadow: 0 0 5px rgba(255,171,0,.45) !important;
+  animation: none !important;
+}
+.dot.red {
+  background: rgba(255,61,85,.85) !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+@keyframes livePulse {
+  0%,100% { box-shadow: 0 0 5px rgba(0,230,118,.55); }
+  50%     { box-shadow: 0 0 14px rgba(0,230,118,.90); }
+}
+
+/* syncBadge FS READER badge */
+.syncBadge {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 8px !important;
+  letter-spacing: .5px !important;
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid rgba(255,171,0,.12) !important;
+  color: rgba(155,175,205,.75) !important;
+  padding: 0 8px !important;
+  height: 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  border-radius: 4px !important;
+  white-space: nowrap !important;
+}
+
+/* Alert badge — hide legacy */
+.alertBadge { display: none !important; }
+</style>
+
+
+<style id="qx-guided-mode-v2-style">
+/* Deterministic Guided Mode v2 — fixed side panel, no brittle spotlight math */
+#qxGuidedBack{
+  position:fixed; inset:0; z-index:17000; display:none;
+  background:rgba(2,6,14,.55);
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+#qxGuidedBack.show{display:flex}
+#qxGuidedShell{
+  margin-left:auto;
+  width:min(470px, calc(100vw - 24px));
+  height:100%;
+  background:linear-gradient(180deg, rgba(10,16,30,.98), rgba(7,11,22,.98));
+  border-left:1px solid rgba(255,255,255,.08);
+  box-shadow:-28px 0 80px rgba(0,0,0,.52), inset 1px 0 0 rgba(255,255,255,.03);
+  display:flex; flex-direction:column;
+}
+#qxGuidedHead{
+  padding:18px 18px 14px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  background:rgba(12,18,34,.94);
+}
+#qxGuidedStep{
+  font-family:var(--mono); font-size:10px; letter-spacing:1px; text-transform:uppercase;
+  color:rgba(180,220,255,.74);
+}
+#qxGuidedTitle{
+  font-family:var(--font-display); font-size:28px; letter-spacing:.5px; line-height:1;
+  margin-top:6px; color:rgba(245,248,255,.96);
+}
+#qxGuidedSub{
+  margin-top:8px; color:rgba(232,234,240,.64); font-size:11px; line-height:1.55;
+}
+#qxGuidedBody{
+  padding:16px 18px 18px; display:grid; gap:12px; overflow:auto;
+}
+.qxGuideBox{
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.03);
+  padding:12px 13px;
+}
+.qxGuideLabel{
+  font-family:var(--mono); font-size:9px; letter-spacing:1px; text-transform:uppercase;
+  color:rgba(232,234,240,.44); margin-bottom:5px;
+}
+.qxGuideText{
+  color:rgba(232,234,240,.78); font-size:12px; line-height:1.6;
+}
+.qxGuideTargets{display:grid; gap:8px}
+.qxGuideTarget{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+  padding:10px 11px; border-radius:12px;
+  border:1px solid rgba(100,170,255,.16);
+  background:linear-gradient(180deg, rgba(41,121,255,.10), rgba(255,255,255,.02));
+}
+.qxGuideTarget .t{
+  font-size:11px; color:rgba(245,248,255,.92); font-weight:700; line-height:1.45;
+}
+.qxGuideTarget .m{
+  font-size:10px; color:rgba(232,234,240,.52); margin-top:2px; line-height:1.45;
+}
+.qxGuidePill{
+  flex:0 0 auto;
+  font-family:var(--mono); font-size:9px; letter-spacing:.7px;
+  border-radius:999px; padding:4px 8px;
+  border:1px solid rgba(0,214,143,.20);
+  background:rgba(0,214,143,.08); color:rgba(0,214,143,.90);
+}
+#qxGuidedDots{display:flex; gap:6px; align-items:center; flex-wrap:wrap}
+.qxGuideDot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18)}
+.qxGuideDot.active{background:rgba(0,214,143,.94); box-shadow:0 0 12px rgba(0,214,143,.30)}
+#qxGuidedFoot{
+  margin-top:auto;
+  padding:14px 18px 18px;
+  border-top:1px solid rgba(255,255,255,.07);
+  display:grid; gap:10px;
+  background:rgba(9,14,26,.92);
+}
+#qxGuidedNav{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+}
+#qxGuidedBtns{display:flex; gap:8px; align-items:center}
+.qxGuideBtn{
+  cursor:pointer; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.05);
+  color:#eef7ff; border-radius:999px; padding:8px 12px; font-size:11px; font-weight:700;
+}
+.qxGuideBtn.primary{
+  background:linear-gradient(135deg, rgba(41,121,255,.30), rgba(0,214,143,.16));
+  border-color:rgba(41,121,255,.24);
+}
+.qxGuideBtn.ghost{color:rgba(232,234,240,.74)}
+#qxGuidedCloseTop{cursor:pointer}
+.qxGuideCardFocus{
+  filter: none !important;
+  opacity: 1 !important;
+  transform: translateZ(0) !important;
+  border-color: rgba(0,229,255,.45) !important;
+  box-shadow:
+    0 0 0 1px rgba(0,229,255,.25),
+    0 0 0 4px rgba(0,229,255,.08),
+    0 24px 60px rgba(0,0,0,.55) !important;
+  position: relative !important;
+  z-index: 9999 !important;
+  transition: filter .35s ease, opacity .35s ease, box-shadow .35s ease !important;
+}
+.qxGuideCardPulse{
+  animation:qxGuidePulse 1.8s ease-in-out infinite;
+}
+@keyframes qxGuidePulse{
+  0%,100%{box-shadow:0 0 0 1px rgba(41,121,255,.18), 0 0 0 4px rgba(41,121,255,.08), 0 22px 56px rgba(0,0,0,.42)}
+  50%{box-shadow:0 0 0 1px rgba(0,214,143,.22), 0 0 0 6px rgba(0,214,143,.10), 0 22px 56px rgba(0,0,0,.46)}
+}
+@media(max-width:980px){
+  #qxGuidedShell{width:min(100vw, 100vw)}
+}
+</style>
+
+<div id="qxGuidedBack" aria-hidden="true">
+  <div id="qxGuidedShell">
+    <div id="qxGuidedHead">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+        <div>
+          <div id="qxGuidedStep">Step 1 of 6</div>
+          <div id="qxGuidedTitle">Guided Mode</div>
+          <div id="qxGuidedSub">A structured walkthrough of the QuadraX Intelligence Architecture, illustrating how regime detection, signal edge, and model consensus converge to produce the system’s market view.</div>
+        </div>
+        <button class="qxGuideBtn ghost" id="qxGuidedCloseTop">Close</button>
+      </div>
+    </div>
+    <div id="qxGuidedBody">
+      <div class="qxGuideBox">
+        <div class="qxGuideLabel">What this panel means</div>
+        <div class="qxGuideText" id="qxGuideMeaning">--</div>
+      </div>
+      <div class="qxGuideBox">
+        <div class="qxGuideLabel">Why it matters</div>
+        <div class="qxGuideText" id="qxGuideWhy">--</div>
+      </div>
+      <div class="qxGuideBox">
+        <div class="qxGuideLabel">How it fits the overall story</div>
+        <div class="qxGuideText" id="qxGuideHow">--</div>
+      </div>
+      <div class="qxGuideBox">
+        <div class="qxGuideLabel">Focus panels</div>
+        <div class="qxGuideTargets" id="qxGuideTargets"></div>
+      </div>
+    </div>
+    <div id="qxGuidedFoot">
+      <div id="qxGuidedNav">
+        <div id="qxGuidedDots"></div>
+        <div id="qxGuidedBtns">
+          <button class="qxGuideBtn ghost" id="qxGuidePrev">Back</button>
+          <button class="qxGuideBtn primary" id="qxGuideNext">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script id="qx-guided-mode-v2-script">
+(function(){
+  function $(id){ return document.getElementById(id); }
+
+  const STEPS = [
+    {
+      title: "Current Market Regime",
+      meaning: "This is the structural state of the market right now. It tells a first-time viewer whether EUR/USD is range-bound, trending, transitional, or fragile.",
+      why: "Everything below only makes sense if the regime is understood first. Structure is the first decision filter.",
+      how: "The dashboard starts with regime because edge, direction, and execution all depend on the environment.",
+      targets: [
+        { title: "Current Market State · HMM Regime Engine", note: "Read state, confidence, age, next-state risk, and emission probabilities." }
+      ]
+    },
+    {
+      title: "Signal Edge",
+      meaning: "This panel shows whether a real statistical advantage exists, rather than just price movement. It measures persistence, volatility character, autocorrelation, Kelly sizing, and half-life.",
+      why: "Markets move all the time. Edge is rarer. This separates activity from opportunity.",
+      how: "After regime, the platform asks the next institutional question: is there an exploitable edge right now?",
+      targets: [
+        { title: "Quantitative Edge · Signal Engine", note: "This is the engine room for statistical validity." }
+      ]
+    },
+    {
+      title: "Model Consensus",
+      meaning: "This is the unified decision layer. Independent models resolve into one coherent BUY, SELL, or WAIT view.",
+      why: "Professional systems need one answer. Not six indicators holding a committee meeting.",
+      how: "This is where structure and edge become a single trade stance and risk throttle.",
+      targets: [
+        { title: "Unified Signal Bus · System Coherence", note: "Use this as the single source of truth for direction and coherence." }
+      ]
+    },
+    {
+      title: "Forecast + Execution",
+      meaning: "The forecast engine frames the likely path and range. Execution context explains when the market is actually tradable.",
+      why: "Direction alone is not enough. Timing, liquidity, session behavior, and cost gates decide execution quality.",
+      how: "This layer turns the model view into an actionable trade path with operational discipline.",
+      targets: [
+        { title: "Forward Projection · Regime-Conditioned Cone", note: "This is the price-path and range view." },
+        { title: "Session Playbook · 15m Decision Clock", note: "This explains whether the market is executable now." }
+      ]
+    },
+    {
+      title: "Macro Pressure Map",
+      meaning: "This explains why the market is behaving the way it is by showing cross-asset pressure from the dollar, commodities, and related FX pairs.",
+      why: "Investors want to know not just what the system sees, but why the market is under pressure.",
+      how: "This is the explanatory layer that gives the terminal macro credibility and narrative clarity.",
+      targets: [
+        { title: "Macro Drivers", note: "Cross-asset context: Brent, Gold, Silver, DXY, and correlated FX." },
+        { title: "Transmission Mechanism", note: "Shows how those macro levers propagate into EUR/USD." }
+      ]
+    },
+    {
+      title: "Regime Transition Engine + System Performance",
+      meaning: "The transition matrix shows what could change next. Calibration and performance show whether the machine is learning and whether the edge actually works.",
+      why: "This is where confidence becomes justified. A strong platform shows both what may happen next and whether it has earned trust.",
+      how: "The story ends with validation: path dependency, adaptive learning, and live performance quality.",
+      targets: [
+        { title: "HMM Transition Matrix", note: "What regime path is most likely next." },
+        { title: "Projection Accuracy · Adaptive Learning", note: "Whether forecasts are learning from resolved outcomes." },
+        { title: "Signal Performance · Rolling Sharpe", note: "Whether the system is compounding real quality." }
+      ]
+    }
+  ];
+
+  const back = $("qxGuidedBack");
+  const stepEl = $("qxGuidedStep");
+  const titleEl = $("qxGuidedTitle");
+  const meaningEl = $("qxGuideMeaning");
+  const whyEl = $("qxGuideWhy");
+  const howEl = $("qxGuideHow");
+  const targetsEl = $("qxGuideTargets");
+  const dotsEl = $("qxGuidedDots");
+  const prevBtn = $("qxGuidePrev");
+  const nextBtn = $("qxGuideNext");
+  const closeTop = $("qxGuidedCloseTop");
+
+  let idx = 0;
+
+  function allCards(){
+    return Array.prototype.slice.call(document.querySelectorAll(".card"));
+  }
+
+  function findCardByTitle(title){
+    return allCards().find(function(card){
+      const h2 = card.querySelector(".card-title h2");
+      return h2 && h2.textContent && h2.textContent.trim() === title;
+    });
+  }
+
+  function clearFocus(){
+    document.querySelectorAll(".qxGuideCardFocus,.qxGuideCardPulse").forEach(function(el){
+      el.classList.remove("qxGuideCardFocus","qxGuideCardPulse");
+    });
+  }
+
+  function applyFocus(step){
+    clearFocus();
+    let firstTarget = null;
+    step.targets.forEach(function(t){
+      const card = findCardByTitle(t.title);
+      if(card){
+        card.classList.add("qxGuideCardFocus","qxGuideCardPulse");
+        if(!firstTarget) firstTarget = card;
+      }
+    });
+    if(firstTarget){
+      firstTarget.scrollIntoView({behavior:"smooth", block:"center"});
+    }
+  }
+
+  function renderDots(){
+    dotsEl.innerHTML = STEPS.map(function(_,i){
+      return '<span class="qxGuideDot '+(i===idx?'active':'')+'"></span>';
+    }).join("");
+  }
+
+  function renderTargets(step){
+    targetsEl.innerHTML = step.targets.map(function(t){
+      return (
+        '<div class="qxGuideTarget">' +
+          '<div>' +
+            '<div class="t">'+t.title+'</div>' +
+            '<div class="m">'+t.note+'</div>' +
+          '</div>' +
+          '<div class="qxGuidePill">Focus</div>' +
+        '</div>'
+      );
+    }).join("");
+  }
+
+  function render(){
+    const step = STEPS[idx];
+    stepEl.textContent = "Step " + (idx + 1) + " of " + STEPS.length;
+    titleEl.textContent = step.title;
+    meaningEl.textContent = step.meaning;
+    whyEl.textContent = step.why;
+    howEl.textContent = step.how;
+    renderTargets(step);
+    renderDots();
+    prevBtn.disabled = idx === 0;
+    nextBtn.textContent = idx === STEPS.length - 1 ? "Finish" : "Next";
+    applyFocus(step);
+  }
+
+  function openGuidedMode(){
+    idx = 0;
+    back.classList.add("show");
+    back.setAttribute("aria-hidden","false");
+    document.body.classList.add("guided-active");
+    render();
+  }
+
+  function closeGuidedMode(){
+    back.classList.remove("show");
+    back.setAttribute("aria-hidden","true");
+    document.body.classList.remove("guided-active");
+    clearFocus();
+  }
+
+  function patchGuideButton(){
+    const legacyGuide = $("guideBack");
+    if(legacyGuide) legacyGuide.style.display = "none";
+
+    const guideBtn = $("guideBtn");
+    if(guideBtn){
+      const clone = guideBtn.cloneNode(true);
+      clone.id = "guideBtn";
+      clone.textContent = "Guided Mode";
+      guideBtn.parentNode.replaceChild(clone, guideBtn);
+      clone.addEventListener("click", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        openGuidedMode();
+      });
+    }
+  }
+
+  prevBtn.addEventListener("click", function(){
+    if(idx > 0){ idx -= 1; render(); }
+  });
+  nextBtn.addEventListener("click", function(){
+    if(idx < STEPS.length - 1){ idx += 1; render(); }
+    else { closeGuidedMode(); }
+  });
+  closeTop.addEventListener("click", closeGuidedMode);
+  back.addEventListener("click", function(e){
+    if(e.target === back) closeGuidedMode();
+  });
+  document.addEventListener("keydown", function(e){
+    if(!back.classList.contains("show")) return;
+    if(e.key === "Escape") closeGuidedMode();
+    if(e.key === "ArrowRight" || e.key === "Enter"){
+      if(idx < STEPS.length - 1){ idx += 1; render(); } else { closeGuidedMode(); }
+    }
+    if(e.key === "ArrowLeft" && idx > 0){
+      idx -= 1; render();
+    }
+  });
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", patchGuideButton, {once:true});
+  } else {
+    patchGuideButton();
+  }
+})();
+</script>
+
+
+<style id="qx-guided-blur-layer">
+/* ── GUIDED MODE: Dashboard de-emphasis + active panel spotlight ─── */
+
+/* All cards dim + blur when guided mode is active */
+body.guided-active .card {
+  filter: blur(2.5px) brightness(0.45) !important;
+  opacity: 0.6 !important;
+  transition: filter .35s ease, opacity .35s ease !important;
+  pointer-events: none !important;
+}
+
+/* Active step card breaks through — fully sharp and lit */
+body.guided-active .card.qxGuideCardFocus {
+  filter: none !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transition: filter .35s ease, opacity .35s ease !important;
+}
+
+/* Topbar stays crisp — it's the anchor, not a card */
+body.guided-active .topbar {
+  filter: none !important;
+  opacity: 1 !important;
+  z-index: 201 !important;
+}
+
+/* Grid/layout wrappers — don't dim them, only .card children */
+body.guided-active .grid,
+body.guided-active .stack,
+body.guided-active .col {
+  filter: none !important;
+  opacity: 1 !important;
+}
+</style>
 </body>
 </html>
