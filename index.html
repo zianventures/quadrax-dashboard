@@ -303,10 +303,10 @@ canvas{display:block;width:100%}
 .sig2{color:var(--green);font-weight:600}.sig1{color:var(--amber)}.sigNS{color:var(--text4)}
 .corrPos{color:var(--green)}.corrNeg{color:var(--red)}
 /* ── TX MATRIX ───────────────────────────────────────── */
-.txMx{width:100%;border-collapse:separate;border-spacing:2px}
-.txMx th{padding:6px 4px;font-size:8.5px;color:rgba(0,229,255,.60);text-align:center;background:rgba(0,10,30,.60);font-family:var(--mono);font-weight:700;letter-spacing:1px;border-radius:4px;border:1px solid rgba(0,229,255,.08)}
-.txMx td{padding:4px 3px;text-align:center;font-family:var(--mono);font-size:9px;border:1px solid rgba(255,255,255,.04);color:rgba(220,228,240,.82);border-radius:3px;transition:background .3s ease}
-.txMx .rl{text-align:left;color:rgba(0,229,255,.70);font-size:9px;padding:6px 8px;font-weight:700;letter-spacing:.5px;border-right:1px solid rgba(0,229,255,.10);background:rgba(0,10,30,.40);border-radius:4px}
+.txMx{width:100%;border-collapse:separate;border-spacing:1px;table-layout:fixed}
+.txMx th{padding:4px 2px;font-size:7.5px;color:rgba(0,229,255,.50);text-align:center;background:rgba(2,6,18,.80);font-family:var(--mono);font-weight:700;letter-spacing:1.2px;border:none}
+.txMx td{padding:3px 1px;text-align:center;font-family:var(--mono);font-size:8.5px;border:none;color:rgba(220,228,240,.82);transition:all .3s ease}
+.txMx .rl{text-align:center;color:rgba(0,229,255,.55);font-size:7.5px;padding:4px 5px;font-weight:700;letter-spacing:1.2px;background:rgba(2,6,18,.70);border:none}
 /* ── LOG TABLE ───────────────────────────────────────── */
 .tableWrap{border-radius:var(--r2);background:rgba(255,255,255,.02);border:1px solid var(--border);overflow:hidden}
 table{width:100%;border-collapse:collapse;font-size:11px}
@@ -3528,22 +3528,37 @@ function drawEquity(arr){
   ctx.fillText(arr.length+" signals",w-58,14);
 }
 function drawTM(matrix){const body=$("tmBody");if(!body||!matrix)return;
-  function heatC(v){v=clamp(v,0,1);if(v<0.02)return'rgba(8,14,30,.6)';if(v<0.08)return'rgba(30,50,90,'+(0.3+v*4)+')';if(v<0.15)return'rgba(0,120,180,'+(0.25+v*3)+')';if(v<0.25)return'rgba(0,200,220,'+(0.35+v*2)+')';if(v<0.40)return'rgba(0,214,143,'+(0.45+v*1.2)+')';if(v<0.60)return'rgba(80,220,100,'+(0.55+v*.6)+')';if(v<0.80)return'rgba(255,200,50,'+(0.60+v*.4)+')';return'rgba(255,255,255,'+(0.70+v*.3)+')';}
-  function tC(v){if(v<0.02)return'rgba(255,255,255,.18)';if(v<0.10)return'rgba(180,210,240,.50)';if(v<0.30)return'rgba(255,255,255,.80)';if(v<0.60)return'rgba(255,255,255,.92)';return'rgba(0,10,30,.95)';}
+  // 12-stop spectrum: void → deep purple → indigo → royal blue → cyan → teal → emerald → lime → gold → orange → magenta → white
+  function hC(v){v=clamp(v,0,1);
+    if(v<0.01)return'rgb(6,8,22)';
+    if(v<0.03)return'rgb(18,12,40)';
+    if(v<0.06)return'rgb(32,18,65)';
+    if(v<0.10)return'rgb(28,30,90)';
+    if(v<0.15)return'rgb(15,55,120)';
+    if(v<0.20)return'rgb(0,90,140)';
+    if(v<0.28)return'rgb(0,150,170)';
+    if(v<0.38)return'rgb(0,180,130)';
+    if(v<0.50)return'rgb(30,190,80)';
+    if(v<0.65)return'rgb(180,200,40)';
+    if(v<0.80)return'rgb(240,170,30)';
+    if(v<0.92)return'rgb(230,80,120)';
+    return'rgb(255,240,255)';
+  }
+  function tC(v){return v<0.06?'rgba(255,255,255,.14)':v<0.12?'rgba(180,200,230,.40)':v<0.25?'rgba(255,255,255,.72)':v<0.50?'rgba(255,255,255,.88)':'rgba(255,255,255,.95)';}
   const rows=[];for(let i=0;i<8;i++){
     const raw=Array.isArray(matrix[i])?matrix[i]:new Array(8).fill(1);
     const total=raw.reduce((a,b)=>a+b,0);
-    let pcts=total>0?raw.map(v=>Math.round(v/total*100)):new Array(8).fill(13);
-    let pSum=pcts.reduce((a,b)=>a+b,0);if(pSum!==100){const mx=pcts.indexOf(Math.max(...pcts));pcts[mx]+=(100-pSum);}
-    const norm=pcts.map(v=>v/100);
-    const cells=norm.map((v,j)=>{
-      const d=i===j;const bg=heatC(v);const tc=tC(v);
-      const bdr=d?'border:2px solid rgba(0,229,255,.45);box-shadow:inset 0 0 8px rgba(0,229,255,.15);border-radius:4px;':'';
-      const wt=v>0.20?'font-weight:700;':'font-weight:500;';
-      const fs=v>0.30?'font-size:10.5px;':'font-size:9px;';
-      return"<td style='background:"+bg+";color:"+tc+";"+bdr+wt+fs+"text-align:center;padding:6px 4px'>"+( pcts[j]>0?pcts[j]+"%":"")+"</td>";
+    let p=total>0?raw.map(v=>Math.round(v/total*100)):new Array(8).fill(13);
+    let s=p.reduce((a,b)=>a+b,0);if(s!==100){const mx=p.indexOf(Math.max(...p));p[mx]+=(100-s);}
+    const n=p.map(v=>v/100);
+    const cells=n.map((v,j)=>{
+      const d=i===j;
+      const bg=hC(v);
+      const tc=tC(v);
+      const bdr=d?'outline:1.5px solid rgba(0,229,255,.55);outline-offset:-1px;box-shadow:inset 0 0 6px rgba(0,229,255,.20);':'';
+      return"<td style='background:"+bg+";color:"+tc+";"+bdr+"font-size:"+(v>0.25?"9px":"8px")+";font-weight:"+(v>0.18?"700":"500")+";padding:3px 2px;border-radius:2px'>"+(p[j]>0?p[j]+"%":"")+"</td>";
     }).join("");
-    rows.push("<tr><td class='rl' style='font-weight:700;color:rgba(0,229,255,.70);font-size:9px;letter-spacing:.5px;padding:6px 8px;white-space:nowrap;border-right:1px solid rgba(0,229,255,.10)'>S"+(i+1)+"</td>"+cells+"</tr>");
+    rows.push("<tr><td class='rl'>S"+(i+1)+"</td>"+cells+"</tr>");
   }body.innerHTML=rows.join("");}
 
 function drawTickChart(prices){
@@ -6387,7 +6402,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v47-hmm-rebal                              ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v48-matrix                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -7023,8 +7038,8 @@ td {
   font-variant-numeric: tabular-nums !important;
 }
 tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
-.txMx .rl { font-family: var(--dt-ui) !important; font-size: 9px !important; color: rgba(0,229,255,.70) !important; font-weight: 700 !important; letter-spacing: 1px !important; }
-.txMx th  { font-family: var(--dt-ui) !important; letter-spacing: 1.5px !important; color: rgba(0,229,255,.55) !important; background: rgba(0,10,30,.55) !important; font-weight: 700 !important; }
+.txMx .rl { font-family: var(--dt-mono) !important; font-size: 7.5px !important; color: rgba(0,229,255,.50) !important; font-weight: 700 !important; letter-spacing: 1.2px !important; }
+.txMx th  { font-family: var(--dt-mono) !important; letter-spacing: 1.2px !important; color: rgba(0,229,255,.45) !important; background: rgba(2,6,18,.75) !important; font-weight: 700 !important; }
 
 /* ────────────────────────────────────────────
    NEWSFEED
