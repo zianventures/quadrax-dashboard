@@ -4,7 +4,7 @@
 //  Bump CACHE_VERSION on every deploy to force update
 // ══════════════════════════════════════════════════════════════════════════════
 
-const CACHE_VERSION = 'qx-v48';
+const CACHE_VERSION = 'qx-v49';
 const SHELL_CACHE  = `${CACHE_VERSION}-shell`;
 const FONT_CACHE   = `${CACHE_VERSION}-fonts`;
 
