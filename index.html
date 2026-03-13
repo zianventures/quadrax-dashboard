@@ -304,9 +304,15 @@ canvas{display:block;width:100%}
 .corrPos{color:var(--green)}.corrNeg{color:var(--red)}
 /* ── TX MATRIX ───────────────────────────────────────── */
 .txMx{width:100%;border-collapse:separate;border-spacing:1px;table-layout:fixed}
-.txMx th{padding:4px 2px;font-size:7.5px;color:rgba(0,229,255,.50);text-align:center;background:rgba(2,6,18,.80);font-family:var(--mono);font-weight:700;letter-spacing:1.2px;border:none}
-.txMx td{padding:3px 1px;text-align:center;font-family:var(--mono);font-size:8.5px;border:none;color:rgba(220,228,240,.82);transition:all .3s ease}
-.txMx .rl{text-align:center;color:rgba(0,229,255,.55);font-size:7.5px;padding:4px 5px;font-weight:700;letter-spacing:1.2px;background:rgba(2,6,18,.70);border:none}
+.txMx th{padding:3px 2px;font-size:7px;text-align:center;background:rgba(2,6,18,.80);font-family:var(--mono);font-weight:700;letter-spacing:1px;border:none;position:relative}
+.txMx td{padding:2px 1px;text-align:center;font-family:var(--mono);font-size:8px;border:none;line-height:1.3;transition:all .4s ease;position:relative}
+.txMx .rl{text-align:center;color:rgba(0,229,255,.45);font-size:7px;padding:3px 4px;font-weight:700;letter-spacing:1px;background:rgba(2,6,18,.60);border:none}
+.txMx tr.tm-active .rl{color:rgba(0,229,255,.90)!important;text-shadow:0 0 6px rgba(0,229,255,.40)}
+.txMx tr.tm-active{background:rgba(0,229,255,.04)}
+.tm-active-bar{position:absolute;left:0;top:2px;bottom:2px;width:2px;background:#00e5ff;border-radius:1px;box-shadow:0 0 6px rgba(0,229,255,.60)}
+@keyframes tmPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,229,255,.50)}50%{box-shadow:0 0 0 3px rgba(0,229,255,.0)}}
+.tm-pred{animation:tmPulse 2s ease-in-out infinite;border-radius:3px}
+.tm-dot{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.12);display:inline-block}
 /* ── LOG TABLE ───────────────────────────────────────── */
 .tableWrap{border-radius:var(--r2);background:rgba(255,255,255,.02);border:1px solid var(--border);overflow:hidden}
 table{width:100%;border-collapse:collapse;font-size:11px}
@@ -3527,38 +3533,89 @@ function drawEquity(arr){
   ctx.fillStyle="rgba(232,239,255,.32)";
   ctx.fillText(arr.length+" signals",w-58,14);
 }
-function drawTM(matrix){const body=$("tmBody");if(!body||!matrix)return;
-  // 12-stop spectrum: void → deep purple → indigo → royal blue → cyan → teal → emerald → lime → gold → orange → magenta → white
-  function hC(v){v=clamp(v,0,1);
-    if(v<0.01)return'rgb(6,8,22)';
-    if(v<0.03)return'rgb(18,12,40)';
-    if(v<0.06)return'rgb(32,18,65)';
-    if(v<0.10)return'rgb(28,30,90)';
-    if(v<0.15)return'rgb(15,55,120)';
-    if(v<0.20)return'rgb(0,90,140)';
-    if(v<0.28)return'rgb(0,150,170)';
-    if(v<0.38)return'rgb(0,180,130)';
-    if(v<0.50)return'rgb(30,190,80)';
-    if(v<0.65)return'rgb(180,200,40)';
-    if(v<0.80)return'rgb(240,170,30)';
-    if(v<0.92)return'rgb(230,80,120)';
-    return'rgb(255,240,255)';
+function drawTM(matrix, activePol){const body=$("tmBody");if(!body||!matrix)return;
+  // State colors from STATES[] — used for column headers and semantic encoding
+  const SC=['rgba(0,214,143,.85)','rgba(255,176,32,.85)','rgba(120,170,255,.85)','rgba(43,108,255,.90)','rgba(255,138,64,.90)','rgba(255,71,87,.90)','rgba(160,120,255,.90)','rgba(255,58,165,.90)'];
+  // State category: 0=stable, 1=trending, 2=stress
+  const CAT=[0,0,0,1,2,2,2,2];
+  // Deep 14-stop spectrum: void → grape → indigo → cobalt → teal → cyan → emerald → green → lime → gold → tangerine → coral → magenta → white
+  function hC(v,cat){v=clamp(v,0,1);
+    // Stress transitions (cat 2) get warm undertone shift
+    if(cat===2){
+      if(v<0.02)return'rgb(12,6,14)';
+      if(v<0.05)return'rgb(35,10,25)';
+      if(v<0.10)return'rgb(70,15,35)';
+      if(v<0.18)return'rgb(120,25,45)';
+      if(v<0.30)return'rgb(180,50,50)';
+      if(v<0.50)return'rgb(220,90,40)';
+      return'rgb(255,140,60)';
+    }
+    // Trending transitions (cat 1) get green shift
+    if(cat===1){
+      if(v<0.02)return'rgb(4,10,18)';
+      if(v<0.05)return'rgb(8,22,30)';
+      if(v<0.10)return'rgb(10,45,50)';
+      if(v<0.18)return'rgb(0,80,70)';
+      if(v<0.30)return'rgb(0,130,90)';
+      if(v<0.50)return'rgb(20,180,80)';
+      return'rgb(80,220,60)';
+    }
+    // Stable transitions — cool deep spectrum
+    if(v<0.01)return'rgb(5,6,18)';
+    if(v<0.03)return'rgb(14,10,35)';
+    if(v<0.06)return'rgb(25,16,58)';
+    if(v<0.10)return'rgb(22,28,82)';
+    if(v<0.15)return'rgb(12,50,110)';
+    if(v<0.22)return'rgb(0,85,135)';
+    if(v<0.30)return'rgb(0,140,160)';
+    if(v<0.42)return'rgb(0,170,125)';
+    if(v<0.55)return'rgb(25,185,75)';
+    if(v<0.70)return'rgb(160,195,40)';
+    if(v<0.85)return'rgb(230,165,30)';
+    if(v<0.95)return'rgb(220,75,110)';
+    return'rgb(250,235,250)';
   }
-  function tC(v){return v<0.06?'rgba(255,255,255,.14)':v<0.12?'rgba(180,200,230,.40)':v<0.25?'rgba(255,255,255,.72)':v<0.50?'rgba(255,255,255,.88)':'rgba(255,255,255,.95)';}
+  function tC(v){return v<0.03?'rgba(255,255,255,.10)':v<0.08?'rgba(180,200,230,.30)':v<0.15?'rgba(255,255,255,.58)':v<0.30?'rgba(255,255,255,.78)':v<0.55?'rgba(255,255,255,.90)':'rgba(255,255,255,.97)';}
+  // Color column headers by state
+  const thead=$("tmBody")?.closest("table")?.querySelector("thead");
+  if(thead){const ths=thead.querySelectorAll("th");ths.forEach((th,i)=>{if(i>0&&i<=8)th.style.cssText='color:'+SC[i-1]+';background:rgba(2,6,18,.80);padding:3px 2px;font-size:7px;letter-spacing:1px;border:none;border-bottom:2px solid '+SC[i-1].replace(/[\d.]+\)$/,'.25)')+';font-family:var(--mono);font-weight:700';});}
+  // Find active row's predicted next
+  const aIdx=activePol?activePol-1:null;
+  let predJ=-1;
+  if(aIdx!==null&&Array.isArray(matrix[aIdx])){const ar=matrix[aIdx],at=ar.reduce((a,b)=>a+b,0);if(at>0){let mx=0;ar.forEach((v,j)=>{if(v/at>mx){mx=v/at;predJ=j;}});}}
   const rows=[];for(let i=0;i<8;i++){
     const raw=Array.isArray(matrix[i])?matrix[i]:new Array(8).fill(1);
     const total=raw.reduce((a,b)=>a+b,0);
     let p=total>0?raw.map(v=>Math.round(v/total*100)):new Array(8).fill(13);
     let s=p.reduce((a,b)=>a+b,0);if(s!==100){const mx=p.indexOf(Math.max(...p));p[mx]+=(100-s);}
     const n=p.map(v=>v/100);
+    const isActive=aIdx===i;
+    // Find row max for emphasis
+    const rowMax=Math.max(...n);
     const cells=n.map((v,j)=>{
-      const d=i===j;
-      const bg=hC(v);
+      const isDiag=i===j;
+      const isPred=isActive&&j===predJ;
+      const cat=CAT[j];
+      const bg=hC(v,cat);
       const tc=tC(v);
-      const bdr=d?'outline:1.5px solid rgba(0,229,255,.55);outline-offset:-1px;box-shadow:inset 0 0 6px rgba(0,229,255,.20);':'';
-      return"<td style='background:"+bg+";color:"+tc+";"+bdr+"font-size:"+(v>0.25?"9px":"8px")+";font-weight:"+(v>0.18?"700":"500")+";padding:3px 2px;border-radius:2px'>"+(p[j]>0?p[j]+"%":"")+"</td>";
+      const isRowMax=v===rowMax&&v>0.05;
+      // Build style
+      let st='background:'+bg+';color:'+tc+';';
+      st+='font-size:'+(isRowMax?'9px':'7.5px')+';';
+      st+='font-weight:'+(v>0.15?'700':'400')+';';
+      st+='padding:2px 1px;border-radius:2px;';
+      // Diagonal — self-loop indicator
+      if(isDiag)st+='outline:1px solid rgba(0,229,255,.40);outline-offset:-1px;';
+      // Active row predicted next — pulsing glow
+      let cls=isPred?'tm-pred':'';
+      // Content — tiny dot for near-zero, percentage for visible values
+      const txt=p[j]<1?'<span class="tm-dot"></span>':p[j]+'%';
+      return"<td class='"+cls+"' style='"+st+"'>"+txt+"</td>";
     }).join("");
-    rows.push("<tr><td class='rl'>S"+(i+1)+"</td>"+cells+"</tr>");
+    const activeClass=isActive?'tm-active':'';
+    const rlBar=isActive?'<span class="tm-active-bar"></span>':'';
+    const rl="<td class='rl' style='position:relative'>"+rlBar+"S"+(i+1)+"</td>";
+    rows.push("<tr class='"+activeClass+"'>"+rl+cells+"</tr>");
   }body.innerHTML=rows.join("");}
 
 function drawTickChart(prices){
@@ -3784,7 +3841,7 @@ function applyFullStateToUI(st){
   if(probEls.length===8&&st.probs?.length===8)
     st.probs.forEach((p,i)=>{probEls[i].bar.style.width=clamp(p*100,0,100)+"%";probEls[i].bar.style.background=STATES[i].color;probEls[i].val.textContent=(p*100).toFixed(1)+"%";});
   if(st.recentStates?.length){drawTimeline($("timelineCanvas"),st.recentStates);const td=$("timelineDepth");if(td)td.textContent=st.recentStates.length;}
-  if(st.TM)drawTM(st.TM);
+  if(st.TM)drawTM(st.TM, st.policy||null);
   // Spot
   if(st.spotPrice){
     $("fxSpotPrice").textContent=st.spotPrice.toFixed(5);
@@ -6402,7 +6459,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v48-matrix                              ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v49-heatmap                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -7038,8 +7095,8 @@ td {
   font-variant-numeric: tabular-nums !important;
 }
 tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
-.txMx .rl { font-family: var(--dt-mono) !important; font-size: 7.5px !important; color: rgba(0,229,255,.50) !important; font-weight: 700 !important; letter-spacing: 1.2px !important; }
-.txMx th  { font-family: var(--dt-mono) !important; letter-spacing: 1.2px !important; color: rgba(0,229,255,.45) !important; background: rgba(2,6,18,.75) !important; font-weight: 700 !important; }
+.txMx .rl { font-family: var(--dt-mono) !important; font-size: 7px !important; color: rgba(0,229,255,.45) !important; font-weight: 700 !important; letter-spacing: 1px !important; }
+.txMx th  { font-family: var(--dt-mono) !important; letter-spacing: 1px !important; font-weight: 700 !important; }
 
 /* ────────────────────────────────────────────
    NEWSFEED
