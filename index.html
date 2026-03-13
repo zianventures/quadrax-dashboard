@@ -3662,8 +3662,75 @@ function injectSignalStats(state,sigStats){
 }
 
 // ── APPLY FULL STATE TO UI: works for MASTER (local) and READER (from Firebase) ──
+// ── PUSH NOTIFICATION ENGINE ────────────────────────────────────────────
+const QxNotify = (function(){
+  let _lastDir = null, _lastRegime = null, _enabled = false;
+
+  function init(){
+    if(!('Notification' in window)) return;
+    if(Notification.permission === 'granted'){ _enabled = true; return; }
+    if(Notification.permission !== 'denied'){
+      // Ask after 10s so it doesn't block first paint
+      setTimeout(()=>{
+        Notification.requestPermission().then(p=>{ _enabled = p === 'granted'; });
+      }, 10000);
+    }
+  }
+
+  function _fire(title, body, tag){
+    if(!_enabled) return;
+    try {
+      if(navigator.serviceWorker && navigator.serviceWorker.controller){
+        navigator.serviceWorker.ready.then(reg=>{
+          reg.showNotification(title, {
+            body: body,
+            icon: 'icons/icon-192.png',
+            badge: 'icons/icon-192.png',
+            tag: tag,        // collapse duplicate notifications
+            renotify: true,
+            vibrate: [100, 50, 100],
+            data: { url: './' },
+            silent: false
+          });
+        });
+      } else {
+        new Notification(title, { body: body, icon: 'icons/icon-192.png', tag: tag });
+      }
+    } catch(e){ console.warn('[QxNotify]', e); }
+  }
+
+  function check(st){
+    if(!st || !_enabled) return;
+    const dir = st.busDir || null;
+    const regime = st.policy ? ('S' + st.policy) : null;
+
+    // Direction change: LONG↔SHORT (ignore NEUTRAL transitions)
+    if(dir && _lastDir && dir !== _lastDir && dir !== 'NEUTRAL' && _lastDir !== 'NEUTRAL'){
+      const label = dir === 'LONG' ? 'BUY' : 'SELL';
+      _fire('⚡ Signal Change — ' + label,
+        'Consensus flipped to ' + label + '. Regime: S' + (st.policy||'?') + ' ' + (st.stateName||''),
+        'signal-change');
+    }
+
+    // Regime change
+    if(regime && _lastRegime && regime !== _lastRegime){
+      _fire('◎ Regime Shift — ' + regime,
+        (st.stateName||regime) + '. Previous: ' + _lastRegime + '.',
+        'regime-change');
+    }
+
+    if(dir) _lastDir = dir;
+    if(regime) _lastRegime = regime;
+  }
+
+  return { init, check };
+})();
+QxNotify.init();
+
 function applyFullStateToUI(st){
   if(!st)return;
+  // Check for signal/regime changes → push notification
+  try { QxNotify.check(st); } catch(e){}
   // Unified Signal Bus: render from state for ALL modes (MASTER/READER/STANDALONE)
   // This fixes READER parity where some bus cards were not populated.
   if(st.signalBus){ try{ updateSignalBusUI(st.signalBus);}catch(e){ console.warn('[QuadraX] updateSignalBusUI failed',e);} }
@@ -6302,7 +6369,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v45-polished                              ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v46-notify                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -7852,7 +7919,7 @@ body.guided-active .col {
     margin: 0 !important;
     width: 100% !important;
     max-width: 100vw !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     border: none !important;
     border-bottom: 1px solid var(--m-acc) !important;
     border-radius: 0 !important;
@@ -8376,7 +8443,7 @@ body.guided-active .col {
     transform: none !important; font-size: 12px !important;
     padding: 12px 14px !important; border-radius: var(--m-rs) !important;
   }
-  .qx-mob-menu { right: 0 !important; top: 44px !important; }
+  .qx-mob-menu { right: 14px !important; top: 52px !important; }
 
 } /* end 768px */
 
@@ -8384,6 +8451,8 @@ body.guided-active .col {
 @supports(padding: env(safe-area-inset-top)) {
   @media (max-width: 768px) {
     .topbar { padding-top: calc(14px + env(safe-area-inset-top)) !important; }
+    .qx-mob-menu { top: calc(52px + env(safe-area-inset-top)) !important; }
+    .qx-price-bar.show { top: calc(0px + env(safe-area-inset-top)) !important; }
     .wrap { padding-bottom: calc(70px + env(safe-area-inset-bottom)) !important; }
     .qx-bottom-nav { padding-bottom: env(safe-area-inset-bottom) !important; }
   }
@@ -8424,12 +8493,17 @@ body.guided-active .col {
     border: 1px solid rgba(255,255,255,.08) !important;
   }
   .qx-mob-menu {
-    display: none; position: absolute; right: 0; top: 44px;
+    display: none;
+    position: fixed;
+    right: 14px; top: 52px;
     background: rgba(6,10,24,.98);
     border: 1px solid rgba(0,229,255,.14);
-    border-radius: 14px; padding: 8px 0; z-index: 500;
+    border-radius: 14px;
+    padding: 8px 0;
+    z-index: 9999;
     box-shadow: 0 16px 48px rgba(0,0,0,.80), 0 0 1px rgba(0,229,255,.20);
-    backdrop-filter: blur(24px); min-width: 175px;
+    backdrop-filter: blur(24px);
+    min-width: 175px;
   }
   .qx-mob-menu.show { display: block; }
   .qx-mob-item {
