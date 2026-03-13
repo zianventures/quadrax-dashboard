@@ -303,10 +303,10 @@ canvas{display:block;width:100%}
 .sig2{color:var(--green);font-weight:600}.sig1{color:var(--amber)}.sigNS{color:var(--text4)}
 .corrPos{color:var(--green)}.corrNeg{color:var(--red)}
 /* ── TX MATRIX ───────────────────────────────────────── */
-.txMx{width:100%;border-collapse:collapse}
-.txMx th{padding:4px;font-size:8px;color:rgba(190,205,225,.80);text-align:center;border-bottom:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);font-family:var(--mono);font-weight:600;letter-spacing:.5px}
-.txMx td{padding:3px 4px;text-align:center;font-family:var(--mono);font-size:9px;border:1px solid rgba(255,255,255,.06);color:rgba(220,228,240,.82)}
-.txMx .rl{text-align:left;color:rgba(178,198,225,.80);font-size:8.5px;padding:3px 6px;font-weight:500}
+.txMx{width:100%;border-collapse:separate;border-spacing:2px}
+.txMx th{padding:6px 4px;font-size:8.5px;color:rgba(0,229,255,.60);text-align:center;background:rgba(0,10,30,.60);font-family:var(--mono);font-weight:700;letter-spacing:1px;border-radius:4px;border:1px solid rgba(0,229,255,.08)}
+.txMx td{padding:4px 3px;text-align:center;font-family:var(--mono);font-size:9px;border:1px solid rgba(255,255,255,.04);color:rgba(220,228,240,.82);border-radius:3px;transition:background .3s ease}
+.txMx .rl{text-align:left;color:rgba(0,229,255,.70);font-size:9px;padding:6px 8px;font-weight:700;letter-spacing:.5px;border-right:1px solid rgba(0,229,255,.10);background:rgba(0,10,30,.40);border-radius:4px}
 /* ── LOG TABLE ───────────────────────────────────────── */
 .tableWrap{border-radius:var(--r2);background:rgba(255,255,255,.02);border:1px solid var(--border);overflow:hidden}
 table{width:100%;border-collapse:collapse;font-size:11px}
@@ -2494,7 +2494,7 @@ const HeadlinesFeed=(()=>{
 })();
 
 const Engine=(()=>{
-  const HN=80,MW=8,VW=18,HT=2,PT=1.35,MSW=10,WARMUP=20;
+  const HN=80,MW=8,VW=18,HT=2,PT=1.10,MSW=10,WARMUP=20;
   let tickN=0,regAge=0,lastPol=null;let prices=[],returns=[];let polState=null,pendingState=null,hold=0;
   // TM: flat uniform priors — real observed transitions build it up from scratch
   // Realistic EUR/USD regime transition priors (row = from, col = to, normalized by drawTM)
@@ -2515,15 +2515,16 @@ const Engine=(()=>{
     const mb=Math.abs(bp(f.mom)),rb=Math.abs(bp(f.r)),v=f.volx,ms=f.momScore;
     const sc=returns.slice(-10);
     const sig=sc.length<6?0:sc.reduce((c,_,i)=>i>0&&Math.sign(sc[i])!==Math.sign(sc[i-1])?c+1:c,0);
+    // v43 rebalanced: S3 base lowered, S4 more reachable, stress states less negative
     return softmax([
-      0.6+1.2*clamp(sig/7,0,1)-0.4*v-0.03*mb-0.30*ms,  // S1 Mean-Rev: only when sign-changes high + vol low
-      0.4-0.5*v-0.04*mb,                                  // S2 Liq Vacuum: only in extremely quiet markets
-      1.1+0.30*ms-0.15*v-0.025*mb,                       // S3 Slow Drift: default active-session state
-      0.4+0.40*v+0.060*mb+0.30*ms,                       // S4 Strong Trend: vol + momentum aligned
-      -0.6+0.65*v+0.03*mb+0.05*rb,                       // S5 Stop Cascade: high vol + return impulse
-      -0.6+(f.shock?4.0:0)+0.30*v,                       // S6 News Shock: shock events only
-      -0.3+0.25*v+0.35*clamp(sig/6,0,1)-0.25*ms,        // S7 Dealer Unwind: chop + moderate vol
-      -1.8+1.2*Math.max(0,v-2)+0.05*rb+(f.shock?0.8:0)  // S8 Panic/Forced: extreme vol only
+      0.5+1.4*clamp(sig/6,0,1)-0.35*v-0.03*mb-0.25*ms,  // S1 Mean-Rev: sign-reversals dominate + low vol
+      -0.1-0.3*v-0.03*mb+0.4*clamp(1-v,0,1),              // S2 Liq Vacuum: very low vol environments
+      0.7+0.25*ms-0.18*v-0.02*mb,                          // S3 Slow Drift: moderate base, less dominant
+      0.3+0.50*v+0.07*mb+0.40*ms,                          // S4 Strong Trend: vol + momentum aligned
+      -0.3+0.70*v+0.04*mb+0.08*rb,                         // S5 Stop Cascade: elevated vol + return shock
+      -0.5+(f.shock?3.5:0)+0.35*v,                         // S6 News Shock: shock events primarily
+      -0.1+0.30*v+0.40*clamp(sig/5,0,1)-0.20*ms,          // S7 Dealer Unwind: chop + moderate vol
+      -1.2+1.0*Math.max(0,v-1.8)+0.08*rb+(f.shock?0.6:0)  // S8 Panic/Forced: extreme vol
     ]);
   }
   const pick=probs=>{let b=0;for(let i=1;i<probs.length;i++)if(probs[i]>probs[b])b=i;return b+1;};
@@ -3526,7 +3527,24 @@ function drawEquity(arr){
   ctx.fillStyle="rgba(232,239,255,.32)";
   ctx.fillText(arr.length+" signals",w-58,14);
 }
-function drawTM(matrix){const body=$("tmBody");if(!body||!matrix)return;const rows=[];for(let i=0;i<8;i++){const row=Array.isArray(matrix[i])?matrix[i]:new Array(8).fill(0.125);const total=row.reduce((a,b)=>a+b,0),norm=total>0?row.map(v=>v/total):new Array(8).fill(0);const cells=norm.map((v,j)=>{const alpha=clamp(v*4,0,.85);const col=v>.3?STATES[j].color.replace(/[\d.]+\)$/,alpha+")"):"rgba(255,255,255,"+(alpha*.5)+")";const txt=v>.01?Math.round(v*100)+"%":"";return"<td style='background:"+col+";color:rgba(255,255,255,"+Math.max(v*3,.6)+");font-size:9px'>"+txt+"</td>";}).join("");rows.push("<tr><td class='rl'>S"+(i+1)+"</td>"+cells+"</tr>");}body.innerHTML=rows.join("");}
+function drawTM(matrix){const body=$("tmBody");if(!body||!matrix)return;
+  function heatC(v){v=clamp(v,0,1);if(v<0.02)return'rgba(8,14,30,.6)';if(v<0.08)return'rgba(30,50,90,'+(0.3+v*4)+')';if(v<0.15)return'rgba(0,120,180,'+(0.25+v*3)+')';if(v<0.25)return'rgba(0,200,220,'+(0.35+v*2)+')';if(v<0.40)return'rgba(0,214,143,'+(0.45+v*1.2)+')';if(v<0.60)return'rgba(80,220,100,'+(0.55+v*.6)+')';if(v<0.80)return'rgba(255,200,50,'+(0.60+v*.4)+')';return'rgba(255,255,255,'+(0.70+v*.3)+')';}
+  function tC(v){if(v<0.02)return'rgba(255,255,255,.18)';if(v<0.10)return'rgba(180,210,240,.50)';if(v<0.30)return'rgba(255,255,255,.80)';if(v<0.60)return'rgba(255,255,255,.92)';return'rgba(0,10,30,.95)';}
+  const rows=[];for(let i=0;i<8;i++){
+    const raw=Array.isArray(matrix[i])?matrix[i]:new Array(8).fill(1);
+    const total=raw.reduce((a,b)=>a+b,0);
+    let pcts=total>0?raw.map(v=>Math.round(v/total*100)):new Array(8).fill(13);
+    let pSum=pcts.reduce((a,b)=>a+b,0);if(pSum!==100){const mx=pcts.indexOf(Math.max(...pcts));pcts[mx]+=(100-pSum);}
+    const norm=pcts.map(v=>v/100);
+    const cells=norm.map((v,j)=>{
+      const d=i===j;const bg=heatC(v);const tc=tC(v);
+      const bdr=d?'border:2px solid rgba(0,229,255,.45);box-shadow:inset 0 0 8px rgba(0,229,255,.15);border-radius:4px;':'';
+      const wt=v>0.20?'font-weight:700;':'font-weight:500;';
+      const fs=v>0.30?'font-size:10.5px;':'font-size:9px;';
+      return"<td style='background:"+bg+";color:"+tc+";"+bdr+wt+fs+"text-align:center;padding:6px 4px'>"+( pcts[j]>0?pcts[j]+"%":"")+"</td>";
+    }).join("");
+    rows.push("<tr><td class='rl' style='font-weight:700;color:rgba(0,229,255,.70);font-size:9px;letter-spacing:.5px;padding:6px 8px;white-space:nowrap;border-right:1px solid rgba(0,229,255,.10)'>S"+(i+1)+"</td>"+cells+"</tr>");
+  }body.innerHTML=rows.join("");}
 
 function drawTickChart(prices){
   const canvas=$("tickChart");if(!canvas||prices.length<2)return;
@@ -6369,7 +6387,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v46-notify                              ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v47-hmm-rebal                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -7005,8 +7023,8 @@ td {
   font-variant-numeric: tabular-nums !important;
 }
 tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
-.txMx .rl { font-family: var(--dt-ui) !important; font-size: 8px !important; color: var(--dt-t3) !important; }
-.txMx th  { font-family: var(--dt-ui) !important; letter-spacing: 1.5px !important; color: var(--dt-t3) !important; background: rgba(0,0,0,.20) !important; }
+.txMx .rl { font-family: var(--dt-ui) !important; font-size: 9px !important; color: rgba(0,229,255,.70) !important; font-weight: 700 !important; letter-spacing: 1px !important; }
+.txMx th  { font-family: var(--dt-ui) !important; letter-spacing: 1.5px !important; color: rgba(0,229,255,.55) !important; background: rgba(0,10,30,.55) !important; font-weight: 700 !important; }
 
 /* ────────────────────────────────────────────
    NEWSFEED
