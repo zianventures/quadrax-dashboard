@@ -304,15 +304,43 @@ canvas{display:block;width:100%}
 .corrPos{color:var(--green)}.corrNeg{color:var(--red)}
 /* ── TX MATRIX ───────────────────────────────────────── */
 .txMx{width:100%;border-collapse:separate;border-spacing:1px;table-layout:fixed}
-.txMx th{padding:3px 2px;font-size:7px;text-align:center;background:rgba(2,6,18,.80);font-family:var(--mono);font-weight:700;letter-spacing:1px;border:none;position:relative}
-.txMx td{padding:2px 1px;text-align:center;font-family:var(--mono);font-size:8px;border:none;line-height:1.3;transition:all .4s ease;position:relative}
-.txMx .rl{text-align:center;color:rgba(0,229,255,.45);font-size:7px;padding:3px 4px;font-weight:700;letter-spacing:1px;background:rgba(2,6,18,.60);border:none}
-.txMx tr.tm-active .rl{color:rgba(0,229,255,.90)!important;text-shadow:0 0 6px rgba(0,229,255,.40)}
-.txMx tr.tm-active{background:rgba(0,229,255,.04)}
-.tm-active-bar{position:absolute;left:0;top:2px;bottom:2px;width:2px;background:#00e5ff;border-radius:1px;box-shadow:0 0 6px rgba(0,229,255,.60)}
-@keyframes tmPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,229,255,.50)}50%{box-shadow:0 0 0 3px rgba(0,229,255,.0)}}
-.tm-pred{animation:tmPulse 2s ease-in-out infinite;border-radius:3px}
-.tm-dot{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.12);display:inline-block}
+.txMx th{padding:3px 2px;font-size:6.5px;text-align:center;background:rgba(2,6,18,.85);font-family:var(--mono);font-weight:700;letter-spacing:1px;border:none;position:relative}
+.txMx td{text-align:center;font-family:var(--mono);border:none;position:relative;overflow:hidden;vertical-align:middle;height:26px}
+.txMx .rl{color:rgba(100,140,180,.50);font-size:6.5px;padding:0 4px;font-weight:700;letter-spacing:1px;background:rgba(2,6,18,.60);border:none}
+
+/* ── NEURAL CELL — micro probability widget ────────────────── */
+.tm-c{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:2px}
+.tm-c .tm-bg{position:absolute;inset:0;opacity:.85;transition:opacity .5s}
+.tm-c .tm-bar{position:absolute;left:0;bottom:0;height:3px;border-radius:0 1px 0 0;transition:width .7s cubic-bezier(.22,1,.36,1);opacity:.9}
+.tm-c .tm-v{position:relative;z-index:2;font-size:7.5px;font-weight:500;line-height:1;letter-spacing:.3px;transition:all .4s}
+.tm-c .tm-v.lg{font-size:9px;font-weight:800;letter-spacing:0}
+.tm-c .tm-v.xl{font-size:10px;font-weight:800;text-shadow:0 0 8px rgba(255,255,255,.30)}
+
+/* ── ACTIVE ROW — scanning sweep ──────────────────────────── */
+.tm-row-active .rl{color:rgba(0,229,255,.90)!important;text-shadow:0 0 8px rgba(0,229,255,.50)}
+.tm-row-active td{border-top:1px solid rgba(0,229,255,.15)!important;border-bottom:1px solid rgba(0,229,255,.15)!important}
+.tm-scan{position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(0,229,255,.08) 45%,rgba(0,229,255,.18) 50%,rgba(0,229,255,.08) 55%,transparent 100%);animation:tmScan 3s linear infinite;pointer-events:none;z-index:1;opacity:0}
+.tm-row-active .tm-scan{opacity:1}
+@keyframes tmScan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+/* ── DIAGONAL — self-loop ring ────────────────────────────── */
+.tm-diag{outline:1px solid rgba(0,229,255,.30);outline-offset:-1px;border-radius:2px}
+.tm-diag::after{content:'';position:absolute;inset:1px;border-radius:1px;border:1px solid rgba(0,229,255,.10);pointer-events:none}
+
+/* ── PREDICTED NEXT — beacon pulse ────────────────────────── */
+.tm-beacon{position:absolute;inset:0;border-radius:2px;pointer-events:none;z-index:3;opacity:0}
+.tm-pred .tm-beacon{opacity:1;animation:tmBeacon 2s ease-in-out infinite}
+@keyframes tmBeacon{0%,100%{box-shadow:inset 0 0 0 0 rgba(0,229,255,.45),0 0 0 0 rgba(0,229,255,.30)}50%{box-shadow:inset 0 0 6px 1px rgba(0,229,255,.10),0 0 0 4px rgba(0,229,255,.0)}}
+
+/* ── STRESS PATHWAY — warm glow on danger transitions ─────── */
+.tm-stress .tm-bar{box-shadow:0 0 4px rgba(255,71,87,.40)}
+
+/* ── HEADER STATE DOTS ────────────────────────────────────── */
+.tm-hdot{width:4px;height:4px;border-radius:50%;display:inline-block;margin-bottom:2px;box-shadow:0 0 4px currentColor}
+
+/* ── ZERO CELL — near-invisible ──────────────────────────── */
+.tm-zero .tm-v{opacity:.15;font-size:5px}
+.tm-zero .tm-bar{display:none}
 /* ── LOG TABLE ───────────────────────────────────────── */
 .tableWrap{border-radius:var(--r2);background:rgba(255,255,255,.02);border:1px solid var(--border);overflow:hidden}
 table{width:100%;border-collapse:collapse;font-size:11px}
@@ -1478,7 +1506,7 @@ body.qx-auth-locked .wrap{display:none!important}
 </div></div>
 <div class="card"><div class="inner">
 <div class="card-title"><h2>HMM Transition Matrix</h2><div class="hint">Online learned P(next|current). Row=from Col=to. Darker=higher probability. Resets on page load (stateless for team sync).</div></div>
-<div style="overflow-x:auto"><table class="txMx"><thead><tr><th>From\To</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>S5</th><th>S6</th><th>S7</th><th>S8</th></tr></thead><tbody id="tmBody"></tbody></table></div>
+<div style="overflow-x:auto"><table class="txMx"><thead><tr><th>FROM\TO</th><th><span class="tm-hdot" style="color:rgba(0,214,143,.85)"></span><br>S1</th><th><span class="tm-hdot" style="color:rgba(255,176,32,.85)"></span><br>S2</th><th><span class="tm-hdot" style="color:rgba(120,170,255,.85)"></span><br>S3</th><th><span class="tm-hdot" style="color:rgba(43,108,255,.90)"></span><br>S4</th><th><span class="tm-hdot" style="color:rgba(255,138,64,.90)"></span><br>S5</th><th><span class="tm-hdot" style="color:rgba(255,71,87,.90)"></span><br>S6</th><th><span class="tm-hdot" style="color:rgba(160,120,255,.90)"></span><br>S7</th><th><span class="tm-hdot" style="color:rgba(255,58,165,.90)"></span><br>S8</th></tr></thead><tbody id="tmBody"></tbody></table></div>
 <div class="smallNote" style="margin-top:6px">First-order Markov online learning. Stateless per session = deterministic convergence across team instances.</div>
 </div></div>
 <div class="card"><div class="inner">
@@ -3534,55 +3562,34 @@ function drawEquity(arr){
   ctx.fillText(arr.length+" signals",w-58,14);
 }
 function drawTM(matrix, activePol){const body=$("tmBody");if(!body||!matrix)return;
-  // State colors from STATES[] — used for column headers and semantic encoding
-  const SC=['rgba(0,214,143,.85)','rgba(255,176,32,.85)','rgba(120,170,255,.85)','rgba(43,108,255,.90)','rgba(255,138,64,.90)','rgba(255,71,87,.90)','rgba(160,120,255,.90)','rgba(255,58,165,.90)'];
-  // State category: 0=stable, 1=trending, 2=stress
-  const CAT=[0,0,0,1,2,2,2,2];
-  // Deep 14-stop spectrum: void → grape → indigo → cobalt → teal → cyan → emerald → green → lime → gold → tangerine → coral → magenta → white
-  function hC(v,cat){v=clamp(v,0,1);
-    // Stress transitions (cat 2) get warm undertone shift
-    if(cat===2){
-      if(v<0.02)return'rgb(12,6,14)';
-      if(v<0.05)return'rgb(35,10,25)';
-      if(v<0.10)return'rgb(70,15,35)';
-      if(v<0.18)return'rgb(120,25,45)';
-      if(v<0.30)return'rgb(180,50,50)';
-      if(v<0.50)return'rgb(220,90,40)';
-      return'rgb(255,140,60)';
+  const SC=['0,214,143','255,176,32','120,170,255','43,108,255','255,138,64','255,71,87','160,120,255','255,58,165'];
+  const CAT=[0,0,0,1,2,2,2,2]; // 0=stable 1=trend 2=stress
+  // Background: semantic gradient per category
+  function bgC(v,cat){v=clamp(v,0,1);
+    if(v<0.01)return'rgb(4,5,14)';
+    if(cat===2){// Stress: black→wine→crimson→coral→amber
+      if(v<0.04)return'rgb(20,8,14)';if(v<0.08)return'rgb(45,12,22)';if(v<0.14)return'rgb(75,18,30)';if(v<0.22)return'rgb(110,25,35)';if(v<0.35)return'rgb(155,40,40)';if(v<0.55)return'rgb(195,65,35)';return'rgb(230,110,45)';
     }
-    // Trending transitions (cat 1) get green shift
-    if(cat===1){
-      if(v<0.02)return'rgb(4,10,18)';
-      if(v<0.05)return'rgb(8,22,30)';
-      if(v<0.10)return'rgb(10,45,50)';
-      if(v<0.18)return'rgb(0,80,70)';
-      if(v<0.30)return'rgb(0,130,90)';
-      if(v<0.50)return'rgb(20,180,80)';
-      return'rgb(80,220,60)';
+    if(cat===1){// Trend: black→forest→jade→emerald→lime
+      if(v<0.04)return'rgb(5,14,12)';if(v<0.08)return'rgb(8,30,22)';if(v<0.14)return'rgb(10,55,40)';if(v<0.22)return'rgb(0,85,60)';if(v<0.35)return'rgb(0,125,75)';if(v<0.55)return'rgb(15,170,70)';return'rgb(60,210,55)';
     }
-    // Stable transitions — cool deep spectrum
-    if(v<0.01)return'rgb(5,6,18)';
-    if(v<0.03)return'rgb(14,10,35)';
-    if(v<0.06)return'rgb(25,16,58)';
-    if(v<0.10)return'rgb(22,28,82)';
-    if(v<0.15)return'rgb(12,50,110)';
-    if(v<0.22)return'rgb(0,85,135)';
-    if(v<0.30)return'rgb(0,140,160)';
-    if(v<0.42)return'rgb(0,170,125)';
-    if(v<0.55)return'rgb(25,185,75)';
-    if(v<0.70)return'rgb(160,195,40)';
-    if(v<0.85)return'rgb(230,165,30)';
-    if(v<0.95)return'rgb(220,75,110)';
-    return'rgb(250,235,250)';
+    // Stable: black→grape→indigo→cobalt→teal→cyan→mint
+    if(v<0.04)return'rgb(10,8,28)';if(v<0.08)return'rgb(18,14,50)';if(v<0.14)return'rgb(20,28,78)';if(v<0.22)return'rgb(10,50,108)';if(v<0.35)return'rgb(0,90,135)';if(v<0.55)return'rgb(0,145,150)';if(v<0.75)return'rgb(0,175,120)';return'rgb(50,200,80)';
   }
-  function tC(v){return v<0.03?'rgba(255,255,255,.10)':v<0.08?'rgba(180,200,230,.30)':v<0.15?'rgba(255,255,255,.58)':v<0.30?'rgba(255,255,255,.78)':v<0.55?'rgba(255,255,255,.90)':'rgba(255,255,255,.97)';}
-  // Color column headers by state
-  const thead=$("tmBody")?.closest("table")?.querySelector("thead");
-  if(thead){const ths=thead.querySelectorAll("th");ths.forEach((th,i)=>{if(i>0&&i<=8)th.style.cssText='color:'+SC[i-1]+';background:rgba(2,6,18,.80);padding:3px 2px;font-size:7px;letter-spacing:1px;border:none;border-bottom:2px solid '+SC[i-1].replace(/[\d.]+\)$/,'.25)')+';font-family:var(--mono);font-weight:700';});}
-  // Find active row's predicted next
+  // Bar color: brighter version of category
+  function barC(v,cat){
+    if(cat===2)return v>0.20?'rgba(255,100,70,.90)':'rgba(255,71,87,.55)';
+    if(cat===1)return v>0.20?'rgba(0,220,100,.90)':'rgba(0,180,80,.55)';
+    return v>0.20?'rgba(0,200,220,.90)':'rgba(0,160,200,.55)';
+  }
+  function tC(v){return v<0.03?'rgba(255,255,255,.06)':v<0.06?'rgba(255,255,255,.22)':v<0.12?'rgba(255,255,255,.48)':v<0.22?'rgba(255,255,255,.70)':v<0.40?'rgba(255,255,255,.85)':'rgba(255,255,255,.96)';}
+  // Active row prediction target
   const aIdx=activePol?activePol-1:null;
-  let predJ=-1;
-  if(aIdx!==null&&Array.isArray(matrix[aIdx])){const ar=matrix[aIdx],at=ar.reduce((a,b)=>a+b,0);if(at>0){let mx=0;ar.forEach((v,j)=>{if(v/at>mx){mx=v/at;predJ=j;}});}}
+  let predJ=-1, predV=0;
+  if(aIdx!==null&&Array.isArray(matrix[aIdx])){const ar=matrix[aIdx],at=ar.reduce((a,b)=>a+b,0);if(at>0)ar.forEach((v,j)=>{const nv=v/at;if(nv>predV){predV=nv;predJ=j;}});}
+  // Find 2nd-highest prediction for secondary highlight
+  let pred2J=-1, pred2V=0;
+  if(aIdx!==null&&Array.isArray(matrix[aIdx])){const ar=matrix[aIdx],at=ar.reduce((a,b)=>a+b,0);if(at>0)ar.forEach((v,j)=>{const nv=v/at;if(nv>pred2V&&j!==predJ){pred2V=nv;pred2J=j;}});}
   const rows=[];for(let i=0;i<8;i++){
     const raw=Array.isArray(matrix[i])?matrix[i]:new Array(8).fill(1);
     const total=raw.reduce((a,b)=>a+b,0);
@@ -3590,32 +3597,36 @@ function drawTM(matrix, activePol){const body=$("tmBody");if(!body||!matrix)retu
     let s=p.reduce((a,b)=>a+b,0);if(s!==100){const mx=p.indexOf(Math.max(...p));p[mx]+=(100-s);}
     const n=p.map(v=>v/100);
     const isActive=aIdx===i;
-    // Find row max for emphasis
     const rowMax=Math.max(...n);
     const cells=n.map((v,j)=>{
       const isDiag=i===j;
       const isPred=isActive&&j===predJ;
+      const isPred2=isActive&&j===pred2J&&pred2V>0.08;
       const cat=CAT[j];
-      const bg=hC(v,cat);
+      const bg=bgC(v,cat);
+      const bar=barC(v,cat);
       const tc=tC(v);
-      const isRowMax=v===rowMax&&v>0.05;
-      // Build style
-      let st='background:'+bg+';color:'+tc+';';
-      st+='font-size:'+(isRowMax?'9px':'7.5px')+';';
-      st+='font-weight:'+(v>0.15?'700':'400')+';';
-      st+='padding:2px 1px;border-radius:2px;';
-      // Diagonal — self-loop indicator
-      if(isDiag)st+='outline:1px solid rgba(0,229,255,.40);outline-offset:-1px;';
-      // Active row predicted next — pulsing glow
-      let cls=isPred?'tm-pred':'';
-      // Content — tiny dot for near-zero, percentage for visible values
-      const txt=p[j]<1?'<span class="tm-dot"></span>':p[j]+'%';
-      return"<td class='"+cls+"' style='"+st+"'>"+txt+"</td>";
+      const isMax=v===rowMax&&v>0.08;
+      const isZero=p[j]<1;
+      // Size class
+      const szCls=v>0.55?'xl':v>0.20?'lg':'';
+      // Cell classes
+      let cls='tm-c';
+      if(isDiag)cls+=' tm-diag';
+      if(isPred)cls+=' tm-pred';
+      if(cat===2&&v>0.10)cls+=' tm-stress';
+      if(isZero)cls+=' tm-zero';
+      // Inner HTML: background + bar + scan + beacon + value
+      const scanEl=isActive?'<div class="tm-scan"></div>':'';
+      const beaconEl=isPred?'<div class="tm-beacon"></div>':'';
+      const barW=Math.max(v*100,0);
+      // Secondary prediction gets dimmer outline
+      const pred2Style=isPred2?'outline:1px dashed rgba(0,229,255,.25);outline-offset:-1px;':'';
+      return"<td style='padding:0;"+pred2Style+"'><div class='"+cls+"'><div class='tm-bg' style='background:"+bg+"'></div><div class='tm-bar' style='width:"+barW+"%;background:"+bar+"'></div>"+scanEl+beaconEl+"<span class='tm-v "+szCls+"' style='color:"+tc+"'>"+(isZero?'·':p[j]+'%')+"</span></div></td>";
     }).join("");
-    const activeClass=isActive?'tm-active':'';
-    const rlBar=isActive?'<span class="tm-active-bar"></span>':'';
-    const rl="<td class='rl' style='position:relative'>"+rlBar+"S"+(i+1)+"</td>";
-    rows.push("<tr class='"+activeClass+"'>"+rl+cells+"</tr>");
+    const rowCls=isActive?'tm-row-active':'';
+    const rl="<td class='rl'>S"+(i+1)+"</td>";
+    rows.push("<tr class='"+rowCls+"'>"+rl+cells+"</tr>");
   }body.innerHTML=rows.join("");}
 
 function drawTickChart(prices){
@@ -6459,7 +6470,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v49-heatmap                              ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v50-neural                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -7095,7 +7106,7 @@ td {
   font-variant-numeric: tabular-nums !important;
 }
 tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
-.txMx .rl { font-family: var(--dt-mono) !important; font-size: 7px !important; color: rgba(0,229,255,.45) !important; font-weight: 700 !important; letter-spacing: 1px !important; }
+.txMx .rl { font-family: var(--dt-mono) !important; font-size: 6.5px !important; font-weight: 700 !important; letter-spacing: 1px !important; }
 .txMx th  { font-family: var(--dt-mono) !important; letter-spacing: 1px !important; font-weight: 700 !important; }
 
 /* ────────────────────────────────────────────
