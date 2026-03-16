@@ -6569,7 +6569,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v52-throttle                              ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v53-intelligence                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -8070,6 +8070,265 @@ body.guided-active .col {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════════╗
+   ║  LIVING INTELLIGENCE DESIGN SYSTEM — v53                                ║
+   ║  Upgrades every card to match the transition matrix / transmission      ║
+   ║  mechanism visual language: scanning sweeps, deep gradients, ambient    ║
+   ║  glows, semantic borders, and breathing data fields.                    ║
+   ╚══════════════════════════════════════════════════════════════════════════╝ */
+
+/* ── CARD SHELL — deep layered glass ──────────────────────────────────── */
+.card {
+  background: linear-gradient(180deg, rgba(8,14,32,.92), rgba(5,9,22,.96)) !important;
+  border: 1px solid rgba(0,229,255,.06) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,.45), 0 1px 3px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.03) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.card::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: radial-gradient(800px 400px at 15% 20%, rgba(0,229,255,.025), transparent 60%) !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+.card .inner { position: relative !important; z-index: 1 !important; }
+.card:hover {
+  border-color: rgba(0,229,255,.12) !important;
+  box-shadow: 0 6px 32px rgba(0,0,0,.50), 0 0 1px rgba(0,229,255,.15), inset 0 1px 0 rgba(255,255,255,.04) !important;
+}
+
+/* ── CARD TITLE — intelligence section header ─────────────────────────── */
+.card-title {
+  padding-bottom: 10px !important;
+  margin-bottom: 14px !important;
+  border-bottom: 1px solid rgba(0,229,255,.06) !important;
+  position: relative !important;
+}
+.card-title h2 {
+  color: rgba(160,195,230,.70) !important;
+  letter-spacing: 2px !important;
+  font-size: 10px !important;
+}
+
+/* ── INTELLIGENCE BADGE LABELS ────────────────────────────────────────── */
+.liveBadge.live {
+  background: rgba(0,229,255,.06) !important;
+  border: 1px solid rgba(0,229,255,.20) !important;
+  color: rgba(0,229,255,.85) !important;
+  box-shadow: 0 0 8px rgba(0,229,255,.10) !important;
+}
+
+/* ── HERO CARD — command center feel ──────────────────────────────────── */
+.hero {
+  background: linear-gradient(180deg, rgba(0,229,255,.025), rgba(0,140,180,.01), transparent) !important;
+  border: 1px solid rgba(0,229,255,.08) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.hero::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: radial-gradient(500px 300px at 10% 20%, rgba(0,229,255,.04), transparent 60%) !important;
+  pointer-events: none !important;
+}
+.stateBig {
+  background: linear-gradient(90deg, rgba(220,240,255,.95), rgba(0,229,255,.75)) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  filter: drop-shadow(0 0 12px rgba(0,229,255,.15)) !important;
+}
+
+/* ── CHIPS — micro data pills ─────────────────────────────────────────── */
+.chip {
+  background: rgba(0,229,255,.03) !important;
+  border: 1px solid rgba(0,229,255,.10) !important;
+  color: rgba(200,220,240,.80) !important;
+  font-size: 10px !important;
+  transition: border-color .3s, background .3s !important;
+}
+.chip b {
+  color: rgba(220,240,255,.95) !important;
+}
+.chip:hover {
+  background: rgba(0,229,255,.06) !important;
+  border-color: rgba(0,229,255,.18) !important;
+}
+
+/* ── QUOTE CARD — price display ───────────────────────────────────────── */
+.quoteCard {
+  background: linear-gradient(180deg, rgba(8,14,32,.90), rgba(5,9,22,.95)) !important;
+  border: 1px solid rgba(0,229,255,.06) !important;
+}
+.quotePx {
+  color: rgba(230,245,255,.97) !important;
+  text-shadow: 0 0 20px rgba(0,229,255,.12) !important;
+}
+
+/* ── DATA BOXES — universal intelligence cells ────────────────────────── */
+.fpBox, .qeBox, .sharpeBox, .paBox, .busBox, .fcastBox, .sessBox, .hmmDiagBox {
+  background: linear-gradient(180deg, rgba(0,229,255,.02), rgba(0,140,180,.005)) !important;
+  border: 1px solid rgba(0,229,255,.06) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: border-color .4s, box-shadow .4s !important;
+}
+.fpBox:hover, .qeBox:hover, .sharpeBox:hover, .paBox:hover,
+.busBox:hover, .fcastBox:hover, .sessBox:hover, .hmmDiagBox:hover {
+  border-color: rgba(0,229,255,.14) !important;
+  box-shadow: 0 2px 12px rgba(0,229,255,.06) !important;
+}
+
+/* Ambient scan line on data boxes */
+.fpBox::after, .qeBox::after, .sharpeBox::after, .paBox::after,
+.busBox::after, .fcastBox::after, .hmmDiagBox::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(90deg, transparent 0%, rgba(0,229,255,.03) 45%, rgba(0,229,255,.07) 50%, rgba(0,229,255,.03) 55%, transparent 100%) !important;
+  animation: qxBoxScan 6s linear infinite !important;
+  pointer-events: none !important;
+  opacity: .5 !important;
+}
+@keyframes qxBoxScan { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+
+/* Box labels — uppercase micro headers */
+.fpBox .k, .qeBox .qk, .sharpeBox .k, .paBox .k, .fcastBox .fk {
+  color: rgba(0,229,255,.45) !important;
+  letter-spacing: 1px !important;
+  font-weight: 700 !important;
+}
+
+/* Box values — bright with subtle glow */
+.fpBox .v, .qeBox .qv, .sharpeBox .v, .fcastBox .fv {
+  color: rgba(220,240,255,.95) !important;
+  text-shadow: 0 0 10px rgba(0,229,255,.08) !important;
+}
+
+/* ── INTEL TILES (Move Risk, Chart Pattern) ───────────────────────────── */
+.intelTile {
+  background: linear-gradient(180deg, rgba(0,229,255,.02), rgba(0,100,140,.01)) !important;
+  border: 1px solid rgba(0,229,255,.07) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.intelTile .t {
+  color: rgba(0,229,255,.50) !important;
+  letter-spacing: 1.5px !important;
+}
+.intelTile .v {
+  color: rgba(220,240,255,.95) !important;
+  text-shadow: 0 0 8px rgba(0,229,255,.10) !important;
+}
+
+/* ── CONVICTION ROW — premium strip ───────────────────────────────────── */
+.convicRow {
+  background: linear-gradient(90deg, rgba(0,229,255,.02), rgba(0,140,180,.01)) !important;
+  border: 1px solid rgba(0,229,255,.06) !important;
+  border-left: 2px solid rgba(0,229,255,.30) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* ── SIGNAL BUS BANNER ────────────────────────────────────────────────── */
+.busBanner {
+  background: linear-gradient(90deg, rgba(0,229,255,.03), transparent) !important;
+  border: 1px solid rgba(0,229,255,.08) !important;
+  border-left: 3px solid rgba(0,229,255,.40) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.busBanner::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(90deg, transparent, rgba(0,229,255,.04) 50%, transparent) !important;
+  animation: qxBoxScan 5s linear infinite !important;
+  pointer-events: none !important;
+}
+
+/* ── RISK STRIP ───────────────────────────────────────────────────────── */
+.riskStrip {
+  background: rgba(0,0,0,.15) !important;
+  border: 1px solid rgba(255,255,255,.04) !important;
+  border-radius: var(--r2) !important;
+  padding: 10px !important;
+}
+.riskItem {
+  background: linear-gradient(180deg, rgba(0,229,255,.015), transparent) !important;
+  border: 1px solid rgba(0,229,255,.06) !important;
+}
+
+/* ── DAY ROW ──────────────────────────────────────────────────────────── */
+.dayRow {
+  background: linear-gradient(90deg, rgba(0,229,255,.02), transparent) !important;
+  border: 1px solid rgba(0,229,255,.06) !important;
+  border-left: 2px solid rgba(0,229,255,.20) !important;
+}
+
+/* ── PROBABILITY BARS — deeper, richer ────────────────────────────────── */
+.pbar, .tmBar, .pb3Bar, .hurstBar, .kellyBar, .alMiniBar, .stkBar, .fcastBar {
+  background: rgba(0,229,255,.04) !important;
+  border-radius: 999px !important;
+}
+
+/* ── TABLES — deep intelligence styling ───────────────────────────────── */
+.paLogTable, .corrTable {
+  border-collapse: separate !important;
+  border-spacing: 0 1px !important;
+}
+.paLogTable th, .corrTable th {
+  background: rgba(0,229,255,.04) !important;
+  color: rgba(0,229,255,.55) !important;
+  letter-spacing: 1px !important;
+  border-bottom: 1px solid rgba(0,229,255,.08) !important;
+}
+.paLogTable td, .corrTable td {
+  border-bottom: 1px solid rgba(255,255,255,.03) !important;
+}
+
+/* ── SPARKLINE CANVASES — subtle frame ────────────────────────────────── */
+.sparkCanvas {
+  border-radius: 6px !important;
+  background: rgba(0,0,0,.15) !important;
+}
+
+/* ── REGIME HISTORY TIMELINE ──────────────────────────────────────────── */
+#timelineCanvas {
+  border-radius: 6px !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,.25), inset 0 0 1px rgba(0,229,255,.08) !important;
+}
+
+/* ── CONE / EQUITY CANVASES ───────────────────────────────────────────── */
+#coneCanvas, #equityCanvas {
+  border-radius: 10px !important;
+  background: rgba(0,0,0,.18) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.03), 0 2px 8px rgba(0,0,0,.30) !important;
+}
+
+/* ── SCROLL CONTAINERS — premium feel ─────────────────────────────────── */
+.scroll {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(0,229,255,.12) transparent !important;
+}
+
+/* ── POS/NEG VALUE COLORS — brighter against dark backgrounds ─────────── */
+.pos { color: rgba(0,225,160,.92) !important; }
+.neg { color: rgba(255,85,100,.92) !important; }
+
+/* ── MACRO BOX / TRANSMISSION — already styled, reinforce borders ─────── */
+.macroBox {
+  background: linear-gradient(180deg, rgba(0,229,255,.02), rgba(0,100,140,.008)) !important;
+  border: 1px solid rgba(0,229,255,.06) !important;
+}
+.tmBox {
+  background: linear-gradient(180deg, rgba(0,229,255,.025), rgba(0,100,140,.01)) !important;
+  border: 1px solid rgba(0,229,255,.07) !important;
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════════╗
    ║  MOBILE PWA — PREMIUM TERMINAL v43                                      ║
    ║  Built as a $10M fintech trading terminal, not a responsive site.       ║
    ║  Targets phones (<768px). Desktop is completely untouched.              ║
@@ -8189,7 +8448,7 @@ body.guided-active .col {
     white-space: nowrap !important;
   }
   .brand-rx { font-size: 15px !important; }
-  .brand-term { display: none !important; }
+  .brand-term { display: inline !important; font-size: 6px !important; letter-spacing: 2.5px !important; margin-left: 6px !important; color: rgba(130,155,185,.40) !important; }
   .brand .sub { display: none !important; }
 
   .top-actions {
