@@ -283,13 +283,19 @@ canvas{display:block;width:100%}
 .macroHint{font-size:10.5px;color:var(--text3);line-height:1.45;text-align:right;max-width:300px}
 /* ── TRANSITION MATRIX ───────────────────────────────── */
 .tmGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.tmBox{border-radius:var(--r2);background:rgba(255,255,255,.025);border:1px solid var(--border);padding:12px;display:grid;gap:6px}
-.tmTop{display:flex;align-items:center;justify-content:space-between;gap:6px}
-.tmTop .k{font-size:10px;color:var(--text2);line-height:1.2;font-weight:500}
-.tmTop .pct{font-size:21px;font-weight:700;font-family:var(--mono);letter-spacing:-1px}
-.tmBar{height:4px;border-radius:999px;background:rgba(255,255,255,.05);overflow:hidden}
-.tmBar>i{display:block;height:100%;width:0%;border-radius:999px;transition:width .55s ease}
-.tmMeta{font-size:10px;color:var(--text3);line-height:1.35}
+.tmBox{border-radius:var(--r2);background:rgba(255,255,255,.025);border:1px solid var(--border);padding:12px;display:grid;gap:6px;position:relative;overflow:hidden}
+.tmTop{display:flex;align-items:center;justify-content:space-between;gap:6px;position:relative;z-index:2}
+.tmTop .k{font-size:10px;color:var(--text2);line-height:1.2;font-weight:500;text-transform:uppercase;letter-spacing:.8px}
+.tmTop .pct{font-size:21px;font-weight:700;font-family:var(--mono);letter-spacing:-1px;transition:color .5s ease}
+.tmBar{height:5px;border-radius:999px;background:rgba(255,255,255,.04);overflow:hidden;position:relative;z-index:2}
+.tmBar>i{display:block;height:100%;width:0%;border-radius:999px;transition:width .7s cubic-bezier(.22,1,.36,1),background .5s ease;position:relative}
+.tmMeta{font-size:10px;color:var(--text3);line-height:1.35;position:relative;z-index:2}
+/* Scanning sweep on tmBox */
+.tmBox::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(0,229,255,.04) 40%,rgba(0,229,255,.10) 50%,rgba(0,229,255,.04) 60%,transparent 100%);animation:tmLeverScan 4s linear infinite;pointer-events:none;z-index:1;opacity:0;transition:opacity .5s}
+.tmBox.tm-lever-hot::after{opacity:1}
+@keyframes tmLeverScan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+/* Background glow that shifts with intensity */
+.tmBox .tm-lever-glow{position:absolute;inset:0;border-radius:inherit;opacity:.12;transition:background .8s ease,opacity .8s ease;pointer-events:none}
 /* ── RISK METER ──────────────────────────────────────── */
 .riskLevel{text-align:center;padding:12px 14px 11px}
 .rlabel{font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);font-weight:600}
@@ -942,10 +948,10 @@ body.qx-auth-locked .wrap{display:none!important}
   <div class="qx-auth-shell">
     <div class="qx-auth-head">
       <div class="qx-auth-mark">
-<span class="davincii-logo-auth" data-text="DAVINCII">DAVINCII</span>
+<span class="davincii-logo-auth" data-text="DAVINCII"><a href="https://davincii.com/" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">DAVINCII</a></span>
 </div>
       <div>
-        <div class="qx-auth-title"><span style="color:#dde6f0">QUADRA</span><span style="display:inline-block;width:5px"></span><span style="color:#00e5ff;text-shadow:0 0 16px rgba(0,229,255,.50)">X</span></div>
+        <div class="qx-auth-title"><span style="color:#dde6f0">QUADRA</span><span style="display:inline-block;width:5px"></span><span style="color:#00e5ff;text-shadow:0 0 16px rgba(0,229,255,.50)">X</span><span style="color:rgba(130,155,185,.55);font-size:9px;letter-spacing:3px;margin-left:8px;font-weight:500">TERMINAL</span></div>
         <div class="qx-auth-sub">Enter your email and password to access the dashboard.</div>
       </div>
     </div>
@@ -993,7 +999,9 @@ body.qx-auth-locked .wrap{display:none!important}
 <div class="topbar">
 <div class="brand">
 <div class="qxlogo-mark" title="DaVincii — QuadraX Intelligence Platform">
+<a href="https://davincii.com/" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:flex;align-items:center">
 <span class="davincii-logo" data-text="DAVINCII">DAVINCII</span>
+</a>
 </div>
 <div class="brand-text-block">
   <!--
@@ -1003,7 +1011,7 @@ body.qx-auth-locked .wrap{display:none!important}
     Vertical separator · between them for visual separation
   -->
   <div class="brand-wordmark">
-    <span class="brand-q">QUADRA</span><span class="brand-sep"> </span><span class="brand-rx">X</span>
+    <span class="brand-q">QUADRA</span><span class="brand-sep"> </span><span class="brand-rx">X</span><span class="brand-term">TERMINAL</span>
   </div>
   <div class="sub">EUR/USD · HMM · PB3 · <span class="sub-si">Superintelligence Architecture</span></div>
 </div>
@@ -1492,11 +1500,11 @@ body.qx-auth-locked .wrap{display:none!important}
 <div class="card"><div class="inner">
 <div class="card-title"><h2>Transmission Mechanism</h2><div class="hint">Oil (terms of trade) · USD (safe haven) · Fear (gold bid) · Event proximity. Four levers drive EUR/USD around macro shocks.</div></div>
 <div class="tmGrid">
-<div class="tmBox"><div class="tmTop"><div class="k">Oil Lever (Brent)</div><div class="pct" id="oilLeverPct">0%</div></div><div class="tmBar"><i id="oilLeverBar"></i></div><div class="tmMeta" id="oilLeverMeta">EU energy drag proxy</div></div>
-<div class="tmBox"><div class="tmTop"><div class="k">Dollar Lever (DXY)</div><div class="pct" id="usdLeverPct">0%</div></div><div class="tmBar"><i id="usdLeverBar"></i></div><div class="tmMeta" id="usdLeverMeta">Dollar index proxy</div></div>
-<div class="tmBox"><div class="tmTop"><div class="k">Fear Lever (Gold)</div><div class="pct" id="fearLeverPct">0%</div></div><div class="tmBar"><i id="fearLeverBar"></i></div><div class="tmMeta" id="fearLeverMeta">Gold bid risk-off proxy</div></div>
-<div class="tmBox"><div class="tmTop"><div class="k">Event Risk</div><div class="pct" id="eventLeverPct">0%</div></div><div class="tmBar"><i id="eventLeverBar"></i></div><div class="tmMeta" id="eventLeverMeta">Calendar proximity</div></div>
-<div class="tmBox" style="grid-column:1/span 2"><div class="tmTop"><div class="k">FX Pair Confluence (GBP+AUD+NZD)</div><div class="pct" id="fxLeverPct">0%</div></div><div class="tmBar"><i id="fxLeverBar" style="background:rgba(160,100,255,.82)"></i></div><div class="tmMeta" id="fxLeverMeta">Correlated pair alignment</div></div>
+<div class="tmBox" id="tmOil"><div class="tm-lever-glow"></div><div class="tmTop"><div class="k">Oil Lever (Brent)</div><div class="pct" id="oilLeverPct">0%</div></div><div class="tmBar"><i id="oilLeverBar"></i></div><div class="tmMeta" id="oilLeverMeta">EU energy drag proxy</div></div>
+<div class="tmBox" id="tmUsd"><div class="tm-lever-glow"></div><div class="tmTop"><div class="k">Dollar Lever (DXY)</div><div class="pct" id="usdLeverPct">0%</div></div><div class="tmBar"><i id="usdLeverBar"></i></div><div class="tmMeta" id="usdLeverMeta">Dollar index proxy</div></div>
+<div class="tmBox" id="tmFear"><div class="tm-lever-glow"></div><div class="tmTop"><div class="k">Fear Lever (Gold)</div><div class="pct" id="fearLeverPct">0%</div></div><div class="tmBar"><i id="fearLeverBar"></i></div><div class="tmMeta" id="fearLeverMeta">Gold bid risk-off proxy</div></div>
+<div class="tmBox" id="tmEvent"><div class="tm-lever-glow"></div><div class="tmTop"><div class="k">Event Risk</div><div class="pct" id="eventLeverPct">0%</div></div><div class="tmBar"><i id="eventLeverBar"></i></div><div class="tmMeta" id="eventLeverMeta">Calendar proximity</div></div>
+<div class="tmBox" id="tmFx" style="grid-column:1/span 2"><div class="tm-lever-glow"></div><div class="tmTop"><div class="k">FX Pair Confluence (GBP+AUD+NZD)</div><div class="pct" id="fxLeverPct">0%</div></div><div class="tmBar"><i id="fxLeverBar"></i></div><div class="tmMeta" id="fxLeverMeta">Correlated pair alignment</div></div>
 </div>
 </div></div>
 <div class="card"><div class="inner">
@@ -3689,7 +3697,54 @@ function computeTx(){
   const bias=score<=-.18?"USD+RISK OFF":score>=.18?"USD WEAK/RISK ON":"NEUTRAL";
   const gbpChg=gbp?.changePct??null,audChg=aud?.changePct??null,nzdChg=nzd?.changePct??null;
   return{score,intensity,bias,fxConf,fxInt,gbpChg,audChg,nzdChg,components:{oilInt,usdInt,fearInt,silvInt,eventInt:eRisk,fxInt}};}
-function leverPaint(barEl,pctEl,val,dir){const pct=Math.round(val*100);if(pctEl)pctEl.textContent=pct+"%";if(barEl){barEl.style.width=clamp(pct,0,100)+"%";barEl.style.background=dir==="bad"?"rgba(255,71,87,.82)":dir==="good"?"rgba(0,214,143,.82)":"rgba(41,121,255,.78)";}}
+function leverPaint(barEl,pctEl,val,dir,boxId){
+  const pct=Math.round(clamp(val,0,1)*100);
+  // Gradient color: 0%=deep red → 25%=coral → 50%=cyan/blue → 75%=teal → 100%=bright green
+  function leverColor(p){
+    if(p<5)return'rgb(60,15,20)';
+    if(p<15)return'rgb(140,30,35)';
+    if(p<25)return'rgb(200,55,45)';
+    if(p<35)return'rgb(220,100,40)';
+    if(p<45)return'rgb(180,150,40)';
+    if(p<55)return'rgb(0,140,170)';
+    if(p<65)return'rgb(0,160,200)';
+    if(p<75)return'rgb(0,180,150)';
+    if(p<85)return'rgb(0,200,110)';
+    if(p<95)return'rgb(20,210,80)';
+    return'rgb(50,230,60)';
+  }
+  function pctColor(p){
+    if(p<20)return'rgba(255,80,80,.90)';
+    if(p<40)return'rgba(255,160,60,.85)';
+    if(p<60)return'rgba(0,200,220,.90)';
+    if(p<80)return'rgba(0,210,150,.90)';
+    return'rgba(50,230,80,.95)';
+  }
+  function glowBg(p){
+    if(p<15)return'radial-gradient(ellipse at 70% 50%, rgba(255,50,50,.12), transparent 70%)';
+    if(p<40)return'radial-gradient(ellipse at 70% 50%, rgba(255,140,40,.08), transparent 70%)';
+    if(p<65)return'radial-gradient(ellipse at 70% 50%, rgba(0,180,220,.08), transparent 70%)';
+    return'radial-gradient(ellipse at 70% 50%, rgba(0,220,100,.10), transparent 70%)';
+  }
+  function borderC(p){
+    if(p<20)return'rgba(255,71,87,.25)';
+    if(p<50)return'rgba(255,176,32,.15)';
+    if(p<75)return'rgba(0,200,220,.18)';
+    return'rgba(0,214,143,.25)';
+  }
+  if(pctEl){pctEl.textContent=pct+'%';pctEl.style.color=pctColor(pct);}
+  if(barEl){barEl.style.width=clamp(pct,0,100)+'%';barEl.style.background=leverColor(pct);barEl.style.boxShadow='0 0 8px '+leverColor(pct).replace('rgb','rgba').replace(')',',0.50)');}
+  // Update box glow, border, and sweep
+  if(boxId){
+    const box=document.getElementById(boxId);
+    if(box){
+      const glow=box.querySelector('.tm-lever-glow');
+      if(glow)glow.style.background=glowBg(pct);
+      box.style.borderColor=borderC(pct);
+      if(pct>30)box.classList.add('tm-lever-hot');else box.classList.remove('tm-lever-hot');
+    }
+  }
+}
 function computeProj(step,tx,cm,ba,sa){const base1h={1:6,2:10,3:7,4:12,5:18,6:16,7:14,8:26};const pol=step?.policy||1,volx=step?.features?.volx??1,momBp=bp(step?.features?.mom??0),conf=(step?.conf??.25)*((ba||1)*(sa||1));const volMult=clamp(.75+.18*volx,.65,1.85),txMult=clamp(1.0+.55*tx.intensity,1.0,1.6),eRisk=tx.components.eventInt;const r1Raw=Math.round((base1h[pol]??8)*volMult*txMult*clamp(1.0+.65*eRisk,1,1.7));const r4Raw=Math.round(r1Raw*2.6*clamp(1.0+.35*eRisk,1,1.35));const momDir=Math.tanh(momBp/18),score=clamp(.55*momDir+.75*tx.score,-1,1);const bias=score>=.20?"LONG":score<=-.20?"SHORT":"NEUTRAL";const agree=1-Math.abs(momDir-tx.score)/2,dec=clamp(.35*conf+.45*agree+.20*(1-eRisk*.6),0,1);const r1dRaw=Math.round(r4Raw*2.5);return{bias,r1:clamp(r1Raw,3,80),r4:clamp(r4Raw,6,160),r1d:clamp(r1dRaw,12,400),decPct:Math.round(dec*100),volMult,txMult,eRisk};}
 
 // ── BUILD FULL STATE (MASTER packs everything, READERs unpack and render) ──
@@ -3927,12 +3982,12 @@ function applyFullStateToUI(st){
   const tb2=$("txBig"),tm=$("txMeta");
   if(tb2)tb2.textContent=(st.txScore??0)<=-.18?"BEAR EURUSD":(st.txScore??0)>=.18?"BULL EURUSD":"NEUTRAL";
   if(tm)tm.textContent="Score "+(st.txScore??0).toFixed(2)+" | "+(st.txBias||"--")+" | Intensity "+Math.round((st.txIntensity??0)*100)+"%";
-  leverPaint($("oilLeverBar"),$("oilLeverPct"),st.oilInt,(st.oilChg??0)>=0?"bad":"good");
-  leverPaint($("usdLeverBar"),$("usdLeverPct"),st.usdInt,(st.usdChg??0)>=0?"bad":"good");
-  leverPaint($("fearLeverBar"),$("fearLeverPct"),st.fearInt,(st.goldChg??0)>=0?"bad":"good");
-  leverPaint($("eventLeverBar"),$("eventLeverPct"),st.eventInt,st.eventInt>=.35?"bad":"neutral");
+  leverPaint($("oilLeverBar"),$("oilLeverPct"),st.oilInt,(st.oilChg??0)>=0?"bad":"good","tmOil");
+  leverPaint($("usdLeverBar"),$("usdLeverPct"),st.usdInt,(st.usdChg??0)>=0?"bad":"good","tmUsd");
+  leverPaint($("fearLeverBar"),$("fearLeverPct"),st.fearInt,(st.goldChg??0)>=0?"bad":"good","tmFear");
+  leverPaint($("eventLeverBar"),$("eventLeverPct"),st.eventInt,st.eventInt>=.35?"bad":"neutral","tmEvent");
   {const fxc=st.fxConf||0,fxi=st.fxInt||0,fxlv=Math.abs(fxc)*clamp(fxi*1.5,0,1);
-   leverPaint($("fxLeverBar"),$("fxLeverPct"),fxlv,fxc>0.15?"good":fxc<-0.15?"bad":"neutral");
+   leverPaint($("fxLeverBar"),$("fxLeverPct"),fxlv,fxc>0.15?"good":fxc<-0.15?"bad":"neutral","tmFx");
    const fxlm=$("fxLeverMeta");if(fxlm)fxlm.textContent=fxc>0.15?"Bullish confluence — "+Math.round(fxlv*100)+"% confirm":fxc<-0.15?"Bearish confluence — "+Math.round(fxlv*100)+"% confirm":"Mixed/neutral";
    const fxcEl=$("fxConfChip"),fxiEl=$("fxIntChip"),fxbEl=$("fxConfBig"),fxmEl=$("fxConfMeta");
    if(fxcEl)fxcEl.textContent=fxc>0.15?"▲ BULL CONFIRM":fxc<-0.15?"▼ BEAR CONFIRM":"MIXED";
@@ -4514,7 +4569,7 @@ async function onSpotUpdate(s){
    const n=pairs.filter(p=>p.d!=null).length;
    if(fxmEl)fxmEl.textContent=n+"/3 pairs active"+(fxc>0.15?" — BULLISH":fxc<-0.15?" — BEARISH":" — mixed");
    const fxlv=Math.abs(fxc)*clamp(fxi*1.5,0,1);
-   leverPaint($("fxLeverBar"),$("fxLeverPct"),fxlv,fxc>0.15?"good":fxc<-0.15?"bad":"neutral");
+   leverPaint($("fxLeverBar"),$("fxLeverPct"),fxlv,fxc>0.15?"good":fxc<-0.15?"bad":"neutral","tmFx");
    const fxlm=$("fxLeverMeta");if(fxlm)fxlm.textContent=fxc>0.15?"Bullish confluence — "+Math.round(fxlv*100)+"% confirm":fxc<-0.15?"Bearish confluence — "+Math.round(fxlv*100)+"% confirm":"Mixed/neutral — no clear alignment";}
   // ── Write to Firestore (fullState already has sigEquity from injectSignalStats) ─
   if(FirebaseSync.isMaster)FirebaseSync.writeState(fullState);
@@ -6470,7 +6525,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v50-neural                              ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v51-transmission                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -6711,6 +6766,16 @@ body::before, body::after { display: none !important; }
   text-shadow: 0 0 16px rgba(0,229,255,.50), 0 0 40px rgba(0,229,255,.20) !important;
   letter-spacing: 1px !important;
   font-size: 17px !important;
+}
+/* TERMINAL label */
+.brand-term {
+  color: rgba(130,155,185,.45) !important;
+  font-size: 8px !important;
+  font-weight: 500 !important;
+  letter-spacing: 3.5px !important;
+  margin-left: 8px !important;
+  position: relative !important;
+  top: 1px !important;
 }
 
 /* Override old h1 brand just in case */
@@ -7265,6 +7330,13 @@ tbody tr:hover td { background: rgba(0,229,255,.03) !important; }
   text-shadow: 0 0 18px rgba(0,229,255,.55), 0 0 40px rgba(0,229,255,.18) !important;
   letter-spacing: 2px !important;
   font-size: 15px !important;
+}
+.brand-term {
+  color: rgba(130,155,185,.40) !important;
+  font-size: 7.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 4px !important;
+  margin-left: 7px !important;
 }
 
 /* Sub line — lean & informational */
@@ -8073,6 +8145,7 @@ body.guided-active .col {
     white-space: nowrap !important;
   }
   .brand-rx { font-size: 15px !important; }
+  .brand-term { display: none !important; }
   .brand .sub { display: none !important; }
 
   .top-actions {
