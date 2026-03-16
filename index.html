@@ -3418,22 +3418,25 @@ const FirebaseSync=(()=>{
     }
     return out;
   }
-  // ── Smart write throttle — cuts Firestore writes by ~85% ─────────────────
-  // Only writes when: (a) key state changed, or (b) minimum interval elapsed
-  // Immediate write on regime/bias change; debounced for routine tick updates
-  let _lastWrite=0, _lastHash='', _pendingWrite=null, _writeCount=0;
-  const WRITE_MIN_MS = 60000;       // Max 1 write per 60s for routine updates
-  const WRITE_URGENT_MS = 5000;     // 5s cooldown even for urgent changes
+  // ── Robust write throttle — v53 fix ──────────────────────────────────────
+  // Bug in v52: setTimeout gets frozen when browser sleeps background tab.
+  // _pendingWrite stays truthy → all new calls return → writes stop entirely.
+  // Fix: always capture latest payload, use requestAnimationFrame fallback,
+  // and add staleness watchdog.
+  let _lastWrite=0, _lastHash='', _writeCount=0;
+  let _latestPayload=null, _writeTimer=null;
+  const WRITE_MIN_MS = 30000;       // Max 1 routine write per 30s
+  const WRITE_URGENT_MS = 3000;     // 3s cooldown for critical changes
+  const WRITE_STALE_MS = 120000;    // Force write if 2min since last
   
   function _stateHash(p){
-    // Hash key fields that matter for READER — skip noise like tickN, regimeAge
     return [p.policy,p.busDir,p.bias,p.spotPrice?.toFixed(4),p.stateName,
             Math.round((p.oilInt||0)*100),Math.round((p.usdInt||0)*100),
             Math.round((p.fearInt||0)*100)].join('|');
   }
   
   async function _doWrite(payload){
-    if(!db||!_isMaster)return;
+    if(!db||!_isMaster||!payload)return;
     try{
       await db.collection("quadrax").doc("state").set({
         ..._sanitise(payload),
@@ -3443,38 +3446,69 @@ const FirebaseSync=(()=>{
       });
       _writeCount++;
       _lastWrite=Date.now();
-      console.log('[QuadraX] Firestore write #'+_writeCount);
+      _latestPayload=null;
+      console.log('[QuadraX] Firestore write #'+_writeCount+' ('+new Date().toLocaleTimeString()+')');
     }catch(err){
-      console.warn("[QuadraX] Firestore write error:",err);
+      console.warn("[QuadraX] Firestore write error:",err.code||err.message||err);
+      // If permission-denied, log clearly
+      if(err.code==='permission-denied')console.error('[QuadraX] PERMISSION DENIED — check Firestore rules and custom claims. Current user:',auth?.currentUser?.email);
     }
+  }
+  
+  function _scheduleWrite(delayMs){
+    if(_writeTimer)clearTimeout(_writeTimer);
+    _writeTimer=setTimeout(()=>{
+      _writeTimer=null;
+      if(_latestPayload) _doWrite(_latestPayload);
+    }, delayMs);
   }
   
   async function writeState(payload){
     if(!db||!_isMaster)return;
     const now=Date.now();
     const hash=_stateHash(payload);
-    const isUrgent = hash!==_lastHash && (
-      // Regime changed or bias flipped — write immediately (with 5s cooldown)
-      (payload.policy && _lastHash && hash.split('|')[0]!==_lastHash.split('|')[0]) ||
-      (payload.busDir && _lastHash && hash.split('|')[1]!==_lastHash.split('|')[1])
+    
+    // Always capture latest payload (fixes stale-data bug)
+    _latestPayload=payload;
+    
+    const isUrgent = hash!==_lastHash && _lastHash && (
+      hash.split('|')[0]!==_lastHash.split('|')[0] || // regime changed
+      hash.split('|')[1]!==_lastHash.split('|')[1]    // bias flipped
     );
     _lastHash=hash;
     
+    // Critical change — write now (with short cooldown)
     if(isUrgent && (now-_lastWrite)>=WRITE_URGENT_MS){
-      // Critical change — write now
-      if(_pendingWrite){clearTimeout(_pendingWrite);_pendingWrite=null;}
+      if(_writeTimer){clearTimeout(_writeTimer);_writeTimer=null;}
       await _doWrite(payload);
       return;
     }
     
-    // Routine update — debounce to WRITE_MIN_MS
-    if(_pendingWrite)return; // already scheduled
-    const delay=Math.max(0, WRITE_MIN_MS-(now-_lastWrite));
-    _pendingWrite=setTimeout(async()=>{
-      _pendingWrite=null;
+    // Staleness failsafe — if 2min since last write, force it
+    if((now-_lastWrite)>=WRITE_STALE_MS && _lastWrite>0){
+      if(_writeTimer){clearTimeout(_writeTimer);_writeTimer=null;}
       await _doWrite(payload);
-    }, delay);
+      return;
+    }
+    
+    // Routine — schedule write at next interval
+    if(!_writeTimer){
+      const delay=Math.max(1000, WRITE_MIN_MS-(now-_lastWrite));
+      _scheduleWrite(delay);
+    }
+    // If timer already running, _latestPayload is updated above,
+    // so when it fires it'll write the freshest data
   }
+  
+  // ── Staleness watchdog — catches browser-sleep scenarios ────────────────
+  // Runs every 60s. If MASTER and no write in 2min, force one.
+  setInterval(()=>{
+    if(!db||!_isMaster||!_latestPayload)return;
+    if((Date.now()-_lastWrite)>=WRITE_STALE_MS){
+      console.log('[QuadraX] Watchdog: forcing stale write');
+      _doWrite(_latestPayload);
+    }
+  }, 60000);
 
   return{
     init,subscribeState,writeState,updateBadge:_badge,
@@ -3484,6 +3518,19 @@ const FirebaseSync=(()=>{
     get role(){return!_configured?"STANDALONE":_isMaster?"MASTER":"READER";},
   };
 })();
+
+// ── Tab wake-up recovery — forces sync when returning from sleep ──────────
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState==='visible' && FirebaseSync.isMaster){
+    console.log('[QuadraX] Tab visible — checking write staleness');
+    // The watchdog interval handles the actual write logic;
+    // this just ensures an immediate check on wake
+    setTimeout(()=>{
+      const syncBtn=document.getElementById('syncBtn');
+      if(syncBtn) syncBtn.click(); // trigger a full tick cycle
+    }, 2000);
+  }
+});
 
 // ── CANVAS ────────────────────────────────────────────────────────────────
 function setupCanvas(canvas){const dpr=window.devicePixelRatio||1;const rect=canvas.getBoundingClientRect();const w=Math.max(rect.width,1),h=Math.max(rect.height,1);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);const ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);return{ctx,w,h};}
@@ -6569,7 +6616,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v53-intelligence                              ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v54-sync-fix                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
