@@ -2592,7 +2592,20 @@ const SessionEngine=(()=>{
   const isOpen=s=>{const h=utcH();return s.endH>24?(h>=s.startH||h<(s.endH-24)):(h>=s.startH&&h<s.endH);};
   function minsToEnd(s){const d=new Date(),um=d.getUTCHours()*60+d.getUTCMinutes(),em=(s.endH%24)*60;let diff=em-um;if(diff<0)diff+=1440;return diff;}
   function compute(){const open=SESS.filter(s=>isOpen(s));const dow=new Date().getDay();const dayInfo=DAY[dow]||{name:new Date().toLocaleDateString([],{weekday:"long"}).toUpperCase(),effect:"Weekend. Markets closed."};const isOL=open.some(s=>s.id==="LONDON")&&open.some(s=>s.id==="NEW_YORK");const primary=open.length?open.at(-1):null;return{openSessions:open.map(s=>s.id),primary,isOverlap:isOL,dayInfo,minsLeft:primary?minsToEnd(primary):null};}
-  return{compute,SESS};
+  // EUR/USD trades Sun 22:00 UTC → Fri 22:00 UTC (continuous). Closed Fri 22:00 → Sun 22:00.
+  function isForexOpen(){
+    const d=new Date();
+    const dow=d.getUTCDay(); // 0=Sun,1=Mon,...,5=Fri,6=Sat
+    const h=d.getUTCHours();
+    // Saturday = always closed
+    if(dow===6)return false;
+    // Sunday = closed until 22:00 UTC
+    if(dow===0&&h<22)return false;
+    // Friday = closed after 22:00 UTC
+    if(dow===5&&h>=22)return false;
+    return true;
+  }
+  return{compute,isForexOpen,SESS};
 })();
 
 const PB3=(()=>{
@@ -2656,9 +2669,20 @@ const ProjTracker=(()=>{
     return o;
   }); // normalize older entries so newer UI fields populate
   save(KEY.proj,log.slice(-200)); // persist v39 migration
+  // v56 migration: reset calibration values if spiraled to extremes from pre-market-hours bug
   let calibMult=Number(settings.calibMult)||1.0;
   let biasConfAdj=Number(settings.biasConfAdj)||1.0;
-  let sharpeAdj=Number(settings.sharpeAdj)||1.0
+  let sharpeAdj=Number(settings.sharpeAdj)||1.0;
+  if(!settings._v56reset){
+    // Reset extreme values — these were caused by weekend projections poisoning the adaptive loop
+    if(calibMult>=2.5||calibMult<=0.45) calibMult=1.0;
+    if(biasConfAdj<=0.25||biasConfAdj>=1.55) biasConfAdj=1.0;
+    if(sharpeAdj<=0.55||sharpeAdj>=1.45) sharpeAdj=1.0;
+    settings.calibMult=calibMult;settings.biasConfAdj=biasConfAdj;settings.sharpeAdj=sharpeAdj;
+    settings._v56reset=true;
+    save(KEY.s,settings);
+    console.log('[QuadraX] v56: calibration reset — calibMult:',calibMult,'biasConfAdj:',biasConfAdj,'sharpeAdj:',sharpeAdj);
+  }
   // Signal performance derived from projection outcomes (4H).
   // This ensures MASTER and READER share identical performance metrics because they are computed from the same logged calls.
   const PERIODS_PER_YEAR_4H = 1512; // 4H periods — 252 trading days × 6 sessions
@@ -2722,19 +2746,25 @@ const ProjTracker=(()=>{
   }
 ;
 
-  function logProjection({spot,bias,r1,r4,r1d:_r1dArg,policy}){
+  function logProjection({spot,bias,r1,r4,r1d:_r1dArg,policy,forexOpen,conviction}){
     if(!spot||bias==="NEUTRAL")return;
+    // Don't project when forex market is closed (weekends)
+    if(forexOpen===false){return;}
+    // Don't project when conviction is too low — produces noise
+    if(conviction!=null&&conviction<0.15){return;}
     // Log at most once per hour — quality signal calls, not per-tick noise
     const last=log.length?log.at(-1):null;
     if(last&&(Date.now()-last.ts)<60*60*1000)return;
     const r1d = _r1dArg||Math.max(10, Math.round((r4||0)*2.5));
-    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,r1d,policy,outcome1h:null,outcome4h:null,outcome1d:null});
+    log.push({id:Date.now(),ts:Date.now(),spot,bias,r1,r4,r1d,policy,conviction:conviction||0,outcome1h:null,outcome4h:null,outcome1d:null});
     if(log.length>200)log=log.slice(-200);
     _persist();
   }
 
   function scoreOutcomes(currentSpot){
     if(!Number.isFinite(currentSpot))return;
+    // Don't score during closed market — exit price would be stale/gapped
+    if(!SessionEngine.isForexOpen())return;
     const now=Date.now();let changed=false;
 
     function resolveHorizon(p,horizonMins,targetPips,key){
@@ -2790,32 +2820,35 @@ function _adapt(currentSpot){
     const s=_stats();
     // CONE: adapt from 4H range hit rate — target 60-80%
     if(s.n4h>=MIN_N&&s.rng4hRate!=null){
-      if(s.rng4hRate<0.50)calibMult=clamp(calibMult*1.06,0.40,3.0);       // too narrow -> widen
-      else if(s.rng4hRate>0.82)calibMult=clamp(calibMult*0.96,0.40,3.0);  // too wide -> tighten
+      if(s.rng4hRate<0.55)calibMult=clamp(calibMult*1.03,0.50,2.0);       // too narrow -> widen gently
+      else if(s.rng4hRate>0.82)calibMult=clamp(calibMult*0.97,0.50,2.0);  // too wide -> tighten gently
+      // Mean-revert toward 1.0 to prevent spiraling
+      calibMult=calibMult*0.995+1.0*0.005;
     }
     // BIAS CONFIDENCE: adapt from 4H direction hit rate
     if(s.n4h>=MIN_N&&s.dir4hRate!=null){
-      if(s.dir4hRate<0.48)biasConfAdj=clamp(biasConfAdj*0.94,0.20,1.60);
-      else if(s.dir4hRate>0.62)biasConfAdj=clamp(biasConfAdj*1.04,0.20,1.60);
+      if(s.dir4hRate<0.45)biasConfAdj=clamp(biasConfAdj*0.97,0.40,1.40);
+      else if(s.dir4hRate>0.58)biasConfAdj=clamp(biasConfAdj*1.02,0.40,1.40);
+      // Mean-revert toward 1.0
+      biasConfAdj=biasConfAdj*0.995+1.0*0.005;
     }
 
     // SIGNAL PERFORMANCE (rolling Sharpe) derived from projection outcomes (1h).
-    // Strong Sharpe -> allow slightly higher confidence; weak Sharpe -> dampen.
     try{
       const sp=getSignalPerf(currentSpot,30);
       const sh=sp?.sharpe;
       const nSig=sp?.closedN||0;
       if(Number.isFinite(sh) && nSig>=20){
-        if(sh<0.50)sharpeAdj=clamp(sharpeAdj*0.95,0.50,1.50);
-        else if(sh>2.50)sharpeAdj=clamp(sharpeAdj*1.03,0.50,1.50);
-      }else{
-        sharpeAdj=clamp(sharpeAdj*0.995+0.005,0.50,1.50);
+        if(sh<0.50)sharpeAdj=clamp(sharpeAdj*0.97,0.60,1.40);
+        else if(sh>2.50)sharpeAdj=clamp(sharpeAdj*1.02,0.60,1.40);
       }
+      // Mean-revert toward 1.0
+      sharpeAdj=sharpeAdj*0.995+1.0*0.005;
     }catch(e){}
 
-    calibMult=Math.round(calibMult*1000)/1000;
-    biasConfAdj=Math.round(biasConfAdj*1000)/1000;
-    sharpeAdj=Math.round(sharpeAdj*1000)/1000;
+    calibMult=Math.round(clamp(calibMult,0.50,2.0)*1000)/1000;
+    biasConfAdj=Math.round(clamp(biasConfAdj,0.40,1.40)*1000)/1000;
+    sharpeAdj=Math.round(clamp(sharpeAdj,0.60,1.40)*1000)/1000;
     settings.calibMult=calibMult;settings.biasConfAdj=biasConfAdj;settings.sharpeAdj=sharpeAdj;
     save(KEY.s,settings);
   }
@@ -4630,7 +4663,8 @@ async function onSpotUpdate(s){
   const _eRisk=computeEventRisk?computeEventRisk():0;
   step.lastPrice=s.price;
   const _bus=SignalBus.synthesize(step,tx,proj,pb3,_q,_projSt,_eRisk);
-  ProjTracker.logProjection({spot:s.price,bias:proj.bias,r1:proj.r1,r4:proj.r4,r1d:proj.r1d,policy:step.policy});
+  ProjTracker.logProjection({spot:s.price,bias:proj.bias,r1:proj.r1,r4:proj.r4,r1d:proj.r1d,policy:step.policy,
+    forexOpen:SessionEngine.isForexOpen(),conviction:_bus?.conviction||0});
   updateSignalBusUI(_bus);
   // Daily forecast — bias overridden by bus consensus
   const _dailyF=ForecastEngine.computeDaily(step,tx,s,_projSt);
@@ -6616,7 +6650,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v55-lia                              ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v56-learn                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
