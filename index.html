@@ -2442,7 +2442,8 @@ const MacroFeed=(()=>{
 
 const EventsFeed=(()=>{
   let cache=[],lastFetch=0;const TTL=5*60*1000;
-  const FF_URL="https://nfs.faireconomy.media/ff_calendar_thisweek.json";
+  const FF_THIS_WEEK="https://nfs.faireconomy.media/ff_calendar_thisweek.json";
+  const FF_NEXT_WEEK="https://nfs.faireconomy.media/ff_calendar_nextweek.json";
   const mkProxies=u=>[
     "https://corsproxy.io/?"+encodeURIComponent(u),
     "https://api.allorigins.win/raw?url="+encodeURIComponent(u),
@@ -2450,10 +2451,30 @@ const EventsFeed=(()=>{
     "https://thingproxy.freeboard.io/fetch/"+u,
   ];
   async function tryFetch(url,ms=10000){for(const prox of mkProxies(url)){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);try{const res=await fetch(prox,{method:"GET",cache:"no-store",signal:c.signal});clearTimeout(t);if(!res.ok)continue;const txt=await res.text();let parsed;try{parsed=JSON.parse(txt);}catch{const m=txt.match(/^\s*[\[{]/);if(!m)continue;}parsed=parsed||JSON.parse(txt);if(Array.isArray(parsed))return parsed;if(parsed?.data){try{const d=JSON.parse(parsed.data);if(Array.isArray(d))return d;}catch{}}continue;}catch{clearTimeout(t);}}return null;}
+  function parseEvents(json){
+    if(!json||!json.length)return[];
+    return json.filter(e=>(e.impact==="High"||e.impact==="Medium")&&(e.country==="USD"||e.country==="EUR"))
+      .map(e=>({when:e.date,event:e.title+" ("+e.country+")",impact:e.impact==="High"?"HIGH":"MED",
+        forecast:e.forecast||"",previous:e.previous||"",actual:e.actual||"",
+        country:e.country,title:e.title}));
+  }
   async function tick(){const now=Date.now();if(now-lastFetch<TTL&&cache.length>0)return;const cb=$("calBadge"),cl=$("calLastFetch");
-    try{const json=await tryFetch(FF_URL,12000);if(!json||!json.length)throw new Error("no data");
-      cache=json.filter(e=>(e.impact==="High"||e.impact==="Medium")&&(e.country==="USD"||e.country==="EUR")).map(e=>({when:e.date,event:e.title+" ("+e.country+")",impact:e.impact==="High"?"HIGH":"MED",forecast:e.forecast||"",previous:e.previous||""}));
-      lastFetch=now;if(cb){cb.className="liveBadge live";cb.textContent="LIVE";}if(cl)cl.textContent="Updated "+fmtTime(now)+" — "+cache.length+" events";}
+    try{
+      // Fetch this week + next week for forward visibility
+      const [thisWeek, nextWeek] = await Promise.allSettled([
+        tryFetch(FF_THIS_WEEK,12000),
+        tryFetch(FF_NEXT_WEEK,10000)
+      ]);
+      const tw=thisWeek.status==='fulfilled'?parseEvents(thisWeek.value):[];
+      const nw=nextWeek.status==='fulfilled'?parseEvents(nextWeek.value):[];
+      const combined=[...tw,...nw];
+      if(!combined.length)throw new Error("no data");
+      // Deduplicate by date+title
+      const seen=new Set();
+      cache=combined.filter(e=>{const k=e.when+"|"+e.event;if(seen.has(k))return false;seen.add(k);return true;});
+      lastFetch=now;
+      if(cb){cb.className="liveBadge live";cb.textContent="LIVE";}
+      if(cl)cl.textContent="Updated "+fmtTime(now)+" — "+cache.length+" events (2-week view)";}
     catch{if(cb){cb.className="liveBadge error";cb.textContent="UNAVAIL";}if(cl)cl.textContent="Calendar unavailable. Will retry in 5 min.";}
     renderEvents();}
   return{tick,get:()=>cache};
@@ -3005,6 +3026,34 @@ const QuantEngine=(()=>{
   }
   return{push,compute,getPrices:()=>PH,getReturns:()=>RH};
 })();
+
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  EQUITIES EXPANSION ARCHITECTURE — Phase 2 (Future)                     ║
+// ║  Stubs for options flow + insider trading signals.                       ║
+// ║  These will feed into a future multi-asset Signal Bus when activated.    ║
+// ║  Ref: Neuberg insider tracking (SEC EDGAR Form 4 cluster buy detection) ║
+// ║  Ref: Neuberg options flow (unusual activity from Yahoo Finance)         ║
+// ║  Req: finvizfinance library (bookmarked for equities expansion)          ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+// const OptionsFlowEngine = (() => {
+//   // Unusual options activity detection from Yahoo Finance options chains
+//   // Signals: put/call ratio spikes, large OI changes, unusual volume
+//   // Integration: feeds into SignalBus as a new vote source with ~5% weight
+//   // Data: Yahoo Finance options API via AllOrigins proxy
+//   // function detectUnusualActivity(symbol) { /* ... */ }
+//   // function computeFlowSignal() { /* ... */ }
+//   // return { tick, getSignal };
+// })();
+//
+// const InsiderTradeEngine = (() => {
+//   // SEC EDGAR Form 4 cluster buy detection
+//   // Signals: cluster buys (3+ insiders buying within 30 days), large open-market purchases
+//   // Integration: feeds into a future equities dashboard layer
+//   // Data: SEC EDGAR XBRL API (free, no key needed)
+//   // function fetchForm4(cik) { /* ... */ }
+//   // function detectClusterBuys() { /* ... */ }
+//   // return { tick, getClusters };
+// })();
 
 // == TRADING ECONOMICS NEWSFEED =============================================
 const TENewsFeed=(()=>{
@@ -3948,7 +3997,86 @@ function renderHeadlines(){const h=HeadlinesFeed.get();const tb=$("headlinesBody
 
 // ── TRANSMISSION & PROJECTION ─────────────────────────────────────────────
 const normAbsPct=(x,cap)=>!Number.isFinite(x)?0:clamp(Math.abs(x)/cap,0,1);
-function computeEventRisk(){const now=Date.now(),wt={HIGH:1.0,MED:0.6,LOW:.25};const up=EventsFeed.get().map(e=>({...e,t:new Date(e.when).getTime()})).filter(e=>Number.isFinite(e.t)&&e.t>=now);let best=0;for(const e of up){const w=wt[(e.impact||"LOW").toUpperCase()]??.25,mins=(e.t-now)/60000;const prox=mins<=60?1:mins<=360?(1-(mins-60)/300)*.85:mins<=1440?(1-(mins-360)/1080)*.35:0;best=Math.max(best,w*prox);}return clamp(best,0,1);}
+// ── EVENT AWARENESS ENGINE (Phase 1-3) ─────────────────────────────────────
+// Phase 1: Calendar proximity as conviction modifier (not signal source)
+// Phase 2: Post-event volatility window detection
+// Phase 3: Tier-1 event identification (NFP, FOMC, ECB have outsized impact)
+// Ref: Kakushadze & Serur Ch.19.5 — Trading on Economic Announcements
+function computeEventRisk(){
+  const now=Date.now();
+  const events=EventsFeed.get().map(e=>({...e,t:new Date(e.when).getTime()})).filter(e=>Number.isFinite(e.t));
+
+  // ── TIER-1 EVENT DETECTION: NFP, FOMC, ECB are category-defining events ──
+  const TIER1_PATTERNS=[
+    /non.?farm/i, /nfp/i, /employment.change/i,
+    /fed.*rate|fomc|federal.funds/i,
+    /ecb.*rate|ecb.*decision|european.central/i,
+    /cpi\b|inflation.rate/i,
+    /gdp\b|gross.domestic/i,
+    /retail.sales/i,
+  ];
+  function isTier1(eventTitle){
+    return TIER1_PATTERNS.some(p=>p.test(eventTitle||''));
+  }
+
+  // ── IMPACT WEIGHTS: Tier-1 HIGH events are 40% more impactful ──
+  function impactWeight(e){
+    const base = e.impact==='HIGH'?1.0:e.impact==='MED'?0.55:0.20;
+    const tier1Boost = isTier1(e.event) ? 0.40 : 0;
+    return Math.min(base + tier1Boost, 1.0);
+  }
+
+  // ── PROXIMITY DECAY: Sharp curve — full risk within 1hr, decays over 6hr ──
+  function proximityScore(minsUntil){
+    if(minsUntil<=0)return 0; // past event handled separately
+    if(minsUntil<=30)return 1.0;   // 30 min before = max risk
+    if(minsUntil<=60)return 0.92;  // 1hr = near-max
+    if(minsUntil<=120)return 0.70; // 2hr = elevated
+    if(minsUntil<=360)return 0.35 * (1 - (minsUntil-120)/240); // 2-6hr = decaying
+    if(minsUntil<=1440)return 0.10 * (1 - (minsUntil-360)/1080); // 6-24hr = background
+    return 0;
+  }
+
+  // ── POST-EVENT VOLATILITY WINDOW: events that JUST happened still cause elevated vol ──
+  function postEventScore(minsAfter, e){
+    if(minsAfter<0)return 0;
+    const w = impactWeight(e);
+    if(minsAfter<=15) return w * 0.80;  // First 15 min after release = very high
+    if(minsAfter<=60) return w * 0.50;  // Next hour = elevated
+    if(minsAfter<=120)return w * 0.20;  // 1-2hr after = fading
+    return 0;
+  }
+
+  let preEventRisk=0, postEventRisk=0;
+  let nextTier1=null, nextTier1Mins=Infinity;
+
+  for(const e of events){
+    const minsUntil=(e.t-now)/60000;
+
+    if(minsUntil>0){
+      // Upcoming event — pre-event risk
+      const risk = impactWeight(e) * proximityScore(minsUntil);
+      preEventRisk = Math.max(preEventRisk, risk);
+      // Track next Tier-1 event for display
+      if(isTier1(e.event) && minsUntil < nextTier1Mins){
+        nextTier1 = e;
+        nextTier1Mins = minsUntil;
+      }
+    } else {
+      // Past event — post-event volatility window
+      const minsAfter = -minsUntil;
+      if(minsAfter <= 120){
+        const risk = postEventScore(minsAfter, e);
+        postEventRisk = Math.max(postEventRisk, risk);
+      }
+    }
+  }
+
+  // Composite: max of pre-event and post-event risk
+  const composite = clamp(Math.max(preEventRisk, postEventRisk), 0, 1);
+
+  return composite;
+}
 function computeTx(){
   const oil=MacroFeed.get("OIL"),gold=MacroFeed.get("GOLD"),silv=MacroFeed.get("SILV"),usd=MacroFeed.get("USD"),eRisk=computeEventRisk();
   const gbp=MacroFeed.get("GBP"),aud=MacroFeed.get("AUD"),nzd=MacroFeed.get("NZD");
@@ -6795,7 +6923,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v57-living                              ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v58-event-arch                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
