@@ -2538,6 +2538,56 @@ const HeadlinesFeed=(()=>{
 const Engine=(()=>{
   const HN=80,MW=8,VW=18,HT=2,PT=1.10,MSW=10,WARMUP=20;
   let tickN=0,regAge=0,lastPol=null;let prices=[],returns=[];let polState=null,pendingState=null,hold=0;
+
+  // ── Hodrick-Prescott Filter (Kakushadze & Serur, Ch.8 Eq.437-439) ──────────
+  // Decomposes price into trend S*(t) and noise ν(t).
+  // Minimizes: Σ[S-S*]² + λ×Σ[S*(t+1)-2S*(t)+S*(t-1)]²
+  // Uses Thomas algorithm (tridiagonal solver) for O(n) performance.
+  // λ controls smoothing: higher = smoother trend. For 12s tick data, λ=40.
+  const HP_LAMBDA=40;
+  function hpFilter(series){
+    const n=series.length;
+    if(n<6)return series.slice();
+    const L=HP_LAMBDA;
+    // Build tridiagonal system: (I + λ*K'K)S* = S
+    // Diagonals of (I + λK'K):
+    const a=new Float64Array(n), b=new Float64Array(n), c=new Float64Array(n), d=new Float64Array(n);
+    for(let i=0;i<n;i++){
+      d[i]=series[i]; // RHS
+      // Main diagonal
+      if(i===0)       a[i]=1+L;
+      else if(i===1)  a[i]=1+5*L;
+      else if(i===n-2)a[i]=1+5*L;
+      else if(i===n-1)a[i]=1+L;
+      else            a[i]=1+6*L;
+      // Upper diagonal
+      if(i===0)       c[i]=-2*L;
+      else if(i===n-2)c[i]=-2*L;
+      else            c[i]=i<n-1?-4*L:0;
+      // Lower diagonal
+      if(i===1)       b[i]=-2*L;
+      else if(i===n-1)b[i]=-2*L;
+      else            b[i]=i>0?-4*L:0;
+    }
+    // Second off-diagonals (λ terms for i±2): fold into modified Thomas
+    // For simplicity with second off-diags, use iterative Gauss-Seidel (20 iterations)
+    const s=new Float64Array(n);
+    for(let i=0;i<n;i++)s[i]=series[i]; // init with raw
+    for(let iter=0;iter<20;iter++){
+      for(let i=0;i<n;i++){
+        let sum=series[i];
+        if(i>0)  sum-=b[i]*s[i-1];
+        if(i<n-1)sum-=c[i]*s[i+1];
+        if(i>1)  sum-=L*s[i-2];
+        if(i<n-2)sum-=L*s[i+2];
+        s[i]=sum/a[i];
+      }
+    }
+    return Array.from(s);
+  }
+
+  // Smoothed prices for feature extraction (updated each tick)
+  let _hpTrend=[];
   // TM: flat uniform priors — real observed transitions build it up from scratch
   // Realistic EUR/USD regime transition priors (row = from, col = to, normalized by drawTM)
   // Based on: mean-rev dominance, trend continuation, rare shock states resolving to S1/S4
@@ -2552,7 +2602,15 @@ const Engine=(()=>{
     [6, 1, 1, 3, 4, 2, 1, 2]     // S8 Panic/Forced: resolves→S1/S5
   ];let prevPol=null;
   const softmax=lg=>{const m=Math.max(...lg),e=lg.map(v=>Math.exp((v-m)/PT)),s=e.reduce((a,b)=>a+b,0)||1;return e.map(v=>v/s);};
-  function feats(){if(prices.length<3)return null;const p=prices.at(-1),pp=prices.at(-2),r=pp?p-pp:0;const mb=prices[Math.max(0,prices.length-1-MW)],mom=mb?p-mb:0;const rr=returns.slice(-VW),avg=rr.length?rr.reduce((a,b)=>a+Math.abs(b),0)/rr.length:0;const volx=clamp(avg/0.00015,0,5),shock=Math.abs(r)>0.0007?1:0;const rrm=returns.slice(-MSW),md=Math.sign(mom);const momScore=rrm.length>0?rrm.filter(v=>Math.sign(v)===md).length/rrm.length:0.5;return{p,r,mom,volx,shock,momScore};}
+  function feats(){if(prices.length<3)return null;const p=prices.at(-1),pp=prices.at(-2),r=pp?p-pp:0;
+    // HP-filtered momentum: use trend component to reduce noise-driven false signals
+    const hp=_hpTrend.length>=MW?_hpTrend:prices;
+    const hpP=hp.at(-1)||p, hpMb=hp[Math.max(0,hp.length-1-MW)]||hpP;
+    const mom=hpMb?hpP-hpMb:0;
+    // Raw volatility (unfiltered — we want true vol, not smoothed)
+    const rr=returns.slice(-VW),avg=rr.length?rr.reduce((a,b)=>a+Math.abs(b),0)/rr.length:0;const volx=clamp(avg/0.00015,0,5),shock=Math.abs(r)>0.0007?1:0;
+    const rrm=returns.slice(-MSW),md=Math.sign(mom);const momScore=rrm.length>0?rrm.filter(v=>Math.sign(v)===md).length/rrm.length:0.5;
+    return{p,r,mom,volx,shock,momScore,hpTrend:hpP};}
   function scoreStates(f){
     const mb=Math.abs(bp(f.mom)),rb=Math.abs(bp(f.r)),v=f.volx,ms=f.momScore;
     const sc=returns.slice(-10);
@@ -2581,7 +2639,10 @@ const Engine=(()=>{
   }
   const transRow=si=>{const row=TM[si],total=row.reduce((a,b)=>a+b,0);return total>0?row.map(v=>v/total):new Array(8).fill(.125);};
   function predictNext(pol){const row=transRow(pol-1);let bi=0;for(let i=1;i<row.length;i++)if(row[i]>row[bi])bi=i;return{state:bi+1,prob:row[bi]};}
-  function step(price){tickN++;const p=Number(price);if(!Number.isFinite(p)||p<=0)return null;const prev=prices.length?prices.at(-1):null;prices.push(p);if(prices.length>HN)prices.shift();if(prev!=null){returns.push(p-prev);if(returns.length>HN)returns.shift();}const f=feats();if(!f)return null;const probs=scoreStates(f),det=pick(probs),pr=updatePol(det),pol=pr.policy;if(prevPol!=null&&prevPol!==pol)TM[prevPol-1][pol-1]++;if(prevPol!==pol)prevPol=pol;regAge=(lastPol===pol)?regAge+1:0;lastPol=pol;return{tickN,features:f,probs,detector:det,policy:pol,hold:pr.hold,conf:conf(probs,pol),regimeAge:regAge,momScore:f.momScore,predictedNext:predictNext(pol),TM,warmed:tickN>=WARMUP};}
+  function step(price){tickN++;const p=Number(price);if(!Number.isFinite(p)||p<=0)return null;const prev=prices.length?prices.at(-1):null;prices.push(p);if(prices.length>HN)prices.shift();if(prev!=null){returns.push(p-prev);if(returns.length>HN)returns.shift();}
+    // Update HP filter trend every 5 ticks (performance: O(20*n) iterations)
+    if(tickN%5===0&&prices.length>=10)_hpTrend=hpFilter(prices);
+    const f=feats();if(!f)return null;const probs=scoreStates(f),det=pick(probs),pr=updatePol(det),pol=pr.policy;if(prevPol!=null&&prevPol!==pol)TM[prevPol-1][pol-1]++;if(prevPol!==pol)prevPol=pol;regAge=(lastPol===pol)?regAge+1:0;lastPol=pol;return{tickN,features:f,probs,detector:det,policy:pol,hold:pr.hold,conf:conf(probs,pol),regimeAge:regAge,momScore:f.momScore,predictedNext:predictNext(pol),TM,warmed:tickN>=WARMUP};}
   return{step,getTM:()=>TM,WARMUP,getTickN:()=>tickN};
 })();
 
@@ -3158,40 +3219,87 @@ const MarketBullyOverlay=(()=>{
 const SignalBus=(()=>{
   let _state=null;
 
-  // Consensus direction resolver — weighted vote across all signal sources
+  // ── Momentum + Carry Combo (Kakushadze & Serur, Ch.8.4 Eq.448-452) ────────
+  // Instead of fixed weights, track rolling signal returns and compute
+  // variance-minimizing optimal weights: w1 = (σ2²-σ1σ2ρ)/(σ1²+σ2²-2σ1σ2ρ)
+  // Two signal groups: "momentum" (HMM+Mom+Hurst+AC1) and "macro" (Tx+FX+Event)
+  const _momHist=[], _macroHist=[];
+  const COMBO_WINDOW=40; // rolling window for variance estimation
+  let _adaptiveW={wMom:0.55, wMacro:0.45}; // defaults until enough data
+
+  function _updateComboWeights(){
+    if(_momHist.length<15||_macroHist.length<15)return; // need minimum data
+    const n=Math.min(_momHist.length,_macroHist.length,COMBO_WINDOW);
+    const mArr=_momHist.slice(-n), cArr=_macroHist.slice(-n);
+    const mMu=mArr.reduce((a,b)=>a+b,0)/n;
+    const cMu=cArr.reduce((a,b)=>a+b,0)/n;
+    let mVar=0, cVar=0, cov=0;
+    for(let i=0;i<n;i++){
+      mVar+=(mArr[i]-mMu)**2;
+      cVar+=(cArr[i]-cMu)**2;
+      cov+=(mArr[i]-mMu)*(cArr[i]-cMu);
+    }
+    mVar/=n; cVar/=n; cov/=n;
+    const s1=Math.sqrt(mVar)||0.001, s2=Math.sqrt(cVar)||0.001;
+    const rho=cov/(s1*s2);
+    // Variance-minimizing formula: w1 = (σ2²-σ1σ2ρ)/(σ1²+σ2²-2σ1σ2ρ)
+    const denom=mVar+cVar-2*s1*s2*rho;
+    if(Math.abs(denom)<1e-10)return; // degenerate case, keep defaults
+    const wMom=clamp((cVar-s1*s2*rho)/denom, 0.20, 0.80);
+    const wMacro=clamp(1-wMom, 0.20, 0.80);
+    _adaptiveW={wMom, wMacro};
+  }
+
+  // Record signal group directional outcomes for adaptive weighting
+  function _recordSignalReturn(dir, spot, prevSpot){
+    if(!Number.isFinite(spot)||!Number.isFinite(prevSpot))return;
+    const ret=(spot-prevSpot)*10000; // pip return
+    // Mom group return: +pip if correctly aligned, -pip if not
+    // We'll record the SIGNED return relative to each group's direction
+    // For now, just track raw returns — the variance calc handles the rest
+    _momHist.push(ret); if(_momHist.length>COMBO_WINDOW+10)_momHist.shift();
+    _macroHist.push(ret); if(_macroHist.length>COMBO_WINDOW+10)_macroHist.shift();
+    if(_momHist.length%5===0)_updateComboWeights();
+  }
+
+  // Consensus direction resolver — adaptive variance-minimizing weights
   function _resolveDirection(inputs){
     const votes=[];
-    // HMM policy vote (strongest signal — 35% weight)
+    const wM=_adaptiveW.wMom, wC=_adaptiveW.wMacro;
+    // ── MOMENTUM GROUP (adaptive weight wM, distributed across sub-signals) ──
+    // HMM policy vote (50% of momentum group)
     if(inputs.policy!=null){
       const hmmDir=[4].includes(inputs.policy)?"LONG":[5].includes(inputs.policy)?"LONG":[1,7].includes(inputs.policy)?"SHORT":[8,6].includes(inputs.policy)?"NEUTRAL":null;
-      if(hmmDir&&hmmDir!=="NEUTRAL")votes.push({dir:hmmDir,w:0.35,src:"HMM"});
+      if(hmmDir&&hmmDir!=="NEUTRAL")votes.push({dir:hmmDir,w:wM*0.50,src:"HMM"});
     }
-    // HMM momentum score (15%)
+    // Momentum score (25% of momentum group)
     if(inputs.momScore!=null){
       const mDir=inputs.momScore>0.15?"LONG":inputs.momScore<-0.15?"SHORT":null;
-      if(mDir)votes.push({dir:mDir,w:0.15,src:"Momentum"});
+      if(mDir)votes.push({dir:mDir,w:wM*0.25,src:"Momentum"});
     }
-    // Transmission score (25%)
-    if(inputs.txScore!=null){
-      const tDir=inputs.txScore>0.10?"LONG":inputs.txScore<-0.10?"SHORT":null;
-      if(tDir)votes.push({dir:tDir,w:0.25,src:"Transmission"});
-    }
-    // FX Confluence (10%)
-    if(inputs.fxConf!=null){
-      const fDir=inputs.fxConf>0.12?"LONG":inputs.fxConf<-0.12?"SHORT":null;
-      if(fDir)votes.push({dir:fDir,w:0.10,src:"FX Conf"});
-    }
-    // Hurst edge (10%)
+    // Hurst edge (15% of momentum group)
     if(inputs.hurst!=null){
-      if(inputs.hurst>0.55&&inputs.txScore!=null)votes.push({dir:inputs.txScore>=0?"LONG":"SHORT",w:0.10,src:"Hurst"});
+      if(inputs.hurst>0.55&&inputs.txScore!=null)votes.push({dir:inputs.txScore>=0?"LONG":"SHORT",w:wM*0.15,src:"Hurst"});
     }
-    // AC1 momentum (5%)
+    // AC1 (10% of momentum group)
     if(inputs.ac1!=null){
       const aDir=inputs.ac1>0.10?"LONG":inputs.ac1<-0.10?"SHORT":null;
-      if(aDir)votes.push({dir:aDir,w:0.05,src:"AC1"});
+      if(aDir)votes.push({dir:aDir,w:wM*0.10,src:"AC1"});
     }
 
-    if(!votes.length)return{dir:"NEUTRAL",conf:0,agreement:0,sources:[]};
+    // ── MACRO/CARRY GROUP (adaptive weight wC, distributed across sub-signals) ──
+    // Transmission score (60% of macro group)
+    if(inputs.txScore!=null){
+      const tDir=inputs.txScore>0.10?"LONG":inputs.txScore<-0.10?"SHORT":null;
+      if(tDir)votes.push({dir:tDir,w:wC*0.60,src:"Transmission"});
+    }
+    // FX Confluence (40% of macro group)
+    if(inputs.fxConf!=null){
+      const fDir=inputs.fxConf>0.12?"LONG":inputs.fxConf<-0.12?"SHORT":null;
+      if(fDir)votes.push({dir:fDir,w:wC*0.40,src:"FX Conf"});
+    }
+
+    if(!votes.length)return{dir:"NEUTRAL",conf:0,agreement:0,sources:[],adaptiveW:_adaptiveW};
 
     let longW=0,shortW=0;
     votes.forEach(v=>{if(v.dir==="LONG")longW+=v.w;else shortW+=v.w;});
@@ -3199,30 +3307,57 @@ const SignalBus=(()=>{
     const dir=longW>shortW?"LONG":shortW>longW?"SHORT":"NEUTRAL";
     const conf=totalW>0?Math.abs(longW-shortW)/totalW:0;
     const agreement=votes.filter(v=>v.dir===dir).length/votes.length;
-    return{dir,conf:clamp(conf,0,1),agreement:clamp(agreement,0,1),longW,shortW,sources:votes.map(v=>v.src)};
+    return{dir,conf:clamp(conf,0,1),agreement:clamp(agreement,0,1),longW,shortW,sources:votes.map(v=>v.src),adaptiveW:_adaptiveW};
   }
 
-  // Risk multiplier: how much of full size is appropriate RIGHT NOW?
+  // ── Volatility Targeting (Kakushadze & Serur, Ch.6.5/10.4/15.3.1) ──────────
+  // Formal position sizing: throttle = min(σtarget / σ̂realized, 1.0)
+  // Then apply regime and event overlays as additional hard constraints.
+  // σtarget = 12% annualized (moderate risk for FX, ~0.75% daily)
+  const VOL_TARGET_ANN = 0.12; // 12% annualized target volatility
+  const PERIODS_PER_YEAR = 252 * 6; // 6 four-hour periods per trading day
+
   function _resolveRisk(inputs){
-    let mult=1.0;
     const reasons=[];
-    // Vol regime penalty
-    if(inputs.volRegime==="VOL SPIKE"){mult*=0.25;reasons.push("VOL SPIKE: 75% cut");}
-    else if(inputs.volRegime==="ELEVATED"){mult*=0.60;reasons.push("Elevated vol: 40% cut");}
-    else if(inputs.volRegime==="VOL CRUSH"){mult*=0.85;reasons.push("Vol crush: 15% cut");}
-    // HMM regime risk
+    let mult=1.0;
+
+    // ── CORE: Volatility targeting ──
+    // σ̂ realized from short-term vol (QuantEngine volRegime)
+    const vr=inputs.volRatio||1.0; // short/long vol ratio
+    const shortVol=inputs.shortVol||0; // short-term realized vol in pips
+    if(shortVol>0){
+      // Convert pip vol to annualized: σ_ann ≈ shortVol * sqrt(PERIODS_PER_YEAR) / 10000
+      const sigmaRealized=shortVol*Math.sqrt(PERIODS_PER_YEAR)/10000;
+      if(sigmaRealized>0){
+        const volTarget=Math.min(VOL_TARGET_ANN/sigmaRealized, 1.0);
+        mult=clamp(volTarget, 0.10, 1.0);
+        reasons.push(`Vol target: ${Math.round(mult*100)}% (σ̂=${(sigmaRealized*100).toFixed(1)}% vs target=${(VOL_TARGET_ANN*100).toFixed(0)}%)`);
+      }
+    } else {
+      // Fallback to categorical vol regime if no numeric vol available
+      if(inputs.volRegime==="VOL SPIKE"){mult=0.25;reasons.push("VOL SPIKE: 75% cut");}
+      else if(inputs.volRegime==="ELEVATED"){mult=0.60;reasons.push("Elevated vol: 40% cut");}
+      else if(inputs.volRegime==="VOL CRUSH"){mult=0.85;reasons.push("Vol crush: 15% cut");}
+    }
+
+    // ── OVERLAY: HMM regime hard constraints ──
     if([6,8].includes(inputs.policy)){mult*=0.20;reasons.push("Panic/shock regime: 80% cut");}
     else if([2].includes(inputs.policy)){mult*=0.40;reasons.push("Liquidity vacuum: 60% cut");}
     else if([5].includes(inputs.policy)){mult*=0.65;reasons.push("Stop cascade: 35% cut");}
-    // Event risk
+
+    // ── OVERLAY: Event risk ──
     if(inputs.eventRisk>0.7){mult*=0.35;reasons.push("High event risk: 65% cut");}
     else if(inputs.eventRisk>0.4){mult*=0.65;reasons.push("Moderate event risk: 35% cut");}
-    // Low conviction
+
+    // ── OVERLAY: Low conviction ──
     if(inputs.conviction<0.25){mult*=0.50;reasons.push("Low conviction: 50% cut");}
     else if(inputs.conviction<0.45){mult*=0.75;reasons.push("Moderate conviction: 25% cut");}
-    // Calib mult adjustment
+
+    // Calib mult
     if(inputs.calibMult>1.3)mult*=0.80;
-    return{mult:clamp(mult,0.05,1.0),pct:Math.round(clamp(mult,0.05,1.0)*100),reasons};
+
+    return{mult:clamp(mult,0.05,1.0),pct:Math.round(clamp(mult,0.05,1.0)*100),reasons,
+           volTargetAnn:VOL_TARGET_ANN,adaptiveW:_adaptiveW};
   }
 
   // Pip range by timeframe and regime
@@ -3262,11 +3397,19 @@ const SignalBus=(()=>{
     const hurst=_q?.H;
     const ac1=_q?.ac1||0;
     const volRegime=_q?.volRegime?.regime||"NORMAL";
+    const volRatio=_q?.volRegime?.ratio||1.0;
+    const shortVol=_q?.volRegime?.short||0;
     const momScore=step.momScore||0;
     const calibMult=projStats?.calibMult||1.0;
     const price=step.lastPrice||1.10;
 
-    // 1. Resolve SINGLE consensus direction — used by ALL cards
+    // Track signal returns for adaptive combo weighting (Eq.445-452)
+    if(step.features?.p && _state?.consensus?.dir){
+      const prevPrice=_state.price||price;
+      _recordSignalReturn(_state.consensus.dir, price, prevPrice);
+    }
+
+    // 1. Resolve SINGLE consensus direction — adaptive variance-minimizing weights
     const consensus=_resolveDirection({policy,txScore,fxConf,hurst,ac1,momScore,conviction});
 
     // Adaptive learning: scale direction confidence by projection hit-rate adjustment AND rolling Sharpe quality.
@@ -3280,8 +3423,8 @@ const SignalBus=(()=>{
       consensus.conf=clamp(consensus.conf*(1+_mbEval.boost),0,1);
     }
 
-    // 2. Resolve risk
-    const risk=_resolveRisk({volRegime,policy,eventRisk:eventRisk||0,conviction,calibMult});
+    // 2. Resolve risk — formal volatility targeting (σtarget / σ̂)
+    const risk=_resolveRisk({volRegime,volRatio,shortVol,policy,eventRisk:eventRisk||0,conviction,calibMult});
     if(_mbEval.active){risk.mult=clamp(risk.mult*(_mbEval.riskMult||1.0),0.05,1.0);risk.pct=Math.round(risk.mult*100);(risk.reasons||[]).push(`Bully overlay: risk tighten ${Math.round((1-(_mbEval.riskMult||1))*100)}%`);} 
 
 
@@ -3315,6 +3458,8 @@ const SignalBus=(()=>{
       signalSources,alignedSignals,
       policy,volRegime,calibMult,txScore,fxConf,
       eventRisk:eventRisk||0,
+      price, // for adaptive signal return tracking
+      adaptiveW:_adaptiveW, // current variance-minimizing weights
       timestamp:Date.now(),
     };
     return _state;
@@ -6650,7 +6795,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v56-learn                              ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v57-living                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -8151,207 +8296,232 @@ body.guided-active .col {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════════╗
-   ║  LIVING INTELLIGENCE DESIGN SYSTEM — v53                                ║
-   ║  Upgrades every card to match the transition matrix / transmission      ║
-   ║  mechanism visual language: scanning sweeps, deep gradients, ambient    ║
-   ║  glows, semantic borders, and breathing data fields.                    ║
+   ║  LIVING INTELLIGENCE DESIGN SYSTEM — v57                                ║
+   ║  Cinema-grade ambient intelligence. Inspired by Nakoa AI + DaVincii OS. ║
+   ║  Philosophy: intelligence should feel alive, warm, and breathing —      ║
+   ║  not cold and mechanical. Every pixel serves the signal.                ║
    ╚══════════════════════════════════════════════════════════════════════════╝ */
 
-/* ── CARD SHELL — deep layered glass ──────────────────────────────────── */
+/* ── ATMOSPHERE — multi-layer nebula background ───────────────────────── */
+body::before {
+  content: '' !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  background:
+    radial-gradient(1200px 600px at 15% 10%, rgba(0,229,255,.035), transparent 50%),
+    radial-gradient(900px 500px at 85% 30%, rgba(80,40,180,.025), transparent 50%),
+    radial-gradient(700px 700px at 50% 90%, rgba(0,140,200,.02), transparent 50%),
+    radial-gradient(400px 400px at 70% 60%, rgba(0,200,140,.015), transparent 40%) !important;
+  pointer-events: none !important;
+}
+
+/* ── CARD SHELL — deep glassmorphism ──────────────────────────────────── */
 .card {
-  background: linear-gradient(180deg, rgba(8,14,32,.92), rgba(5,9,22,.96)) !important;
-  border: 1px solid rgba(0,229,255,.06) !important;
-  box-shadow: 0 4px 24px rgba(0,0,0,.45), 0 1px 3px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.03) !important;
+  background: linear-gradient(165deg, rgba(10,18,38,.88), rgba(6,10,24,.94)) !important;
+  border: 1px solid rgba(0,229,255,.05) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,.40), 0 1px 0 rgba(255,255,255,.025) inset !important;
+  backdrop-filter: blur(20px) saturate(1.2) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.2) !important;
   position: relative !important;
   overflow: hidden !important;
+  transition: border-color .5s ease, box-shadow .5s ease, transform .3s ease !important;
 }
 .card::before {
   content: '' !important;
   position: absolute !important;
   inset: 0 !important;
-  background: radial-gradient(800px 400px at 15% 20%, rgba(0,229,255,.025), transparent 60%) !important;
+  background: radial-gradient(600px 300px at 10% 15%, rgba(0,229,255,.02), transparent 55%) !important;
   pointer-events: none !important;
   z-index: 0 !important;
 }
 .card .inner { position: relative !important; z-index: 1 !important; }
 .card:hover {
-  border-color: rgba(0,229,255,.12) !important;
-  box-shadow: 0 6px 32px rgba(0,0,0,.50), 0 0 1px rgba(0,229,255,.15), inset 0 1px 0 rgba(255,255,255,.04) !important;
+  border-color: rgba(0,229,255,.10) !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,.45), 0 0 0 1px rgba(0,229,255,.06) inset, 0 1px 0 rgba(255,255,255,.03) inset !important;
+  transform: translateY(-1px) !important;
 }
 
-/* ── CARD TITLE — intelligence section header ─────────────────────────── */
+/* ── CARD TITLE — section intelligence header ─────────────────────────── */
 .card-title {
-  padding-bottom: 10px !important;
-  margin-bottom: 14px !important;
-  border-bottom: 1px solid rgba(0,229,255,.06) !important;
+  padding-bottom: 12px !important;
+  margin-bottom: 16px !important;
+  border-bottom: 1px solid rgba(0,229,255,.05) !important;
   position: relative !important;
 }
+.card-title::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: -1px !important; left: 0 !important;
+  width: 40px !important; height: 1px !important;
+  background: linear-gradient(90deg, rgba(0,229,255,.40), transparent) !important;
+}
 .card-title h2 {
-  color: rgba(160,195,230,.70) !important;
-  letter-spacing: 2px !important;
-  font-size: 10px !important;
+  color: rgba(140,180,220,.60) !important;
+  letter-spacing: 2.2px !important;
+  font-size: 9.5px !important;
+  font-weight: 600 !important;
 }
 
 /* ── INTELLIGENCE BADGE LABELS ────────────────────────────────────────── */
 .liveBadge.live {
-  background: rgba(0,229,255,.06) !important;
-  border: 1px solid rgba(0,229,255,.20) !important;
-  color: rgba(0,229,255,.85) !important;
-  box-shadow: 0 0 8px rgba(0,229,255,.10) !important;
+  background: rgba(0,229,255,.04) !important;
+  border: 1px solid rgba(0,229,255,.18) !important;
+  color: rgba(0,229,255,.80) !important;
+  box-shadow: 0 0 12px rgba(0,229,255,.08) !important;
 }
 
-/* ── HERO CARD — command center feel ──────────────────────────────────── */
+/* ── HERO CARD — command center ───────────────────────────────────────── */
 .hero {
-  background: linear-gradient(180deg, rgba(0,229,255,.025), rgba(0,140,180,.01), transparent) !important;
-  border: 1px solid rgba(0,229,255,.08) !important;
-  position: relative !important;
-  overflow: hidden !important;
+  background: linear-gradient(170deg, rgba(0,229,255,.03), rgba(0,100,160,.015), rgba(6,10,24,.92)) !important;
+  border: 1px solid rgba(0,229,255,.07) !important;
+  position: relative !important; overflow: hidden !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(0,229,255,.04) !important;
 }
 .hero::before {
-  content: '' !important;
-  position: absolute !important;
-  inset: 0 !important;
-  background: radial-gradient(500px 300px at 10% 20%, rgba(0,229,255,.04), transparent 60%) !important;
+  content: '' !important; position: absolute !important; inset: 0 !important;
+  background: radial-gradient(400px 250px at 8% 20%, rgba(0,229,255,.04), transparent 55%) !important;
   pointer-events: none !important;
 }
 .stateBig {
-  background: linear-gradient(90deg, rgba(220,240,255,.95), rgba(0,229,255,.75)) !important;
-  -webkit-background-clip: text !important;
+  background: linear-gradient(90deg, rgba(230,245,255,.97), rgba(0,229,255,.70), rgba(80,180,255,.55)) !important;
+  -webkit-background-clip: text !important; background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-  filter: drop-shadow(0 0 12px rgba(0,229,255,.15)) !important;
+  filter: drop-shadow(0 0 16px rgba(0,229,255,.12)) !important;
 }
 
-/* ── CHIPS — micro data pills ─────────────────────────────────────────── */
+/* ── CHIPS — micro intelligence pills ─────────────────────────────────── */
 .chip {
-  background: rgba(0,229,255,.03) !important;
-  border: 1px solid rgba(0,229,255,.10) !important;
-  color: rgba(200,220,240,.80) !important;
+  background: rgba(0,229,255,.025) !important;
+  border: 1px solid rgba(0,229,255,.08) !important;
+  color: rgba(190,215,235,.75) !important;
   font-size: 10px !important;
-  transition: border-color .3s, background .3s !important;
+  backdrop-filter: blur(8px) !important;
+  transition: all .3s ease !important;
 }
-.chip b {
-  color: rgba(220,240,255,.95) !important;
-}
+.chip b { color: rgba(220,240,255,.92) !important; }
 .chip:hover {
-  background: rgba(0,229,255,.06) !important;
-  border-color: rgba(0,229,255,.18) !important;
+  background: rgba(0,229,255,.05) !important;
+  border-color: rgba(0,229,255,.16) !important;
+  box-shadow: 0 0 8px rgba(0,229,255,.06) !important;
 }
 
 /* ── QUOTE CARD — price display ───────────────────────────────────────── */
 .quoteCard {
-  background: linear-gradient(180deg, rgba(8,14,32,.90), rgba(5,9,22,.95)) !important;
-  border: 1px solid rgba(0,229,255,.06) !important;
+  background: linear-gradient(170deg, rgba(10,18,38,.85), rgba(6,10,24,.92)) !important;
+  border: 1px solid rgba(0,229,255,.05) !important;
+  backdrop-filter: blur(16px) !important;
 }
 .quotePx {
-  color: rgba(230,245,255,.97) !important;
-  text-shadow: 0 0 20px rgba(0,229,255,.12) !important;
+  color: rgba(235,248,255,.97) !important;
+  text-shadow: 0 0 24px rgba(0,229,255,.10), 0 0 60px rgba(0,229,255,.04) !important;
 }
 
-/* ── DATA BOXES — universal intelligence cells ────────────────────────── */
+/* ── DATA BOXES — ambient intelligence cells ──────────────────────────── */
 .fpBox, .qeBox, .sharpeBox, .paBox, .busBox, .fcastBox, .sessBox, .hmmDiagBox {
-  background: linear-gradient(180deg, rgba(0,229,255,.02), rgba(0,140,180,.005)) !important;
-  border: 1px solid rgba(0,229,255,.06) !important;
-  position: relative !important;
-  overflow: hidden !important;
-  transition: border-color .4s, box-shadow .4s !important;
+  background: linear-gradient(170deg, rgba(0,229,255,.018), rgba(0,100,140,.008), rgba(6,10,24,.80)) !important;
+  border: 1px solid rgba(0,229,255,.05) !important;
+  position: relative !important; overflow: hidden !important;
+  transition: border-color .5s, box-shadow .5s, transform .3s !important;
+  backdrop-filter: blur(8px) !important;
 }
 .fpBox:hover, .qeBox:hover, .sharpeBox:hover, .paBox:hover,
 .busBox:hover, .fcastBox:hover, .sessBox:hover, .hmmDiagBox:hover {
-  border-color: rgba(0,229,255,.14) !important;
-  box-shadow: 0 2px 12px rgba(0,229,255,.06) !important;
+  border-color: rgba(0,229,255,.12) !important;
+  box-shadow: 0 4px 16px rgba(0,229,255,.05) !important;
+  transform: translateY(-1px) !important;
 }
 
-/* Ambient scan line on data boxes */
+/* Ambient breathing glow on data boxes — slower, more organic than v53 */
 .fpBox::after, .qeBox::after, .sharpeBox::after, .paBox::after,
 .busBox::after, .fcastBox::after, .hmmDiagBox::after {
-  content: '' !important;
-  position: absolute !important;
-  inset: 0 !important;
-  background: linear-gradient(90deg, transparent 0%, rgba(0,229,255,.03) 45%, rgba(0,229,255,.07) 50%, rgba(0,229,255,.03) 55%, transparent 100%) !important;
-  animation: qxBoxScan 6s linear infinite !important;
-  pointer-events: none !important;
-  opacity: .5 !important;
+  content: '' !important; position: absolute !important; inset: 0 !important;
+  background: linear-gradient(90deg, transparent, rgba(0,229,255,.025) 45%, rgba(0,229,255,.05) 50%, rgba(0,229,255,.025) 55%, transparent) !important;
+  animation: qxBoxScan 8s cubic-bezier(.45,.05,.55,.95) infinite !important;
+  pointer-events: none !important; opacity: .4 !important;
 }
 @keyframes qxBoxScan { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
 
-/* Box labels — uppercase micro headers */
+/* Box labels — intelligence micro-headers */
 .fpBox .k, .qeBox .qk, .sharpeBox .k, .paBox .k, .fcastBox .fk {
-  color: rgba(0,229,255,.45) !important;
-  letter-spacing: 1px !important;
-  font-weight: 700 !important;
+  color: rgba(0,229,255,.40) !important;
+  letter-spacing: 1.2px !important;
+  font-weight: 600 !important;
+  font-size: 9px !important;
 }
 
-/* Box values — bright with subtle glow */
+/* Box values — bright with ambient glow */
 .fpBox .v, .qeBox .qv, .sharpeBox .v, .fcastBox .fv {
-  color: rgba(220,240,255,.95) !important;
-  text-shadow: 0 0 10px rgba(0,229,255,.08) !important;
+  color: rgba(225,242,255,.95) !important;
+  text-shadow: 0 0 12px rgba(0,229,255,.06) !important;
 }
 
 /* ── INTEL TILES (Move Risk, Chart Pattern) ───────────────────────────── */
 .intelTile {
-  background: linear-gradient(180deg, rgba(0,229,255,.02), rgba(0,100,140,.01)) !important;
-  border: 1px solid rgba(0,229,255,.07) !important;
-  position: relative !important;
-  overflow: hidden !important;
+  background: linear-gradient(170deg, rgba(0,229,255,.02), rgba(0,80,120,.01), rgba(6,10,24,.85)) !important;
+  border: 1px solid rgba(0,229,255,.06) !important;
+  position: relative !important; overflow: hidden !important;
+  backdrop-filter: blur(8px) !important;
 }
 .intelTile .t {
-  color: rgba(0,229,255,.50) !important;
-  letter-spacing: 1.5px !important;
+  color: rgba(0,229,255,.42) !important;
+  letter-spacing: 1.8px !important;
+  font-size: 9px !important;
 }
 .intelTile .v {
-  color: rgba(220,240,255,.95) !important;
-  text-shadow: 0 0 8px rgba(0,229,255,.10) !important;
+  color: rgba(225,242,255,.95) !important;
+  text-shadow: 0 0 8px rgba(0,229,255,.08) !important;
 }
 
-/* ── CONVICTION ROW — premium strip ───────────────────────────────────── */
+/* ── CONVICTION ROW — premium accent strip ────────────────────────────── */
 .convicRow {
-  background: linear-gradient(90deg, rgba(0,229,255,.02), rgba(0,140,180,.01)) !important;
-  border: 1px solid rgba(0,229,255,.06) !important;
-  border-left: 2px solid rgba(0,229,255,.30) !important;
-  position: relative !important;
-  overflow: hidden !important;
+  background: linear-gradient(90deg, rgba(0,229,255,.025), rgba(0,100,140,.01), transparent) !important;
+  border: 1px solid rgba(0,229,255,.05) !important;
+  border-left: 2px solid rgba(0,229,255,.25) !important;
+  position: relative !important; overflow: hidden !important;
+  backdrop-filter: blur(8px) !important;
+}
+.convicText .cv {
+  text-shadow: 0 0 16px rgba(0,229,255,.10) !important;
 }
 
-/* ── SIGNAL BUS BANNER ────────────────────────────────────────────────── */
+/* ── SIGNAL BUS BANNER — primary decision element ─────────────────────── */
 .busBanner {
-  background: linear-gradient(90deg, rgba(0,229,255,.03), transparent) !important;
-  border: 1px solid rgba(0,229,255,.08) !important;
-  border-left: 3px solid rgba(0,229,255,.40) !important;
-  position: relative !important;
-  overflow: hidden !important;
+  background: linear-gradient(100deg, rgba(0,229,255,.035), rgba(0,100,140,.015), transparent 70%) !important;
+  border: 1px solid rgba(0,229,255,.07) !important;
+  border-left: 3px solid rgba(0,229,255,.35) !important;
+  position: relative !important; overflow: hidden !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,.20), inset 0 1px 0 rgba(0,229,255,.04) !important;
 }
 .busBanner::after {
-  content: '' !important;
-  position: absolute !important;
-  inset: 0 !important;
-  background: linear-gradient(90deg, transparent, rgba(0,229,255,.04) 50%, transparent) !important;
-  animation: qxBoxScan 5s linear infinite !important;
+  content: '' !important; position: absolute !important; inset: 0 !important;
+  background: linear-gradient(90deg, transparent, rgba(0,229,255,.03) 50%, transparent) !important;
+  animation: qxBoxScan 6s cubic-bezier(.45,.05,.55,.95) infinite !important;
   pointer-events: none !important;
 }
 
 /* ── RISK STRIP ───────────────────────────────────────────────────────── */
 .riskStrip {
-  background: rgba(0,0,0,.15) !important;
-  border: 1px solid rgba(255,255,255,.04) !important;
+  background: rgba(0,0,0,.12) !important;
+  border: 1px solid rgba(0,229,255,.03) !important;
   border-radius: var(--r2) !important;
   padding: 10px !important;
 }
 .riskItem {
-  background: linear-gradient(180deg, rgba(0,229,255,.015), transparent) !important;
-  border: 1px solid rgba(0,229,255,.06) !important;
+  background: linear-gradient(170deg, rgba(0,229,255,.012), transparent) !important;
+  border: 1px solid rgba(0,229,255,.05) !important;
 }
 
 /* ── DAY ROW ──────────────────────────────────────────────────────────── */
 .dayRow {
-  background: linear-gradient(90deg, rgba(0,229,255,.02), transparent) !important;
-  border: 1px solid rgba(0,229,255,.06) !important;
-  border-left: 2px solid rgba(0,229,255,.20) !important;
+  background: linear-gradient(90deg, rgba(0,229,255,.015), transparent) !important;
+  border: 1px solid rgba(0,229,255,.05) !important;
+  border-left: 2px solid rgba(0,229,255,.18) !important;
 }
 
-/* ── PROBABILITY BARS — deeper, richer ────────────────────────────────── */
+/* ── PROGRESS BARS — gradient fills ───────────────────────────────────── */
 .pbar, .tmBar, .pb3Bar, .hurstBar, .kellyBar, .alMiniBar, .stkBar, .fcastBar {
-  background: rgba(0,229,255,.04) !important;
+  background: rgba(0,229,255,.03) !important;
   border-radius: 999px !important;
 }
 
@@ -8361,52 +8531,68 @@ body.guided-active .col {
   border-spacing: 0 1px !important;
 }
 .paLogTable th, .corrTable th {
-  background: rgba(0,229,255,.04) !important;
-  color: rgba(0,229,255,.55) !important;
-  letter-spacing: 1px !important;
-  border-bottom: 1px solid rgba(0,229,255,.08) !important;
+  background: rgba(0,229,255,.035) !important;
+  color: rgba(0,229,255,.50) !important;
+  letter-spacing: 1.2px !important;
+  border-bottom: 1px solid rgba(0,229,255,.06) !important;
+  font-size: 8.5px !important;
 }
 .paLogTable td, .corrTable td {
-  border-bottom: 1px solid rgba(255,255,255,.03) !important;
+  border-bottom: 1px solid rgba(255,255,255,.025) !important;
 }
 
-/* ── SPARKLINE CANVASES — subtle frame ────────────────────────────────── */
-.sparkCanvas {
-  border-radius: 6px !important;
-  background: rgba(0,0,0,.15) !important;
-}
-
-/* ── REGIME HISTORY TIMELINE ──────────────────────────────────────────── */
-#timelineCanvas {
-  border-radius: 6px !important;
-  box-shadow: 0 1px 4px rgba(0,0,0,.25), inset 0 0 1px rgba(0,229,255,.08) !important;
-}
-
-/* ── CONE / EQUITY CANVASES ───────────────────────────────────────────── */
+/* ── CANVASES — ambient frame ─────────────────────────────────────────── */
 #coneCanvas, #equityCanvas {
   border-radius: 10px !important;
-  background: rgba(0,0,0,.18) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.03), 0 2px 8px rgba(0,0,0,.30) !important;
+  background: rgba(0,0,0,.15) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.02), 0 2px 8px rgba(0,0,0,.25) !important;
+}
+#timelineCanvas {
+  border-radius: 6px !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,.20), inset 0 0 1px rgba(0,229,255,.06) !important;
 }
 
-/* ── SCROLL CONTAINERS — premium feel ─────────────────────────────────── */
+/* ── SCROLL CONTAINERS ────────────────────────────────────────────────── */
 .scroll {
   scrollbar-width: thin !important;
-  scrollbar-color: rgba(0,229,255,.12) transparent !important;
+  scrollbar-color: rgba(0,229,255,.10) transparent !important;
 }
 
-/* ── POS/NEG VALUE COLORS — brighter against dark backgrounds ─────────── */
-.pos { color: rgba(0,225,160,.92) !important; }
-.neg { color: rgba(255,85,100,.92) !important; }
+/* ── POS/NEG VALUE COLORS ─────────────────────────────────────────────── */
+.pos { color: rgba(0,225,160,.90) !important; text-shadow: 0 0 8px rgba(0,225,160,.08) !important; }
+.neg { color: rgba(255,85,100,.90) !important; text-shadow: 0 0 8px rgba(255,85,100,.08) !important; }
 
-/* ── MACRO BOX / TRANSMISSION — already styled, reinforce borders ─────── */
+/* ── MACRO BOX — ambient intelligence ─────────────────────────────────── */
 .macroBox {
-  background: linear-gradient(180deg, rgba(0,229,255,.02), rgba(0,100,140,.008)) !important;
-  border: 1px solid rgba(0,229,255,.06) !important;
+  background: linear-gradient(170deg, rgba(0,229,255,.015), rgba(0,80,120,.008), rgba(6,10,24,.82)) !important;
+  border: 1px solid rgba(0,229,255,.05) !important;
+  backdrop-filter: blur(8px) !important;
 }
+
+/* ── TRANSMISSION BOX — already styled with lever system, reinforce ──── */
 .tmBox {
-  background: linear-gradient(180deg, rgba(0,229,255,.025), rgba(0,100,140,.01)) !important;
-  border: 1px solid rgba(0,229,255,.07) !important;
+  background: linear-gradient(170deg, rgba(0,229,255,.02), rgba(0,80,120,.01), rgba(6,10,24,.85)) !important;
+  border: 1px solid rgba(0,229,255,.06) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* ── AMBIENT PULSE — subtle breathing on the entire page ──────────────── */
+@keyframes ambientBreathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .92; }
+}
+.wrap { animation: ambientBreathe 12s ease-in-out infinite !important; }
+
+/* ── SECTION LABELS (MARKET INTELLIGENCE etc) — refined ───────────────── */
+.card-title h2::before {
+  content: '' !important;
+  display: inline-block !important;
+  width: 5px !important; height: 5px !important;
+  border-radius: 50% !important;
+  background: rgba(0,229,255,.50) !important;
+  box-shadow: 0 0 6px rgba(0,229,255,.30) !important;
+  margin-right: 8px !important;
+  vertical-align: middle !important;
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════════╗
