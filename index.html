@@ -1013,7 +1013,7 @@ body.qx-auth-locked .wrap{display:none!important}
   <div class="brand-wordmark">
     <span class="brand-q">QUADRA</span><span class="brand-sep"> </span><span class="brand-rx">X</span><span class="brand-term">TERMINAL</span>
   </div>
-  <div class="sub">EUR/USD · HMM · PB3 · <span class="sub-si">Living Intelligence System</span></div>
+  <div class="sub">EUR/USD · HMM · PB3 · <span class="sub-si">A Living Intelligence System</span></div>
 </div>
 </div>
 <!-- CENTER STAGE — fills negative space, balances header -->
@@ -1047,6 +1047,7 @@ body.qx-auth-locked .wrap{display:none!important}
   <i id="riskPulseFill" style="display:none"></i><!-- hidden compat -->
 </div>
 <div class="pill qx-tf-badge" title="4-hour timeframe basis">⧖ <b>4H</b></div>
+<div class="pill qx-market-badge" id="marketStatusBadge" title="Forex market status"><span class="dot" id="marketDot" style="background:rgba(0,214,143,.85)"></span><span id="marketStatusText">OPEN</span></div>
 <div class="pill"><span class="dot" id="liveDot"></span><span id="lastUpdate">--:--</span></div>
 <button class="btn" id="pauseBtn" title="Pause/Resume (P)">⏸</button>
 <button class="btn primary" id="syncBtn" title="Force sync (S)">⟳</button>
@@ -4786,7 +4787,20 @@ function paintFxPair(key,pxId,metaId,tagId,sparkId,changePct){
 // ── MISC UI ───────────────────────────────────────────────────────────────
 function setRisk(pol,cf){const MAP={1:["NORMAL","Range logic. Fade extremes."],2:["ELEVATED","Thin liquidity. Reduce size."],3:["NORMAL","Drift regime. Small edges."],4:["HIGH","Trend regime. Bias with trend."],5:["HIGH","Stop cascade. De-risk."],6:["HIGH","News shock. Consider standing down."],7:["ELEVATED","Unwind risk. Protect capital."],8:["CRITICAL","Risk off. Protect capital first."]};let[level,rule]=MAP[pol]||["--","State-aware sizing"];if(cf!=null){if(cf<.35&&level==="NORMAL")level="ELEVATED";if(cf<.25&&level==="ELEVATED")level="HIGH";}const rb=$("riskBig"),rr=$("riskRule");if(rb){rb.textContent=level;rb.classList.remove("pos","neg");if(level==="NORMAL")rb.classList.add("pos");if(["CRITICAL","HIGH"].includes(level))rb.classList.add("neg");}if(rr)rr.textContent=rule;}
 function setFxStatus(st){const fs=$("fxSpotStatus"),fd=$("fxStatusDot");if(fs)fs.textContent=st;if(fd){fd.classList.remove("live","err");if(st==="LIVE")fd.classList.add("live");else if(st==="ERROR"||st==="STALE")fd.classList.add("err");}}
-function updateSessionUI(){const{openSessions,primary,isOverlap,dayInfo,minsLeft}=SessionEngine.compute();SessionEngine.SESS.forEach(s=>{const box=$("sb_"+s.id),st=$("ss_"+s.id);if(!box||!st)return;const isOpen=openSessions.includes(s.id),isOL=isOverlap&&(s.id==="LONDON"||s.id==="NEW_YORK");box.style.borderColor=isOpen?s.color.replace(/[\d.]+\)$/,"0.40)"):"rgba(180,220,255,.10)";box.style.background=isOpen?s.color.replace(/[\d.]+\)$/,"0.07)"):"rgba(8,20,52,.22)";st.textContent=isOL?"Overlap":isOpen?"Open":"Closed";st.className="sStat "+(isOL?"overlap":isOpen?"open":"closed");});const cdn=$("currentDayName"),csl=$("currentSessionLabel"),den=$("dayEffectNote"),sob=$("sessionOverlapBadge"),sml=$("sessionMinsLeft");if(cdn)cdn.textContent=dayInfo.name;if(csl)csl.textContent=primary?"Session: "+primary.label:"Session: Closed";if(den)den.textContent=dayInfo.effect;if(sob){sob.textContent=isOverlap?"LDN/NY OVERLAP - Highest Vol":openSessions.length?openSessions.join("+")+" Open":"All sessions closed";sob.style.color=isOverlap?"rgba(100,180,255,.92)":"rgba(255,255,255,.58)";}if(sml)sml.textContent=minsLeft!=null?"~"+minsLeft+"m left":"";}
+function updateSessionUI(){const{openSessions,primary,isOverlap,dayInfo,minsLeft}=SessionEngine.compute();SessionEngine.SESS.forEach(s=>{const box=$("sb_"+s.id),st=$("ss_"+s.id);if(!box||!st)return;const isOpen=openSessions.includes(s.id),isOL=isOverlap&&(s.id==="LONDON"||s.id==="NEW_YORK");box.style.borderColor=isOpen?s.color.replace(/[\d.]+\)$/,"0.40)"):"rgba(180,220,255,.10)";box.style.background=isOpen?s.color.replace(/[\d.]+\)$/,"0.07)"):"rgba(8,20,52,.22)";st.textContent=isOL?"Overlap":isOpen?"Open":"Closed";st.className="sStat "+(isOL?"overlap":isOpen?"open":"closed");});const cdn=$("currentDayName"),csl=$("currentSessionLabel"),den=$("dayEffectNote"),sob=$("sessionOverlapBadge"),sml=$("sessionMinsLeft");if(cdn)cdn.textContent=dayInfo.name;if(csl)csl.textContent=primary?"Session: "+primary.label:"Session: Closed";if(den)den.textContent=dayInfo.effect;if(sob){sob.textContent=isOverlap?"LDN/NY OVERLAP - Highest Vol":openSessions.length?openSessions.join("+")+" Open":"All sessions closed";sob.style.color=isOverlap?"rgba(100,180,255,.92)":"rgba(255,255,255,.58)";}if(sml)sml.textContent=minsLeft!=null?"~"+minsLeft+"m left":"";
+  // ── Market State: toggle closed-market UI mode ──
+  const forexOpen=SessionEngine.isForexOpen();
+  const mDot=$("marketDot"),mText=$("marketStatusText");
+  if(mDot&&mText){
+    if(forexOpen){
+      mDot.style.background="rgba(0,214,143,.85)";mText.textContent="OPEN";
+      document.body.classList.remove("market-closed");
+    } else {
+      mDot.style.background="rgba(255,176,32,.85)";mText.textContent="CLOSED";
+      document.body.classList.add("market-closed");
+    }
+  }
+}
 function updateWarmupBadge(tickN,warmed){
   // READER: badge is managed by FirebaseSync._badge — never touch it here
   if(FirebaseSync.isReader)return;
@@ -6923,7 +6937,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v58-event-arch                              ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v58-living-system                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -8721,6 +8735,66 @@ body::before {
   box-shadow: 0 0 6px rgba(0,229,255,.30) !important;
   margin-right: 8px !important;
   vertical-align: middle !important;
+}
+
+/* ── MARKET STATUS BADGE ──────────────────────────────────────────────── */
+.qx-market-badge {
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: .8px !important;
+  font-family: var(--mono) !important;
+}
+
+/* ── MARKET CLOSED STATE ──────────────────────────────────────────────── */
+/* When body.market-closed is active, projection/signal panels dim gracefully */
+body.market-closed .card:has(.paLogTable),
+body.market-closed .card:has(#coneCanvas),
+body.market-closed .card:has(#equityCanvas) {
+  opacity: .55 !important;
+  filter: saturate(.6) !important;
+  pointer-events: auto !important;
+}
+/* Dim the projection accuracy boxes */
+body.market-closed #projDirHit,
+body.market-closed #projRngHit,
+body.market-closed #projAvgMove,
+body.market-closed #projLogged {
+  opacity: .50 !important;
+}
+/* Signal bus banner dims slightly */
+body.market-closed .busBanner {
+  opacity: .65 !important;
+  filter: saturate(.7) !important;
+}
+/* Conviction row dims */
+body.market-closed .convicRow {
+  opacity: .60 !important;
+}
+/* Throttle and risk items dim */
+body.market-closed .qx-risk-chip {
+  opacity: .55 !important;
+}
+/* Market closed badge pulses gently */
+body.market-closed .qx-market-badge {
+  animation: mktClosedPulse 4s ease-in-out infinite !important;
+}
+@keyframes mktClosedPulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: .65; }
+}
+/* Edge Score dims when market closed */
+body.market-closed #topbarEdgeScore {
+  opacity: .45 !important;
+}
+
+/* ── TOPBAR GRADIENT ACCENT ───────────────────────────────────────────── */
+.topbar::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important; left: 0 !important; right: 0 !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, rgba(0,229,255,.30), rgba(0,229,255,.06) 30%, transparent 60%, rgba(80,40,180,.10) 80%, transparent) !important;
+  pointer-events: none !important;
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════════╗
