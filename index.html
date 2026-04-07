@@ -3,6 +3,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
 <title>DaVincii QuadraX</title>
 
 <!-- PWA manifest & meta -->
@@ -6937,7 +6940,7 @@ body::after{
 <style id="qx-deep-terminal">
 /*
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  QUADRAX  ·  DEEP TERMINAL  ·  v58-living-system                              ║
+║  QUADRAX  ·  DEEP TERMINAL  ·  v59                              ║
 ║  "Future Dust" + Electric Cyan — institutional precision meets             ║
 ║  kinetic terminal energy. One accent. Maximum signal-to-noise.            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -7007,12 +7010,15 @@ body::after{
 ──────────────────────────────────────────── */
 body {
   font-family: var(--dt-ui) !important;
-  background: var(--dt-bg0) !important;
+  background:
+    radial-gradient(1100px 550px at 12% 8%, rgba(0,229,255,.035), transparent 50%),
+    radial-gradient(800px 450px at 85% 25%, rgba(60,30,140,.03), transparent 50%),
+    radial-gradient(600px 600px at 50% 85%, rgba(0,120,180,.025), transparent 50%),
+    var(--dt-bg0) !important;
   color: var(--dt-t1) !important;
   -webkit-font-smoothing: antialiased !important;
   font-variant-numeric: tabular-nums !important;
 }
-body::before, body::after { display: none !important; }
 
 /* ────────────────────────────────────────────
    TOPBAR — SINGLE-ROW COMMAND LINE
@@ -7429,24 +7435,32 @@ body::before, body::after { display: none !important; }
    CARDS
 ──────────────────────────────────────────── */
 .card {
-  background: var(--dt-bg1) !important;
-  border: 1px solid var(--dt-b2) !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 20px rgba(0,0,0,.50), 0 1px 3px rgba(0,0,0,.35) !important;
+  background: linear-gradient(165deg, rgba(12,22,45,.82), rgba(6,12,28,.90)) !important;
+  border: 1px solid rgba(0,229,255,.06) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 6px 28px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.025) inset !important;
   position: relative; overflow: hidden;
-  transition: border-color .15s ease !important;
+  transition: border-color .4s ease, box-shadow .4s ease, transform .3s ease !important;
+  backdrop-filter: blur(12px) saturate(1.15) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.15) !important;
 }
 .card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg,
-    transparent, rgba(0,229,255,.12) 40%, rgba(0,229,255,.06) 70%, transparent);
-  pointer-events: none;
+  content: '' !important;
+  position: absolute !important; inset: 0 !important;
+  background: radial-gradient(500px 250px at 8% 12%, rgba(0,229,255,.03), transparent 55%) !important;
+  pointer-events: none !important; z-index: 0 !important;
 }
-.card::after { display: none !important; }
-.card > .inner { position: relative; z-index: 1; }
+.card::after {
+  content: '' !important; display: block !important;
+  position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; height: 1px !important;
+  background: linear-gradient(90deg, rgba(0,229,255,.25), rgba(0,229,255,.08) 40%, transparent 70%) !important;
+  pointer-events: none !important; z-index: 1 !important;
+}
+.card > .inner { position: relative; z-index: 2; }
 .card:hover {
-  border-color: rgba(0,229,255,.14) !important;
+  border-color: rgba(0,229,255,.12) !important;
+  box-shadow: 0 8px 36px rgba(0,0,0,.50), 0 0 0 1px rgba(0,229,255,.05) inset !important;
+  transform: translateY(-1px) !important;
 }
 
 /* ────────────────────────────────────────────
@@ -9617,12 +9631,18 @@ body.market-closed #topbarEdgeScore {
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js')
+    // Cache-bust the SW URL so browsers always check for updates
+    navigator.serviceWorker.register('service-worker.js?v=59')
       .then(reg => {
         console.log('[QuadraX] SW registered, scope:', reg.scope);
 
-        // Check for updates every 10 minutes
-        setInterval(() => reg.update(), 10 * 60 * 1000);
+        // Force immediate activation of new SW (don't wait for all tabs to close)
+        if (reg.waiting) {
+          reg.waiting.postMessage('skipWaiting');
+        }
+
+        // Check for updates every 5 minutes
+        setInterval(() => reg.update(), 5 * 60 * 1000);
 
         // When a new SW is waiting, show subtle update banner
         reg.addEventListener('updatefound', () => {
