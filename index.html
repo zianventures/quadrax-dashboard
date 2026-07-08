@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>QuadraX Terminal · v69 · Centroid Diagnostics</title>
+<title>QuadraX Terminal · v70 · Centroid Protocol</title>
 <style>
 @font-face {
   font-family: 'Space Grotesk';
@@ -7501,7 +7501,7 @@ signal lights, and price ladder. No analytics/engine logic changed.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     // Cache-bust the SW URL so browsers always check for updates
-    navigator.serviceWorker.register('service-worker.js?v=70')
+    navigator.serviceWorker.register('service-worker.js?v=71')
       .then(reg => {
         console.log('[QuadraX] SW registered, scope:', reg.scope);
 
@@ -7584,7 +7584,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
 (function(){
   "use strict";
   if(window.__qx64__) return; window.__qx64__=true;
-  // Off-deploy (local/file), the v59 service-worker.js?v=70 asset 404s and floods the console.
+  // Off-deploy (local/file), the service-worker.js?v=71 asset 404s and floods the console.
   // It exists on the real GitHub Pages origin; everywhere else, no-op the registration silently
   // (returns a never-settling promise so v59's .then/.catch — and the warning — never fire).
   try{
@@ -7658,7 +7658,11 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
   // Empty by default: sending speculative frames makes the server CLOSE the socket (verified).
   // Leave empty so the WS stays open + listening; set window.CENTROID_SUBSCRIBE = {…} or [{…}]
   // with the confirmed CS-360 subscribe schema once Centroid provides the API reference.
-  var CENTROID_SUBSCRIBE_MSGS=[];
+  var CENTROID_SUBSCRIBE_MSGS=[
+    {key:"fix_conn_status"},
+    {key:"dashboard_data",value:"unsubscribe"},
+    {key:"symbol",value:CENTROID_SYMBOL}
+  ];
   var Market=(function(){
     var CRED="qx_ds_cred_v1";
     var T=window.QXTrace=window.QXTrace||{loginAttempts:0,loginHTTP:null,loginFailCat:null,tokenReceived:false,clientCodeExtracted:false,clientCodeMasked:null,wsURLShapeValid:null,wsOpenTs:null,wsCloseCode:null,wsCloseReason:null,wsErrors:0,rawMsgs:0,pricePubs:0,feedFrames:0,symbolsSeen:[],firstFrameShape:null,lastFrameTs:null,eurusdQSeen:false,eurusdMatched:false,subscribeSent:null};
@@ -7682,12 +7686,11 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
       return j.token;
     }
     function openSocket(){
-      try{ T.wsURLShapeValid=!!(token&&creds.code); ws=new WebSocket("wss://bridge.centroidsol.com/ws?token="+encodeURIComponent(token)+"&q="+encodeURIComponent(creds.code||"")); }
+      try{ T.wsURLShapeValid=!!(token&&creds.code); ws=new WebSocket("wss://bridge.centroidsol.com/ws?q="+encodeURIComponent(creds.code||"")+"&token="+encodeURIComponent(token)); }
       catch(e){ setState("ERROR","socket"); reconnect(); return; }
       ws.onopen=function(){ T.wsOpenTs=Date.now(); attempts=0; setState("CONNECTING","connected — awaiting feed");
-        // VERIFIED: login + WS auth succeed, but the price feed needs a subscribe frame the
-        // public guide omits. CENTROID_SUBSCRIBE_MSGS holds candidate frames; set the confirmed
-        // schema here (or via window.CENTROID_SUBSCRIBE) once Centroid provides the API reference.
+        // VERIFIED against Centroid Bridge UI bundle: selected Market Watch symbols are requested
+        // with {key:"symbol",value:"EURUSD.q"}. Keep this list secret-free and frame-shape only.
         var subs=(window.CENTROID_SUBSCRIBE&&[].concat(window.CENTROID_SUBSCRIBE))||CENTROID_SUBSCRIBE_MSGS;
         if(subs.length){try{T.subscribeSent=subs.map(function(m){return typeof m==="string"?"string("+m.length+")":Object.keys(m).join("+");}).join(" | ");}catch(e){}} subs.forEach(function(m,i){ setTimeout(function(){ try{ ws.send(typeof m==="string"?m:JSON.stringify(m)); }catch(e){} }, 150+i*200); });
       };
@@ -7699,12 +7702,14 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
       T.rawMsgs++; var m; try{ m=JSON.parse(data); }catch(e){ return; } if(!T.firstFrameShape){try{T.firstFrameShape=Object.keys(m).slice(0,8).join(",");}catch(e){}} if(m.operation==="price"||m.type==="price_pub"||m.price_pub)T.pricePubs++;
       var arr=m.feed_symbols||(m.data&&m.data.feed_symbols); if(!arr||!arr.length) return;
       var now=Date.now(); lastMsgTs=now; T.feedFrames++; T.lastFrameTs=now;
-      arr.forEach(function(s){ if(!s||!s.symbol) return;
-        var raw=String(s.symbol);                                  // e.g. "EURUSD.q" (Centroid broker symbol)
+      arr.forEach(function(s){ if(!s||!(s.symbol||s.feed)) return;
+        var raw=String(s.symbol||s.feed);                          // e.g. "EURUSD.q" (Centroid broker symbol)
         var sym=raw.toUpperCase().split(".")[0].replace(/[^A-Z0-9]/g,""); if(T.symbolsSeen.indexOf(raw)<0&&T.symbolsSeen.length<12)T.symbolsSeen.push(raw); if(/^EURUSD\.q$/i.test(raw))T.eurusdQSeen=true; if(sym==="EURUSD")T.eurusdMatched=true;  // base symbol "EURUSD" for matching
         var prev=quotes[sym]||{};
-        quotes[sym]={symbol:sym,rawSymbol:raw,bid:+s.bid_price,ask:+s.ask_price,bidVol:+s.bid_volume||0,askVol:+s.ask_volume||0,
-          bidChg:s.bid_price_change||(prev.bid!=null?(+s.bid_price>prev.bid?"up":+s.bid_price<prev.bid?"down":"flat"):"flat"),
+        var bid=+(s.bid_price!=null?s.bid_price:s.bid);
+        var ask=+(s.ask_price!=null?s.ask_price:s.ask);
+        quotes[sym]={symbol:sym,rawSymbol:raw,bid:bid,ask:ask,bidVol:+(s.bid_volume!=null?s.bid_volume:s.bid_vol)||0,askVol:+(s.ask_volume!=null?s.ask_volume:s.ask_vol)||0,
+          bidChg:s.bid_price_change||(prev.bid!=null?(bid>prev.bid?"up":bid<prev.bid?"down":"flat"):"flat"),
           askChg:s.ask_price_change||"flat",ts:now}; });
       setState("LIVE_CENTROID","streaming");
     }
@@ -8469,7 +8474,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
       (failover.length?failover.slice(-8).map(function(f){return kv(f.t,f.from+" → "+f.to,C.sec);}).join(""):kv("—","no transitions yet",C.sec))+
       '<div class="sec">RUNTIME</div>'+
       kv("Window errors",String(errCount),errCount?C.rd:C.lm)+(errCount?kv("Last error",lastErr,C.rd):"")+
-      kv("Build","v69 · centroid diagnostics")+(window.__qxTraceHTML?window.__qxTraceHTML():"");
+      kv("Build","v70 · centroid protocol")+(window.__qxTraceHTML?window.__qxTraceHTML():"");
   }
   function openDiag(){ if(!diag) buildDiag(); diag.classList.add("show"); paintDiag(); }
 
@@ -8783,8 +8788,8 @@ html,body{max-width:100%;overflow-x:hidden;background:#030507}
 
 
 
-<script id="qx-v69-trace">
-/* v69 — CENTROID HANDSHAKE TRACE renderer (no secrets: booleans/counts/masked/shapes only) */
+<script id="qx-v70-trace">
+/* v70 — CENTROID HANDSHAKE TRACE renderer (no secrets: booleans/counts/masked/shapes only) */
 (function(){ "use strict";
 if(window.__qx69__)return; window.__qx69__=true;
 function esc(x){return x==null?"—":String(x);}
