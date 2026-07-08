@@ -4,7 +4,7 @@
 //  Bump CACHE_VERSION on every deploy to force update
 // ══════════════════════════════════════════════════════════════════════════════
 
-const CACHE_VERSION = 'qx-v69';
+const CACHE_VERSION = 'qx-v70';
 const SHELL_CACHE  = `${CACHE_VERSION}-shell`;
 const FONT_CACHE   = `${CACHE_VERSION}-fonts`;
 
@@ -39,6 +39,12 @@ const FONT_DOMAINS = [
   'fonts.googleapis.com',
   'fonts.gstatic.com'
 ];
+
+function isAppShellRequest(request, url) {
+  if (request.mode === 'navigate') return true;
+  const path = url.pathname.replace(/\/+$/, '/');
+  return path.endsWith('/') || path.endsWith('/index.html');
+}
 
 // ══════════════════════════════════════════════════════════════════════════════
 //  INSTALL — pre-cache app shell
@@ -99,6 +105,19 @@ self.addEventListener('fetch', event => {
             return response;
           });
         })
+      )
+    );
+    return;
+  }
+
+  // Network-first for navigations/index.html so deploys replace old cached shells.
+  if (isAppShellRequest(event.request, url)) {
+    event.respondWith(
+      caches.open(SHELL_CACHE).then(cache =>
+        fetch(event.request, { cache: 'no-store' }).then(response => {
+          if (response.ok) cache.put(event.request, response.clone());
+          return response;
+        }).catch(() => cache.match(event.request).then(cached => cached || cache.match('./index.html')))
       )
     );
     return;
