@@ -3105,8 +3105,9 @@ function pearsonR(xs,ys){const n=Math.min(xs.length,ys.length);if(n<5)return{r:0
 const KEY={s:"qx_s_v5",sg:"qx_sg_v1",rh:"qx_rh_v3",proj:"qx_proj_v1"};
 function loadObj(k,fb){try{const r=localStorage.getItem(k);if(!r)return fb;const p=JSON.parse(r);return(p&&typeof p==="object")?p:fb;}catch{return fb;}}
 function loadArr(k,fb){try{const r=localStorage.getItem(k);if(!r)return fb;const p=JSON.parse(r);return Array.isArray(p)?p:fb;}catch{return fb;}}
-function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(k===KEY.s?Object.assign({},v,{fbPassword:""}):v));}catch{}}
 let settings=loadObj(KEY.s,{twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbConfig:null,fbEmail:"",fbPassword:"",calibMult:1.0,biasConfAdj:1.0,sharpeAdj:1.0,mbOverlay:{enabled:true,sharpeTrigger:1.0,confMin:0.35,confMax:0.75,minAgreement:0.45,maxEventRisk:0.60,allowedPolicies:[1,2,3,4,7],sessionsUTC:[{name:"London",start:"06:45",end:"09:15"},{name:"New York",start:"12:45",end:"15:15"}],confBoostMax:0.12,riskTighten:0.90,cooldownMin:15}});
+if(settings.fbPassword){settings.fbPassword="";save(KEY.s,settings);} // purge legacy persisted Firebase password
 try{window.__qxSetTD=function(k){settings.twelvedataKey=k;};}catch(e){}
 const STATES=[
   {id:1,name:"Mean-Reverting",  desc:"Range-bound. Fade extremes, keep size disciplined.",       color:"rgba(0,214,143,.85)"},
@@ -7670,9 +7671,11 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
     var quotes={}, lastMsgTs=0, attempts=0, timer=null, manualClose=false;
     var lastKnown=null; // {mid,bid,ask,ts,source}
     var FRESH=8000;
-    function loadCreds(){ try{ var r=sessionStorage.getItem(CRED)||localStorage.getItem(CRED); if(r){var o=JSON.parse(r); creds={user:o.user||"",pass:o.pass||"",code:o.code||"",broker:o.broker||"",td:""}; remember=!!o.remember; return creds;} }catch(e){} return null; }
-    function saveCreds(c,rem){ creds=c; remember=!!rem; var p=JSON.stringify({user:c.user,pass:c.pass,code:c.code,broker:c.broker,remember:remember}); try{sessionStorage.setItem(CRED,p);}catch(e){} try{ rem?localStorage.setItem(CRED,p):localStorage.removeItem(CRED);}catch(e){} }
-    function clearCreds(){ creds=null; token=null; try{sessionStorage.removeItem(CRED);localStorage.removeItem(CRED);}catch(e){} }
+    // Credentials live in memory only; any legacy persisted copy (qx_ds_cred_v1) is purged.
+    function purgeStored(){ try{sessionStorage.removeItem(CRED);}catch(e){} try{localStorage.removeItem(CRED);}catch(e){} }
+    function loadCreds(){ purgeStored(); return creds; }
+    function saveCreds(c,rem){ creds=c; remember=false; purgeStored(); }
+    function clearCreds(){ creds=null; token=null; purgeStored(); }
     function tdKey(){ return (creds&&creds.td)||""; }
     function setState(s,m){ state=s; if(m!=null) msg=m; }
     async function getToken(){
@@ -8031,7 +8034,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
     settingsEl=document.createElement("div"); settingsEl.id="qxSettings";
     settingsEl.innerHTML=
       '<div class="qxs-card"><div class="qxs-h">Data Sources &amp; Connection<span id="qxsClose">✕</span></div>'+
-      '<div class="qxs-warn">Centroid credentials stay in <b>session storage</b> on this device (or local storage only if you tick Remember). The TwelveData key and Firebase login are held <b>in memory only</b> and cleared on reload. Nothing is sent to Firebase state, exported, or logged.</div>'+
+      '<div class="qxs-warn">Centroid credentials and the Firebase password are held <b>in memory only</b> and cleared on reload. The TwelveData key is saved in local storage on this device. Nothing is sent to Firebase state, exported, or logged.</div>'+
       '<div class="qxs-grid">'+
       '<label>Centroid Token Broker URL <i>(recommended for production)</i></label><input id="qxsBroker" autocomplete="off" placeholder="https://worker.example.com/centroid-token"/>'+
       '<label>Centroid Username <i>(Direct Browser Test — dev only)</i></label><input id="qxsUser" autocomplete="off"/>'+
@@ -8041,7 +8044,6 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
       '<label>Firebase Email <i>(optional — team sync)</i></label><input id="qxsEmail" autocomplete="off"/>'+
       '<label>Firebase Password</label><input id="qxsFbPass" type="password" autocomplete="new-password"/>'+
       '</div>'+
-      '<label class="qxs-chk"><input type="checkbox" id="qxsRemember"/> Remember on this device (localStorage — trusted machine only)</label>'+
       '<div class="qxs-status" id="qxsStatus"></div>'+
       '<div class="qxs-acts"><button id="qxsClear">Clear</button><button id="qxsDisc">Disconnect</button><button id="qxsConnect" class="pri">Connect Centroid</button><button id="qxsFb" class="pri">Connect Firebase</button></div></div>';
     document.body.appendChild(settingsEl);
@@ -8049,7 +8051,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
     settingsEl.addEventListener("click",function(e){ if(e.target===settingsEl) closeSettings(); });
     $("#qxsConnect",settingsEl).addEventListener("click",function(){
       var c={broker:$("#qxsBroker").value.trim(),user:$("#qxsUser").value.trim(),pass:$("#qxsPass").value,code:$("#qxsCode").value.trim(),td:$("#qxsTd").value.trim()};
-      Market.connect(c,$("#qxsRemember").checked,false); paintStatus();
+      Market.connect(c,false,false); paintStatus();
       // hand TwelveData key to v59 settings (no hardcode) for its fallback pipeline
       try{ if(c.td && window.__qxSetTD) window.__qxSetTD(c.td); }catch(e){}
     });
