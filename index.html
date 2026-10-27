@@ -7502,7 +7502,7 @@ signal lights, and price ladder. No analytics/engine logic changed.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     // Cache-bust the SW URL so browsers always check for updates
-    navigator.serviceWorker.register('service-worker.js?v=71')
+    navigator.serviceWorker.register('service-worker.js?v=72')
       .then(reg => {
         console.log('[QuadraX] SW registered, scope:', reg.scope);
 
@@ -7585,7 +7585,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
 (function(){
   "use strict";
   if(window.__qx64__) return; window.__qx64__=true;
-  // Off-deploy (local/file), the service-worker.js?v=71 asset 404s and floods the console.
+  // Off-deploy (local/file), the service-worker.js?v=72 asset 404s and floods the console.
   // It exists on the real GitHub Pages origin; everywhere else, no-op the registration silently
   // (returns a never-settling promise so v59's .then/.catch — and the warning — never fire).
   try{
