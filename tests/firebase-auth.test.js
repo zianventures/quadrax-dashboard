@@ -35,7 +35,9 @@ function env(opts = {}) {
       calls.signIn++;
       if (opts.gate) await opts.gate;
       if (opts.error) { const e = new Error('mock'); e.code = opts.error; throw e; }
-      const user = { uid: 'u1', getIdTokenResult: async () => ({ token: TOKEN, claims: opts.claims || {} }) };
+      const user = { uid: 'u1', getIdTokenResult: async force => { calls.forceRefresh = force === true;
+        if (opts.tokenError) { const e = new Error('mock'); e.code = opts.tokenError; throw e; }
+        return { token: TOKEN, claims: opts.claims || {} }; } };
       auth.currentUser = user; return { user };
     },
   };
@@ -77,6 +79,10 @@ const leak = e => e.logs.join('\n').includes(PW) || e.logs.join('\n').includes(T
       e.FS.authState.state === 'CONNECTED' && e.FS.authState.role === role && e.FS.role === label && e.FS.isMaster === master && e.facade.role === label);
     check(`claims ${JSON.stringify(claims)}: no password/token/email in logs or events`, !leak(e));
   }
+  check('claims read from a forced token refresh (no stale cached claims)', e.calls.forceRefresh === true);
+  e = env({ claims: { role: 'MASTER' }, tokenError: 'auth/user-token-expired' }); await e.FS.init(CFG, 'user@test.invalid', PW);
+  check('expired/revoked token → fails closed (AUTH_ERROR, signed out, not MASTER)',
+    e.FS.authState.state === 'AUTH_ERROR' && !e.FS.isMaster && !e.FS.configured && e.auth.currentUser === null && e.FS.role === 'STANDALONE');
   e = env({ claims: {} }); await e.FS.init(CFG, 'user@test.invalid', PW);
   await e.FS.writeState({ policy: 'x' });
   check('NO_ROLE never writes state', e.calls.set === 0);
