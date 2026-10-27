@@ -781,7 +781,7 @@ x-dc{display:none!important}
       
     </div>
     <div data-dc-tpl="27" style="display: flex; align-items: center; gap: 7px; flex-wrap: wrap;">
-      <div data-dc-tpl="28" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 2px; background: rgba(110, 214, 166, 0.07); border: 1px solid rgba(110, 214, 166, 0.22);"><span data-dc-tpl="29" style="width: 6px; height: 6px; border-radius: 50%; background: var(--lm); box-shadow: 0 0 5px var(--lm); animation: 2s ease 0s infinite normal none running qxpulse;"></span><span data-dc-tpl="30" style="font: 600 10px / 1 &quot;JetBrains Mono&quot;, monospace; letter-spacing: 0.8px; color: var(--lm);">MASTER · DESK 01</span></div>
+      <div id="qxRolePill" data-dc-tpl="28" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 2px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.14);"><span id="qxRoleDot" data-dc-tpl="29" style="width: 6px; height: 6px; border-radius: 50%; background: #7E8A96;"></span><span id="qxRoleTxt" data-dc-tpl="30" style="font: 600 10px / 1 &quot;JetBrains Mono&quot;, monospace; letter-spacing: 0.8px; color: #AAB4BE;">STANDALONE</span></div>
       <button data-dc-tpl="31" class="scp0" style="display: inline-flex; align-items: center; gap: 7px; padding: 7px 11px; border-radius: 3px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); color: rgb(170, 180, 190); cursor: pointer; font-family: &quot;Space Grotesk&quot;, sans-serif;"><span data-dc-tpl="32" style="font: 400 14px / 1 &quot;Space Grotesk&quot;, sans-serif;">Command</span><kbd data-dc-tpl="33" style="font: 600 10.5px / 1 &quot;JetBrains Mono&quot;, monospace; padding: 3px 5px; border-radius: 4px; background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.12); color: rgb(170, 180, 190);">⌘K</kbd></button>
       <button data-dc-tpl="34" class="scp1" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 3px; background: rgba(86, 178, 214, 0.12); border: 1px solid rgba(86, 178, 214, 0.3); color: rgb(169, 192, 212); cursor: pointer; font: 500 14px / 1 &quot;Space Grotesk&quot;, sans-serif;">Guided ▾</button>
       <button data-dc-tpl="35" title="Export" class="scp2" style="width: 33px; height: 33px; border-radius: 3px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); color: rgb(170, 180, 190); cursor: pointer; font: 400 14px / 1 &quot;Space Grotesk&quot;, sans-serif;">↗</button>
@@ -4343,7 +4343,43 @@ const SignalBus=(()=>{
 
 // ── FIRESTORE SYNC: push-based, onSnapshot, no polling ──────────────────────
 const FirebaseSync=(()=>{
-  let db=null,auth=null,_isMaster=false,_configured=false,_unsubListener=null,_persistenceEnabled=false;
+  let db=null,auth=null,_isMaster=false,_configured=false,_unsubListener=null,_pending=false,_purge=null;
+  // qx-v73: auth state model. role comes only from the verified ID-token claim.
+  let _authState={state:"DISCONNECTED",role:null,msg:""};
+  function _setAuth(state,role,msg){
+    _authState={state,role:role||null,msg:msg||""};
+    try{window.dispatchEvent(new CustomEvent("qx-auth-change",{detail:_authState}));}catch(e){}
+  }
+  // Detach listeners and drop any authenticated in-memory state.
+  function _teardown(){
+    if(_unsubListener){try{_unsubListener();}catch(e){}_unsubListener=null;}
+    _isMaster=false;_configured=false;_latestPayload=null;
+    if(_writeTimer){clearTimeout(_writeTimer);_writeTimer=null;}
+  }
+  // qx-v73: in-memory auth only. Migrates any session persisted by <=qx-v72 (IndexedDB)
+  // out of storage, signs it out, and clears the Firestore disk cache. Runs once.
+  function purgePersisted(config){
+    if(_purge)return _purge;
+    _purge=(async()=>{
+      if(!config||typeof firebase==="undefined")return;
+      try{
+        if(!firebase.apps.length)firebase.initializeApp(config);
+        auth=firebase.auth();
+        await auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
+        if(auth.currentUser)await auth.signOut();
+        auth.onAuthStateChanged(u=>{if(!u&&_configured){_teardown();_badge("STANDALONE");_setAuth("DISCONNECTED");}});
+      }catch(e){console.warn("[QuadraX] auth persistence purge failed:",(e&&e.code)||"error");}
+      try{await firebase.firestore().clearPersistence();}catch(e){}
+    })();
+    return _purge;
+  }
+  async function signOut(){
+    _teardown();
+    _badge("STANDALONE");
+    _setAuth("DISCONNECTED");
+    try{if(auth)await auth.signOut();}catch(e){}
+    try{window.dispatchEvent(new CustomEvent("qx-auth-signout"));}catch(e){}
+  }
 
   // ── Badge helper ──────────────────────────────────────────────────────────
   function _badge(mode){
@@ -4353,7 +4389,7 @@ const FirebaseSync=(()=>{
     // • FS READER: disabled/grey (view-only)
     // • STANDALONE + FS MASTER: enabled (manual refresh / push+pull)
     if(syncBtn){
-      const isReader = (mode==="READER");
+      const isReader = (mode==="READER"||mode==="NOROLE");
       syncBtn.disabled = isReader;
       syncBtn.classList.toggle("primary", !isReader);
       syncBtn.classList.toggle("disabled", isReader);
@@ -4363,6 +4399,8 @@ const FirebaseSync=(()=>{
       STANDALONE:["syncBadge synced",  "",      "STANDALONE"],
       MASTER:    ["syncBadge fbmaster","",       "FS MASTER"],
       READER:    ["syncBadge fbreader","",       "FS READER"],
+      NOROLE:    ["syncBadge stale",   "amber",  "FS NO ROLE"],
+      RATELIMIT: ["syncBadge autherr", "red",    "AUTH RATE LIMITED"],
       STALE:     ["syncBadge stale",   "amber",  "FS STALE"],
       AUTHERR:   ["syncBadge autherr", "red",   "AUTH FAIL — check Settings"],
       CONNECTING:["syncBadge warming", "amber",  "FS CONNECTING"],
@@ -4382,44 +4420,51 @@ const FirebaseSync=(()=>{
       if(statusEl)statusEl.textContent="Firestore: not configured — running standalone.";
       return;
     }
+    if(_pending)return; // qx-v73: one sign-in request at a time
+    _pending=true;
+    _teardown(); // re-login: detach old listeners before switching identity
     _badge("CONNECTING");
+    _setAuth("CONNECTING");
     if(statusEl)statusEl.textContent="Connecting to Firestore…";
     try{
-      // Init Firebase app (idempotent — reuse existing app if already initialised)
+      await purgePersisted(config);
       if(!firebase.apps.length)firebase.initializeApp(config);
       auth=firebase.auth();
-      db=firebase.firestore();
-      // Offline persistence (only enable once — re-init after settings save reuses same db)
-      if(!_persistenceEnabled){db.enablePersistence({synchronizeTabs:true}).then(()=>{_persistenceEnabled=true;}).catch(()=>{_persistenceEnabled=true;});}
-      // Sign in
+      db=firebase.firestore(); // memory cache only (no enablePersistence) since qx-v73
       const cred=await auth.signInWithEmailAndPassword(email,password);
-      // Read custom claim to determine role — set once via Admin SDK
+      // Role only from the server-verified custom claim; absent claim never means MASTER
       const tok=await cred.user.getIdTokenResult(true);
-      _isMaster=tok.claims.role==="MASTER";
+      const role=tok.claims.role==="MASTER"?"MASTER":tok.claims.role==="READER"?"READER":"NO_ROLE";
+      _isMaster=role==="MASTER";
       _configured=true;
-      _badge(_isMaster?"MASTER":"READER");
+      _badge(role==="NO_ROLE"?"NOROLE":role);
+      _setAuth("CONNECTED",role);
       if(statusEl)statusEl.textContent=
-        "Firestore: connected | "+email+" | Role: "+(_isMaster?"MASTER — writing state":"Reader — receiving push updates");
+        "Firestore: connected | Role: "+(role==="MASTER"?"MASTER — writing state":role==="READER"?"READER — receiving push updates":"no role claim — read-only");
     }catch(err){
-      _configured=false;
-      _badge("AUTHERR");
+      _teardown();
+      try{if(auth&&auth.currentUser)await auth.signOut();}catch(e){}
+      const limited=err&&err.code==="auth/too-many-requests";
+      _badge(limited?"RATELIMIT":"AUTHERR");
       const msg=err.code==="auth/wrong-password"||err.code==="auth/invalid-credential"||err.code==="auth/invalid-login-credentials"?"Wrong email or password — check exact credentials in Firebase Auth console":
                 err.code==="auth/user-not-found"?"No account found for this email — check Firebase Auth → Users":
                 err.code==="auth/invalid-api-key"?"Invalid API key — re-paste firebaseConfig from Firebase Project Settings":
                 err.code==="auth/invalid-email"?"Invalid email format":
-                err.code==="auth/too-many-requests"?"Too many failed attempts — wait a few minutes then retry":
+                err.code==="auth/too-many-requests"?"Too many failed attempts — Firebase has paused sign-in. Wait several minutes, then retry once":
                 err.code==="auth/network-request-failed"?"Network error — check your internet connection":
-                (err.code?"[" + err.code + "] ":"")+( err.message||"Unknown error");
+                err.code==="auth/user-disabled"?"This account is disabled in Firebase Auth":
+                "Sign-in failed"+(err&&err.code?" ["+err.code+"]":"");
+      _setAuth(limited?"RATE_LIMITED":"AUTH_ERROR",null,msg);
       if(statusEl)statusEl.textContent="Firebase error: "+msg;
-      console.error("[QuadraX] FirebaseSync.init error:",err);
-    }
+      console.error("[QuadraX] FirebaseSync.init error:",(err&&err.code)||"unknown");
+    }finally{_pending=false;}
   }
 
   // ── Subscribe: called once in start() for Readers ─────────────────────────
   // onSnapshot fires immediately with current data, then on every MASTER write.
   // No polling. No timers. No missed ticks.
   function subscribeState(onState){
-    if(!db||_isMaster)return;
+    if(!db||_isMaster||!_configured)return; // qx-v73: no listener without a signed-in session
     if(_unsubListener){_unsubListener();_unsubListener=null;}
     _unsubListener=db.collection("quadrax").doc("state").onSnapshot(
       snap=>{
@@ -4502,7 +4547,7 @@ const FirebaseSync=(()=>{
     }catch(err){
       console.warn("[QuadraX] Firestore write error:",err.code||err.message||err);
       // If permission-denied, log clearly
-      if(err.code==='permission-denied')console.error('[QuadraX] PERMISSION DENIED — check Firestore rules and custom claims. Current user:',auth?.currentUser?.email);
+      if(err.code==='permission-denied')console.error('[QuadraX] PERMISSION DENIED — check Firestore rules and custom claims.');
     }
   }
   
@@ -4562,13 +4607,21 @@ const FirebaseSync=(()=>{
   }, 60000);
 
   return{
-    init,subscribeState,writeState,updateBadge:_badge,
+    init,subscribeState,writeState,updateBadge:_badge,purgePersisted,signOut,
     get isMaster(){return _isMaster;},
     get configured(){return _configured;},
     get isReader(){return _configured&&!_isMaster;},
-    get role(){return!_configured?"STANDALONE":_isMaster?"MASTER":"READER";},
+    get role(){return!_configured?"STANDALONE":_authState.role==="NO_ROLE"?"NO ROLE":_isMaster?"MASTER":"READER";},
+    get authState(){return{..._authState};},
   };
 })();
+// qx-v73: read-only facade for the v63 panels (no write access exposed)
+window.FirebaseSync=Object.freeze({
+  get configured(){return FirebaseSync.configured;},
+  get role(){return FirebaseSync.role;},
+  get authState(){return FirebaseSync.authState;},
+  signOut:()=>FirebaseSync.signOut(),
+});
 
 // ── Tab wake-up recovery — forces sync when returning from sleep ──────────
 document.addEventListener('visibilitychange', ()=>{
@@ -5874,6 +5927,7 @@ if(saveBtn)saveBtn.addEventListener("click",async()=>{
   save(KEY.s,settings);
   // ── Re-init Firestore with new credentials ───────────────────────────────
   await FirebaseSync.init(fbConfig,settings.fbEmail,settings.fbPassword);
+  settings.fbPassword="";{const fpi=$("fbPasswordInput");if(fpi)fpi.value="";} // qx-v73: drop after use
   if(settings.alertThreshPips>0&&"Notification"in window&&Notification.permission==="default")Notification.requestPermission();
   closeSettings();
   // Subscribe state if now a Reader (may have changed role)
@@ -5908,6 +5962,16 @@ window.addEventListener("keydown",e=>{if(e.target.tagName==="INPUT"||e.target.ta
 const tvf=$("tvFrame");if(tvf){let tvLoaded=false;tvf.addEventListener("load",()=>{tvLoaded=true;});setTimeout(()=>{if(!tvLoaded){const fb=$("tvFallback");if(fb)fb.classList.add("show");}},9000);}
 
 // ── START ─────────────────────────────────────────────────────────────────
+// Called automatically every time MASTER writes to Firestore (~200ms latency)
+function onReaderState(st){
+  lastFullState=st;
+  applyFullStateToUI(st);
+  updateSessionUI();
+  const ageSec=Math.round((Date.now()-(st.ts||Date.now()))/1000);
+  const lu=$("lastUpdate");
+  if(lu)lu.textContent=fmtTime(st.ts||Date.now())+" (MASTER "+ageSec+"s ago)";
+  setFxStatus("LIVE");
+}
 async function start(){
   initProbUI();
   MacroFeed.hydrate();
@@ -5937,6 +6001,7 @@ async function start(){
   const __fbConfig = (__authCfg&&__authCfg.fbConfig) ? __authCfg.fbConfig : (settings.fbConfig || __BAKED_CONFIG);
   const __fbEmail  = (__authCfg&&__authCfg.fbEmail)  ? __authCfg.fbEmail  : settings.fbEmail;
   const __fbPass   = (__authCfg&&__authCfg.fbPassword) ? __authCfg.fbPassword : settings.fbPassword;
+  await FirebaseSync.purgePersisted(__fbConfig); // qx-v73: no restored sessions
   if(__fbConfig&&__fbEmail&&__fbPass){
     await FirebaseSync.init(__fbConfig,__fbEmail,__fbPass);
   }else{
@@ -5957,16 +6022,7 @@ async function start(){
 
   // ── READER: subscribe to Firestore onSnapshot — zero polling ──────────────
   if(FirebaseSync.isReader){
-    FirebaseSync.subscribeState(st=>{
-      // Called automatically every time MASTER writes to Firestore (~200ms latency)
-      lastFullState=st;
-      applyFullStateToUI(st);
-      updateSessionUI();
-      const ageSec=Math.round((Date.now()-(st.ts||Date.now()))/1000);
-      const lu=$("lastUpdate");
-      if(lu)lu.textContent=fmtTime(st.ts||Date.now())+" (MASTER "+ageSec+"s ago)";
-      setFxStatus("LIVE");
-    });
+    FirebaseSync.subscribeState(onReaderState);
     // Background feeds still useful for macro context on Reader displays
     await Promise.allSettled([MacroFeed.tick(),EventsFeed.tick(),HeadlinesFeed.tick()]);
     setTimeout(async()=>{await MacroFeed.tick();MacroFeed.hydrate();},3000);
@@ -6020,6 +6076,14 @@ async function start(){
   },2000);
 }
 window.__qxStart=start;
+// qx-v73: sign in without re-running start() (re-entry duplicated feeds and intervals).
+window.__qxAuthLogin=async function(cfg,em,pw){
+  await FirebaseSync.init(cfg,em,pw);
+  window.__qxAuthConfigured=FirebaseSync.configured;
+  if(FirebaseSync.isReader)FirebaseSync.subscribeState(onReaderState);
+};
+// On sign-out, drop the last authenticated snapshot; the standalone loop repaints.
+window.addEventListener("qx-auth-signout",()=>{lastFullState=null;window.__qxAuthConfigured=false;setFxStatus("STALE");});
 })();
 </script>
 <script>
@@ -6326,45 +6390,55 @@ signal lights, and price ladder. No analytics/engine logic changed.
     if(gate) gate.hidden = true;
   }
 
+  let busy = false; // qx-v73: one pending sign-in at a time
   async function login(){
+    if(busy) return;
     const email    = (($('qxAuthEmail')?.value)   ||'').trim();
-    const password = (($('qxAuthPassword')?.value)||'').trim();
+    const password = (($('qxAuthPassword')?.value)||''); // not trimmed: spaces are valid password characters
 
     if(!email || !password){
       setMsg('Email and password are required.', 'err');
       return;
     }
+    busy = true;
+    const btn = $('qxAuthLogin'); if(btn) btn.disabled = true;
 
-    // Pass the hardcoded config + user credentials to the main start sequence
-    window.__qxAuthOverride = { fbConfig: FIREBASE_CONFIG, fbEmail: email, fbPassword: password };
-
-    // Pre-fill hidden settings inputs so the Settings panel reflects the active connection
+    // Pre-fill hidden settings email so the Settings panel reflects the active connection (never the password)
     try{
       const cfgEl = document.getElementById('fbConfigInput');
       if(cfgEl && !cfgEl.value) cfgEl.value = JSON.stringify(FIREBASE_CONFIG);
       const emailEl = document.getElementById('fbEmailInput');
       if(emailEl) emailEl.value = email;
-      const passEl = document.getElementById('fbPasswordInput');
-      if(passEl) passEl.value = password;
     }catch(e){}
 
     setMsg('Signing in…', '');
 
     try{
-      if(typeof window.__qxStart !== 'function'){
+      if(typeof window.__qxAuthLogin === 'function'){
+        await window.__qxAuthLogin(FIREBASE_CONFIG, email, password);
+      }else if(typeof window.__qxStart === 'function'){
+        window.__qxAuthOverride = { fbConfig: FIREBASE_CONFIG, fbEmail: email, fbPassword: password };
+        await window.__qxStart();
+      }else{
         setMsg('Dashboard not ready. Reload the page.', 'err');
         return;
       }
-      await window.__qxStart();
+      const st = window.FirebaseSync && window.FirebaseSync.authState;
       if(window.__qxAuthConfigured){
         setMsg('Access granted.', 'ok');
         unlockUI();
       }else{
-        setMsg('Incorrect email or password.', 'err');
+        setMsg((st && st.msg) || 'Sign-in failed.', 'err');
       }
     }catch(e){
-      console.error('[QuadraX] login error:', e);
-      setMsg('Sign-in failed. Check your credentials.', 'err');
+      console.error('[QuadraX] login error:', (e && e.code) || 'unknown');
+      setMsg('Sign-in failed.', 'err');
+    }finally{
+      // Password lives only for the duration of the request
+      window.__qxAuthOverride = null;
+      ['qxAuthPassword','fbPasswordInput'].forEach(id=>{ const el=$(id); if(el) el.value=''; });
+      busy = false;
+      if(btn) btn.disabled = false;
     }
   }
 
@@ -7502,7 +7576,7 @@ signal lights, and price ladder. No analytics/engine logic changed.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     // Cache-bust the SW URL so browsers always check for updates
-    navigator.serviceWorker.register('service-worker.js?v=72')
+    navigator.serviceWorker.register('service-worker.js?v=73')
       .then(reg => {
         console.log('[QuadraX] SW registered, scope:', reg.scope);
 
@@ -7585,7 +7659,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
 (function(){
   "use strict";
   if(window.__qx64__) return; window.__qx64__=true;
-  // Off-deploy (local/file), the service-worker.js?v=72 asset 404s and floods the console.
+  // Off-deploy (local/file), the service-worker.js?v=73 asset 404s and floods the console.
   // It exists on the real GitHub Pages origin; everywhere else, no-op the registration silently
   // (returns a never-settling promise so v59's .then/.catch — and the warning — never fire).
   try{
@@ -8045,7 +8119,8 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
       '<label>Firebase Password</label><input id="qxsFbPass" type="password" autocomplete="new-password"/>'+
       '</div>'+
       '<div class="qxs-status" id="qxsStatus"></div>'+
-      '<div class="qxs-acts"><button id="qxsClear">Clear</button><button id="qxsDisc">Disconnect</button><button id="qxsConnect" class="pri">Connect Centroid</button><button id="qxsFb" class="pri">Connect Firebase</button></div></div>';
+      '<div class="qxs-status" id="qxsFbStatus"></div>'+
+      '<div class="qxs-acts"><button id="qxsClear">Clear</button><button id="qxsDisc">Disconnect</button><button id="qxsFbOut">Sign out Firebase</button><button id="qxsConnect" class="pri">Connect Centroid</button><button id="qxsFb" class="pri">Connect Firebase</button></div></div>';
     document.body.appendChild(settingsEl);
     $("#qxsClose",settingsEl).addEventListener("click",closeSettings);
     settingsEl.addEventListener("click",function(e){ if(e.target===settingsEl) closeSettings(); });
@@ -8057,12 +8132,28 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
     });
     $("#qxsFb",settingsEl).addEventListener("click",function(){
       var em=$("#qxsEmail").value.trim(), pw=$("#qxsFbPass").value;
-      if(em&&pw&&window.__qxFirebaseLogin){ window.__qxFirebaseLogin(em,pw); paintStatus("Firebase connecting…"); }
+      if(fbLocked()){ paintStatus(); return; }
+      if(!em||!pw){ fbNote="Enter Firebase email and password"; paintStatus(); return; }
+      $("#qxsFbPass").value=""; fbNote="";
+      if(window.__qxFirebaseLogin) window.__qxFirebaseLogin(em,pw);
+      paintStatus();
     });
+    $("#qxsFbOut",settingsEl).addEventListener("click",function(){ if(window.FirebaseSync) window.FirebaseSync.signOut(); fbNote=""; paintStatus(); });
     $("#qxsDisc",settingsEl).addEventListener("click",function(){ Market.disconnect(); paintStatus(); });
     $("#qxsClear",settingsEl).addEventListener("click",function(){ Market.disconnect(); Market.clearCreds(); ["qxsBroker","qxsUser","qxsPass","qxsCode","qxsTd","qxsEmail","qxsFbPass"].forEach(function(id){var e=$("#"+id,settingsEl); if(e)e.value="";}); paintStatus(); });
   }
-  function paintStatus(extra){ var s=Market.status(); var el=$("#qxsStatus",settingsEl); if(el) el.textContent=(extra?extra+" · ":"")+"Centroid: "+s.state+" — "+s.msg; }
+  // v73: Firebase auth state (no email, password or token is ever shown). Rate limit locks the button 60s — no auto-retry.
+  var fbNote="", fbLimitedAt=0;
+  window.addEventListener("qx-auth-change",function(e){ if(e.detail&&e.detail.state==="RATE_LIMITED") fbLimitedAt=Date.now(); if(settingsEl&&settingsEl.classList.contains("show")) paintStatus(); });
+  function fbState(){ return (window.FirebaseSync&&window.FirebaseSync.authState)||{state:"DISCONNECTED"}; }
+  function fbLocked(){ var st=fbState().state; return st==="CONNECTING"||(st==="RATE_LIMITED"&&Date.now()-fbLimitedAt<60000); }
+  function paintStatus(extra){ var s=Market.status(); var el=$("#qxsStatus",settingsEl); if(el) el.textContent=(extra?extra+" · ":"")+"Centroid: "+s.state+" — "+s.msg;
+    var a=fbState(), fe=$("#qxsFbStatus",settingsEl), fb=$("#qxsFb",settingsEl), fo=$("#qxsFbOut",settingsEl);
+    var label=a.state==="CONNECTED"?"CONNECTED · Role "+(a.role==="NO_ROLE"?"NO ROLE (read-only)":a.role):a.state==="AUTH_ERROR"?"AUTH ERROR":a.state==="RATE_LIMITED"?"RATE LIMITED":a.state;
+    if(fe){ fe.textContent="Firebase: "+label+(a.msg&&a.state!=="CONNECTED"?" — "+a.msg:"")+(fbNote?" · "+fbNote:""); fe.style.color=a.state==="CONNECTED"?"#6ED6A6":(a.state==="AUTH_ERROR"||a.state==="RATE_LIMITED")?"#E07A7A":a.state==="CONNECTING"?"#E0B05A":""; }
+    if(fb){ var lk=fbLocked(); fb.disabled=lk; fb.textContent=a.state==="CONNECTING"?"Connecting…":(lk?"Wait…":"Connect Firebase"); }
+    if(fo) fo.disabled=a.state!=="CONNECTED";
+  }
   function openSettings(){ if(!settingsEl) buildSettings(); var c=Market.loadCreds()||{}; $("#qxsBroker",settingsEl).value=c.broker||""; $("#qxsUser",settingsEl).value=c.user||""; $("#qxsCode",settingsEl).value=c.code||""; $("#qxsTd",settingsEl).value=c.td||""; paintStatus(); settingsEl.classList.add("show"); }
   function closeSettings(){ if(settingsEl) settingsEl.classList.remove("show"); }
   function wireSettingsTriggers(){
@@ -8825,6 +8916,25 @@ window.__qxTraceHTML=function(){
   if(silent) h+='<div class="kv" style="margin-top:6px"><span style="color:#E9566E">ENTITLEMENT DETECTOR</span><b style="color:#E9566E;text-align:right">No Market Watch frames after '+(((Date.now()-T.wsOpenTs)/1000)|0)+'s — likely API entitlement / symbol enablement / subscribe schema. Ask Centroid to enable price_pub/feed_symbols for EURUSD.q.</b></div>';
   return h;
 };
+})();
+</script>
+<script id="qx-v73-role-pill">
+/* v73: header role pill reflects the verified Firebase custom claim only. Never derived from client-editable values. */
+(function(){
+  if(window.__qxV73RolePill) return; window.__qxV73RolePill=true;
+  var MAP={MASTER:["MASTER","#6ED6A6"],READER:["READER","#56B2D6"],NO_ROLE:["NO ROLE","#E0B05A"]};
+  function paint(){
+    var t=document.getElementById("qxRoleTxt"), d=document.getElementById("qxRoleDot"); if(!t||!d) return;
+    var a=(window.FirebaseSync&&window.FirebaseSync.authState)||{}, v; // event is only a trigger; state from FirebaseSync
+    if(a.state==="CONNECTED") v=MAP[a.role]||MAP.NO_ROLE;
+    else if(a.state==="CONNECTING") v=["CONNECTING","#E0B05A"];
+    else if(a.state==="AUTH_ERROR") v=["AUTH ERROR","#E07A7A"];
+    else if(a.state==="RATE_LIMITED") v=["RATE LIMITED","#E07A7A"];
+    else v=["STANDALONE","#AAB4BE"];
+    t.textContent=v[0]; t.style.color=v[1]; d.style.background=v[1];
+  }
+  window.addEventListener("qx-auth-change",paint);
+  paint();
 })();
 </script>
 </body></html>
