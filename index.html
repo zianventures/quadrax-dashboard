@@ -7588,7 +7588,7 @@ signal lights, and price ladder. No analytics/engine logic changed.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     // Cache-bust the SW URL so browsers always check for updates
-    navigator.serviceWorker.register('service-worker.js?v=76')
+    navigator.serviceWorker.register('service-worker.js?v=77')
       .then(reg => {
         console.log('[QuadraX] SW registered, scope:', reg.scope);
 
@@ -7671,7 +7671,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
 (function(){
   "use strict";
   if(window.__qx64__) return; window.__qx64__=true;
-  // Off-deploy (local/file), the service-worker.js?v=76 asset 404s and floods the console.
+  // Off-deploy (local/file), the service-worker.js?v=77 asset 404s and floods the console.
   // It exists on the real GitHub Pages origin; everywhere else, no-op the registration silently
   // (returns a never-settling promise so v59's .then/.catch — and the warning — never fire).
   try{
@@ -7759,15 +7759,67 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
     if(!Array.isArray(ra)||ra.length!==1) return null;
     var a=ra[0]&&ra[0].alias; return (typeof a==="string"&&a)?a:null;
   }
-  // qx-v76: Macro Matrix reads Centroid mids only (get(sym) -> {mid,ts,fresh}|null); no public fallback.
-  // DXY is computed from the ICE weights and only when all six legs are fresh; it is not the official index.
+  // qx-v77: quote health. A received frame proves transport, not a current price. A symbol is LIVE only
+  // after QH_RECOVER_N consecutive valid bid/ask changes in this connection, inside its session, with its
+  // last change (and provider timestamp, when sent) inside the class quiet window, and not contradicted by
+  // a fresh independent reference. Quiet windows (ms): warn -> UNCHANGED, suspect -> SUSPECT, stale -> STALE.
+  var QH_CLASS={
+    fx:{warn:30e3,suspect:120e3,stale:300e3,maxSpread:0.005,spotTol:0.003,futTol:0.01,sess:"fx"},
+    fxThin:{warn:60e3,suspect:300e3,stale:600e3,maxSpread:0.01,spotTol:0.005,futTol:0.015,sess:"fx"},
+    metal:{warn:30e3,suspect:120e3,stale:300e3,maxSpread:0.005,spotTol:0.005,futTol:0.02,sess:"cme"},
+    energy:{warn:60e3,suspect:300e3,stale:600e3,maxSpread:0.01,spotTol:0.01,futTol:0.03,sess:"cme"}};
+  var QH_SYM={EURUSD:"fx",GBPUSD:"fx",USDJPY:"fx",USDCHF:"fx",USDCAD:"fx",AUDUSD:"fx",NZDUSD:"fxThin",USDSEK:"fxThin",XAUUSD:"metal",XTIUSD:"energy"};
+  var QH_RECOVER_N=3, QH_OBS_MAX=8000, QH_REF_MAX=1800e3, QH_NYF=null;
+  function qhClass(sym){ return QH_CLASS[QH_SYM[sym]||"fxThin"]; }
+  // New York clock: FX Sun 17:00 -> Fri 17:00; metals/energy Sun 18:00 -> Fri 17:00, daily 17:00-18:00 break.
+  // Holidays are not modelled: a holiday shows SUSPECT/STALE, never LIVE.
+  function qhNy(now){ var p={}; QH_NYF=QH_NYF||new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",hourCycle:"h23",weekday:"short",hour:"numeric",minute:"numeric"});
+    QH_NYF.formatToParts(new Date(now)).forEach(function(x){p[x.type]=x.value;}); return {d:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].indexOf(p.weekday),m:(+p.hour%24)*60+(+p.minute)}; }
+  function qhSessionOpen(kind,now){ var t=qhNy(now), c=1020; if(t.d===6) return false; if(t.d===5) return t.m<c;
+    if(t.d===0) return t.m>=(kind==="fx"?c:c+60); return kind==="fx"||t.m<c||t.m>=c+60; }
+  function qhRollover(now){ var m=qhNy(now).m; return m>=1015&&m<1095; } // 16:55-18:15 NY: thin liquidity, windows x4
+  // Pure per-symbol record update. Invalid quotes keep the last valid bid/ask and reset recovery.
+  function qhObserve(sym,raw,prev,s,now){ prev=prev||{};
+    var bid=+(s.bid_price!=null?s.bid_price:s.bid), ask=+(s.ask_price!=null?s.ask_price:s.ask), c=qhClass(sym);
+    var ok=isFinite(bid)&&isFinite(ask)&&bid>0&&ask>=bid&&(ask-bid)/((ask+bid)/2)<=c.maxSpread;
+    var chg=ok&&prev.bid!=null&&(bid!==prev.bid||ask!==prev.ask);
+    var pv=s.timestamp!=null?s.timestamp:s.time!=null?s.time:s.ts!=null?s.ts:s.updated_at, pt=null;
+    if(pv!=null){ pt=typeof pv==="number"?pv:/^\d+(\.\d+)?$/.test(pv)?+pv:Date.parse(pv); pt=isFinite(pt)?(pt<1e12?pt*1000:pt):null; }
+    var run=!ok?0:!chg?(prev.run||0):(prev.chgTs&&now-prev.chgTs>c.suspect)?1:(prev.run||0)+1;
+    return {symbol:sym,rawSymbol:raw,bid:ok?bid:prev.bid,ask:ok?ask:prev.ask,
+      bidVol:+(s.bid_volume!=null?s.bid_volume:s.bid_vol)||0,askVol:+(s.ask_volume!=null?s.ask_volume:s.ask_vol)||0,
+      bidChg:s.bid_price_change||(ok&&prev.bid!=null?(bid>prev.bid?"up":bid<prev.bid?"down":"flat"):"flat"),
+      askChg:s.ask_price_change||"flat",ts:now,validTs:ok?now:prev.validTs,chgTs:chg?now:(prev.chgTs||now),
+      invalid:!ok,run:run,everLive:!!prev.everLive||run>=QH_RECOVER_N,provTs:pt};
+  }
+  // rec: qhObserve record; conn: socket streaming; ref: optional independent {mid,ts,kind:"spot"|"futures"}.
+  function quoteHealth(sym,rec,now,conn,ref){
+    var c=qhClass(sym), mid=rec&&isFinite(rec.bid)&&isFinite(rec.ask)?(rec.bid+rec.ask)/2:null, st, quiet=null, k=1;
+    var refOk=!!(ref&&isFinite(ref.mid)&&ref.mid>0&&now-ref.ts<QH_REF_MAX), open=qhSessionOpen(c.sess,now);
+    if(!conn) st="DISCONNECTED";
+    else if(!rec) st="UNVERIFIED";
+    else if(rec.invalid) st="INVALID";
+    else if(now-rec.ts>QH_OBS_MAX) st="STALE";
+    else if(!open) st="MARKET CLOSED";
+    else if(refOk&&Math.abs(mid/ref.mid-1)>(ref.kind==="futures"?c.futTol:c.spotTol)) st="DISPUTED";
+    else { k=qhRollover(now)?4:1; quiet=Math.max(now-rec.chgTs,rec.provTs!=null?now-rec.provTs:0);
+      st=quiet>c.stale*k?"STALE":quiet>c.suspect*k?"SUSPECT":rec.run<QH_RECOVER_N?"UNVERIFIED":quiet>c.warn*k?"UNCHANGED":"LIVE"; }
+    return {symbol:sym,state:st,eligible:st==="LIVE"||st==="UNCHANGED",mid:mid,
+      shown:mid!=null&&!!(rec&&rec.everLive)&&st!=="INVALID"&&st!=="DISPUTED",
+      source:rec?"Centroid "+rec.rawSymbol:"Centroid",session_open:open,observed_at:rec?rec.ts:null,last_valid_at:rec?rec.validTs:null,
+      last_change_at:rec?rec.chgTs:null,provider_ts:rec?rec.provTs:null,quiet_ms:quiet,run:rec?rec.run:0,reference:refOk?ref:null,ts:rec?rec.ts:null};
+  }
+  // qx-v76: Macro Matrix reads Centroid only (get(sym) -> quoteHealth|null); no public fallback.
+  // qx-v77: DXY is computed from the ICE weights only when all six legs are eligible; it is not the official index.
+  // A price never evidenced live, disputed or invalid is withheld; others show their last mid with their state.
   var ICE_DXY=[["EURUSD",-0.576],["USDJPY",0.136],["GBPUSD",-0.119],["USDCAD",0.091],["USDSEK",0.042],["USDCHF",0.036]];
-  function iceDxy(get){ var v=50.14348112; for(var i=0;i<ICE_DXY.length;i++){ var q=get(ICE_DXY[i][0]); if(!q||!q.fresh) return null; v*=Math.pow(q.mid,ICE_DXY[i][1]); } return {mid:v,fresh:true}; }
+  function iceDxy(get){ var v=50.14348112, all=true; for(var i=0;i<ICE_DXY.length;i++){ var q=get(ICE_DXY[i][0]); if(!q||!q.eligible) return null; all=all&&q.state==="LIVE"; v*=Math.pow(q.mid,ICE_DXY[i][1]); }
+    return {mid:v,state:all?"LIVE":"UNCHANGED",eligible:true,shown:true}; }
   var MACRO_TILES=[["DXY INDEX",null,3],["GOLD · XAU","XAUUSD",2],["WTI OIL","XTIUSD",2],["GBP/USD","GBPUSD",5],["AUD/USD","AUDUSD",5]];
   function macroTileRows(get){
     return MACRO_TILES.map(function(t){ var q=t[1]?get(t[1]):iceDxy(get);
       if(!q) return {label:t[0],value:"CENTROID FEED UNAVAILABLE",status:"",basis:""};
-      return {label:t[0],value:q.mid.toFixed(t[2]),status:q.fresh?"LIVE · CENTROID":"STALE",basis:t[1]?"":"COMPUTED · ICE WEIGHTS"}; })
+      return {label:t[0],value:q.shown?q.mid.toFixed(t[2]):q.state,status:q.shown?q.state+" · CENTROID":"PRICE WITHHELD · CENTROID",basis:t[1]?"":"COMPUTED · ICE WEIGHTS"}; })
       .concat([{label:"EUR STRENGTH",value:"NOT DEFINED",status:"",basis:""}]);
   }
   function paintMacroTiles(rows){
@@ -7813,6 +7865,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
       try{ T.wsURLShapeValid=!!(token&&creds.code); ws=new WebSocket("wss://bridge.centroidsol.com/ws?q="+encodeURIComponent(creds.code||"")+"&token="+encodeURIComponent(token)); }
       catch(e){ setState("ERROR","socket"); reconnect(); return; }
       ws.onopen=function(){ T.wsOpenTs=Date.now(); attempts=0; setState("CONNECTING","connected — awaiting feed");
+        for(var k in quotes) quotes[k].run=0; // qx-v77: a fresh connection must re-evidence LIVE
         // Frames carry the alias; T.subscribeSent records key names only.
         var subs=(window.CENTROID_SUBSCRIBE&&[].concat(window.CENTROID_SUBSCRIBE))||centroidSubscribeMsgs(alias);
         if(subs.length){try{T.subscribeSent=subs.map(function(m){return typeof m==="string"?"string("+m.length+")":Object.keys(m).join("+");}).join(" | ");}catch(e){}} subs.forEach(function(m,i){ setTimeout(function(){ try{ ws.send(typeof m==="string"?m:JSON.stringify(m)); }catch(e){} }, 150+i*200); });
@@ -7828,12 +7881,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
       arr.forEach(function(s){ if(!s||!(s.symbol||s.feed)) return;
         var raw=String(s.symbol||s.feed);                          // e.g. "EURUSD.q" (Centroid broker symbol)
         var sym=raw.toUpperCase().split(".")[0].replace(/[^A-Z0-9]/g,""); if(T.symbolsSeen.indexOf(raw)<0&&T.symbolsSeen.length<12)T.symbolsSeen.push(raw); if(/^EURUSD\.q$/i.test(raw))T.eurusdQSeen=true; if(sym==="EURUSD")T.eurusdMatched=true;  // base symbol "EURUSD" for matching
-        var prev=quotes[sym]||{};
-        var bid=+(s.bid_price!=null?s.bid_price:s.bid);
-        var ask=+(s.ask_price!=null?s.ask_price:s.ask);
-        quotes[sym]={symbol:sym,rawSymbol:raw,bid:bid,ask:ask,bidVol:+(s.bid_volume!=null?s.bid_volume:s.bid_vol)||0,askVol:+(s.ask_volume!=null?s.ask_volume:s.ask_vol)||0,
-          bidChg:s.bid_price_change||(prev.bid!=null?(bid>prev.bid?"up":bid<prev.bid?"down":"flat"):"flat"),
-          askChg:s.ask_price_change||"flat",ts:now}; });
+        quotes[sym]=qhObserve(sym,raw,quotes[sym],s,now); }); // qx-v77: ts = observation; chgTs = last bid/ask change
       setState("LIVE_CENTROID","streaming");
     }
     function reconnect(){ if(manualClose) return; clearTimeout(timer); attempts++; var d=Math.min(30000,1000*Math.pow(2,Math.min(attempts,5))); setState(state==="ERROR"?"ERROR":"DISCONNECTED","reconnect "+Math.round(d/1000)+"s"); timer=setTimeout(function(){ connect(creds,remember,true); },d); }
@@ -7850,18 +7898,18 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
     }
     function disconnect(){ manualClose=true; clearTimeout(timer); try{ if(ws) ws.close(); }catch(e){} ws=null; clearCreds(); setState("DISCONNECTED","disconnected"); } // qx-v75: explicit disconnect destroys reconnect credentials
     function pipFactor(sym){ return /JPY/.test(sym)?100:/XAU/.test(sym)?10:10000; }
-    // qx-v76: Centroid-only mid for Macro tiles; null when the symbol never streamed. No fallback.
-    function centroidMid(sym){ var q=quotes[sym]; if(!q||!isFinite(q.bid)||!isFinite(q.ask)) return null; return {mid:(q.bid+q.ask)/2,ts:q.ts,fresh:(Date.now()-q.ts)<FRESH}; }
+    // qx-v77: Centroid-only quote health for Macro tiles / DXY; null when the symbol never streamed. No fallback.
+    function centroidMid(sym){ var q=quotes[sym]; return q?quoteHealth(sym,q,Date.now(),state==="LIVE_CENTROID"):null; }
     // unified MarketQuote, preferring Centroid then v59 spot pipeline then last-known
     function quote(){
-      var q=quotes.EURUSD, now=Date.now();
-      if(q && isFinite(q.bid) && isFinite(q.ask) && (now-q.ts)<FRESH){
+      var q=quotes.EURUSD, now=Date.now(), h=q&&quoteHealth("EURUSD",q,now,state==="LIVE_CENTROID");
+      if(q && h.eligible && isFinite(q.bid) && isFinite(q.ask) && (now-q.ts)<FRESH){ // qx-v77: eligible = LIVE or UNCHANGED
         var mid=(q.bid+q.ask)/2, pf=pipFactor("EURUSD"), tot=q.bidVol+q.askVol;
         lastKnown={mid:mid,bid:q.bid,ask:q.ask,ts:now,source:"LIVE_CENTROID"};
         return {symbol:q.rawSymbol||CENTROID_SYMBOL,source_status:"LIVE_CENTROID",provider:"Centroid",spot:mid,bid:q.bid,ask:q.ask,mid:mid,
           spread_pips:Math.abs(q.ask-q.bid)*pf,bid_volume:q.bidVol,ask_volume:q.askVol,
           quote_imbalance:tot>0?q.bidVol/tot:0.5,latency_ms:now-q.ts,updated_at:now,freshness_ms:now-q.ts,
-          is_live:true,is_fallback:false,is_stale:false,bidChg:q.bidChg,askChg:q.askChg};
+          is_live:true,is_fallback:false,is_stale:false,health_state:h.state,bidChg:q.bidChg,askChg:q.askChg};
       }
       // fallback: read the ACTUAL provider from v59 — only call it TwelveData when it truly is.
       var sp=parseFloat(v("fxSpotPrice")), src=v("fxSpotMeta").replace(/source:/i,"").trim();
@@ -7880,7 +7928,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
       return {symbol:"EURUSD",source_status:(creds?"DISCONNECTED":"CREDENTIALS_REQUIRED"),provider:null,spot:null,is_live:false,is_fallback:false,is_stale:true};
     }
     return {connect:connect,disconnect:disconnect,clearCreds:clearCreds,loadCreds:loadCreds,hasCreds:function(){return !!(creds&&(creds.broker||(creds.user&&creds.pass)));},
-      quote:quote,centroidQuote:centroidMid,status:function(){return {state:state,msg:msg};},tdKey:tdKey,
+      quote:quote,centroidQuote:centroidMid,quoteHealth:function(){ var o={}; CENTROID_MACRO_SYMBOLS.concat(["EURUSD"]).forEach(function(s){ o[s]=centroidMid(s)||{symbol:s,state:state==="LIVE_CENTROID"?"UNVERIFIED":"DISCONNECTED",eligible:false}; }); return o; },status:function(){return {state:state,msg:msg};},tdKey:tdKey,
       // DIAGNOSTICS-ONLY frame ingest for local verification (Playwright / operator smoke tests).
       // Routes through the SAME handle() parser as real socket frames — no separate code path —
       // and is hard-gated to loopback hosts, so it cannot produce a false LIVE on any deploy origin.

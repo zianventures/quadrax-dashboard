@@ -54,7 +54,7 @@ const PASS = 'pw-' + 'test', TOK = 'tk-' + 'test';
 function session(riskAccounts) {
   const sockets = [], logs = [], timers = [];
   const ctx = {
-    T: {}, ws: null, token: null, alias: null, riskCount: 0, creds: null, remember: false, state: '', msg: '',
+    T: {}, quotes: {}, ws: null, token: null, alias: null, riskCount: 0, creds: null, remember: false, state: '', msg: '',
     attempts: 0, timer: null, manualClose: false, CENTROID_SYMBOL: 'EURUSD.q', CENTROID_MACRO_SYMBOLS: MACRO, CENTROID_TOKEN_BROKER_URL: '',
     window: {}, sessionStorage: { removeItem() {} }, localStorage: { removeItem() {} },
     console: { log: (...a) => logs.push(a.join(' ')), warn: (...a) => logs.push(a.join(' ')), error: (...a) => logs.push(a.join(' ')) },
@@ -103,7 +103,7 @@ check('handle() extractable', !!hM);
 if (hM) {
   const ctx = { quotes: {}, lastMsgTs: 0, state: '', T: { rawMsgs: 0, feedFrames: 0, symbolsSeen: [] } };
   ctx.setState = s => { ctx.state = s; };
-  vm.runInNewContext(hM[0] + '; this.handle = handle;', ctx);
+  vm.runInNewContext(grab('  var QH_CLASS=', '  // qx-v76: Macro Matrix') + hM[0] + '; this.handle = handle;', ctx);
   ctx.handle(JSON.stringify({ feed_symbols: [{ feed: 'EURUSD.q', bid: 1.0801, ask: 1.0803, bid_vol: 5 }] }));
   const q1 = ctx.quotes.EURUSD;
   check('parses feed + bid/ask (v70 shape)', !!q1 && q1.bid === 1.0801 && q1.ask === 1.0803 && q1.bidVol === 5);
@@ -122,7 +122,7 @@ if (mtSrc) {
   const mctx = { Math }; vm.runInNewContext(mtSrc + '; this.rows = macroTileRows;', mctx);
   const MIDS = { EURUSD: 1.11231, GBPUSD: 1.3301, AUDUSD: 0.70323, NZDUSD: 0.56059, USDJPY: 157.957, USDCAD: 1.40619,
     USDCHF: 0.829905, USDSEK: 9.95465, XAUUSD: 4162.26, XTIUSD: 100.735 };
-  const getter = (over) => s => (s in over) ? over[s] : (MIDS[s] ? { mid: MIDS[s], ts: 1, fresh: true } : null);
+  const getter = (over) => s => (s in over) ? over[s] : (MIDS[s] ? { mid: MIDS[s], state: 'LIVE', eligible: true, shown: true } : null);
   const by = (rows, l) => rows.filter(r => r.label === l)[0] || {};
   const live = mctx.rows(getter({}));
   const expDxy = 50.14348112 * Math.pow(1.11231, -0.576) * Math.pow(157.957, 0.136) * Math.pow(1.3301, -0.119) *
@@ -131,12 +131,16 @@ if (mtSrc) {
   check('DXY vector 102.405 (live mids 2026-10-27)', by(live, 'DXY INDEX').value === '102.405');
   check('XAU / XTI / GBP / AUD from Centroid mids', by(live, 'GOLD · XAU').value === '4162.26' && by(live, 'WTI OIL').value === (100.735).toFixed(2)
     && by(live, 'GBP/USD').value === '1.33010' && by(live, 'AUD/USD').value === '0.70323' && by(live, 'GBP/USD').status === 'LIVE · CENTROID');
-  const oneStale = mctx.rows(getter({ USDSEK: { mid: 9.95, ts: 1, fresh: false } }));
+  const oneStale = mctx.rows(getter({ USDSEK: { mid: 9.95, state: 'STALE', eligible: false, shown: true } }));
   check('one stale DXY leg -> DXY CENTROID FEED UNAVAILABLE', by(oneStale, 'DXY INDEX').value === 'CENTROID FEED UNAVAILABLE');
   const missing = mctx.rows(getter({ USDJPY: null, XAUUSD: null }));
   check('missing leg / symbol -> CENTROID FEED UNAVAILABLE, no number', by(missing, 'DXY INDEX').value === 'CENTROID FEED UNAVAILABLE' && by(missing, 'GOLD · XAU').value === 'CENTROID FEED UNAVAILABLE');
-  const stale = mctx.rows(getter({ XTIUSD: { mid: 100.7, ts: 1, fresh: false } }));
-  check('stale symbol keeps its last mid but is labelled STALE', by(stale, 'WTI OIL').value === '100.70' && by(stale, 'WTI OIL').status === 'STALE');
+  const stale = mctx.rows(getter({ XTIUSD: { mid: 100.7, state: 'STALE', eligible: false, shown: true } }));
+  check('stale symbol keeps its last mid but is labelled STALE', by(stale, 'WTI OIL').value === '100.70' && by(stale, 'WTI OIL').status === 'STALE · CENTROID');
+  const held = mctx.rows(getter({ XAUUSD: { mid: 4162.255, state: 'DISPUTED', eligible: false, shown: false } }));
+  check('qx-v77: withheld symbol shows its state, never the number', by(held, 'GOLD · XAU').value === 'DISPUTED' && !/4162/.test(JSON.stringify(held)));
+  const unch = mctx.rows(getter({ USDSEK: { mid: 9.95465, state: 'UNCHANGED', eligible: true, shown: true } }));
+  check('qx-v77: UNCHANGED leg keeps DXY, labelled UNCHANGED', by(unch, 'DXY INDEX').value === '102.405' && by(unch, 'DXY INDEX').status === 'UNCHANGED · CENTROID');
   check('no Centroid at all -> every priced tile UNAVAILABLE', mctx.rows(() => null).filter(r => r.label !== 'EUR STRENGTH').every(r => r.value === 'CENTROID FEED UNAVAILABLE'));
   check('EUR STRENGTH shows NOT DEFINED', by(live, 'EUR STRENGTH').value === 'NOT DEFINED');
 }
