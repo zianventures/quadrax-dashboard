@@ -4526,7 +4526,7 @@ const FirebaseSync=(()=>{
   // _pendingWrite stays truthy → all new calls return → writes stop entirely.
   // Fix: always capture latest payload, use requestAnimationFrame fallback,
   // and add staleness watchdog.
-  let _lastWrite=0, _lastHash='', _writeCount=0;
+  let _lastWrite=0, _lastHash='', _writeCount=0, _writtenHash='', _skipCount=0; // qx-v79: change-aware
   let _latestPayload=null, _writeTimer=null;
   const WRITE_MIN_MS = 30000;       // Max 1 routine write per 30s
   const WRITE_URGENT_MS = 3000;     // 3s cooldown for critical changes
@@ -4549,6 +4549,7 @@ const FirebaseSync=(()=>{
       });
       _writeCount++;
       _lastWrite=Date.now();
+      _writtenHash=_stateHash(payload);
       _latestPayload=null;
       console.log('[QuadraX] Firestore write #'+_writeCount+' ('+new Date().toLocaleTimeString()+')');
     }catch(err){
@@ -4562,7 +4563,9 @@ const FirebaseSync=(()=>{
     if(_writeTimer)clearTimeout(_writeTimer);
     _writeTimer=setTimeout(()=>{
       _writeTimer=null;
-      if(_latestPayload) _doWrite(_latestPayload);
+      // qx-v79: routine write only on a meaningful change; unchanged state waits for the 2-min heartbeat
+      if(_latestPayload&&(_stateHash(_latestPayload)!==_writtenHash||(Date.now()-_lastWrite)>=WRITE_STALE_MS)) _doWrite(_latestPayload);
+      else if(_latestPayload) _skipCount++;
     }, delayMs);
   }
   
@@ -4620,6 +4623,7 @@ const FirebaseSync=(()=>{
     get isReader(){return _configured&&!_isMaster;},
     get role(){return!_configured?"STANDALONE":_authState.role==="NO_ROLE"?"NO ROLE":_isMaster?"MASTER":"READER";},
     get authState(){return{..._authState};},
+    get writeStats(){return{writes:_writeCount,skipped:_skipCount,lastWrite:_lastWrite};},
   };
 })();
 // qx-v73: read-only facade for the v63 panels (no write access exposed)
@@ -7588,7 +7592,7 @@ signal lights, and price ladder. No analytics/engine logic changed.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     // Cache-bust the SW URL so browsers always check for updates
-    navigator.serviceWorker.register('service-worker.js?v=78')
+    navigator.serviceWorker.register('service-worker.js?v=79')
       .then(reg => {
         console.log('[QuadraX] SW registered, scope:', reg.scope);
 
@@ -7671,7 +7675,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
 (function(){
   "use strict";
   if(window.__qx64__) return; window.__qx64__=true;
-  // Off-deploy (local/file), the service-worker.js?v=78 asset 404s and floods the console.
+  // Off-deploy (local/file), the service-worker.js?v=79 asset 404s and floods the console.
   // It exists on the real GitHub Pages origin; everywhere else, no-op the registration silently
   // (returns a never-settling promise so v59's .then/.catch — and the warning — never fire).
   try{
