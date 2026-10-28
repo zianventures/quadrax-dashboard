@@ -7592,7 +7592,7 @@ signal lights, and price ladder. No analytics/engine logic changed.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     // Cache-bust the SW URL so browsers always check for updates
-    navigator.serviceWorker.register('service-worker.js?v=79')
+    navigator.serviceWorker.register('service-worker.js?v=80')
       .then(reg => {
         console.log('[QuadraX] SW registered, scope:', reg.scope);
 
@@ -7675,7 +7675,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
 (function(){
   "use strict";
   if(window.__qx64__) return; window.__qx64__=true;
-  // Off-deploy (local/file), the service-worker.js?v=79 asset 404s and floods the console.
+  // Off-deploy (local/file), the service-worker.js?v=80 asset 404s and floods the console.
   // It exists on the real GitHub Pages origin; everywhere else, no-op the registration silently
   // (returns a never-settling promise so v59's .then/.catch — and the warning — never fire).
   try{
@@ -9046,6 +9046,70 @@ window.__qxTraceHTML=function(){
   }
   window.addEventListener("qx-auth-change",paint);
   paint();
+})();
+</script>
+<script id="qx-live-accounts">
+/* Live MT5 accounts (read-only). MASTER claim only; reads accounts/* published by the ingest runner. Never synthetic. */
+(function(){
+  if(window.__qxLiveAccounts) return; window.__qxLiveAccounts=true;
+  var RANK=["LIVE","DELAYED","INCOMPLETE","STALE","OFFLINE","RECONCILIATION FAILED","INVALID"];
+  var COL={LIVE:"#6ED6A6",DELAYED:"#E0B05A",INCOMPLETE:"#E0B05A",STALE:"#E0B05A",OFFLINE:"#AAB4BE"};
+  var box=null, unsub=null, docs=null, err=null;
+  function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return "&#"+c.charCodeAt(0)+";";}); }
+  function num(v){ return typeof v==="number"&&isFinite(v)?v.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}):"—"; }
+  function ts(s){ var m=/^(\d{4})\.(\d{2})\.(\d{2}) (\d{2}):(\d{2}):(\d{2})$/.exec(s||""); return m?Date.UTC(+m[1],m[2]-1,+m[3],+m[4],+m[5],+m[6]):NaN; }
+  // The runner publishes only on a new seq, so the stored health ages here with the pipeline's thresholds; never upgraded.
+  function health(d,now){
+    var age=(now-ts(d.exported_at_utc))/1000, h=RANK.indexOf(d.health)<0?"INVALID":d.health, a;
+    if(!isFinite(age)||age<-60) a="INVALID"; else a=age>300?"OFFLINE":age>60?"STALE":age>25?"DELAYED":"LIVE";
+    return [RANK.indexOf(a)>RANK.indexOf(h)?a:h, age];
+  }
+  function mount(){
+    if(box) return box;
+    box=document.createElement("section"); box.id="qxLiveAccounts";
+    box.style.cssText="margin:12px 0;padding:12px 14px;border:1px solid rgba(255,255,255,.14);border-radius:2px;background:rgba(255,255,255,.03);font:500 11px/1.5 \"JetBrains Mono\",monospace;color:#D8DEE4";
+    var ref=document.getElementById("research-dock");
+    if(ref&&ref.parentNode) ref.parentNode.insertBefore(box,ref.nextSibling); else document.body.appendChild(box);
+    return box;
+  }
+  function render(){
+    if(!box) return;
+    var head='<div style="font-weight:600;letter-spacing:.8px;color:#AAB4BE;margin-bottom:8px">LIVE MT5 ACCOUNTS · BROKER EQUITY (NOT OFFICIAL NAV)</div>';
+    if(err){ box.innerHTML=head+'<div style="color:#E07A7A">LIVE ACCOUNTS UNAVAILABLE ('+esc(err)+')</div>'; return; }
+    if(!docs){ box.innerHTML=head+'<div style="color:#AAB4BE">CONNECTING…</div>'; return; }
+    if(!docs.length){ box.innerHTML=head+'<div style="color:#AAB4BE">NO ACCOUNT TELEMETRY</div>'; return; }
+    var now=Date.now(), tot={}, th='style="text-align:right;padding:2px 8px"', rows=docs.map(function(x){
+      var d=x.d, h=health(d,now), c=COL[h[0]]||"#E07A7A", cur=String(d.currency||"?");
+      var t=tot[cur]||(tot[cur]={n:0,b:0,e:0}); t.n++; t.b+=+d.balance||0; t.e+=+d.equity||0;
+      return '<tr><td style="padding:2px 8px">'+esc(x.id.slice(0,12))+'</td><td>'+esc(cur)+'</td><td '+th+'>'+num(d.balance)+'</td><td '+th+'>'+num(d.equity)+
+        '</td><td '+th+'>'+num(d.margin)+'</td><td '+th+'>'+num(d.margin_free)+'</td><td '+th+'>'+((d.positions||[]).length)+
+        '</td><td style="padding:2px 8px;color:'+c+'">'+esc(h[0])+'</td><td>'+esc(d.reconciliation||"—")+'</td><td '+th+'>'+(isFinite(h[1])?Math.round(h[1])+"s":"—")+'</td></tr>';
+    }).join("");
+    // Totals per currency only: no FX conversion is sourced, so currencies are never summed together.
+    var sums=Object.keys(tot).sort().map(function(k){ var t=tot[k];
+      return '<div>'+esc(k)+' · '+t.n+' acct · balance '+num(t.b)+' · equity '+num(t.e)+'</div>'; }).join("");
+    box.innerHTML=head+'<div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;white-space:nowrap"><thead style="color:#7E8A96"><tr>'+
+      '<th style="text-align:left;padding:2px 8px">ACCOUNT</th><th style="text-align:left">CCY</th><th '+th+'>BALANCE</th><th '+th+'>EQUITY</th><th '+th+'>MARGIN</th><th '+th+'>FREE</th><th '+th+'>POS</th>'+
+      '<th style="text-align:left;padding:2px 8px">HEALTH</th><th style="text-align:left">RECON</th><th '+th+'>AGE</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+      '<div style="margin-top:8px;color:#AAB4BE">'+sums+'</div>';
+  }
+  function stop(){
+    if(unsub){ try{unsub();}catch(e){} unsub=null; }
+    docs=null; err=null;
+    if(box){ box.innerHTML=""; box.style.display="none"; }
+  }
+  function sync(){
+    var a=(window.FirebaseSync&&window.FirebaseSync.authState)||{};
+    if(!(a.state==="CONNECTED"&&a.role==="MASTER"&&window.firebase&&firebase.apps&&firebase.apps.length)){ stop(); return; }
+    if(unsub) return;
+    mount().style.display=""; render();
+    unsub=firebase.firestore().collection("accounts").onSnapshot(function(s){
+      err=null; docs=s.docs.map(function(x){return {id:x.id,d:x.data()};}).sort(function(p,q){return p.id<q.id?-1:1;}); render();
+    },function(e){ err=(e&&e.code)||"error"; docs=null; unsub=null; render(); });
+  }
+  window.addEventListener("qx-auth-change",sync);
+  setInterval(function(){ if(unsub) render(); },5000);
+  sync();
 })();
 </script>
 </body></html>
