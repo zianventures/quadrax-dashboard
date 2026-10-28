@@ -4,6 +4,8 @@
   "alias_source": "/v2/api/login response user.user_risk_accounts[0].alias (verified from QuadraX 2026-10-27; corrected frame -> 181 feed_symbols/37s, 0 errors)",
   "working_symbol_frame": { "key": "symbol", "value": "[\"<RISK_ACCOUNT_ALIAS>||EURUSD.q||EURUSD\"]" },
   "working_symbol_value_decoded": ["<RISK_ACCOUNT_ALIAS>||EURUSD.q||EURUSD"],
+  "qx_v76_symbol_value_decoded": ["<RISK_ACCOUNT_ALIAS>||EURUSD.q||EURUSD","<RISK_ACCOUNT_ALIAS>||GBPUSD.q||GBPUSD","<RISK_ACCOUNT_ALIAS>||AUDUSD.q||AUDUSD","<RISK_ACCOUNT_ALIAS>||NZDUSD.q||NZDUSD","<RISK_ACCOUNT_ALIAS>||USDJPY.q||USDJPY","<RISK_ACCOUNT_ALIAS>||USDCAD.q||USDCAD","<RISK_ACCOUNT_ALIAS>||USDCHF.q||USDCHF","<RISK_ACCOUNT_ALIAS>||USDSEK.q||USDSEK","<RISK_ACCOUNT_ALIAS>||XAUUSD.q||XAUUSD","<RISK_ACCOUNT_ALIAS>||XTIUSD.q||XTIUSD"],
+  "qx_v76_source": "qx-v76 Macro Matrix legs; same alias-qualified array frame, all 10 streamed live 2026-10-27 (diagnostic, read-only).",
   "empty_watchlist_frame": { "key": "symbol", "value": "unsubscribe" },
   "negative_cases": [
     { "frame": { "key": "symbol", "value": "EURUSD.q" }, "observed": "silently ignored: no error, no feed_symbols (v70)" },

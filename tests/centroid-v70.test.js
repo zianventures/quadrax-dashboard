@@ -14,17 +14,25 @@ check('symbol constant is EURUSD.q', /CENTROID_SYMBOL\s*=\s*"EURUSD\.q"/.test(sr
 // qx-v74: symbol frame must match the live-verified fixture (alias-qualified; bare "EURUSD.q" is ignored).
 const fx = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'centroid-protocol.fixture.json'), 'utf8'));
 const ALIAS = '<RISK_ACCOUNT_ALIAS>';
+const macM = src.match(/var CENTROID_MACRO_SYMBOLS=(\[[^\]]*\]);/);
+check('CENTROID_MACRO_SYMBOLS declared', !!macM);
+const MACRO = macM ? JSON.parse(macM[1]) : [];
 const fnM = src.match(/function centroidSubscribeMsgs\(alias\)\{[\s\S]*?\n\s*\}\r?\n/);
 check('centroidSubscribeMsgs(alias) extractable', !!fnM);
 let subs = [], subsNoAlias = [];
 try {
-  const fctx = { CENTROID_SYMBOL: 'EURUSD.q' };
+  const fctx = { CENTROID_SYMBOL: 'EURUSD.q', CENTROID_MACRO_SYMBOLS: MACRO };
   vm.runInNewContext(fnM[0] + '; this.f = centroidSubscribeMsgs;', fctx);
   subs = fctx.f(ALIAS); subsNoAlias = fctx.f(null);
 } catch (e) {}
+const symFrame = { key: 'symbol', value: JSON.stringify(fx.qx_v76_symbol_value_decoded) };
 check('3 subscribe frames in order fix_conn_status / dashboard_data:unsubscribe / alias-qualified symbol',
-  JSON.stringify(subs) === JSON.stringify([{ key: 'fix_conn_status' }, { key: 'dashboard_data', value: 'unsubscribe' }, fx.working_symbol_frame]));
-check('symbol value decodes to fixture', !!subs[2] && JSON.stringify(JSON.parse(subs[2].value)) === JSON.stringify(fx.working_symbol_value_decoded));
+  JSON.stringify(subs) === JSON.stringify([{ key: 'fix_conn_status' }, { key: 'dashboard_data', value: 'unsubscribe' }, symFrame]));
+const decoded = subs[2] ? JSON.parse(subs[2].value) : [];
+check('symbol value decodes to fixture (qx-v76: EURUSD first, then 9 macro legs)', JSON.stringify(decoded) === JSON.stringify(fx.qx_v76_symbol_value_decoded));
+check('EURUSD element unchanged from the v74 verified frame', decoded[0] === fx.working_symbol_value_decoded[0]);
+check('every element is <alias>||<SYM>.q||<SYM>', decoded.length === 10 && decoded.every(e => /^<RISK_ACCOUNT_ALIAS>\|\|([A-Z]{6})\.q\|\|\1$/.test(e)));
+check('macro symbol list matches the source constant', JSON.stringify(MACRO) === JSON.stringify(fx.qx_v76_symbol_value_decoded.slice(1).map(e => e.split('||')[2])));
 check('no symbol frame without alias', subsNoAlias.length === 2 && !subsNoAlias.some(m => m.key === 'symbol'));
 check('no bare EURUSD.q symbol frame (fixture negative case)', !subs.concat(subsNoAlias).some(m => JSON.stringify(m) === JSON.stringify(fx.negative_cases[0].frame))
   && !/key:"symbol",value:(CENTROID_SYMBOL|"EURUSD\.q")/.test(src));
@@ -47,7 +55,7 @@ function session(riskAccounts) {
   const sockets = [], logs = [], timers = [];
   const ctx = {
     T: {}, ws: null, token: null, alias: null, riskCount: 0, creds: null, remember: false, state: '', msg: '',
-    attempts: 0, timer: null, manualClose: false, CENTROID_SYMBOL: 'EURUSD.q', CENTROID_TOKEN_BROKER_URL: '',
+    attempts: 0, timer: null, manualClose: false, CENTROID_SYMBOL: 'EURUSD.q', CENTROID_MACRO_SYMBOLS: MACRO, CENTROID_TOKEN_BROKER_URL: '',
     window: {}, sessionStorage: { removeItem() {} }, localStorage: { removeItem() {} },
     console: { log: (...a) => logs.push(a.join(' ')), warn: (...a) => logs.push(a.join(' ')), error: (...a) => logs.push(a.join(' ')) },
     setTimeout: (f) => { timers.push(f); return timers.length; }, clearTimeout() {},
@@ -64,10 +72,10 @@ function session(riskAccounts) {
   const ok1 = await one.ctx.connect({ user: 'u', pass: PASS }, false);
   one.sockets[0] && one.sockets[0].onopen(); one.flush();
   const sent1 = one.sockets[0] ? one.sockets[0].sent.map(m => JSON.parse(m)) : [];
-  check('1 risk account: connects and sends the fixture symbol frame', ok1 === true && JSON.stringify(sent1[2]) === JSON.stringify(fx.working_symbol_frame) && one.ctx.T.riskAccounts === 1);
+  check('1 risk account: connects and sends the fixture symbol frame', ok1 === true && JSON.stringify(sent1[2]) === JSON.stringify(symFrame) && one.ctx.T.riskAccounts === 1);
   one.sockets[0].onclose({ code: 1006 }); one.flush(); await new Promise(r => setImmediate(r));
   const s2 = one.sockets[1]; s2 && s2.onopen(); one.flush();
-  check('reconnect re-authenticates and keeps the alias-qualified frame', !!s2 && JSON.stringify(JSON.parse(s2.sent[2])) === JSON.stringify(fx.working_symbol_frame));
+  check('reconnect re-authenticates and keeps the alias-qualified frame', !!s2 && JSON.stringify(JSON.parse(s2.sent[2])) === JSON.stringify(symFrame));
   one.ctx.disconnect();
   check('disconnect clears alias and token', one.ctx.alias === null && one.ctx.token === null && one.ctx.state === 'DISCONNECTED');
   const leak = JSON.stringify(one.ctx.T) + one.logs.join('\n');
@@ -106,6 +114,34 @@ if (hM) {
   ctx.state = ''; ctx.handle(JSON.stringify({ key: 'fix_conn_status', value: 'ok' }));
   check('non-feed frame does not fake LIVE', ctx.state === '');
 }
+
+// qx-v76: Macro Matrix tiles read Centroid mids only; DXY computed from ICE weights, fail closed.
+const mtSrc = grab('  var ICE_DXY=', '  function paintMacroTiles(');
+check('macro tile functions extractable', /function iceDxy/.test(mtSrc) && /function macroTileRows/.test(mtSrc));
+if (mtSrc) {
+  const mctx = { Math }; vm.runInNewContext(mtSrc + '; this.rows = macroTileRows;', mctx);
+  const MIDS = { EURUSD: 1.11231, GBPUSD: 1.3301, AUDUSD: 0.70323, NZDUSD: 0.56059, USDJPY: 157.957, USDCAD: 1.40619,
+    USDCHF: 0.829905, USDSEK: 9.95465, XAUUSD: 4162.26, XTIUSD: 100.735 };
+  const getter = (over) => s => (s in over) ? over[s] : (MIDS[s] ? { mid: MIDS[s], ts: 1, fresh: true } : null);
+  const by = (rows, l) => rows.filter(r => r.label === l)[0] || {};
+  const live = mctx.rows(getter({}));
+  const expDxy = 50.14348112 * Math.pow(1.11231, -0.576) * Math.pow(157.957, 0.136) * Math.pow(1.3301, -0.119) *
+    Math.pow(1.40619, 0.091) * Math.pow(9.95465, 0.042) * Math.pow(0.829905, 0.036);
+  check('DXY = ICE formula on six fresh legs, labelled computed', by(live, 'DXY INDEX').value === expDxy.toFixed(3) && by(live, 'DXY INDEX').basis === 'COMPUTED · ICE WEIGHTS');
+  check('DXY vector 102.405 (live mids 2026-10-27)', by(live, 'DXY INDEX').value === '102.405');
+  check('XAU / XTI / GBP / AUD from Centroid mids', by(live, 'GOLD · XAU').value === '4162.26' && by(live, 'WTI OIL').value === (100.735).toFixed(2)
+    && by(live, 'GBP/USD').value === '1.33010' && by(live, 'AUD/USD').value === '0.70323' && by(live, 'GBP/USD').status === 'LIVE · CENTROID');
+  const oneStale = mctx.rows(getter({ USDSEK: { mid: 9.95, ts: 1, fresh: false } }));
+  check('one stale DXY leg -> DXY CENTROID FEED UNAVAILABLE', by(oneStale, 'DXY INDEX').value === 'CENTROID FEED UNAVAILABLE');
+  const missing = mctx.rows(getter({ USDJPY: null, XAUUSD: null }));
+  check('missing leg / symbol -> CENTROID FEED UNAVAILABLE, no number', by(missing, 'DXY INDEX').value === 'CENTROID FEED UNAVAILABLE' && by(missing, 'GOLD · XAU').value === 'CENTROID FEED UNAVAILABLE');
+  const stale = mctx.rows(getter({ XTIUSD: { mid: 100.7, ts: 1, fresh: false } }));
+  check('stale symbol keeps its last mid but is labelled STALE', by(stale, 'WTI OIL').value === '100.70' && by(stale, 'WTI OIL').status === 'STALE');
+  check('no Centroid at all -> every priced tile UNAVAILABLE', mctx.rows(() => null).filter(r => r.label !== 'EUR STRENGTH').every(r => r.value === 'CENTROID FEED UNAVAILABLE'));
+  check('EUR STRENGTH shows NOT DEFINED', by(live, 'EUR STRENGTH').value === 'NOT DEFINED');
+}
+check('Macro Matrix has no public-feed write', !/setLabeled\("macro-intelligence"/.test(src) && !/macroMap/.test(src) && /paintMacroTiles\(macroTileRows\(Market\.centroidQuote\)\)/.test(src));
+check('centroidQuote has no fallback path', /function centroidMid\(sym\)\{[^\n]*\}/.test(src) && !/function centroidMid[^\n]*(fxSpot|lastKnown|v\()/.test(src));
 
 check('no hardcoded Centroid password/token literal', !/(password|pass|token)\s*:\s*"[^"%]{6,}"/i.test(src));
 
