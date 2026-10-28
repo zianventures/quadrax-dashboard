@@ -144,6 +144,20 @@ if (mtSrc) {
   check('no Centroid at all -> every priced tile UNAVAILABLE', mctx.rows(() => null).filter(r => r.label !== 'EUR STRENGTH').every(r => r.value === 'CENTROID FEED UNAVAILABLE'));
   check('EUR STRENGTH shows NOT DEFINED', by(live, 'EUR STRENGTH').value === 'NOT DEFINED');
 }
+{ // qx-v78: template Confluence Drivers ("GOLD SOFT +9") are withheld, never shown as signals
+  const pSrc = grab('  function paintMacroTiles(', '  var Market=(function(){');
+  const el = (tpl, text, kids = []) => ({ tpl, textContent: text, style: { width: '34%' }, kids });
+  const rows = [['USD WEAK', '+28'], ['GOLD SOFT', '+9'], ['OIL NEUTRAL', '0']].map(([l, v]) => el('421', '', [el('422', l), el('424', ''), el('425', v)]));
+  const head = el('418', 'CONFLUENCE DRIVERS');
+  const mi = el('mi', '', [head, ...rows]);
+  const walk = n => n.kids.flatMap(k => [k, ...walk(k)]);
+  const sel = s => (s.match(/data-dc-tpl="(\d+)"/) || [])[1];
+  const pctx = { document: { getElementById: () => mi }, $all: (s, r) => walk(r).filter(n => n.tpl === sel(s)), $: (s, r) => walk(r).find(n => n.tpl === sel(s)) || null };
+  vm.runInNewContext(pSrc + '; paintMacroTiles([]); paintMacroTiles([]);', pctx);
+  const shown = JSON.stringify(walk(mi).map(n => n.textContent));
+  check('qx-v78: Confluence Drivers withheld (no SOFT/WEAK/+9, values N/D, bars empty)', !/SOFT|WEAK|NEUTRAL|\+9|\+28/.test(shown) && rows.every(r => r.kids[2].textContent === 'N/D' && r.kids[1].style.width === '0'));
+  check('qx-v78: Confluence Drivers heading says NOT COMPUTED; idempotent', head.textContent === 'CONFLUENCE DRIVERS · NOT COMPUTED' && rows[1].kids[0].textContent === 'GOLD');
+}
 check('Macro Matrix has no public-feed write', !/setLabeled\("macro-intelligence"/.test(src) && !/macroMap/.test(src) && /paintMacroTiles\(macroTileRows\(Market\.centroidQuote\)\)/.test(src));
 check('centroidQuote has no fallback path', /function centroidMid\(sym\)\{[^\n]*\}/.test(src) && !/function centroidMid[^\n]*(fxSpot|lastKnown|v\()/.test(src));
 

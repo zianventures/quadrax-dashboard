@@ -7588,7 +7588,7 @@ signal lights, and price ladder. No analytics/engine logic changed.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     // Cache-bust the SW URL so browsers always check for updates
-    navigator.serviceWorker.register('service-worker.js?v=77')
+    navigator.serviceWorker.register('service-worker.js?v=78')
       .then(reg => {
         console.log('[QuadraX] SW registered, scope:', reg.scope);
 
@@ -7671,7 +7671,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
 (function(){
   "use strict";
   if(window.__qx64__) return; window.__qx64__=true;
-  // Off-deploy (local/file), the service-worker.js?v=77 asset 404s and floods the console.
+  // Off-deploy (local/file), the service-worker.js?v=78 asset 404s and floods the console.
   // It exists on the real GitHub Pages origin; everywhere else, no-op the registration silently
   // (returns a never-settling promise so v59's .then/.catch — and the warning — never fire).
   try{
@@ -7832,6 +7832,14 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
       if(st&&st.textContent!==r.status) st.textContent=r.status;
       if(bs&&bs.textContent!==r.basis) bs.textContent=r.basis;
       if(sp) sp.style.visibility="hidden"; // template sparkline is static, not data
+    });
+    // qx-v78: Confluence Drivers are template literals (e.g. "GOLD SOFT +9"); no code computes them. Withhold.
+    var hd=$('[data-dc-tpl="418"]',mi); if(hd&&hd.textContent!=="CONFLUENCE DRIVERS · NOT COMPUTED") hd.textContent="CONFLUENCE DRIVERS · NOT COMPUTED";
+    $all('div[data-dc-tpl="421"]',mi).forEach(function(row){
+      var l=$('[data-dc-tpl="422"]',row), b=$('[data-dc-tpl="424"]',row), v=$('[data-dc-tpl="425"]',row);
+      if(l&&!row.__qxNd){ l.textContent=(l.textContent||"").trim().split(/\s+/)[0]; row.__qxNd=1; }
+      if(b) b.style.width="0";
+      if(v&&v.textContent!=="N/D") v.textContent="N/D";
     });
   }
   var Market=(function(){
