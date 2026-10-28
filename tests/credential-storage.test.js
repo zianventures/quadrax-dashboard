@@ -30,7 +30,7 @@ if (cM) {
   check('clearCreds drops memory copy', api.creds === null);
 }
 
-// Firebase: save() must never persist fbPassword; legacy stored password is purged at load.
+// Firebase: save() must never persist fbEmail/fbPassword; legacy stored credentials are purged at load.
 const sM = src.match(/function save\(k,v\)\{[^\n]*\n/);
 check('settings save() extractable', !!sM);
 if (sM) {
@@ -38,10 +38,13 @@ if (sM) {
   vm.runInNewContext(sM[0] + ';this.save=save;', ctx);
   const settings = { twelvedataKey: 'td', fbEmail: 'e', fbPassword: 'FBSECRET' };
   ctx.save('qx_s_v5', settings);
-  check('save(KEY.s) strips fbPassword', !ls.m.qx_s_v5.includes('FBSECRET') && JSON.parse(ls.m.qx_s_v5).fbEmail === 'e');
+  const stored = JSON.parse(ls.m.qx_s_v5);
+  check('save(KEY.s) strips fbPassword and fbEmail', !ls.m.qx_s_v5.includes('FBSECRET') && !('fbPassword' in stored) && !('fbEmail' in stored) && stored.twelvedataKey === 'td');
   check('save(KEY.s) leaves in-memory settings intact', settings.fbPassword === 'FBSECRET');
 }
-check('legacy fbPassword purge runs at settings load', /let settings=loadObj\(KEY\.s[^\n]*\n\s*if\(settings\.fbPassword\)\{settings\.fbPassword="";save\(KEY\.s,settings\);\}/.test(src));
+check('legacy fbEmail/fbPassword purge runs at settings load', /let settings=loadObj\(KEY\.s[^\n]*\n\s*if\("fbPassword"in settings\|\|"fbEmail"in settings\)\{delete settings\.fbPassword;delete settings\.fbEmail;save\(KEY\.s,settings\);\}/.test(src));
+check('settings schema has no Firebase credential fields', !/fbEmail:""|fbPassword:""/.test(src));
+check('credentials never read back from settings', !/(?<!delete )settings\.(fbEmail|fbPassword)/.test(src));
 check('no Remember-on-device credential option', !/qxsRemember/.test(src));
 check('no direct Web Storage write of CRED', !/Storage\.setItem\(CRED/.test(src));
 

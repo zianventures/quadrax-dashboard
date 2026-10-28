@@ -33,7 +33,7 @@ check('no position subscribe frame', !subs.some(m => m && m.key === 'position'))
 check('alias read from login user_risk_accounts via centroidRiskAlias', /alias=centroidRiskAlias\(ra\)/.test(src) && /j\.user&&j\.user\.user_risk_accounts/.test(src));
 check('onopen subscribes with centroidSubscribeMsgs(alias)', /\|\|centroidSubscribeMsgs\(alias\)/.test(src));
 check('alias never persisted or traced', !/(setItem|saveCreds|T\.\w+\s*=)\([^)]*\balias\b[^)]*\)|T\.\w+\s*=\s*alias\b/.test(src));
-check('alias cleared on clearCreds and disconnect', /function clearCreds\(\)\{[^}]*alias=null/.test(src) && /function disconnect\(\)\{[^\n]*alias=null/.test(src));
+check('alias cleared on clearCreds and disconnect', /function clearCreds\(\)\{[^}]*alias=null/.test(src) && /function disconnect\(\)\{[^\n]*clearCreds\(\)/.test(src));
 
 // Behavioural session test: real getToken/openSocket/connect/reconnect/disconnect with mocked fetch + WebSocket.
 const grab = (a, b) => { const i = src.indexOf(a), k = src.indexOf(b, i); return i >= 0 && k > i ? src.slice(i, k) : ''; };
@@ -93,7 +93,7 @@ function session(riskAccounts) {
 const hM = src.match(/function handle\(data\)\{[\s\S]*?(?=\r?\n\s*function reconnect)/);
 check('handle() extractable', !!hM);
 if (hM) {
-  const ctx = { quotes: {}, lastMsgTs: 0, state: '', T: { rawMsgs: 0, pricePubs: 0, feedFrames: 0, symbolsSeen: [] } };
+  const ctx = { quotes: {}, lastMsgTs: 0, state: '', T: { rawMsgs: 0, feedFrames: 0, symbolsSeen: [] } };
   ctx.setState = s => { ctx.state = s; };
   vm.runInNewContext(hM[0] + '; this.handle = handle;', ctx);
   ctx.handle(JSON.stringify({ feed_symbols: [{ feed: 'EURUSD.q', bid: 1.0801, ask: 1.0803, bid_vol: 5 }] }));

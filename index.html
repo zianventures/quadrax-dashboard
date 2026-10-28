@@ -3105,9 +3105,9 @@ function pearsonR(xs,ys){const n=Math.min(xs.length,ys.length);if(n<5)return{r:0
 const KEY={s:"qx_s_v5",sg:"qx_sg_v1",rh:"qx_rh_v3",proj:"qx_proj_v1"};
 function loadObj(k,fb){try{const r=localStorage.getItem(k);if(!r)return fb;const p=JSON.parse(r);return(p&&typeof p==="object")?p:fb;}catch{return fb;}}
 function loadArr(k,fb){try{const r=localStorage.getItem(k);if(!r)return fb;const p=JSON.parse(r);return Array.isArray(p)?p:fb;}catch{return fb;}}
-function save(k,v){try{localStorage.setItem(k,JSON.stringify(k===KEY.s?Object.assign({},v,{fbPassword:""}):v));}catch{}}
-let settings=loadObj(KEY.s,{twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbConfig:null,fbEmail:"",fbPassword:"",calibMult:1.0,biasConfAdj:1.0,sharpeAdj:1.0,mbOverlay:{enabled:true,sharpeTrigger:1.0,confMin:0.35,confMax:0.75,minAgreement:0.45,maxEventRisk:0.60,allowedPolicies:[1,2,3,4,7],sessionsUTC:[{name:"London",start:"06:45",end:"09:15"},{name:"New York",start:"12:45",end:"15:15"}],confBoostMax:0.12,riskTighten:0.90,cooldownMin:15}});
-if(settings.fbPassword){settings.fbPassword="";save(KEY.s,settings);} // purge legacy persisted Firebase password
+function save(k,v){try{if(k===KEY.s){v=Object.assign({},v);delete v.fbEmail;delete v.fbPassword;}localStorage.setItem(k,JSON.stringify(v));}catch{}} // qx-v75: Firebase credentials never persisted
+let settings=loadObj(KEY.s,{twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbConfig:null,calibMult:1.0,biasConfAdj:1.0,sharpeAdj:1.0,mbOverlay:{enabled:true,sharpeTrigger:1.0,confMin:0.35,confMax:0.75,minAgreement:0.45,maxEventRisk:0.60,allowedPolicies:[1,2,3,4,7],sessionsUTC:[{name:"London",start:"06:45",end:"09:15"},{name:"New York",start:"12:45",end:"15:15"}],confBoostMax:0.12,riskTighten:0.90,cooldownMin:15}});
+if("fbPassword"in settings||"fbEmail"in settings){delete settings.fbPassword;delete settings.fbEmail;save(KEY.s,settings);} // qx-v75: purge legacy persisted Firebase credentials
 try{window.__qxSetTD=function(k){settings.twelvedataKey=k;};}catch(e){}
 const STATES=[
   {id:1,name:"Mean-Reverting",  desc:"Range-bound. Fade extremes, keep size disciplined.",       color:"rgba(0,214,143,.85)"},
@@ -4344,6 +4344,7 @@ const SignalBus=(()=>{
 // ── FIRESTORE SYNC: push-based, onSnapshot, no polling ──────────────────────
 const FirebaseSync=(()=>{
   let db=null,auth=null,_isMaster=false,_configured=false,_unsubListener=null,_pending=false,_purge=null;
+  let _gen=0; // qx-v75: bumped on every teardown; async work from an older generation is discarded
   // qx-v73: auth state model. role comes only from the verified ID-token claim.
   let _authState={state:"DISCONNECTED",role:null,msg:""};
   function _setAuth(state,role,msg){
@@ -4352,6 +4353,7 @@ const FirebaseSync=(()=>{
   }
   // Detach listeners and drop any authenticated in-memory state.
   function _teardown(){
+    _gen++;
     if(_unsubListener){try{_unsubListener();}catch(e){}_unsubListener=null;}
     _isMaster=false;_configured=false;_latestPayload=null;
     if(_writeTimer){clearTimeout(_writeTimer);_writeTimer=null;}
@@ -4367,7 +4369,7 @@ const FirebaseSync=(()=>{
         auth=firebase.auth();
         await auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
         if(auth.currentUser)await auth.signOut();
-        auth.onAuthStateChanged(u=>{if(!u&&_configured){_teardown();_badge("STANDALONE");_setAuth("DISCONNECTED");}});
+        auth.onAuthStateChanged(u=>{if(!u&&_configured){_teardown();_badge("STANDALONE");_setAuth("DISCONNECTED");try{window.dispatchEvent(new CustomEvent("qx-auth-signout"));}catch(e){}}});
       }catch(e){console.warn("[QuadraX] auth persistence purge failed:",(e&&e.code)||"error");}
       try{await firebase.firestore().clearPersistence();}catch(e){}
     })();
@@ -4423,6 +4425,7 @@ const FirebaseSync=(()=>{
     if(_pending)return; // qx-v73: one sign-in request at a time
     _pending=true;
     _teardown(); // re-login: detach old listeners before switching identity
+    const g=_gen;
     _badge("CONNECTING");
     _setAuth("CONNECTING");
     if(statusEl)statusEl.textContent="Connecting to Firestore…";
@@ -4434,6 +4437,7 @@ const FirebaseSync=(()=>{
       const cred=await auth.signInWithEmailAndPassword(email,password);
       // Role only from the server-verified custom claim; absent claim never means MASTER
       const tok=await cred.user.getIdTokenResult(true);
+      if(g!==_gen){try{await auth.signOut();}catch(e){}return;} // qx-v75: signed out mid-sign-in
       const role=tok.claims.role==="MASTER"?"MASTER":tok.claims.role==="READER"?"READER":"NO_ROLE";
       _isMaster=role==="MASTER";
       _configured=true;
@@ -4442,6 +4446,7 @@ const FirebaseSync=(()=>{
       if(statusEl)statusEl.textContent=
         "Firestore: connected | Role: "+(role==="MASTER"?"MASTER — writing state":role==="READER"?"READER — receiving push updates":"no role claim — read-only");
     }catch(err){
+      if(g!==_gen)return;
       _teardown();
       try{if(auth&&auth.currentUser)await auth.signOut();}catch(e){}
       const limited=err&&err.code==="auth/too-many-requests";
@@ -4466,15 +4471,17 @@ const FirebaseSync=(()=>{
   function subscribeState(onState){
     if(!db||_isMaster||!_configured)return; // qx-v73: no listener without a signed-in session
     if(_unsubListener){_unsubListener();_unsubListener=null;}
+    const g=_gen;
     _unsubListener=db.collection("quadrax").doc("state").onSnapshot(
       snap=>{
-        if(!snap.exists)return;
+        if(g!==_gen||!snap.exists)return;
         const data=snap.data();
         if(!data||!data.ts)return;
         // _hydrate reverses the _sanitise step — parses JSON-string fields back to arrays/objects
         onState(_hydrate(data));
       },
       err=>{
+        if(g!==_gen)return;
         console.warn("[QuadraX] onSnapshot error:",err);
         setFxStatus("STALE");
         _badge("STALE");
@@ -5872,14 +5879,13 @@ async function onSpotUpdate(s){
 async function validateTDKey(key){if(!key)return null;try{const r=await fetch("https://api.twelvedata.com/price?symbol=EUR%2FUSD&apikey="+encodeURIComponent(key),{cache:"no-store"});if(!r.ok)return false;const j=await r.json();return Number.isFinite(Number(j?.price))&&Number(j.price)>0;}catch{return false;}}
 function openSettings(){
   const ti=$("tdKeyInput"),pi=$("pollInput"),ai=$("alertThreshInput"),hi=$("histDepthInput");
-  const fci=$("fbConfigInput"),fei=$("fbEmailInput"),fpi=$("fbPasswordInput");
+  const fci=$("fbConfigInput"),fpi=$("fbPasswordInput");
   if(ti)ti.value=settings.twelvedataKey||"";
   if(pi)pi.value=String(settings.pollMs||12000);
   if(ai)ai.value=String(settings.alertThreshPips||"");
   if(hi)hi.value=String(settings.histDepth||60);
   if(fci)fci.value=settings.fbConfig?JSON.stringify(settings.fbConfig,null,2):"";
-  if(fei)fei.value=settings.fbEmail||"";
-  if(fpi)fpi.value=settings.fbPassword||"";
+  if(fpi)fpi.value=""; // qx-v75: never pre-filled; email keeps only what the login gate showed
   const tv=$("tdKeyValidTag");if(tv)tv.textContent="";
   const cv=$("fbConfigValidTag");if(cv)cv.textContent="";
   const sb=$("settingsBack");if(sb)sb.style.display="flex";
@@ -5897,7 +5903,7 @@ const gBtn=$("guideBtn"),gClose=$("closeGuideBtn"),gBack=$("guideBack");
 if(gBtn)gBtn.addEventListener("click",openGuide);
 if(gClose)gClose.addEventListener("click",closeGuide);
 if(gBack)gBack.addEventListener("click",e=>{if(e.target===gBack)closeGuide();});
-if(rBtn)rBtn.addEventListener("click",()=>{if(!confirm("Reset all settings? Firebase credentials will be cleared."))return;settings={twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbConfig:null,fbEmail:"",fbPassword:"",calibMult:1.0,biasConfAdj:1.0,sharpeAdj:1.0};save(KEY.s,settings);openSettings();});
+if(rBtn)rBtn.addEventListener("click",()=>{if(!confirm("Reset all settings? Firebase credentials will be cleared."))return;settings={twelvedataKey:"",pollMs:12000,alertThreshPips:0,histDepth:60,fbConfig:null,calibMult:1.0,biasConfAdj:1.0,sharpeAdj:1.0};save(KEY.s,settings);openSettings();});
 if(rpBtn)rpBtn.addEventListener("click",()=>{if(confirm("Reset all projection logs and calibration multiplier to 1.00?"))ProjTracker.reset();});
 if(saveBtn)saveBtn.addEventListener("click",async()=>{
   // ── Validate TwelveData key ──────────────────────────────────────────────
@@ -5922,12 +5928,12 @@ if(saveBtn)saveBtn.addEventListener("click",async()=>{
   settings.alertThreshPips=Number.isFinite(thresh)&&thresh>0?Math.round(thresh):0;
   settings.histDepth=clamp(Number.isFinite(depth)?Math.round(depth):60,10,120);
   settings.fbConfig=fbConfig;
-  settings.fbEmail=($("fbEmailInput")?.value||"").trim();
-  settings.fbPassword=$("fbPasswordInput")?.value||"";
   save(KEY.s,settings);
-  // ── Re-init Firestore with new credentials ───────────────────────────────
-  await FirebaseSync.init(fbConfig,settings.fbEmail,settings.fbPassword);
-  settings.fbPassword="";{const fpi=$("fbPasswordInput");if(fpi)fpi.value="";} // qx-v73: drop after use
+  // ── Re-init Firestore only when new credentials were entered (qx-v75: never stored) ──
+  const fbEmail=($("fbEmailInput")?.value||"").trim(),fpi=$("fbPasswordInput");
+  let fbPass=fpi?fpi.value:"";if(fpi)fpi.value="";
+  if(fbConfig&&fbEmail&&fbPass)await FirebaseSync.init(fbConfig,fbEmail,fbPass);
+  fbPass="";
   if(settings.alertThreshPips>0&&"Notification"in window&&Notification.permission==="default")Notification.requestPermission();
   closeSettings();
   // Subscribe state if now a Reader (may have changed role)
@@ -5999,8 +6005,8 @@ async function start(){
   })();
   const __authCfg = window.__qxAuthOverride || null;
   const __fbConfig = (__authCfg&&__authCfg.fbConfig) ? __authCfg.fbConfig : (settings.fbConfig || __BAKED_CONFIG);
-  const __fbEmail  = (__authCfg&&__authCfg.fbEmail)  ? __authCfg.fbEmail  : settings.fbEmail;
-  const __fbPass   = (__authCfg&&__authCfg.fbPassword) ? __authCfg.fbPassword : settings.fbPassword;
+  const __fbEmail  = __authCfg&&__authCfg.fbEmail;    // qx-v75: credentials only from the in-memory login gate
+  const __fbPass   = __authCfg&&__authCfg.fbPassword;
   await FirebaseSync.purgePersisted(__fbConfig); // qx-v73: no restored sessions
   if(__fbConfig&&__fbEmail&&__fbPass){
     await FirebaseSync.init(__fbConfig,__fbEmail,__fbPass);
@@ -6082,8 +6088,14 @@ window.__qxAuthLogin=async function(cfg,em,pw){
   window.__qxAuthConfigured=FirebaseSync.configured;
   if(FirebaseSync.isReader)FirebaseSync.subscribeState(onReaderState);
 };
-// On sign-out, drop the last authenticated snapshot; the standalone loop repaints.
-window.addEventListener("qx-auth-signout",()=>{lastFullState=null;window.__qxAuthConfigured=false;setFxStatus("STALE");});
+// qx-v75: sign-out after an authenticated session reloads the page, so no authenticated DOM,
+// in-memory state, listener, timer or late callback survives into the next user's session.
+// Preferences in localStorage are kept; credentials and the session live only in memory.
+window.addEventListener("qx-auth-signout",()=>{
+  const had=window.__qxAuthConfigured||lastFullState;
+  lastFullState=null;window.__qxAuthConfigured=false;setFxStatus("STALE");
+  if(had)location.reload();
+});
 })();
 </script>
 <script>
@@ -7576,7 +7588,7 @@ signal lights, and price ladder. No analytics/engine logic changed.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     // Cache-bust the SW URL so browsers always check for updates
-    navigator.serviceWorker.register('service-worker.js?v=74')
+    navigator.serviceWorker.register('service-worker.js?v=75')
       .then(reg => {
         console.log('[QuadraX] SW registered, scope:', reg.scope);
 
@@ -7659,7 +7671,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
 (function(){
   "use strict";
   if(window.__qx64__) return; window.__qx64__=true;
-  // Off-deploy (local/file), the service-worker.js?v=74 asset 404s and floods the console.
+  // Off-deploy (local/file), the service-worker.js?v=75 asset 404s and floods the console.
   // It exists on the real GitHub Pages origin; everywhere else, no-op the registration silently
   // (returns a never-settling promise so v59's .then/.catch — and the warning — never fire).
   try{
@@ -7747,7 +7759,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
   }
   var Market=(function(){
     var CRED="qx_ds_cred_v1";
-    var T=window.QXTrace=window.QXTrace||{loginAttempts:0,loginHTTP:null,loginFailCat:null,tokenReceived:false,clientCodeExtracted:false,clientCodeMasked:null,wsURLShapeValid:null,wsOpenTs:null,wsCloseCode:null,wsCloseReason:null,wsErrors:0,rawMsgs:0,pricePubs:0,feedFrames:0,symbolsSeen:[],firstFrameShape:null,lastFrameTs:null,eurusdQSeen:false,eurusdMatched:false,subscribeSent:null};
+    var T=window.QXTrace=window.QXTrace||{loginAttempts:0,loginHTTP:null,loginFailCat:null,tokenReceived:false,clientCodeExtracted:false,clientCodeMasked:null,wsURLShapeValid:null,wsOpenTs:null,wsCloseCode:null,wsCloseReason:null,wsErrors:0,rawMsgs:0,feedFrames:0,symbolsSeen:[],firstFrameShape:null,lastFrameTs:null,eurusdQSeen:false,eurusdMatched:false,subscribeSent:null};
     var ws=null, token=null, alias=null, riskCount=0, creds=null, remember=false, state="DISCONNECTED", msg="not configured"; // alias: risk-account label from login, memory only
     var quotes={}, lastMsgTs=0, attempts=0, timer=null, manualClose=false;
     var lastKnown=null; // {mid,bid,ask,ts,source}
@@ -7785,7 +7797,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
       ws.onclose=function(ev){ T.wsCloseCode=ev&&ev.code; T.wsCloseReason=((ev&&ev.reason)||"").slice(0,60); if(!manualClose){ setState("DISCONNECTED","reconnecting"); reconnect(); } };
     }
     function handle(data){
-      T.rawMsgs++; var m; try{ m=JSON.parse(data); }catch(e){ return; } if(!T.firstFrameShape){try{T.firstFrameShape=Object.keys(m).slice(0,8).join(",");}catch(e){}} if(m.operation==="price"||m.type==="price_pub"||m.price_pub)T.pricePubs++;
+      T.rawMsgs++; var m; try{ m=JSON.parse(data); }catch(e){ return; } if(!T.firstFrameShape){try{T.firstFrameShape=Object.keys(m).slice(0,8).join(",");}catch(e){}}
       var arr=m.feed_symbols||(m.data&&m.data.feed_symbols); if(!arr||!arr.length) return;
       var now=Date.now(); lastMsgTs=now; T.feedFrames++; T.lastFrameTs=now;
       arr.forEach(function(s){ if(!s||!(s.symbol||s.feed)) return;
@@ -7807,9 +7819,11 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
       try{ token=await getToken();
         if(!alias&&!window.CENTROID_SUBSCRIBE){ token=null; setState("ERROR",riskCount>1?"Centroid: "+riskCount+" risk accounts in login — cannot pick the EURUSD.q account; not subscribed, fallback active":"Centroid: no risk account in login — not subscribed, fallback active"); return false; }
         openSocket(); return true; }
-      catch(e){ setState(((creds&&creds.broker)||CENTROID_TOKEN_BROKER_URL)?"BROKER_REQUIRED":"ERROR","Centroid auth failed (CORS or credentials) — fallback active"); reconnect(); return false; }
+      catch(e){ // qx-v75: rejected credentials are destroyed, not retried
+        if(/^login 40[13]$/.test(e&&e.message)){ clearCreds(); setState("CREDENTIALS_REQUIRED","Centroid rejected the credentials — re-enter"); return false; }
+        setState(((creds&&creds.broker)||CENTROID_TOKEN_BROKER_URL)?"BROKER_REQUIRED":"ERROR","Centroid auth failed (CORS or credentials) — fallback active"); reconnect(); return false; }
     }
-    function disconnect(){ manualClose=true; clearTimeout(timer); try{ if(ws) ws.close(); }catch(e){} ws=null; token=null; alias=null; setState("DISCONNECTED","disconnected"); }
+    function disconnect(){ manualClose=true; clearTimeout(timer); try{ if(ws) ws.close(); }catch(e){} ws=null; clearCreds(); setState("DISCONNECTED","disconnected"); } // qx-v75: explicit disconnect destroys reconnect credentials
     function pipFactor(sym){ return /JPY/.test(sym)?100:/XAU/.test(sym)?10:10000; }
     // unified MarketQuote, preferring Centroid then v59 spot pipeline then last-known
     function quote(){
@@ -8137,6 +8151,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
     settingsEl.addEventListener("click",function(e){ if(e.target===settingsEl) closeSettings(); });
     $("#qxsConnect",settingsEl).addEventListener("click",function(){
       var c={broker:$("#qxsBroker").value.trim(),user:$("#qxsUser").value.trim(),pass:$("#qxsPass").value,code:$("#qxsCode").value.trim(),td:$("#qxsTd").value.trim()};
+      $("#qxsPass").value=""; // qx-v75: password lives only in Market's memory
       Market.connect(c,false,false); paintStatus();
       // hand TwelveData key to v59 settings (no hardcode) for its fallback pipeline
       try{ if(c.td && window.__qxSetTD) window.__qxSetTD(c.td); }catch(e){}
@@ -8150,7 +8165,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
       paintStatus();
     });
     $("#qxsFbOut",settingsEl).addEventListener("click",function(){ if(window.FirebaseSync) window.FirebaseSync.signOut(); fbNote=""; paintStatus(); });
-    $("#qxsDisc",settingsEl).addEventListener("click",function(){ Market.disconnect(); paintStatus(); });
+    $("#qxsDisc",settingsEl).addEventListener("click",function(){ Market.disconnect(); $("#qxsPass").value=""; paintStatus(); });
     $("#qxsClear",settingsEl).addEventListener("click",function(){ Market.disconnect(); Market.clearCreds(); ["qxsBroker","qxsUser","qxsPass","qxsCode","qxsTd","qxsEmail","qxsFbPass"].forEach(function(id){var e=$("#"+id,settingsEl); if(e)e.value="";}); paintStatus(); });
   }
   // v73: Firebase auth state (no email, password or token is ever shown). Rate limit locks the button 60s — no auto-retry.
@@ -8914,7 +8929,6 @@ window.__qxTraceHTML=function(){
   +(T.wsCloseCode!=null?kv("Socket closed",T.wsCloseCode+(T.wsCloseReason?" "+T.wsCloseReason:""),"#B0BAC4"):"")
   +kv("Socket errors",T.wsErrors||0,(T.wsErrors||0)?"#E9566E":"#6ED6A6")
   +kv("Raw messages",T.rawMsgs||0)
-  +kv("price_pub msgs",T.pricePubs||0)
   +kv("feed_symbols frames",T.feedFrames||0,(T.feedFrames||0)?"#6ED6A6":"#B0BAC4")
   +kv("Symbols seen",(T.symbolsSeen&&T.symbolsSeen.length)?T.symbolsSeen.join(", "):"none")
   +kv("EURUSD.q appeared",T.eurusdQSeen?"yes":"no",T.eurusdQSeen?"#6ED6A6":"#B0BAC4")
