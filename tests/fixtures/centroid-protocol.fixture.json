@@ -1,0 +1,31 @@
+{
+  "_source": "Centroid CS 360 Bridge Engine portal, observed 2026-10-27 (read-only). Sanitized: placeholders only, no account data. Safe to copy into tests/fixtures/ in the public repo.",
+  "endpoint": "wss://bridge.centroidsol.com/ws?q=<CLIENT_CODE>&token=<TOKEN>",
+  "alias_source": "/v2/api/login response user.user_risk_accounts[0].alias (verified from QuadraX 2026-10-27; corrected frame -> 181 feed_symbols/37s, 0 errors)",
+  "working_symbol_frame": { "key": "symbol", "value": "[\"<RISK_ACCOUNT_ALIAS>||EURUSD.q||EURUSD\"]" },
+  "working_symbol_value_decoded": ["<RISK_ACCOUNT_ALIAS>||EURUSD.q||EURUSD"],
+  "empty_watchlist_frame": { "key": "symbol", "value": "unsubscribe" },
+  "negative_cases": [
+    { "frame": { "key": "symbol", "value": "EURUSD.q" }, "observed": "silently ignored: no error, no feed_symbols (v70)" },
+    { "frame": null, "url_order": "token-first, no subscribe frames", "observed": "socket opens, 0 messages in 30s (guide-exact)" }
+  ],
+  "portal_cycle": [
+    { "key": "order_status_sound_alert" },
+    { "key": "fix_conn_status" },
+    { "key": "account_balance", "value": "{\"risk_account\":[\"<RISK_ACCOUNT_ALIAS>\"]}" },
+    { "key": "dashboard_data", "value": "unsubscribe" },
+    { "key": "symbol", "value": "[\"<RISK_ACCOUNT_ALIAS>||EURUSD.q||EURUSD\"]" },
+    { "key": "position", "value": "unsubscribe" }
+  ],
+  "not_authorized_error": { "error": { "code": "not_authorized", "message": "You are not authorized to perform this action", "details": { "key": "account_balance" } } },
+  "not_authorized_keys": ["account_balance", "position", "order_status_sound_alert"],
+  "feed_symbols_row_shape": {
+    "feed_symbols": [{
+      "symbol": "EURUSD.q", "uni_symbol": "EURUSD", "digits": 5, "vol_digits": 2, "depth": 0,
+      "bid_price": 1.00000, "ask_price": 1.00002, "bid_volume": 0, "ask_volume": 0,
+      "bid_price_change": 0, "ask_price_change": 0, "ltp_price": 0, "ltp_volume": 0,
+      "last_updated": "<TIMESTAMP>", "depth_symbols": []
+    }]
+  },
+  "_note": "Numeric values and depth_symbols contents are placeholders; only field names and types are observed facts."
+}

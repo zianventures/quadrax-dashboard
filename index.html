@@ -7576,7 +7576,7 @@ signal lights, and price ladder. No analytics/engine logic changed.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     // Cache-bust the SW URL so browsers always check for updates
-    navigator.serviceWorker.register('service-worker.js?v=73')
+    navigator.serviceWorker.register('service-worker.js?v=74')
       .then(reg => {
         console.log('[QuadraX] SW registered, scope:', reg.scope);
 
@@ -7659,7 +7659,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
 (function(){
   "use strict";
   if(window.__qx64__) return; window.__qx64__=true;
-  // Off-deploy (local/file), the service-worker.js?v=73 asset 404s and floods the console.
+  // Off-deploy (local/file), the service-worker.js?v=74 asset 404s and floods the console.
   // It exists on the real GitHub Pages origin; everywhere else, no-op the registration silently
   // (returns a never-settling promise so v59's .then/.catch — and the warning — never fire).
   try{
@@ -7727,21 +7727,28 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
   var CENTROID_SYMBOL="EURUSD.q";
   var CENTROID_TOKEN_BROKER_URL=""; // set to a Cloudflare Worker to make broker mode primary
   var TWELVEDATA_BROKER_URL="";
-  // Candidate subscribe frames sent on WS open. The bridge.centroidsol.com price feed authenticates
-  // but does not push until subscribed; the guide doc omits this step. Replace with the confirmed
-  // CS-360 subscribe schema once Centroid provides it (or set window.CENTROID_SUBSCRIBE at runtime).
-  // Empty by default: sending speculative frames makes the server CLOSE the socket (verified).
-  // Leave empty so the WS stays open + listening; set window.CENTROID_SUBSCRIBE = {…} or [{…}]
-  // with the confirmed CS-360 subscribe schema once Centroid provides the API reference.
-  var CENTROID_SUBSCRIBE_MSGS=[
-    {key:"fix_conn_status"},
-    {key:"dashboard_data",value:"unsubscribe"},
-    {key:"symbol",value:CENTROID_SYMBOL}
-  ];
+  // qx-v74: subscribe frames sent on WS open, verified live 2026-10-27 (Centroid portal + QuadraX socket).
+  // The symbol value is a JSON-stringified array of "<risk_account_alias>||<symbol>||<uni_symbol>".
+  // A bare "EURUSD.q" is silently ignored (no error, no feed). Without an alias no symbol frame is sent.
+  // account_balance / position / order_status_sound_alert return not_authorized for this user: never send.
+  function centroidSubscribeMsgs(alias){
+    var m=[
+      {key:"fix_conn_status"},
+      {key:"dashboard_data",value:"unsubscribe"}
+    ];
+    if(alias) m.push({key:"symbol",value:JSON.stringify([alias+"||"+CENTROID_SYMBOL+"||EURUSD"])});
+    return m;
+  }
+  // Exactly one risk account with an alias is required. Zero or several -> null (fail closed):
+  // the login response does not say which account carries EURUSD.q, so never guess.
+  function centroidRiskAlias(ra){
+    if(!Array.isArray(ra)||ra.length!==1) return null;
+    var a=ra[0]&&ra[0].alias; return (typeof a==="string"&&a)?a:null;
+  }
   var Market=(function(){
     var CRED="qx_ds_cred_v1";
     var T=window.QXTrace=window.QXTrace||{loginAttempts:0,loginHTTP:null,loginFailCat:null,tokenReceived:false,clientCodeExtracted:false,clientCodeMasked:null,wsURLShapeValid:null,wsOpenTs:null,wsCloseCode:null,wsCloseReason:null,wsErrors:0,rawMsgs:0,pricePubs:0,feedFrames:0,symbolsSeen:[],firstFrameShape:null,lastFrameTs:null,eurusdQSeen:false,eurusdMatched:false,subscribeSent:null};
-    var ws=null, token=null, creds=null, remember=false, state="DISCONNECTED", msg="not configured";
+    var ws=null, token=null, alias=null, riskCount=0, creds=null, remember=false, state="DISCONNECTED", msg="not configured"; // alias: risk-account label from login, memory only
     var quotes={}, lastMsgTs=0, attempts=0, timer=null, manualClose=false;
     var lastKnown=null; // {mid,bid,ask,ts,source}
     var FRESH=8000;
@@ -7749,10 +7756,11 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
     function purgeStored(){ try{sessionStorage.removeItem(CRED);}catch(e){} try{localStorage.removeItem(CRED);}catch(e){} }
     function loadCreds(){ purgeStored(); return creds; }
     function saveCreds(c,rem){ creds=c; remember=false; purgeStored(); }
-    function clearCreds(){ creds=null; token=null; purgeStored(); }
+    function clearCreds(){ creds=null; token=null; alias=null; purgeStored(); }
     function tdKey(){ return (creds&&creds.td)||""; }
     function setState(s,m){ state=s; if(m!=null) msg=m; }
     async function getToken(){
+      alias=null; riskCount=0; T.aliasPresent=false;
       var broker=(creds&&creds.broker)||CENTROID_TOKEN_BROKER_URL||"";
       if(broker){ T.loginAttempts++; var rb=await fetch(broker,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({client_code:creds.code})}).catch(function(){return null;}); T.loginHTTP=rb?rb.status:"network"; if(rb&&rb.ok){var jb=await rb.json().catch(function(){return null;}); if(jb&&jb.token){T.tokenReceived=true; if(creds&&creds.code){T.clientCodeExtracted=true; T.clientCodeMasked="…"+String(creds.code).slice(-2);} return jb.token;} T.loginFailCat="broker-no-token";} else {T.loginFailCat=rb?("broker-http-"+rb.status):"broker-network";} throw new Error("broker"); }
       T.loginAttempts++; var r=await fetch("https://bridge.centroidsol.com/v2/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:creds.user,password:creds.pass})});
@@ -7760,15 +7768,16 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
       var j=await r.json(); if(!j||!j.token) {T.loginFailCat="no-token-in-response"; throw new Error("notoken");} T.tokenReceived=true;
       // client_code is returned in the login response — auto-fill it so the user only needs user+pass
       if(j.user&&j.user.client_code&&creds&&!creds.code){ creds.code=j.user.client_code; saveCreds(creds,remember); } if(creds&&creds.code){T.clientCodeExtracted=true; T.clientCodeMasked="…"+String(creds.code).slice(-2);}
+      // risk-account alias qualifies the symbol subscribe frame; kept in memory, never persisted or traced
+      var ra=j.user&&j.user.user_risk_accounts; riskCount=Array.isArray(ra)?ra.length:0; alias=centroidRiskAlias(ra); T.aliasPresent=!!alias; T.riskAccounts=riskCount;
       return j.token;
     }
     function openSocket(){
       try{ T.wsURLShapeValid=!!(token&&creds.code); ws=new WebSocket("wss://bridge.centroidsol.com/ws?q="+encodeURIComponent(creds.code||"")+"&token="+encodeURIComponent(token)); }
       catch(e){ setState("ERROR","socket"); reconnect(); return; }
       ws.onopen=function(){ T.wsOpenTs=Date.now(); attempts=0; setState("CONNECTING","connected — awaiting feed");
-        // VERIFIED against Centroid Bridge UI bundle: selected Market Watch symbols are requested
-        // with {key:"symbol",value:"EURUSD.q"}. Keep this list secret-free and frame-shape only.
-        var subs=(window.CENTROID_SUBSCRIBE&&[].concat(window.CENTROID_SUBSCRIBE))||CENTROID_SUBSCRIBE_MSGS;
+        // Frames carry the alias; T.subscribeSent records key names only.
+        var subs=(window.CENTROID_SUBSCRIBE&&[].concat(window.CENTROID_SUBSCRIBE))||centroidSubscribeMsgs(alias);
         if(subs.length){try{T.subscribeSent=subs.map(function(m){return typeof m==="string"?"string("+m.length+")":Object.keys(m).join("+");}).join(" | ");}catch(e){}} subs.forEach(function(m,i){ setTimeout(function(){ try{ ws.send(typeof m==="string"?m:JSON.stringify(m)); }catch(e){} }, 150+i*200); });
       };
       ws.onmessage=function(ev){ handle(ev.data); };
@@ -7795,10 +7804,12 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
       if(c) saveCreds(c,rem); if(!creds) loadCreds();
       if(!creds||(!creds.broker&&(!creds.user||!creds.pass))){ setState("CREDENTIALS_REQUIRED","enter Centroid credentials"); return false; }
       manualClose=false; setState("CONNECTING",retry?"reconnecting":"authenticating");
-      try{ token=await getToken(); openSocket(); return true; }
+      try{ token=await getToken();
+        if(!alias&&!window.CENTROID_SUBSCRIBE){ token=null; setState("ERROR",riskCount>1?"Centroid: "+riskCount+" risk accounts in login — cannot pick the EURUSD.q account; not subscribed, fallback active":"Centroid: no risk account in login — not subscribed, fallback active"); return false; }
+        openSocket(); return true; }
       catch(e){ setState(((creds&&creds.broker)||CENTROID_TOKEN_BROKER_URL)?"BROKER_REQUIRED":"ERROR","Centroid auth failed (CORS or credentials) — fallback active"); reconnect(); return false; }
     }
-    function disconnect(){ manualClose=true; clearTimeout(timer); try{ if(ws) ws.close(); }catch(e){} ws=null; token=null; setState("DISCONNECTED","disconnected"); }
+    function disconnect(){ manualClose=true; clearTimeout(timer); try{ if(ws) ws.close(); }catch(e){} ws=null; token=null; alias=null; setState("DISCONNECTED","disconnected"); }
     function pipFactor(sym){ return /JPY/.test(sym)?100:/XAU/.test(sym)?10:10000; }
     // unified MarketQuote, preferring Centroid then v59 spot pipeline then last-known
     function quote(){
