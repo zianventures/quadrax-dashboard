@@ -98,7 +98,8 @@ r.t.paintMarket(); q = r.get('qx81Quotes').innerHTML;
 check('Centroid mid shown; bid/ask hidden when quote() is not Centroid-sourced', /1\.16000/.test(q) && !/1\.15995/.test(q));
 r = runRestore({ state: 'CONNECTED', role: 'MASTER' }, mk(true, 'LIVE_CENTROID'));
 r.t.paintMarket(); q = r.get('qx81Quotes').innerHTML;
-check('Centroid-sourced quote → bid/ask + spread rendered', /1\.15995 \/ 1\.16005/.test(q) && /1\.0 pips/.test(q));
+check('Centroid-sourced quote → bid, ask + spread rendered (v60 cells)', />1\.15995</.test(q) && />1\.16005</.test(q) && /1\.0 pips/.test(q) && /Bid Vol/.test(q));
+check('no volumes in frame → no imbalance/depth figures (no synthetic 50/50)', !/% bid/.test(q) && r.get('qx81LiqReg').textContent === '—');
 check('diagnostics never render trace alias/token', ![q, r.get('qx81Conn').innerHTML, r.get('qx81Src').textContent].join('').includes(SECRET));
 
 // ── live MT5 accounts: MASTER only ───────────────────────────────────────────
@@ -114,6 +115,26 @@ for (const [n, a, want] of [['MASTER', { state: 'CONNECTED', role: 'MASTER' }, 1
   try { vm.runInNewContext(LA, { window, document, firebase, Date, isFinite, Math, String, Object, setInterval: () => 0 }); } catch (e) {}
   check('live accounts subscribe for ' + n + ' → ' + (want ? 'yes' : 'no'), subs === want);
 }
+
+// v63 shell retired: markup gone, legacy decorators guarded, mobile sign-out reachable
+check('v63 #dc-root markup removed', !/<div id="dc-root"/.test(src) && !/id="quadrax-shell"/.test(src));
+check('v64/v65/v68 decorators guarded on #quadrax-shell (3)', src.split('if(!document.getElementById("quadrax-shell")) return; /* v81: v63 shell retired */').length - 1 === 3);
+check('<=520px: header auth button hidden, sign in/out in #mobMenu', src.includes('@media (max-width:520px){.top-actions #qx81AuthBtn{display:none!important}}') && src.includes('mi.id="qx81MobAuth"') && src.includes('$("qx81MobAuth")'));
+
+// v60.1 overlay: guarded, single timer, no v60 Centroid feed, mode-only storage, replay cleared on sign-out
+const OV = [...src.matchAll(/<script id="qx-v81-overlay">([\s\S]*?)<\/script>/g)];
+check('exactly one qx-v81-overlay script', OV.length === 1);
+const O = OV[0] ? OV[0][1] : '';
+check('overlay is guarded', /if\(window\.__qxV81Overlay\) return; window\.__qxV81Overlay=true;/.test(O));
+check('overlay has exactly one setInterval', (O.match(/setInterval\(/g) || []).length === 1);
+check('no v60 CentroidFeed anywhere', !/CentroidFeed/.test(src));
+check('overlay localStorage only for qx_mode_v1', (O.match(/localStorage\.\w+\(([^)]*)/g) || []).every(x => /"qx_mode_v1"/.test(x)) && !/sessionStorage/.test(O));
+check('overlay copy never says HMM', !/HMM/.test(O));
+check('replay frames cleared on qx-auth-signout', /addEventListener\("qx-auth-signout",function\(\)\{ snaps=\[\]; paintReplay\(\); \}\)/.test(O));
+check('v60 sheet: single @import at the top (a mid-sheet one would void the --dt- tokens)',
+  (v60nc => (v60nc.match(/@import url\(/g) || []).length === 1 && /^\s*@import url\(/.test(v60nc))(v60css.replace(/\/\*[\s\S]*?\*\//g, '')) && /--dt-bg0:/.test(v60css));
+check('Data Sources modal restyled in v60.1 card language', /#qxSettings \.qxs-card\{margin:auto;width:min\(540px/.test(src));
+check('<=1600px header: transition chip + TF badge hidden, anon role compact', /@media \(max-width:1600px\)\{\.qx81-role\{[^}]*\}\.qx81-role\.qx81-anon,#qx-v59-host \.top-actions \.qx-tf-badge,#qx-v59-host \.top-actions \.qx-risk-chip\{display:none!important\}\}/.test(src) && /classList\.toggle\("qx81-anon",t==="STANDALONE"\)/.test(R));
 
 console.log(fails ? fails + ' FAILED' : 'ALL PASS');
 process.exit(fails ? 1 : 0);

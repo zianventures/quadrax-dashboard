@@ -17,7 +17,7 @@ if (!m) { console.log('\nFAILED'); process.exit(1); }
 const code = m[0];
 check('no Firestore enablePersistence (no durable cache)', !/enablePersistence\(/.test(code));
 check('auth persistence set to NONE', /setPersistence\(firebase\.auth\.Auth\.Persistence\.NONE\)/.test(code));
-check('header pill no longer hardcodes MASTER · DESK 01', !/DESK 01/.test(src) && /id="qxRoleTxt"[^>]*>STANDALONE</.test(src));
+check('header pill no longer hardcodes MASTER · DESK 01', !/DESK 01/.test(src) && src.includes(`pill.id="qx81Role"; pill.innerHTML='<i></i><b>STANDALONE</b>'`));
 const swV = (swSrc.match(/CACHE_VERSION = 'qx-v(\d+)'/) || [])[1], regV = (src.match(/service-worker\.js\?v=(\d+)/) || [])[1];
 check(`SW versions consistent (qx-v${swV} / ?v=${regV})`, swV && swV === regV);
 
