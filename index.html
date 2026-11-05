@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>QuadraX Terminal · v70 · Centroid Protocol</title>
+<title>QuadraX Terminal</title>
 <style>
 @font-face {
   font-family: 'Space Grotesk';
@@ -6568,7 +6568,7 @@ signal lights, and price ladder. No analytics/engine logic changed.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     // Cache-bust the SW URL so browsers always check for updates
-    navigator.serviceWorker.register('service-worker.js?v=81')
+    navigator.serviceWorker.register('service-worker.js?v=82')
       .then(reg => {
         console.log('[QuadraX] SW registered, scope:', reg.scope);
 
@@ -6651,7 +6651,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
 (function(){
   "use strict";
   if(window.__qx64__) return; window.__qx64__=true;
-  // Off-deploy (local/file), the service-worker.js?v=81 asset 404s and floods the console.
+  // Off-deploy (local/file), the service-worker.js?v=82 asset 404s and floods the console.
   // It exists on the real GitHub Pages origin; everywhere else, no-op the registration silently
   // (returns a never-settling promise so v59's .then/.catch — and the warning — never fire).
   try{
@@ -6718,6 +6718,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
   // The feed parser normalises "EURUSD.q" -> base "EURUSD" for matching but keeps the raw symbol for display.
   var CENTROID_SYMBOL="EURUSD.q";
   var CENTROID_TOKEN_BROKER_URL=""; // set to a Cloudflare Worker to make broker mode primary
+  var CENTROID_ENABLED=false; window.QX_CENTROID_ENABLED=CENTROID_ENABLED; // qx-v82: Centroid hidden — its endpoint allowlist blocks browsers; true restores it
   var TWELVEDATA_BROKER_URL="";
   // qx-v74: subscribe frames sent on WS open, verified live 2026-10-27 (Centroid portal + QuadraX socket).
   // The symbol value is a JSON-stringified array of "<risk_account_alias>||<symbol>||<uni_symbol>".
@@ -6874,6 +6875,7 @@ body.qx-auth-locked{overflow:visible!important;height:auto!important}
     }
     function reconnect(){ if(manualClose) return; clearTimeout(timer); attempts++; var d=Math.min(30000,1000*Math.pow(2,Math.min(attempts,5))); setState(state==="ERROR"?"ERROR":"DISCONNECTED","reconnect "+Math.round(d/1000)+"s"); timer=setTimeout(function(){ connect(creds,remember,true); },d); }
     async function connect(c,rem,retry){
+      if(typeof CENTROID_ENABLED!=="undefined"&&!CENTROID_ENABLED){ manualClose=true; clearTimeout(timer); setState("DISCONNECTED","disabled"); return false; } // qx-v82: no attempts, no retry loop
       if(c) saveCreds(c,rem); if(!creds) loadCreds();
       if(!creds||(!creds.broker&&(!creds.user||!creds.pass))){ setState("CREDENTIALS_REQUIRED","enter Centroid credentials"); return false; }
       manualClose=false; setState("CONNECTING",retry?"reconnecting":"authenticating");
@@ -12349,7 +12351,7 @@ body:not(.qx81-desk) .qx81-deskonly{display:none!important}
       b.textContent="Continue in Standalone Mode"; acts.appendChild(b);
       b.addEventListener("click",function(){ g.hidden=true; var p=$("qxAuthPassword"); if(p) p.value=""; paint(); });
       var n=document.createElement("div"); n.className="qx81-note";
-      n.textContent="Standalone shows public market data only. Team sync, Centroid Data Sources and live accounts require a MASTER or READER sign-in.";
+      n.textContent="Standalone shows public market data only. Team sync and live accounts require a MASTER or READER sign-in.";
       acts.parentNode.insertBefore(n,acts.nextSibling);
     }
     g.hidden=auth().state==="CONNECTED";
@@ -12377,7 +12379,7 @@ body:not(.qx81-desk) .qx81-deskonly{display:none!important}
     window.__qxOpenSettings();
     var card=document.querySelector("#qxSettings .qxs-card"); if(!card) return;
     // Centroid fields belong to the authenticated Desk; standalone and NO ROLE keep sign-in + preferences only.
-    var desk=isDesk();
+    var desk=isDesk()&&window.QX_CENTROID_ENABLED, st=$("qxsStatus"); if(st) st.style.display=window.QX_CENTROID_ENABLED?"":"none";
     ["qxsBroker","qxsUser","qxsPass","qxsCode"].forEach(function(id){ var i=$(id); if(!i) return; i.style.display=desk?"":"none";
       var l=i.previousElementSibling; if(l&&l.tagName==="LABEL") l.style.display=desk?"":"none"; if(!desk&&i.type==="password") i.value=""; });
     ["qxsConnect","qxsDisc"].forEach(function(id){ var b=$(id); if(b) b.style.display=desk?"":"none"; });
@@ -12411,6 +12413,7 @@ body:not(.qx81-desk) .qx81-deskonly{display:none!important}
     top.parentNode.insertBefore(b,top.nextSibling);
     $("qx81Cfg").addEventListener("click",openSources);
     $("qx81Disc").addEventListener("click",function(){ try{ window.QXMarket.disconnect(); }catch(e){} paint(); });
+    if(!window.QX_CENTROID_ENABLED) [].slice.call(b.querySelectorAll(":scope > .card")).forEach(function(c){ b.removeChild(c); }); // qx-v82
   }
   function meter(id,w,col,txt){ var b=$("qx81Liq"+id), m=$("qx81Liq"+id+"M"); if(b){ b.style.width=w+"%"; b.style.background=col; } if(m) m.textContent=txt; }
   // Liquidity reads only a live Centroid quote; volumes of 0/absent mean no depth, never a synthetic 50/50.
@@ -12581,7 +12584,7 @@ body:not(.qx81-desk) .qx81-deskonly{display:none!important}
     var liq=f.live?"Centroid live":"unavailable (no Centroid feed)";
     var nm=txt("nextStateChip").match(/\((\d+)%\)/), risk=nm?(+nm[1]>=60?"rising":+nm[1]>=35?"moderate":"low"):(f.spot?"stable":WARM.toLowerCase());
     var bl=$("qxBriefLine");
-    if(bl) bl.innerHTML="<b>Regime "+esc(regime)+"</b> · Edge "+esc(edgeWord)+" · Consensus <b>"+esc(consensus)+"</b> · Macro "+esc(macro)+" · Liquidity "+liq+" · Transition risk "+risk+".";
+    if(bl) bl.innerHTML="<b>Regime "+esc(regime)+"</b> · Edge "+esc(edgeWord)+" · Consensus <b>"+esc(consensus)+"</b> · Macro "+esc(macro)+(window.QX_CENTROID_ENABLED?" · Liquidity "+liq:"")+" · Transition risk "+risk+".";
     var rb=$("qxBriefRibbon"), tx=txt("txScoreChip"), f4=txt("rng4h").replace("Target:","").trim(), A="<span class='arw'>&#8594;</span>";
     if(rb) rb.innerHTML=(!f.spot&&dashish(macroRaw))?"Building event-to-regime context from available macro and signal inputs.":
       "Macro pressure <b>"+esc(macro)+"</b>"+A+"transmission "+esc(dashish(tx)?WARM:tx)+A+"regime risk "+risk+A+"consensus "+esc(consensus)+A+"4H path "+esc(dashish(f4)?WARM:f4);
@@ -12633,9 +12636,10 @@ body:not(.qx81-desk) .qx81-deskonly{display:none!important}
     ["&#9678;","System Performance","jump",jump("Signal Performance")],["&#9678;","Calendar","jump",jump("World Events Calendar")],
     ["&#9678;","News","jump",jump("Trading Economics")],["&#9654;","Guided Mode","walkthrough",guided],
     ["&#9881;","Preferences","open",function(){ if(typeof window.__qxOpenPrefs==="function") window.__qxOpenPrefs(); }],
-    ["&#128268;","Centroid Data Sources","data source",function(){ var b=$("settingsBtn"); if(b) b.click(); }],
+    ["&#128268;",window.QX_CENTROID_ENABLED?"Centroid Data Sources":"Data Sources","data source",function(){ var b=$("settingsBtn"); if(b) b.click(); }],
     ["&#9636;","Workspace: Investment","mode",function(){ setMode("investment"); }],["&#9636;","Workspace: Trading","mode",function(){ setMode("trading"); }],
     ["&#9636;","Workspace: Research","mode",function(){ setMode("research"); }],["&#9636;","Workspace: All","mode",function(){ setMode("all"); }]];
+  if(!window.QX_CENTROID_ENABLED) CMDS=CMDS.filter(function(c){ return c[1]!=="Liquidity Intelligence"&&c[1]!=="Market Watch"; }); // qx-v82
   var sel=0, list=CMDS;
   function renderCmd(){
     var q=($("qxCmdInput").value||"").toLowerCase();
